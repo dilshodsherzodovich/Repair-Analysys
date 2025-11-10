@@ -1,0 +1,224 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ========================================
+     FONT CONFIGURATION
+     ======================================== */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* ========================================
+     CUSTOM COLOR PALETTE (Change these!)
+     ======================================== */
+  --corporate-primary: #214b66; /* Main brand color */
+  --corporate-secondary: #2354bf; /* Secondary brand color */
+  --corporate-accent: #4978ce; /* Accent/highlight color */
+  --corporate-light: #f9fafb; /* Light background */
+
+  /* Gray scale palette */
+  --corporate-gray-50: #f9fafb;
+  --corporate-gray-100: #f2f2f2;
+  --corporate-gray-200: #e5e7eb;
+  --corporate-gray-300: #d1d5db;
+  --corporate-gray-400: #9e9e9e;
+  --corporate-gray-500: #6b7280;
+  --corporate-gray-600: #374151;
+  --corporate-gray-700: #1f2937;
+  --corporate-gray-800: #1c1c1c;
+  --corporate-gray-900: #000000;
+
+  /* ========================================
+     SHADCN/UI THEME VARIABLES (Light Mode)
+     Updated to match design: blue primary, success green, error red
+     ======================================== */
+  --background: #ffffff; /* Main background - white */
+  --background-secondary: #f8fafc; /* Secondary background - light gray */
+  --foreground: #1f2937; /* Main text color - dark gray */
+  --card: #ffffff; /* Card background */
+  --card-foreground: #1f2937; /* Card text */
+  --popover: #ffffff; /* Popover background */
+  --popover-foreground: #1f2937; /* Popover text */
+  --primary: #2563eb; /* ✅ Primary blue (selected sidebar, buttons) - bg-primary, text-primary */
+  --primary-foreground: #ffffff; /* Text color on primary backgrounds */
+  --secondary: #f9fafb; /* Secondary background (sidebar background) */
+  --secondary-foreground: #1f2937; /* Text on secondary backgrounds */
+  --muted: #f2f2f2; /* Muted background */
+  --muted-foreground: #475569; /* Muted text (secondary text like "Shifrlovchi") */
+  --accent: #4978ce; /* Accent blue (active pagination) */
+  --accent-foreground: #ffffff; /* Text on accent */
+  --destructive: #dc2626; /* Destructive/error color */
+  --destructive-foreground: #ffffff; /* Text on destructive buttons */
+  --success: #28a745; /* ✅ NEW: Success green (Export EXCEL button) */
+  --success-foreground: #ffffff; /* Text on success backgrounds */
+  --error: #dc2626; /* ✅ NEW: Error color (same as destructive) */
+  --error-foreground: #ffffff; /* Text on error backgrounds */
+  --brand: #eff6ff; /* ✅ NEW: Brand color - bg-brand, text-brand, border-brand */
+  --brand-foreground: #ffffff; /* Text color on brand backgrounds */
+  --border: #e2e8f0; /* Border color (table borders, input borders) */
+  --input: #f9fafb; /* Input field background */
+  --ring: #4978ce; /* Focus ring color */
+  --radius: 0.5rem; /* Border radius for components */
+  --dimmed: #90a1b9;
+
+  /* Chart colors */
+  --chart-1: #2354bf;
+  --chart-2: #4978ce;
+  --chart-3: #214b66;
+  --chart-4: #6b7280;
+  --chart-5: #9e9e9e;
+
+  --sidebar: #f9fafb; /* Sidebar background - light gray */
+  --sidebar-foreground: #1f2937; /* Sidebar text */
+  --sidebar-primary: #2354bf; /* Selected sidebar item (matches primary) */
+  --sidebar-primary-foreground: #ffffff; /* Text on selected sidebar item */
+  --sidebar-accent: #f2f2f2; /* Sidebar hover state */
+  --sidebar-accent-foreground: #1f2937; /* Text on sidebar hover */
+  --sidebar-border: #f1f5f9; /* Sidebar border */
+  --sidebar-ring: #4978ce; /* Sidebar focus ring */
+}
+
+.dark {
+  /* ========================================
+     SHADCN/UI THEME VARIABLES (Dark Mode)
+     Change these to customize dark mode colors
+     ======================================== */
+  --background: #1c1c1c; /* Dark mode background */
+  --foreground: #f9fafb; /* Dark mode text */
+  --card: #232323; /* Dark mode card */
+  --card-foreground: #f9fafb; /* Dark mode card text */
+  --popover: #232323; /* Dark mode popover */
+  --popover-foreground: #f9fafb; /* Dark mode popover text */
+  --primary: #4978ce; /* Dark mode primary (lighter blue) */
+  --primary-foreground: #ffffff; /* Text on primary */
+  --secondary: #374151; /* Dark mode secondary */
+  --secondary-foreground: #f9fafb; /* Text on secondary */
+  --muted: #374151; /* Dark mode muted */
+  --muted-foreground: #9e9e9e; /* Dark mode muted text */
+  --accent: #2354bf; /* Dark mode accent */
+  --accent-foreground: #ffffff; /* Text on accent */
+  --destructive: #dc2626; /* Error/danger */
+  --destructive-foreground: #ffffff; /* Text on destructive */
+  --success: #28a745; /* Dark mode success */
+  --success-foreground: #ffffff; /* Text on success */
+  --error: #dc2626; /* Dark mode error */
+  --error-foreground: #ffffff; /* Text on error */
+  --brand: #4978ce; /* Dark mode brand color */
+  --brand-foreground: #ffffff; /* Text on brand backgrounds */
+  --border: #374151; /* Dark mode border */
+  --input: #374151; /* Dark mode input */
+  --ring: #4978ce; /* Dark mode focus ring */
+  --dimmed: #90a1b9;
+  /* Dark mode sidebar */
+  --sidebar: #232323;
+  --sidebar-foreground: #f9fafb;
+  --sidebar-primary: #4978ce;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #374151;
+  --sidebar-accent-foreground: #f9fafb;
+  --sidebar-border: #374151;
+  --sidebar-ring: #4978ce;
+}
+
+@theme inline {
+  /* ========================================
+     TAILWIND COLOR MAPPING
+     This maps CSS variables to Tailwind classes
+     Example: --color-primary → bg-primary, text-primary, border-primary, etc.
+     ======================================== */
+
+  /* Font family */
+  --font-family-sans: var(--font-sans);
+
+  /* Color mappings - these make bg-primary, text-primary, etc. work! */
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(
+    --primary
+  ); /* ✅ bg-primary uses --primary from :root above */
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary); /* bg-secondary, text-secondary */
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted); /* bg-muted, text-muted */
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent); /* bg-accent, text-accent */
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(
+    --destructive
+  ); /* bg-destructive, text-destructive */
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success); /* ✅ NEW: bg-success, text-success */
+  --color-success-foreground: var(--success-foreground);
+  --color-error: var(--error); /* ✅ NEW: bg-error, text-error */
+  --color-error-foreground: var(--error-foreground);
+  --color-brand: var(--brand); /* ✅ NEW: bg-brand, text-brand, border-brand */
+  --color-brand-foreground: var(--brand-foreground);
+  --color-border: var(--border); /* border-border */
+  --color-input: var(--input); /* bg-input */
+  --color-ring: var(--ring); /* ring-ring */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-dimmed: var(--dimmed);
+
+  /* Corporate utility classes */
+  --color-corporate-primary: var(--corporate-primary);
+  --color-corporate-secondary: var(--corporate-secondary);
+  --color-corporate-accent: var(--corporate-accent);
+  --color-corporate-light: var(--corporate-light);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: var(--font-sans);
+  }
+
+  /* Updated corporate utility classes to use semantic color tokens */
+  .corporate-heading {
+    @apply font-semibold tracking-tight text-foreground;
+  }
+
+  .corporate-subheading {
+    @apply font-medium text-foreground;
+  }
+
+  .corporate-body {
+    @apply leading-relaxed text-muted-foreground;
+  }
+
+  .corporate-card {
+    @apply bg-card rounded-lg shadow-sm border;
+  }
+
+  .corporate-button-primary {
+    @apply font-medium text-primary-foreground bg-primary hover:bg-primary/90;
+  }
+
+  .corporate-button-secondary {
+    @apply font-medium bg-secondary text-secondary-foreground border hover:bg-secondary/80;
+  }
+}
