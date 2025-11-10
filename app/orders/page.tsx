@@ -10,8 +10,20 @@ import { FileSpreadsheet } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { OrderData } from "@/api/types/orders";
-import { useOrders } from "@/api/hooks/use-orders";
+import {
+  OrderData,
+  CreateOrderPayload,
+  UpdateOrderPayload,
+} from "@/api/types/orders";
+import {
+  useOrders,
+  useCreateOrder,
+  useUpdateOrder,
+  useDeleteOrder,
+} from "@/api/hooks/use-orders";
+import { OrderModal } from "@/components/orders/order-modal";
+import { ConfirmationDialog } from "@/ui/confirmation-dialog";
+import { useSnackbar } from "@/providers/snackbar-provider";
 
 export default function OrdersPage() {
   const searchParams = useSearchParams();
@@ -23,6 +35,19 @@ export default function OrdersPage() {
   // State
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    order: OrderData | null;
+  }>({ isOpen: false, order: null });
+
+  // Hooks
+  const { showSuccess, showError } = useSnackbar();
+  const createOrderMutation = useCreateOrder();
+  const updateOrderMutation = useUpdateOrder();
+  const deleteOrderMutation = useDeleteOrder();
 
   // Get current page and items per page from query params for API call
   // The table component will handle updating these URL params internally
@@ -61,20 +86,86 @@ export default function OrdersPage() {
 
   // Handle edit
   const handleEdit = (row: OrderData) => {
-    console.log("Edit:", row);
-    // Implement edit logic
+    setSelectedOrder(row);
+    setModalMode("edit");
+    setIsModalOpen(true);
   };
 
   // Handle delete
   const handleDelete = (row: OrderData) => {
-    console.log("Delete:", row);
-    // Implement delete logic
+    setDeleteConfirmation({ isOpen: true, order: row });
   };
 
   // Handle create
   const handleCreate = () => {
-    console.log("Create new");
-    // Implement create logic
+    setSelectedOrder(null);
+    setModalMode("create");
+    setIsModalOpen(true);
+  };
+
+  // Handle save (create or update)
+  const handleSave = (orderData: CreateOrderPayload | UpdateOrderPayload) => {
+    if (modalMode === "create") {
+      createOrderMutation.mutate(orderData as CreateOrderPayload, {
+        onSuccess: () => {
+          showSuccess("Buyruq MPR muvaffaqiyatli yaratildi!");
+          setIsModalOpen(false);
+          setSelectedOrder(null);
+        },
+        onError: (error: any) => {
+          showError(
+            "Xatolik yuz berdi",
+            error?.response?.data?.message ||
+              error.message ||
+              "Buyruq MPR yaratishda xatolik"
+          );
+        },
+      });
+    } else {
+      if (selectedOrder) {
+        updateOrderMutation.mutate(
+          {
+            id: selectedOrder.id,
+            orderData: orderData as UpdateOrderPayload,
+          },
+          {
+            onSuccess: () => {
+              showSuccess("Buyruq MPR muvaffaqiyatli yangilandi!");
+              setIsModalOpen(false);
+              setSelectedOrder(null);
+            },
+            onError: (error: any) => {
+              showError(
+                "Xatolik yuz berdi",
+                error?.response?.data?.message ||
+                  error.message ||
+                  "Buyruq MPR yangilashda xatolik"
+              );
+            },
+          }
+        );
+      }
+    }
+  };
+
+  // Handle delete confirmation
+  const handleConfirmDelete = () => {
+    if (deleteConfirmation.order) {
+      deleteOrderMutation.mutate(deleteConfirmation.order.id, {
+        onSuccess: () => {
+          showSuccess("Buyruq MPR muvaffaqiyatli o'chirildi");
+          setDeleteConfirmation({ isOpen: false, order: null });
+        },
+        onError: (error: any) => {
+          showError(
+            "Xatolik yuz berdi",
+            error?.response?.data?.message ||
+              error.message ||
+              "Buyruq MPR o'chirishda xatolik"
+          );
+        },
+      });
+    }
   };
 
   // Handle export
@@ -196,6 +287,8 @@ export default function OrdersPage() {
           filters={[]}
           hasSearch={true}
           searchPlaceholder="Qidiruv"
+          addButtonPermittion="create_order"
+          onAdd={handleCreate}
           onExport={handleExport}
           exportButtonText="Export EXCEL"
           exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
@@ -223,6 +316,35 @@ export default function OrdersPage() {
           emptyDescription="Buyruq MPR ma'lumotlari topilmadi"
         />
       </div>
+
+      {/* Order Modal */}
+      <OrderModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedOrder(null);
+        }}
+        onSave={handleSave}
+        order={selectedOrder}
+        mode={modalMode}
+        isPending={
+          createOrderMutation.isPending || updateOrderMutation.isPending
+        }
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() => setDeleteConfirmation({ isOpen: false, order: null })}
+        onConfirm={handleConfirmDelete}
+        title="Buyruq MPR ni o'chirish"
+        message="Haqiqatan ham bu buyruq MPR ni o'chirmoqchimisiz? Bu amalni bekor qilib bo'lmaydi."
+        confirmText="O'chirish"
+        cancelText="Bekor qilish"
+        variant="danger"
+        isDoingAction={deleteOrderMutation.isPending}
+        isDoingActionText="O'chirilmoqda"
+      />
     </div>
   );
 }

@@ -1,7 +1,11 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ordersService } from "../services/orders.service";
-import { OrdersGetParams } from "../types/orders";
+import {
+  OrdersGetParams,
+  CreateOrderPayload,
+  UpdateOrderPayload,
+} from "../types/orders";
 import { queryKeys } from "../querykey";
 
 export function useOrders(params?: OrdersGetParams) {
@@ -18,10 +22,39 @@ export function useOrders(params?: OrdersGetParams) {
   });
 }
 
+export function useCreateOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (orderData: CreateOrderPayload) =>
+      ordersService.createOrder(orderData),
+    mutationKey: [queryKeys.orders.create],
+    onSuccess: () => {
+      // Invalidate orders list to refetch with new data
+      queryClient.invalidateQueries({ queryKey: [queryKeys.orders.all] });
+    },
+  });
+}
+
+export function useUpdateOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      orderData,
+    }: {
+      id: number | string;
+      orderData: UpdateOrderPayload;
+    }) => ordersService.updateOrder(id, orderData),
+    mutationKey: [queryKeys.orders.edit],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.orders.all] });
+    },
+  });
+}
 export function useDeleteOrder() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => ordersService.deleteOrder(id),
+    mutationFn: (id: number | string) => ordersService.deleteOrder(id),
     mutationKey: [queryKeys.orders.delete],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKeys.orders.all] });

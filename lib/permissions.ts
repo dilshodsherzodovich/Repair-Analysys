@@ -46,6 +46,9 @@ export type Permission =
   | "view_defective_works"
   | "view_stations"
   | "view_orders"
+  | "create_order"
+  | "edit_order"
+  | "delete_order"
   | "view_autoconnecters"
   | "view_pantograf"
   | "create_pantograf"
@@ -55,12 +58,14 @@ export type Permission =
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
     "view_dashboard",
-
     "view_reports",
     "view_defects",
     "view_defective_works",
     "view_stations",
     "view_orders",
+    "create_order",
+    "edit_order",
+    "delete_order",
     "view_autoconnecters",
     "view_pantograf",
     "create_pantograf",

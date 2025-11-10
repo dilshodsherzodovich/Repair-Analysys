@@ -50,6 +50,11 @@ export const queryKeys = {
   },
   orders: {
     all: "orders-all",
+    create: "orders-create",
     delete: "delete-order",
+    edit: "edit-order",
+  },
+  locomotives: {
+    list: "locomotives-list",
   },
 } as const;
