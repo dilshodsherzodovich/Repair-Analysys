@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Modal } from "@/ui/modal";
 import { Input } from "@/ui/input";
 import { Textarea } from "@/ui/textarea";
@@ -51,6 +51,16 @@ export function OrderModal({
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
     useGetLocomotives();
 
+  // Memoize locomotive options for better performance
+  const locomotiveOptions = useMemo(() => {
+    if (!locomotivesData) return [];
+    return locomotivesData.map((locomotive) => ({
+      id: locomotive.id,
+      label: `${locomotive.name} (${locomotive.locomotive_model.name})`,
+      value: locomotive.id.toString(),
+    }));
+  }, [locomotivesData]);
+
   // Initialize form data when modal opens or order changes
   useEffect(() => {
     if (order && mode === "edit") {
@@ -82,38 +92,64 @@ export function OrderModal({
     }
   }, [order, mode, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Optimized input handlers using useCallback
+  const handleInputChange = useCallback(
+    (field: keyof typeof formData) =>
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData((prev) => ({
+          ...prev,
+          [field]: e.target.value,
+        }));
+      },
+    []
+  );
 
-    // Convert date from datetime-local to ISO string
-    const dateISO = formData.date ? new Date(formData.date).toISOString() : "";
+  const handleSelectChange = useCallback((field: keyof typeof formData) => {
+    return (value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    };
+  }, []);
 
-    if (mode === "create") {
-      const payload: CreateOrderPayload = {
-        train_number: formData.train_number.trim(),
-        responsible_department: formData.responsible_department.trim(),
-        responsible_person: formData.responsible_person.trim(),
-        damage_amount: formData.damage_amount.trim(),
-        locomotive: parseInt(formData.locomotive),
-        case_description: formData.case_description.trim(),
-        date: dateISO,
-      };
-      onSave(payload);
-    } else {
-      const payload: UpdateOrderPayload = {
-        train_number: formData.train_number.trim(),
-        responsible_department: formData.responsible_department.trim(),
-        responsible_person: formData.responsible_person.trim(),
-        damage_amount: formData.damage_amount.trim(),
-        locomotive: parseInt(formData.locomotive),
-        case_description: formData.case_description.trim(),
-        date: dateISO,
-      };
-      onSave(payload);
-    }
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
 
-  const handleClose = () => {
+      // Convert date from datetime-local to ISO string
+      const dateISO = formData.date
+        ? new Date(formData.date).toISOString()
+        : "";
+
+      if (mode === "create") {
+        const payload: CreateOrderPayload = {
+          train_number: formData.train_number.trim(),
+          responsible_department: formData.responsible_department.trim(),
+          responsible_person: formData.responsible_person.trim(),
+          damage_amount: formData.damage_amount.trim(),
+          locomotive: parseInt(formData.locomotive),
+          case_description: formData.case_description.trim(),
+          date: dateISO,
+        };
+        onSave(payload);
+      } else {
+        const payload: UpdateOrderPayload = {
+          train_number: formData.train_number.trim(),
+          responsible_department: formData.responsible_department.trim(),
+          responsible_person: formData.responsible_person.trim(),
+          damage_amount: formData.damage_amount.trim(),
+          locomotive: parseInt(formData.locomotive),
+          case_description: formData.case_description.trim(),
+          date: dateISO,
+        };
+        onSave(payload);
+      }
+    },
+    [formData, mode, onSave]
+  );
+
+  const handleClose = useCallback(() => {
     setFormData({
       train_number: "",
       responsible_department: "",
@@ -124,7 +160,7 @@ export function OrderModal({
       date: "",
     });
     onClose();
-  };
+  }, [onClose]);
 
   const title =
     mode === "create" ? "Buyruq MPR yaratish" : "Buyruq MPR ni tahrirlash";
@@ -143,12 +179,7 @@ export function OrderModal({
               <Input
                 id="train_number"
                 value={formData.train_number}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    train_number: e.target.value,
-                  }))
-                }
+                onChange={handleInputChange("train_number")}
                 placeholder="Poyezd raqamini kiriting"
                 required
               />
@@ -161,9 +192,7 @@ export function OrderModal({
                 id="date"
                 type="datetime-local"
                 value={formData.date}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, date: e.target.value }))
-                }
+                onChange={handleInputChange("date")}
                 required
               />
             </div>
@@ -173,24 +202,16 @@ export function OrderModal({
               <Label htmlFor="locomotive">Lokomotiv</Label>
               <Select
                 value={formData.locomotive}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, locomotive: value }))
-                }
+                onValueChange={handleSelectChange("locomotive")}
                 disabled={isLoadingLocomotives}
               >
-                <SelectTrigger
-                  id="locomotive"
-                  className="!h-10 !mb-4 !border-gray-300 !bg-white !focus:border-blue-500 !focus:ring-0 !hover:border-gray-400 !rounded-md !px-4 !py-2 !text-base md:!text-sm"
-                >
+                <SelectTrigger id="locomotive">
                   <SelectValue placeholder="Lokomotivni tanlang" />
                 </SelectTrigger>
                 <SelectContent>
-                  {locomotivesData?.map((locomotive) => (
-                    <SelectItem
-                      key={locomotive.id}
-                      value={locomotive.id.toString()}
-                    >
-                      {locomotive.name}
+                  {locomotiveOptions.map((option) => (
+                    <SelectItem key={option.id} value={option.value}>
+                      {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -203,12 +224,7 @@ export function OrderModal({
               <Input
                 id="responsible_department"
                 value={formData.responsible_department}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    responsible_department: e.target.value,
-                  }))
-                }
+                onChange={handleInputChange("responsible_department")}
                 placeholder="Mas'ul tashkilotni kiriting"
                 required
               />
@@ -220,12 +236,7 @@ export function OrderModal({
               <Input
                 id="responsible_person"
                 value={formData.responsible_person}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    responsible_person: e.target.value,
-                  }))
-                }
+                onChange={handleInputChange("responsible_person")}
                 placeholder="Mas'ul shaxsni kiriting"
                 required
               />
@@ -239,12 +250,7 @@ export function OrderModal({
                 type="number"
                 step="0.01"
                 value={formData.damage_amount}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    damage_amount: e.target.value,
-                  }))
-                }
+                onChange={handleInputChange("damage_amount")}
                 placeholder="Zarar summasini kiriting"
                 required
               />
@@ -257,12 +263,7 @@ export function OrderModal({
             <Textarea
               id="case_description"
               value={formData.case_description}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  case_description: e.target.value,
-                }))
-              }
+              onChange={handleInputChange("case_description")}
               placeholder="Hodisa tavsifini kiriting"
               rows={4}
               required
