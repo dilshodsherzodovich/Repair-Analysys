@@ -14,7 +14,14 @@ export interface EmptyStateProps {
 const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
   ({ icon, title, description, action, className, ...props }, ref) => {
     return (
-      <div ref={ref} className={cn("text-center py-12", className)} {...props}>
+      <div
+        ref={ref}
+        className={cn(
+          "text-center py-12 flex flex-col items-center justify-center",
+          className
+        )}
+        {...props}
+      >
         {icon && <div className="mx-auto mb-4 text-[#9ca3af]">{icon}</div>}
         <h3 className="text-lg font-medium text-[#1f2937] mb-2">{title}</h3>
         {description && (

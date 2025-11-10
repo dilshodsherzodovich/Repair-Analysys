@@ -48,4 +48,8 @@ export const queryKeys = {
   logs: {
     list: "logs-list",
   },
+  orders: {
+    all: "orders-all",
+    delete: "delete-order",
+  },
 } as const;

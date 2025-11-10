@@ -51,7 +51,7 @@ const navigationItems = [
     section: "autoconnecters",
   },
   {
-    name: "Buyruq MTP",
+    name: "Buyruq MPR",
     href: "/orders",
     icon: FileText,
     section: "orders",

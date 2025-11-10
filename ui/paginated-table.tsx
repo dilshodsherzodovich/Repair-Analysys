@@ -37,6 +37,9 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { useSearchParams } from "next/navigation";
+import { ConfirmationDialog } from "./confirmation-dialog";
 
 export interface TableColumn<T = any> {
   key: string;
@@ -65,16 +68,17 @@ export interface PaginatedTableProps<T = any> {
   getRowId: (row: T) => string | number;
 
   // Pagination
-  currentPage: number;
   totalPages: number;
   totalItems?: number;
   itemsPerPage?: number;
-  onPageChange: (page: number) => void;
-  onItemsPerPageChange?: (itemsPerPage: number) => void;
+  currentPage?: number; // Optional: if not provided, will read from URL params
+  onPageChange?: (page: number) => void; // Optional: if not provided, will update URL params
+  onItemsPerPageChange?: (itemsPerPage: number) => void; // Optional: if not provided, will update URL params
+  updateQueryParams?: boolean; // If true, updates URL query params for page and pageSize
 
   // Actions
   onEdit?: (row: T) => void;
-  onDelete?: (row: T) => void;
+  onDelete?: (row: T) => void | Promise<void>;
   extraActions?: TableAction<T>[];
   showActions?: boolean;
   actionsLabel?: string;
@@ -107,12 +111,13 @@ export function PaginatedTable<T extends Record<string, any>>({
   isLoading = false,
   error = null,
   getRowId,
-  currentPage,
+  currentPage: externalCurrentPage,
   totalPages,
   totalItems,
-  itemsPerPage = 25,
-  onPageChange,
-  onItemsPerPageChange,
+  itemsPerPage: externalItemsPerPage = 25,
+  onPageChange: externalOnPageChange,
+  onItemsPerPageChange: externalOnItemsPerPageChange,
+  updateQueryParams = true,
   onEdit,
   onDelete,
   extraActions = [],
@@ -132,6 +137,192 @@ export function PaginatedTable<T extends Record<string, any>>({
   showCheckbox = false,
   skeletonRows = 10,
 }: PaginatedTableProps<T>) {
+  // Query params management - handle page and pageSize in table component
+  const { updateQuery } = useFilterParams();
+  const searchParams = useSearchParams();
+
+  // Initialize URL params if they don't exist
+  const hasInitialized = React.useRef(false);
+  React.useEffect(() => {
+    if (updateQueryParams && !externalOnPageChange && !hasInitialized.current) {
+      const pageParam = searchParams.get("page");
+      const pageSizeParam = searchParams.get("pageSize");
+
+      const needsInit = !pageParam || !pageSizeParam;
+      if (needsInit) {
+        hasInitialized.current = true;
+        const updates: Record<string, string> = {};
+        if (!pageParam) {
+          updates.page = "1";
+        }
+        if (!pageSizeParam) {
+          updates.pageSize = (externalItemsPerPage ?? 25).toString();
+        }
+        updateQuery(updates);
+      }
+    }
+  }, [
+    searchParams,
+    updateQueryParams,
+    externalOnPageChange,
+    externalItemsPerPage,
+    updateQuery,
+  ]);
+
+  // Read page and pageSize from URL params when updateQueryParams is true
+  const urlPage = React.useMemo(() => {
+    if (updateQueryParams && !externalOnPageChange) {
+      const pageParam = searchParams.get("page");
+      return pageParam ? parseInt(pageParam) : 1;
+    }
+    return null;
+  }, [searchParams, updateQueryParams, externalOnPageChange]);
+
+  const urlPageSize = React.useMemo(() => {
+    if (updateQueryParams && !externalOnItemsPerPageChange) {
+      const pageSizeParam = searchParams.get("pageSize");
+      return pageSizeParam
+        ? parseInt(pageSizeParam)
+        : externalItemsPerPage ?? 25;
+    }
+    return null;
+  }, [
+    searchParams,
+    updateQueryParams,
+    externalOnItemsPerPageChange,
+    externalItemsPerPage,
+  ]);
+
+  // Determine pagination mode:
+  // - If external handlers are provided, use them (external control)
+  // - If updateQueryParams is true, use URL params (internal control with URL sync)
+  // - Otherwise, use provided values as-is (controlled without URL sync)
+  const useExternalControl =
+    externalOnPageChange !== undefined &&
+    externalOnItemsPerPageChange !== undefined;
+  const useUrlParams = updateQueryParams && !useExternalControl;
+
+  // Get current page: external control > URL params > external prop > default
+  const currentPage = useExternalControl
+    ? externalCurrentPage ?? 1
+    : useUrlParams
+    ? urlPage ?? 1
+    : externalCurrentPage ?? 1;
+
+  // Get items per page: external control > URL params > external prop > default
+  const itemsPerPage = useExternalControl
+    ? externalItemsPerPage ?? 25
+    : useUrlParams
+    ? urlPageSize ?? 25
+    : externalItemsPerPage ?? 25;
+
+  // Handle page change
+  const handlePageChange = React.useCallback(
+    (page: number) => {
+      if (useExternalControl && externalOnPageChange) {
+        externalOnPageChange(page);
+      } else if (useUrlParams) {
+        updateQuery({ page: page.toString() });
+      }
+    },
+    [useExternalControl, externalOnPageChange, useUrlParams, updateQuery]
+  );
+
+  // Handle items per page change
+  const handleItemsPerPageChange = React.useCallback(
+    (newItemsPerPage: number) => {
+      if (useExternalControl && externalOnItemsPerPageChange) {
+        externalOnItemsPerPageChange(newItemsPerPage);
+      } else if (useUrlParams) {
+        updateQuery({ page: "1", pageSize: newItemsPerPage.toString() });
+      }
+    },
+    [
+      useExternalControl,
+      externalOnItemsPerPageChange,
+      useUrlParams,
+      updateQuery,
+    ]
+  );
+
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [rowToDelete, setRowToDelete] = React.useState<T | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<Error | null>(null);
+
+  // Handle delete button click - open confirmation dialog
+  const handleDeleteClick = React.useCallback((row: T) => {
+    // Reset all states before opening
+    setDeleteError(null);
+    setIsDeleting(false);
+    setRowToDelete(row);
+    setDeleteDialogOpen(true);
+  }, []);
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = React.useCallback(async () => {
+    if (!rowToDelete || !onDelete) return;
+
+    // Clear any previous error when starting a new delete attempt
+    setDeleteError(null);
+    setIsDeleting(true);
+
+    try {
+      // Call the onDelete callback - handle both sync and async cases
+      const result = onDelete(rowToDelete);
+
+      // If it's a promise, wait for it
+      if (
+        result &&
+        typeof result === "object" &&
+        typeof (result as any).then === "function"
+      ) {
+        await (result as Promise<void>);
+      }
+
+      // Success - get row ID before clearing state
+      const deletedRowId = getRowId(rowToDelete);
+
+      // Log the row ID as requested
+      console.log("Deleted row ID:", deletedRowId);
+
+      // Reset loading state first
+      setIsDeleting(false);
+
+      // Close dialog - Radix UI will handle cleanup automatically
+      setDeleteDialogOpen(false);
+
+      // Clear other state
+      setDeleteError(null);
+      setRowToDelete(null);
+    } catch (error) {
+      // Error occurred - keep dialog open and show error
+      setIsDeleting(false);
+      setDeleteError(
+        error instanceof Error
+          ? error
+          : new Error(String(error) || "An error occurred during deletion")
+      );
+      // Don't close the dialog on error - user can retry or cancel
+    }
+  }, [rowToDelete, onDelete, getRowId]);
+
+  // Handle delete cancel/close (cancel button, X button, or outside click)
+  const handleDeleteCancel = React.useCallback(() => {
+    // Don't allow closing if currently deleting
+    if (isDeleting) {
+      return;
+    }
+
+    // Close dialog and reset state
+    // The dialog's open prop controls Radix UI's cleanup
+    setDeleteDialogOpen(false);
+    setRowToDelete(null);
+    setDeleteError(null);
+    setIsDeleting(false);
+  }, [isDeleting]);
+
   const allSelected = React.useMemo(() => {
     if (!selectable || data.length === 0) return false;
     return data.every((row) => selectedIds.includes(getRowId(row)));
@@ -227,6 +418,7 @@ export function PaginatedTable<T extends Record<string, any>>({
           <TableBody>
             <TableSkeleton
               rows={skeletonRows}
+              cellClassName="py-2 px-0"
               columns={displayColumns.length + (showCheckbox ? 1 : 0)}
             />
           </TableBody>
@@ -244,7 +436,7 @@ export function PaginatedTable<T extends Record<string, any>>({
           message={errorMessage || error.message}
           onRetry={onRetry}
           showBack={false}
-          className="min-h-[400px]"
+          className=""
         />
       </div>
     );
@@ -284,7 +476,7 @@ export function PaginatedTable<T extends Record<string, any>>({
             <TableRow>
               <TableCell
                 colSpan={displayColumns.length + (showCheckbox ? 1 : 0)}
-                className="h-[400px]"
+                className=""
               >
                 <EmptyState
                   icon={<AlertCircle className="h-12 w-12" />}
@@ -403,7 +595,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                       <ActionsDropdown
                         row={row}
                         onEdit={onEdit}
-                        onDelete={onDelete}
+                        onDelete={onDelete ? handleDeleteClick : undefined}
                         extraActions={extraActions}
                       />
                     </TableCell>
@@ -415,34 +607,48 @@ export function PaginatedTable<T extends Record<string, any>>({
         </Table>
       </div>
 
+      {/* Delete Confirmation Dialog */}
+      {onDelete && (
+        <ConfirmationDialog
+          isOpen={deleteDialogOpen}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          title={deleteError ? "Xatolik" : "O'chirishni tasdiqlash"}
+          message={
+            deleteError
+              ? `Xatolik yuz berdi: ${deleteError.message}. Iltimos, qayta urinib ko'ring yoki bekor qiling.`
+              : rowToDelete
+              ? "Bu ma'lumotni o'chirishni xohlaysizmi? Bu amalni bekor qilib bo'lmaydi."
+              : "Bu ma'lumotni o'chirishni xohlaysizmi?"
+          }
+          confirmText={deleteError ? "Qayta urinish" : "O'chirish"}
+          cancelText="Bekor qilish"
+          variant={deleteError ? "warning" : "danger"}
+          isDoingAction={isDeleting}
+          isDoingActionText="O'chirilmoqda..."
+        />
+      )}
+
       {/* Pagination */}
-      {(totalPages > 1 || onItemsPerPageChange) && (
+      {(totalPages > 1 || updateQueryParams) && (
         <div className="flex items-center justify-between pt-4 px-0">
           {/* Items per page selector */}
           <div className="flex items-center gap-2">
-            {onItemsPerPageChange ? (
-              <>
-                <Select
-                  value={itemsPerPage.toString()}
-                  onValueChange={(value) => onItemsPerPageChange(Number(value))}
-                >
-                  <SelectTrigger className="w-[80px] h-9 border border-[#E2E8F0] rounded-md bg-white text-primary">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="25">25</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span className="text-sm text-gray-600">Sahifa raqami</span>
-              </>
-            ) : (
-              <span className="text-sm text-gray-600">
-                {itemsPerPage} Sahifa raqami
-              </span>
-            )}
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => handleItemsPerPageChange(Number(value))}
+            >
+              <SelectTrigger className="w-[80px] h-9 border border-[#E2E8F0] rounded-md bg-white text-primary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-gray-600">Sahifa raqami</span>
           </div>
 
           {/* Pagination controls */}
@@ -451,7 +657,7 @@ export function PaginatedTable<T extends Record<string, any>>({
               <PaginationControls
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={onPageChange}
+                onPageChange={handlePageChange}
               />
               {totalItems && (
                 <span className="text-sm text-gray-600 whitespace-nowrap">
@@ -571,7 +777,7 @@ function ActionsDropdown<T>({
 }: {
   row: T;
   onEdit?: (row: T) => void;
-  onDelete?: (row: T) => void;
+  onDelete?: (row: T) => void | Promise<void>;
   extraActions?: TableAction<T>[];
 }) {
   const hasActions =

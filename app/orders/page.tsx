@@ -10,34 +10,10 @@ import { FileSpreadsheet } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { OrderData } from "@/api/types/orders";
+import { useOrders } from "@/api/hooks/use-orders";
 
-// Mock data type
-interface PantografData {
-  id: string;
-  sana: string;
-  lokomotiv: string;
-  uchastka: string;
-  xizmat: string;
-  sababi: string;
-  ushreb: number;
-  user_id: string;
-}
-
-// Mock data generator
-const generateMockData = (count: number): PantografData[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `pantograf-${i + 1}`,
-    sana: "2025.07.09",
-    lokomotiv: "610-06 - 3P9E",
-    uchastka: "Guliston Oqoltin 3477km 4-pk",
-    xizmat: "33-7",
-    sababi: "Kontakt tarmog'ini kontakt tori (strunasi) chiqib qolgan",
-    ushreb: 2158276.07,
-    user_id: `user-${i + 1}`,
-  }));
-};
-
-export default function PantografPage() {
+export default function OrdersPage() {
   const searchParams = useSearchParams();
   const { updateQuery } = useFilterParams();
 
@@ -48,33 +24,34 @@ export default function PantografPage() {
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
 
-  // Get current page and items per page from query params for data filtering
+  // Get current page and items per page from query params for API call
   // The table component will handle updating these URL params internally
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
-  // Mock data - replace with actual API call
-  const mockData = generateMockData(1000);
-
-  // Filter data based on search and tab
-  const filteredData = mockData.filter((item) => {
-    if (q) {
-      const searchLower = q.toLowerCase();
-      return (
-        item.lokomotiv.toLowerCase().includes(searchLower) ||
-        item.uchastka.toLowerCase().includes(searchLower) ||
-        item.sababi.toLowerCase().includes(searchLower)
-      );
-    }
-    return true;
+  // Fetch orders from API
+  const {
+    data: apiResponse,
+    isLoading,
+    error: apiError,
+  } = useOrders({
+    page: currentPage,
+    page_size: itemsPerPage,
+    search: q,
+    tab: currentTab === "all" ? undefined : currentTab,
   });
 
-  // Paginate data
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
-  const totalPages = getPageCount(filteredData.length, itemsPerPage) || 1;
-  const totalItems = filteredData.length;
+  // Extract data from API response
+  const paginatedData = apiResponse?.results || [];
+  const totalItems = apiResponse?.count || 0;
+  const totalPages = getPageCount(totalItems, itemsPerPage) || 1;
+
+  // Convert API error to Error object if needed
+  const error = apiError
+    ? apiError instanceof Error
+      ? apiError
+      : new Error(apiError.message || "An error occurred")
+    : null;
 
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -83,13 +60,13 @@ export default function PantografPage() {
   };
 
   // Handle edit
-  const handleEdit = (row: PantografData) => {
+  const handleEdit = (row: OrderData) => {
     console.log("Edit:", row);
     // Implement edit logic
   };
 
   // Handle delete
-  const handleDelete = (row: PantografData) => {
+  const handleDelete = (row: OrderData) => {
     console.log("Delete:", row);
     // Implement delete logic
   };
@@ -106,75 +83,91 @@ export default function PantografPage() {
     // Implement export logic
   };
 
-  // Handle bulk delete
-  const handleBulkDelete = () => {
-    console.log("Bulk delete:", selectedIds);
-    // Implement bulk delete logic
+  // Format date from ISO string to display format
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${day}.${month}.${year} ${hours}:${minutes}`;
+    } catch {
+      return dateString;
+    }
   };
 
-  // Table columns
-  const columns: TableColumn<PantografData>[] = [
+  // Format damage amount (it comes as string from API)
+  const formatDamageAmount = (amount: string): string => {
+    try {
+      const numAmount = parseFloat(amount);
+      return numAmount.toLocaleString("uz-UZ", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    } catch {
+      return amount;
+    }
+  };
+
+  // Table columns based on API response structure
+  const columns: TableColumn<OrderData>[] = [
     {
-      key: "sana",
+      key: "date",
       header: "Sana",
-      accessor: (row) => row.sana,
+      accessor: (row) => formatDate(row.date),
     },
     {
-      key: "lokomotiv",
+      key: "locomotive_info",
       header: "Lokomotiv",
-      accessor: (row) => row.lokomotiv,
+      accessor: (row) => row.locomotive_info,
     },
     {
-      key: "uchastka",
-      header: "Uchastka",
-      accessor: (row) => (
-        <div className="max-w-[300px]">
-          <div className="whitespace-normal break-words">{row.uchastka}</div>
-        </div>
-      ),
+      key: "train_number",
+      header: "Poyezd raqami",
+      accessor: (row) => row.train_number,
     },
     {
-      key: "xizmat",
-      header: "Xizmat",
-      accessor: (row) => row.xizmat,
+      key: "responsible_department",
+      header: "Mas'ul tashkilot",
+      accessor: (row) => row.responsible_department,
     },
     {
-      key: "sababi",
-      header: "Sababi",
+      key: "responsible_person",
+      header: "Mas'ul shaxs",
+      accessor: (row) => row.responsible_person,
+    },
+    {
+      key: "case_description",
+      header: "Hodisa tavsifi",
       accessor: (row) => (
         <div className="max-w-[400px]">
-          <div className="whitespace-normal break-words">{row.sababi}</div>
+          <div className="whitespace-normal break-words">
+            {row.case_description}
+          </div>
         </div>
       ),
     },
     {
-      key: "ushreb",
-      header: "Ushreb",
-      accessor: (row) =>
-        row.ushreb.toLocaleString("uz-UZ", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
-    },
-    {
-      key: "user_id",
-      header: "user_id",
-      accessor: (row) => row.user_id,
+      key: "damage_amount",
+      header: "Zarar summasi",
+      accessor: (row) => formatDamageAmount(row.damage_amount),
     },
   ];
 
   // Breadcrumb items
   const breadcrumbs = [
     { label: "Asosiy", href: "/" },
-    { label: "Pantograf", current: true },
+    { label: "Buyruq MPR", current: true },
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
       {/* Breadcrumb and Header */}
       <PageHeader
-        title="Pantograf"
-        description="Bu qurilmalar elektrovozning asosiy komponentlari hisoblanadi."
+        title="Buyruq MPR"
+        description="Elektrovozlarni poezdlararo ta'mirlash"
         breadcrumbs={breadcrumbs}
       />
 
@@ -185,12 +178,13 @@ export default function PantografPage() {
           value={currentTab}
           onValueChange={handleTabChange}
         >
-          <TabsList className="bg-[#F1F5F9] p-2 gap-0 border-0 rounded-lg inline-flex ">
+          <TabsList className="bg-[#F1F5F9] p-1 gap-0 border-0 rounded-lg inline-flex">
             <TabsTrigger value="all" className={cn()}>
               Barcha lokomotivlar
             </TabsTrigger>
             <TabsTrigger value="chinese">Xitoy Elektrovoz</TabsTrigger>
             <TabsTrigger value="3p9e">3P9E - VL80c - VL60k</TabsTrigger>
+            <TabsTrigger value="teplovoz">Teplovoz</TabsTrigger>
             <TabsTrigger value="statistics">Statistika</TabsTrigger>
           </TabsList>
         </Tabs>
@@ -202,9 +196,6 @@ export default function PantografPage() {
           filters={[]}
           hasSearch={true}
           searchPlaceholder="Qidiruv"
-          onAdd={handleCreate}
-          addButtonText="Yangi qo'shish"
-          addButtonPermittion="create_pantograf"
           onExport={handleExport}
           exportButtonText="Export EXCEL"
           exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
@@ -218,8 +209,8 @@ export default function PantografPage() {
           columns={columns}
           data={paginatedData}
           getRowId={(row) => row.id}
-          isLoading={false}
-          error={null}
+          isLoading={isLoading}
+          error={error}
           totalPages={totalPages}
           totalItems={totalItems}
           updateQueryParams={true}
@@ -229,7 +220,7 @@ export default function PantografPage() {
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
           emptyTitle="Ma'lumot topilmadi"
-          emptyDescription="Pantograf ma'lumotlari topilmadi"
+          emptyDescription="Buyruq MPR ma'lumotlari topilmadi"
         />
       </div>
     </div>

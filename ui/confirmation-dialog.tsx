@@ -56,9 +56,39 @@ export function ConfirmationDialog({
     info: "bg-blue-600 text-white hover:bg-blue-700",
   };
 
+  // Handle dialog state changes
+  // Always call onClose when dialog wants to close to ensure Radix UI can clean up
+  // The event handlers (onEscapeKeyDown, onPointerDownOutside, onInteractOutside)
+  // prevent the close events from firing when isDoingAction is true
+  const handleOpenChange = React.useCallback(
+    (open: boolean) => {
+      if (!open) {
+        onClose();
+      }
+    },
+    [onClose]
+  );
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="sm:max-w-md"
+        onEscapeKeyDown={(e) => {
+          if (isDoingAction) {
+            e.preventDefault();
+          }
+        }}
+        onPointerDownOutside={(e) => {
+          if (isDoingAction) {
+            e.preventDefault();
+          }
+        }}
+        onInteractOutside={(e) => {
+          if (isDoingAction) {
+            e.preventDefault();
+          }
+        }}
+      >
         <DialogHeader>
           <div className="flex items-start gap-4">
             <div

@@ -171,24 +171,12 @@ export default function PageFilters({
     >
       {/* Search Input */}
       {hasSearch && (
-        <div className="min-w-0 w-[272px] max-w-full">
-          <div className="relative w-full h-10 flex items-center">
+        <div className="min-w-0 w-[350px] max-w-full">
+          <div className="relative w-full flex items-center">
             <input
               type="text"
               placeholder={searchPlaceholder}
-              className="w-full h-10 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
-              style={{
-                width: "272px",
-                height: "40px",
-                paddingLeft: "12px",
-                paddingRight: "36px",
-                paddingTop: "10px",
-                paddingBottom: "10px",
-                fontSize: "14px",
-                lineHeight: "20px",
-                fontWeight: 400,
-                boxSizing: "border-box",
-              }}
+              className="w-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
               value={searchLocal}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
