@@ -1,5 +1,4 @@
 import { LoginForm } from "@/components/login/login-form";
-import { BrandSection } from "@/components/login/brand-section";
 import { BackgroundPattern } from "@/components/login/background-pattern";
 
 export default function LoginPage() {

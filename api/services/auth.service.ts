@@ -4,7 +4,7 @@ import { LoginCredentials, LoginResponse, UserData } from "../types/auth";
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
-      const response = await api.post("/user/login/", credentials);
+      const response = await api.post("/account/auth/login/", credentials);
       return response.data;
     } catch (error) {
       console.error("Login error:", error);

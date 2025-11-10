@@ -194,56 +194,22 @@ export default function PantografPage() {
       />
 
       {/* Navigation Tabs */}
-      {/* <div className="bg-white border-b border-[#E2E8F0] px-6">
-        <Tabs value={currentTab} onValueChange={handleTabChange}>
-          <TabsList className="bg-transparent h-auto p-0 gap-0 border-0">
-            <TabsTrigger
-              value="all"
-              className={cn(
-                "px-4 py-2 rounded-t-lg border-b-2 border-transparent",
-                "data-[state=active]:border-primary data-[state=active]:bg-transparent",
-                "data-[state=active]:text-primary data-[state=active]:font-semibold",
-                "text-gray-600 hover:text-gray-900 bg-transparent"
-              )}
-            >
+      <div className="px-6">
+        <Tabs
+          className="w-fit"
+          value={currentTab}
+          onValueChange={handleTabChange}
+        >
+          <TabsList className="bg-[#F1F5F9] p-2 gap-0 border-0 rounded-lg inline-flex ">
+            <TabsTrigger value="all" className={cn()}>
               Barcha lokomotivlar
             </TabsTrigger>
-            <TabsTrigger
-              value="chinese"
-              className={cn(
-                "px-4 py-2 rounded-t-lg border-b-2 border-transparent",
-                "data-[state=active]:border-primary data-[state=active]:bg-transparent",
-                "data-[state=active]:text-primary data-[state=active]:font-semibold",
-                "text-gray-600 hover:text-gray-900 bg-transparent"
-              )}
-            >
-              Xitoy Elektrovoz
-            </TabsTrigger>
-            <TabsTrigger
-              value="3p9e"
-              className={cn(
-                "px-4 py-2 rounded-t-lg border-b-2 border-transparent",
-                "data-[state=active]:border-primary data-[state=active]:bg-transparent",
-                "data-[state=active]:text-primary data-[state=active]:font-semibold",
-                "text-gray-600 hover:text-gray-900 bg-transparent"
-              )}
-            >
-              3P9E - VL80c - VL60k
-            </TabsTrigger>
-            <TabsTrigger
-              value="statistics"
-              className={cn(
-                "px-4 py-2 rounded-t-lg border-b-2 border-transparent",
-                "data-[state=active]:border-primary data-[state=active]:bg-transparent",
-                "data-[state=active]:text-primary data-[state=active]:font-semibold",
-                "text-gray-600 hover:text-gray-900 bg-transparent"
-              )}
-            >
-              Statistika
-            </TabsTrigger>
+            <TabsTrigger value="chinese">Xitoy Elektrovoz</TabsTrigger>
+            <TabsTrigger value="3p9e">3P9E - VL80c - VL60k</TabsTrigger>
+            <TabsTrigger value="statistics">Statistika</TabsTrigger>
           </TabsList>
         </Tabs>
-      </div> */}
+      </div>
 
       {/* Filters and Actions */}
       <div className="px-6 py-4">

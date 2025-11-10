@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { authService } from "../services/auth.service";
-import { LoginCredentials } from "../types/auth";
+import { LoginCredentials, UserData } from "../types/auth";
 import { queryKeys } from "../querykey";
 
 /**
@@ -16,24 +16,31 @@ export function useLogin() {
     mutationFn: (credentials: LoginCredentials) =>
       authService.login(credentials),
     onSuccess: (data) => {
-      // Normalize user data
+      // Extract user data from response (user data is at root level now)
+      // Since LoginResponse extends UserData, we can destructure it
+      const { access, refresh, ...userData } = data;
 
       // Get token expiry from JWT
-      const expiryDate = authService.getTokenExpiry(data.access);
+      const expiryDate = authService.getTokenExpiry(access);
 
       // Store tokens and user data
       authService.storeAuth(
-        data.access,
-        data.refresh,
-        data.user_data,
+        access,
+        refresh,
+        userData,
         expiryDate?.toISOString()
       );
 
       // Invalidate auth queries
       queryClient.invalidateQueries({ queryKey: [queryKeys.auth.login] });
 
-      // Redirect to home page
-      router.push("/");
+      // Redirect based on user role (case-insensitive)
+      const roleLower = userData.role?.toLowerCase() || "";
+      if (roleLower === "observer") {
+        router.push("/bulletins");
+      } else {
+        router.push("/");
+      }
     },
     onError: (error: Error) => {
       console.error("Login failed:", error.message);

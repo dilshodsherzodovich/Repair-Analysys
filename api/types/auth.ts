@@ -5,17 +5,18 @@ export interface LoginCredentials {
 }
 
 export interface UserData {
-  id: string;
-  role: string;
+  id: number;
+  username: string;
   first_name: string;
   last_name: string;
-  username: string;
-  is_active: boolean;
-  profile: any;
+  role: string;
+  phone_number: string;
+  tabel: number;
+  email: string;
+  branch: number | null;
 }
 
-export interface LoginResponse {
-  user_data: UserData;
+export interface LoginResponse extends UserData {
   access: string;
   refresh: string;
 }

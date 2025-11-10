@@ -7,12 +7,10 @@ import { Label } from "@/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Eye, EyeOff, User, Lock, Loader2 } from "lucide-react";
 import { useLogin } from "@/api/hooks/use-auth";
-import { LoginCredentials, LoginResponse } from "@/api/types/auth";
-import { useRouter } from "next/navigation";
+import { LoginCredentials } from "@/api/types/auth";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
   const [formData, setFormData] = useState<LoginCredentials>({
     username: "",
     password: "",
@@ -27,15 +25,8 @@ export function LoginForm() {
       return;
     }
 
-    loginMutation.mutate(formData, {
-      onSuccess: (data: LoginResponse) => {
-        if (data.user_data.role.toLowerCase() === "observer") {
-          router.push("/bulletins");
-        } else {
-          router.push("/");
-        }
-      },
-    });
+    // Navigation is handled in useLogin hook
+    loginMutation.mutate(formData);
   };
 
   const handleInputChange = (field: keyof LoginCredentials, value: string) => {
@@ -43,17 +34,41 @@ export function LoginForm() {
   };
 
   const handleError = (error: any) => {
-    if (error.response?.data.non_field_errors) {
-      return error.response?.data.non_field_errors[0];
+    // Handle different error response formats from the API
+    if (error.response?.data) {
+      const errorData = error.response.data;
+
+      // Check for detail field (common in Django REST Framework)
+      if (errorData.detail) {
+        return typeof errorData.detail === "string"
+          ? errorData.detail
+          : JSON.stringify(errorData.detail);
+      }
+
+      // Check for non_field_errors (Django REST Framework validation errors)
+      if (errorData.non_field_errors) {
+        return Array.isArray(errorData.non_field_errors)
+          ? errorData.non_field_errors[0]
+          : errorData.non_field_errors;
+      }
+
+      // Check for message field
+      if (errorData.message) {
+        return typeof errorData.message === "string"
+          ? errorData.message
+          : errorData.message.detail || "Xatolik yuz berdi";
+      }
     }
-    return error.message;
+
+    // Fallback to error message
+    return error.message || "Tizimga kirishda xatolik yuz berdi";
   };
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center pb-6">
         <CardTitle className="text-2xl font-semibold text-[#1f2937] mb-2">
-          E-BYULLETEN
+          E-LABS.UZ
         </CardTitle>
         <p className="text-[#6b7280] text-sm">
           Tizimga kirish uchun ma'lumotlaringizni kiriting

@@ -385,17 +385,14 @@ export function PaginatedTable<T extends Record<string, any>>({
                       <TableCell
                         key={column.key}
                         className={cn(
-                          "py-2 px-4 transition-colors",
+                          "py-2 px-4 transition-colors h-[56px] min-h-[56px]",
                           column.className
                         )}
                         style={{
-                          padding: "8px 16px",
-                          height: "56px",
-                          minHeight: "56px",
                           boxSizing: "border-box",
                         }}
                       >
-                        <span className="text-base tracking-[-0.005em] font-medium text-[#475569]  peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        <span className="text-sm  font-medium text-[#475569]  peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                           {cellContent ?? "-"}
                         </span>
                       </TableCell>

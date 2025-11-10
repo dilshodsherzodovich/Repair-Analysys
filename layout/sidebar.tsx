@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Zap,
   Eye,
@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
-import { UserData } from "@/api/types/user";
+import { UserData } from "@/api/types/auth";
 import { Button } from "@/ui/button";
 import {
   Select,
@@ -84,14 +84,28 @@ const navigationItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const user: UserData = JSON.parse(localStorage.getItem("user")!);
+  const [user, setUser] = useState<UserData | null>(null);
   const [selectedOrganization, setSelectedOrganization] = useState<string>(
     mockOrganizations[0].id
   );
 
-  const filteredNavigationItems = navigationItems.filter((navItem) =>
-    canAccessSection(user, navItem.section)
-  );
+  // Get user from localStorage on client side only
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error("Failed to parse user data:", error);
+      }
+    }
+  }, []);
+
+  const filteredNavigationItems = user
+    ? navigationItems.filter((navItem) =>
+        canAccessSection(user, navItem.section)
+      )
+    : [];
 
   const selectedOrg = mockOrganizations.find(
     (org) => org.id === selectedOrganization
@@ -234,7 +248,7 @@ export function Sidebar() {
           <div className="space-y-0.5 text-xs text-muted-foreground text-center">
             <div>E-labs.uz</div>
             <div>Raqamli Laboratoriya</div>
-            <div>2025@</div>
+            <div>{new Date().getFullYear()}</div>
           </div>
         </div>
       </div>
