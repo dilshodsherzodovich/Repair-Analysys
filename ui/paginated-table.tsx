@@ -82,6 +82,7 @@ export interface PaginatedTableProps<T = any> {
   extraActions?: TableAction<T>[];
   showActions?: boolean;
   actionsLabel?: string;
+  isDeleting?: boolean;
 
   // Empty & Error states
   emptyTitle?: string;
@@ -114,12 +115,13 @@ export function PaginatedTable<T extends Record<string, any>>({
   currentPage: externalCurrentPage,
   totalPages,
   totalItems,
-  itemsPerPage: externalItemsPerPage = 25,
+  itemsPerPage: externalItemsPerPage = 10,
   onPageChange: externalOnPageChange,
   onItemsPerPageChange: externalOnItemsPerPageChange,
   updateQueryParams = true,
   onEdit,
   onDelete,
+  isDeleting = false,
   extraActions = [],
   showActions = true,
   actionsLabel = "Amallar",
@@ -156,7 +158,7 @@ export function PaginatedTable<T extends Record<string, any>>({
           updates.page = "1";
         }
         if (!pageSizeParam) {
-          updates.pageSize = (externalItemsPerPage ?? 25).toString();
+          updates.pageSize = (externalItemsPerPage ?? 10).toString();
         }
         updateQuery(updates);
       }
@@ -183,7 +185,7 @@ export function PaginatedTable<T extends Record<string, any>>({
       const pageSizeParam = searchParams.get("pageSize");
       return pageSizeParam
         ? parseInt(pageSizeParam)
-        : externalItemsPerPage ?? 25;
+        : externalItemsPerPage ?? 10;
     }
     return null;
   }, [
@@ -211,10 +213,10 @@ export function PaginatedTable<T extends Record<string, any>>({
 
   // Get items per page: external control > URL params > external prop > default
   const itemsPerPage = useExternalControl
-    ? externalItemsPerPage ?? 25
+    ? externalItemsPerPage ?? 10
     : useUrlParams
-    ? urlPageSize ?? 25
-    : externalItemsPerPage ?? 25;
+    ? urlPageSize ?? 10
+    : externalItemsPerPage ?? 10;
 
   // Handle page change
   const handlePageChange = React.useCallback(
@@ -248,14 +250,13 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Delete confirmation dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [rowToDelete, setRowToDelete] = React.useState<T | null>(null);
-  const [isDeleting, setIsDeleting] = React.useState(false);
+
   const [deleteError, setDeleteError] = React.useState<Error | null>(null);
 
   // Handle delete button click - open confirmation dialog
   const handleDeleteClick = React.useCallback((row: T) => {
     // Reset all states before opening
     setDeleteError(null);
-    setIsDeleting(false);
     setRowToDelete(row);
     setDeleteDialogOpen(true);
   }, []);
@@ -266,7 +267,6 @@ export function PaginatedTable<T extends Record<string, any>>({
 
     // Clear any previous error when starting a new delete attempt
     setDeleteError(null);
-    setIsDeleting(true);
 
     try {
       // Call the onDelete callback - handle both sync and async cases
@@ -288,7 +288,6 @@ export function PaginatedTable<T extends Record<string, any>>({
       console.log("Deleted row ID:", deletedRowId);
 
       // Reset loading state first
-      setIsDeleting(false);
 
       // Close dialog - Radix UI will handle cleanup automatically
       setDeleteDialogOpen(false);
@@ -298,7 +297,6 @@ export function PaginatedTable<T extends Record<string, any>>({
       setRowToDelete(null);
     } catch (error) {
       // Error occurred - keep dialog open and show error
-      setIsDeleting(false);
       setDeleteError(
         error instanceof Error
           ? error
@@ -311,17 +309,13 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Handle delete cancel/close (cancel button, X button, or outside click)
   const handleDeleteCancel = React.useCallback(() => {
     // Don't allow closing if currently deleting
-    if (isDeleting) {
-      return;
-    }
 
     // Close dialog and reset state
     // The dialog's open prop controls Radix UI's cleanup
     setDeleteDialogOpen(false);
     setRowToDelete(null);
     setDeleteError(null);
-    setIsDeleting(false);
-  }, [isDeleting]);
+  }, []);
 
   const allSelected = React.useMemo(() => {
     if (!selectable || data.length === 0) return false;

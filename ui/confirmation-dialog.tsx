@@ -71,24 +71,7 @@ export function ConfirmationDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent
-        className="sm:max-w-md"
-        onEscapeKeyDown={(e) => {
-          if (isDoingAction) {
-            e.preventDefault();
-          }
-        }}
-        onPointerDownOutside={(e) => {
-          if (isDoingAction) {
-            e.preventDefault();
-          }
-        }}
-        onInteractOutside={(e) => {
-          if (isDoingAction) {
-            e.preventDefault();
-          }
-        }}
-      >
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-start gap-4">
             <div

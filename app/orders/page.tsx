@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -22,7 +22,6 @@ import {
   useDeleteOrder,
 } from "@/api/hooks/use-orders";
 import { OrderModal } from "@/components/orders/order-modal";
-import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
 
 export default function OrdersPage() {
@@ -38,11 +37,6 @@ export default function OrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
-  const [deleteConfirmation, setDeleteConfirmation] = useState<{
-    isOpen: boolean;
-    order: OrderData | null;
-  }>({ isOpen: false, order: null });
-
   // Hooks
   const { showSuccess, showError } = useSnackbar();
   const createOrderMutation = useCreateOrder();
@@ -91,10 +85,23 @@ export default function OrdersPage() {
     setIsModalOpen(true);
   };
 
-  // Handle delete
-  const handleDelete = (row: OrderData) => {
-    setDeleteConfirmation({ isOpen: true, order: row });
-  };
+  const handleDelete = useCallback(
+    async (row: OrderData) => {
+      try {
+        await deleteOrderMutation.mutateAsync(row.id);
+        showSuccess("Buyruq MPR muvaffaqiyatli o'chirildi");
+      } catch (error: any) {
+        showError(
+          "Xatolik yuz berdi",
+          error?.response?.data?.message ||
+            error.message ||
+            "Buyruq MPR o'chirishda xatolik"
+        );
+        throw error;
+      }
+    },
+    [deleteOrderMutation, showError, showSuccess]
+  );
 
   // Handle create
   const handleCreate = () => {
@@ -148,26 +155,6 @@ export default function OrdersPage() {
     }
   };
 
-  // Handle delete confirmation
-  const handleConfirmDelete = () => {
-    if (deleteConfirmation.order) {
-      deleteOrderMutation.mutate(deleteConfirmation.order.id, {
-        onSuccess: () => {
-          showSuccess("Buyruq MPR muvaffaqiyatli o'chirildi");
-          setDeleteConfirmation({ isOpen: false, order: null });
-        },
-        onError: (error: any) => {
-          showError(
-            "Xatolik yuz berdi",
-            error?.response?.data?.message ||
-              error.message ||
-              "Buyruq MPR o'chirishda xatolik"
-          );
-        },
-      });
-    }
-  };
-
   // Handle export
   const handleExport = () => {
     console.log("Export to Excel");
@@ -212,7 +199,7 @@ export default function OrdersPage() {
     {
       key: "locomotive_info",
       header: "Lokomotiv",
-      accessor: (row) => row.locomotive_info,
+      accessor: (row) => row.locomotive_info?.name || "",
     },
     {
       key: "train_number",
@@ -309,6 +296,7 @@ export default function OrdersPage() {
           updateQueryParams={true}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          isDeleting={deleteOrderMutation.isPending}
           selectable={true}
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
@@ -330,20 +318,6 @@ export default function OrdersPage() {
         isPending={
           createOrderMutation.isPending || updateOrderMutation.isPending
         }
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <ConfirmationDialog
-        isOpen={deleteConfirmation.isOpen}
-        onClose={() => setDeleteConfirmation({ isOpen: false, order: null })}
-        onConfirm={handleConfirmDelete}
-        title="Buyruq MPR ni o'chirish"
-        message="Haqiqatan ham bu buyruq MPR ni o'chirmoqchimisiz? Bu amalni bekor qilib bo'lmaydi."
-        confirmText="O'chirish"
-        cancelText="Bekor qilish"
-        variant="danger"
-        isDoingAction={deleteOrderMutation.isPending}
-        isDoingActionText="O'chirilmoqda"
       />
     </div>
   );

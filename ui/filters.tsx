@@ -267,7 +267,7 @@ export default function PageFilters({
             <PermissionGuard permission={addButtonPermittion}>
               <Button
                 onClick={onAdd}
-                className="h-10 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white whitespace-nowrap"
+                className="h-10 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white whitespace-nowrap cursor-pointer"
               >
                 <span className="flex items-center">
                   {addButtonIcon || <Plus className="w-4 h-4 mr-2" />}
@@ -281,7 +281,7 @@ export default function PageFilters({
           {onExport && (
             <Button
               onClick={onExport}
-              className="h-10 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap"
+              className="h-10 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap cursor-pointer"
             >
               <span className="flex items-center">
                 {exportButtonIcon || (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, memo, FC } from "react";
 import { Modal } from "@/ui/modal";
 import { Input } from "@/ui/input";
 import { Textarea } from "@/ui/textarea";
@@ -30,6 +30,36 @@ interface OrderModalProps {
   isPending: boolean;
 }
 
+type LocomotiveOption = {
+  id: number;
+  label: string;
+  value: string;
+};
+
+const LocomotiveSelect: FC<{
+  value: string;
+  onChange: (value: string) => void;
+  options: LocomotiveOption[];
+  disabled?: boolean;
+}> = memo(({ value, onChange, options, disabled }) => {
+  return (
+    <Select value={value} onValueChange={onChange} disabled={disabled}>
+      <SelectTrigger id="locomotive">
+        <SelectValue placeholder="Lokomotivni tanlang" />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((option) => (
+          <SelectItem key={option.id} value={option.value}>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+});
+
+LocomotiveSelect.displayName = "LocomotiveSelect";
+
 export function OrderModal({
   isOpen,
   onClose,
@@ -52,7 +82,7 @@ export function OrderModal({
     useGetLocomotives();
 
   // Memoize locomotive options for better performance
-  const locomotiveOptions = useMemo(() => {
+  const locomotiveOptions = useMemo<LocomotiveOption[]>(() => {
     if (!locomotivesData) return [];
     return locomotivesData.map((locomotive) => ({
       id: locomotive.id,
@@ -200,22 +230,12 @@ export function OrderModal({
             {/* Locomotive */}
             <div>
               <Label htmlFor="locomotive">Lokomotiv</Label>
-              <Select
+              <LocomotiveSelect
                 value={formData.locomotive}
-                onValueChange={handleSelectChange("locomotive")}
+                onChange={handleSelectChange("locomotive")}
+                options={locomotiveOptions}
                 disabled={isLoadingLocomotives}
-              >
-                <SelectTrigger id="locomotive">
-                  <SelectValue placeholder="Lokomotivni tanlang" />
-                </SelectTrigger>
-                <SelectContent>
-                  {locomotiveOptions.map((option) => (
-                    <SelectItem key={option.id} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
             </div>
 
             {/* Responsible Department */}

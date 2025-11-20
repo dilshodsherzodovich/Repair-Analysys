@@ -57,4 +57,10 @@ export const queryKeys = {
   locomotives: {
     list: "locomotives-list",
   },
+  pantograph: {
+    all: "pantograph-all",
+    create: "pantograph-create",
+    update: "pantograph-update",
+    delete: "pantograph-delete",
+  },
 } as const;

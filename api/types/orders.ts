@@ -1,4 +1,4 @@
-// Orders types and interfaces based on API response
+import type { LocomotiveData } from "./locomotive";
 
 // Order data type based on API response
 export interface OrderData {
@@ -14,7 +14,7 @@ export interface OrderData {
   last_updated_time: string;
   organization_info: string;
   user_info: string;
-  locomotive_info: string;
+  locomotive_info: LocomotiveData | null;
 }
 
 // Order create request payload

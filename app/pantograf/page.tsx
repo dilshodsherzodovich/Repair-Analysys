@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -10,32 +10,19 @@ import { FileSpreadsheet } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-
-// Mock data type
-interface PantografData {
-  id: string;
-  sana: string;
-  lokomotiv: string;
-  uchastka: string;
-  xizmat: string;
-  sababi: string;
-  ushreb: number;
-  user_id: string;
-}
-
-// Mock data generator
-const generateMockData = (count: number): PantografData[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `pantograf-${i + 1}`,
-    sana: "2025.07.09",
-    lokomotiv: "610-06 - 3P9E",
-    uchastka: "Guliston Oqoltin 3477km 4-pk",
-    xizmat: "33-7",
-    sababi: "Kontakt tarmog'ini kontakt tori (strunasi) chiqib qolgan",
-    ushreb: 2158276.07,
-    user_id: `user-${i + 1}`,
-  }));
-};
+import {
+  usePantographJournal,
+  useCreatePantographEntry,
+  useUpdatePantographEntry,
+  useDeletePantographEntry,
+} from "@/api/hooks/use-pantograph";
+import {
+  PantographJournalEntry,
+  CreatePantographJournalPayload,
+  UpdatePantographJournalPayload,
+} from "@/api/types/pantograph";
+import { PantographModal } from "@/components/pantograph/pantograph-modal";
+import { useSnackbar } from "@/providers/snackbar-provider";
 
 export default function PantografPage() {
   const searchParams = useSearchParams();
@@ -47,58 +34,85 @@ export default function PantografPage() {
   // State
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedEntry, setSelectedEntry] =
+    useState<PantographJournalEntry | null>(null);
 
   // Get current page and items per page from query params for data filtering
   // The table component will handle updating these URL params internally
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
-  // Mock data - replace with actual API call
-  const mockData = generateMockData(1000);
-
-  // Filter data based on search and tab
-  const filteredData = mockData.filter((item) => {
-    if (q) {
-      const searchLower = q.toLowerCase();
-      return (
-        item.lokomotiv.toLowerCase().includes(searchLower) ||
-        item.uchastka.toLowerCase().includes(searchLower) ||
-        item.sababi.toLowerCase().includes(searchLower)
-      );
-    }
-    return true;
+  const {
+    data: apiResponse,
+    isLoading,
+    error: apiError,
+  } = usePantographJournal({
+    page: currentPage,
+    page_size: itemsPerPage,
+    search: q,
+    tab: currentTab === "all" ? undefined : currentTab,
   });
 
-  // Paginate data
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
-  const totalPages = getPageCount(filteredData.length, itemsPerPage) || 1;
-  const totalItems = filteredData.length;
+  const createEntryMutation = useCreatePantographEntry();
+  const updateEntryMutation = useUpdatePantographEntry();
+  const deleteEntryMutation = useDeletePantographEntry();
+  const { showSuccess, showError } = useSnackbar();
+
+  const paginatedData = apiResponse?.results ?? [];
+  const totalItems = apiResponse?.count ?? 0;
+  const totalPages = getPageCount(totalItems, itemsPerPage) || 1;
+  const error = apiError
+    ? apiError instanceof Error
+      ? apiError
+      : new Error(
+          (apiError as any)?.message ||
+            "Pantograf jurnalini yuklashda xatolik yuz berdi"
+        )
+    : null;
 
   // Handle tab change
-  const handleTabChange = (value: string) => {
-    setCurrentTab(value);
-    updateQuery({ tab: value, page: "1" });
-  };
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setCurrentTab(value);
+      updateQuery({ tab: value, page: "1" });
+    },
+    [updateQuery]
+  );
 
   // Handle edit
-  const handleEdit = (row: PantografData) => {
-    console.log("Edit:", row);
-    // Implement edit logic
-  };
+  const handleEdit = useCallback((row: PantographJournalEntry) => {
+    setSelectedEntry(row);
+    setModalMode("edit");
+    setIsModalOpen(true);
+  }, []);
 
   // Handle delete
-  const handleDelete = (row: PantografData) => {
-    console.log("Delete:", row);
-    // Implement delete logic
-  };
+  const handleDelete = useCallback(
+    async (row: PantographJournalEntry) => {
+      try {
+        await deleteEntryMutation.mutateAsync(row.id);
+        showSuccess("Pantograf jurnali muvaffaqiyatli o'chirildi");
+      } catch (error: any) {
+        showError(
+          "Xatolik yuz berdi",
+          error?.response?.data?.message ||
+            error?.message ||
+            "Pantograf jurnalini o'chirishda xatolik"
+        );
+        throw error;
+      }
+    },
+    [deleteEntryMutation, showError, showSuccess]
+  );
 
   // Handle create
-  const handleCreate = () => {
-    console.log("Create new");
-    // Implement create logic
-  };
+  const handleCreate = useCallback(() => {
+    setSelectedEntry(null);
+    setModalMode("create");
+    setIsModalOpen(true);
+  }, []);
 
   // Handle export
   const handleExport = () => {
@@ -112,54 +126,134 @@ export default function PantografPage() {
     // Implement bulk delete logic
   };
 
+  const handleSave = useCallback(
+    (
+      payload: CreatePantographJournalPayload | UpdatePantographJournalPayload
+    ) => {
+      if (modalMode === "create") {
+        createEntryMutation.mutate(payload as CreatePantographJournalPayload, {
+          onSuccess: () => {
+            showSuccess("Pantograf jurnali muvaffaqiyatli yaratildi!");
+            setIsModalOpen(false);
+            setSelectedEntry(null);
+          },
+          onError: (error: any) => {
+            showError(
+              "Xatolik yuz berdi",
+              error?.response?.data?.message ||
+                error?.message ||
+                "Pantograf jurnalini yaratishda xatolik"
+            );
+          },
+        });
+      } else if (selectedEntry) {
+        updateEntryMutation.mutate(
+          {
+            id: selectedEntry.id,
+            payload: payload as UpdatePantographJournalPayload,
+          },
+          {
+            onSuccess: () => {
+              showSuccess("Pantograf jurnali muvaffaqiyatli yangilandi!");
+              setIsModalOpen(false);
+              setSelectedEntry(null);
+            },
+            onError: (error: any) => {
+              showError(
+                "Xatolik yuz berdi",
+                error?.response?.data?.message ||
+                  error?.message ||
+                  "Pantograf jurnalini yangilashda xatolik"
+              );
+            },
+          }
+        );
+      }
+    },
+    [
+      modalMode,
+      selectedEntry,
+      createEntryMutation,
+      updateEntryMutation,
+      showSuccess,
+      showError,
+    ]
+  );
+
   // Table columns
-  const columns: TableColumn<PantografData>[] = [
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatDamage = (amount: string): string => {
+    if (!amount) return "-";
+    const parsed = Number(amount);
+    if (Number.isNaN(parsed)) return amount;
+    return parsed.toLocaleString("uz-UZ", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  const columns: TableColumn<PantographJournalEntry>[] = [
     {
-      key: "sana",
+      key: "date",
       header: "Sana",
-      accessor: (row) => row.sana,
+      accessor: (row) => formatDate(row.date),
     },
     {
-      key: "lokomotiv",
+      key: "title",
+      header: "Sarlavha",
+      accessor: (row) => row.title,
+    },
+    {
+      key: "locomotive_info",
       header: "Lokomotiv",
-      accessor: (row) => row.lokomotiv,
+      accessor: (row) =>
+        row.locomotive_info
+          ? `${row.locomotive_info.name} (${row.locomotive_info.locomotive_model.name})`
+          : "-",
     },
     {
-      key: "uchastka",
+      key: "department",
+      header: "Mas'ul tashkilot",
+      accessor: (row) => row.department,
+    },
+    {
+      key: "section",
       header: "Uchastka",
       accessor: (row) => (
         <div className="max-w-[300px]">
-          <div className="whitespace-normal break-words">{row.uchastka}</div>
+          <div className="whitespace-normal break-words">{row.section}</div>
         </div>
       ),
     },
     {
-      key: "xizmat",
-      header: "Xizmat",
-      accessor: (row) => row.xizmat,
+      key: "organization_info",
+      header: "Tashkilot",
+      accessor: (row) => row.organization_info || "-",
     },
     {
-      key: "sababi",
-      header: "Sababi",
+      key: "description",
+      header: "Hodisa tavsifi",
       accessor: (row) => (
         <div className="max-w-[400px]">
-          <div className="whitespace-normal break-words">{row.sababi}</div>
+          <div className="whitespace-normal break-words">{row.description}</div>
         </div>
       ),
     },
     {
-      key: "ushreb",
-      header: "Ushreb",
-      accessor: (row) =>
-        row.ushreb.toLocaleString("uz-UZ", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
-    },
-    {
-      key: "user_id",
-      header: "user_id",
-      accessor: (row) => row.user_id,
+      key: "damage",
+      header: "Zarar summasi",
+      accessor: (row) => formatDamage(row.damage),
     },
   ];
 
@@ -218,13 +312,14 @@ export default function PantografPage() {
           columns={columns}
           data={paginatedData}
           getRowId={(row) => row.id}
-          isLoading={false}
-          error={null}
+          isLoading={isLoading}
+          error={error}
           totalPages={totalPages}
           totalItems={totalItems}
           updateQueryParams={true}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          isDeleting={deleteEntryMutation.isPending}
           selectable={true}
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
@@ -232,6 +327,20 @@ export default function PantografPage() {
           emptyDescription="Pantograf ma'lumotlari topilmadi"
         />
       </div>
+
+      <PantographModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedEntry(null);
+        }}
+        onSave={handleSave}
+        entry={selectedEntry}
+        mode={modalMode}
+        isPending={
+          createEntryMutation.isPending || updateEntryMutation.isPending
+        }
+      />
     </div>
   );
 }
