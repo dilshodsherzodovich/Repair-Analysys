@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -180,6 +180,18 @@ export default function PantografPage() {
     ]
   );
 
+  // Memoized modal close handler to prevent unnecessary re-renders
+  const handleModalClose = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedEntry(null);
+  }, []);
+
+  // Memoized pending state to prevent recalculation on every render
+  const isModalPending = useMemo(
+    () => createEntryMutation.isPending || updateEntryMutation.isPending,
+    [createEntryMutation.isPending, updateEntryMutation.isPending]
+  );
+
   // Table columns
   const formatDate = (dateString: string): string => {
     try {
@@ -330,16 +342,11 @@ export default function PantografPage() {
 
       <PantographModal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedEntry(null);
-        }}
+        onClose={handleModalClose}
         onSave={handleSave}
         entry={selectedEntry}
         mode={modalMode}
-        isPending={
-          createEntryMutation.isPending || updateEntryMutation.isPending
-        }
+        isPending={isModalPending}
       />
     </div>
   );

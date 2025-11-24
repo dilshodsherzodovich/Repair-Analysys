@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, memo, FC } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { Card } from "@/ui/card";
 import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
@@ -44,31 +44,135 @@ type LocomotiveOption = {
   value: string;
 };
 
-const LocomotiveSelect: FC<{
-  value: string;
-  onChange: (value: string) => void;
-  options: LocomotiveOption[];
-  disabled?: boolean;
-}> = memo(({ value, onChange, options, disabled }) => {
-  return (
-    <Select value={value} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger id="locomotive">
-        <SelectValue placeholder="Lokomotivni tanlang" />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem key={option.id} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-});
+type FormData = {
+  title: string;
+  locomotive: string;
+  department: string;
+  section: string;
+  date: string;
+  damage: string;
+  description: string;
+};
 
-LocomotiveSelect.displayName = "PantographLocomotiveSelect";
+const INITIAL_FORM_DATA: FormData = {
+  title: "",
+  locomotive: "",
+  department: "",
+  section: "",
+  date: "",
+  damage: "",
+  description: "",
+};
 
-export function PantographModal({
+// Memoized form field components to prevent unnecessary re-renders
+const FormField = memo(
+  ({
+    id,
+    label,
+    value,
+    onChange,
+    placeholder,
+    required,
+    type = "text",
+    step,
+    rows,
+  }: {
+    id: string;
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    required?: boolean;
+    type?: string;
+    step?: string;
+    rows?: number;
+  }) => {
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        onChange(e.target.value);
+      },
+      [onChange]
+    );
+
+    if (type === "textarea") {
+      return (
+        <div>
+          <Label htmlFor={id}>{label}</Label>
+          <Textarea
+            id={id}
+            value={value}
+            onChange={handleChange}
+            placeholder={placeholder}
+            rows={rows}
+            required={required}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <Label htmlFor={id}>{label}</Label>
+        <Input
+          id={id}
+          type={type}
+          step={step}
+          value={value}
+          onChange={handleChange}
+          placeholder={placeholder}
+          required={required}
+        />
+      </div>
+    );
+  }
+);
+FormField.displayName = "FormField";
+
+// Memoized locomotive select component
+const LocomotiveSelect = memo(
+  ({
+    value,
+    onChange,
+    options,
+    isLoading,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+    options: LocomotiveOption[];
+    isLoading: boolean;
+  }) => {
+    return (
+      <div>
+        <Label htmlFor="locomotive">Lokomotiv</Label>
+        <Select value={value} onValueChange={onChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Lokomotivni tanlang" />
+          </SelectTrigger>
+          <SelectContent>
+            {isLoading ? (
+              <SelectItem value="loading" disabled>
+                Yuklanmoqda...
+              </SelectItem>
+            ) : options.length > 0 ? (
+              options.map((option) => (
+                <SelectItem key={option.id} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="empty" disabled>
+                Lokomotiv topilmadi
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  }
+);
+LocomotiveSelect.displayName = "LocomotiveSelect";
+
+export const PantographModal = memo(function PantographModal({
   isOpen,
   onClose,
   onSave,
@@ -76,19 +180,13 @@ export function PantographModal({
   mode,
   isPending,
 }: PantographModalProps) {
-  const [formData, setFormData] = useState({
-    title: "",
-    locomotive: "",
-    department: "",
-    section: "",
-    date: "",
-    damage: "",
-    description: "",
-  });
+  const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
 
+  // Only fetch locomotives when modal is open
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
-    useGetLocomotives();
+    useGetLocomotives(isOpen);
 
+  // Memoize locomotive options transformation
   const locomotiveOptions = useMemo<LocomotiveOption[]>(() => {
     if (!locomotivesData) return [];
     return locomotivesData.map((locomotive) => ({
@@ -102,7 +200,15 @@ export function PantographModal({
     }));
   }, [locomotivesData]);
 
+  // Initialize form data when modal opens or entry changes
+  // Only update when modal actually opens or entry/mode changes while open
   useEffect(() => {
+    if (!isOpen) {
+      // Only reset when closing to avoid unnecessary state updates
+      return;
+    }
+
+    // When modal opens, initialize form based on mode
     if (entry && mode === "edit") {
       setFormData({
         title: entry.title ?? "",
@@ -113,59 +219,80 @@ export function PantographModal({
         damage: entry.damage ?? "",
         description: entry.description ?? "",
       });
-    } else if (mode === "create" && isOpen) {
-      setFormData({
-        title: "",
-        locomotive: "",
-        department: "",
-        section: "",
-        date: "",
-        damage: "",
-        description: "",
-      });
+    } else {
+      setFormData(INITIAL_FORM_DATA);
     }
   }, [entry, mode, isOpen]);
 
-  const handleInputChange = useCallback(
-    (field: keyof typeof formData) =>
-      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData((prev) => ({
-          ...prev,
-          [field]: e.target.value,
-        }));
-      },
-    []
-  );
-
-  const handleLocomotiveSelect = useCallback((value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      locomotive: value,
-    }));
-  }, []);
-
-  const resetForm = useCallback(() => {
-    setFormData({
-      title: "",
-      locomotive: "",
-      department: "",
-      section: "",
-      date: "",
-      damage: "",
-      description: "",
+  // Stable field update handlers - created once and never change
+  const handleTitleChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.title === value) return prev;
+      return { ...prev, title: value };
     });
   }, []);
 
-  const handleClose = useCallback(() => {
-    resetForm();
-    onClose();
-  }, [onClose, resetForm]);
+  const handleDateChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.date === value) return prev;
+      return { ...prev, date: value };
+    });
+  }, []);
 
+  const handleDepartmentChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.department === value) return prev;
+      return { ...prev, department: value };
+    });
+  }, []);
+
+  const handleSectionChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.section === value) return prev;
+      return { ...prev, section: value };
+    });
+  }, []);
+
+  const handleDamageChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.damage === value) return prev;
+      return { ...prev, damage: value };
+    });
+  }, []);
+
+  const handleDescriptionChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.description === value) return prev;
+      return { ...prev, description: value };
+    });
+  }, []);
+
+  const handleLocomotiveChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.locomotive === value) return prev;
+      return { ...prev, locomotive: value };
+    });
+  }, []);
+
+  // Memoized static text values
+  const modalTexts = useMemo(
+    () => ({
+      title:
+        mode === "create"
+          ? "Pantograf jurnalini yaratish"
+          : "Pantograf jurnalini tahrirlash",
+      submit: mode === "create" ? "Yaratish" : "Saqlash",
+      pending: mode === "create" ? "Yaratilmoqda..." : "Saqlanmoqda...",
+    }),
+    [mode]
+  );
+
+  // Form submission handler
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
 
-      const basePayload = {
+      const payload = {
         title: formData.title.trim(),
         locomotive: Number(formData.locomotive),
         department: formData.department.trim(),
@@ -176,140 +303,121 @@ export function PantographModal({
       };
 
       if (mode === "create") {
-        onSave(basePayload as CreatePantographJournalPayload);
+        onSave(payload as CreatePantographJournalPayload);
       } else {
-        onSave(basePayload as UpdatePantographJournalPayload);
+        onSave(payload as UpdatePantographJournalPayload);
       }
     },
     [formData, mode, onSave]
   );
 
-  const titleText =
-    mode === "create"
-      ? "Pantograf jurnalini yaratish"
-      : "Pantograf jurnalini tahrirlash";
-  const submitText = mode === "create" ? "Yaratish" : "Saqlash";
-  const pendingText = mode === "create" ? "Yaratilmoqda..." : "Saqlanmoqda...";
+  // Dialog close handler - reset form only when actually closing
+  const handleDialogOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        // Reset form immediately when closing to prepare for next open
+        setFormData(INITIAL_FORM_DATA);
+        onClose();
+      }
+    },
+    [onClose]
+  );
+
+  // Cancel handler
+  const handleCancel = useCallback(() => {
+    setFormData(INITIAL_FORM_DATA);
+    onClose();
+  }, [onClose]);
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) {
-          handleClose();
-        }
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="sm:max-w-3xl" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>{titleText}</DialogTitle>
+          <DialogTitle>{modalTexts.title}</DialogTitle>
           <DialogDescription className="sr-only">
-            {titleText} formasi
+            {modalTexts.title} formasi
           </DialogDescription>
         </DialogHeader>
         <Card className="border-none p-0 mt-2">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="title">Sarlavha</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={handleInputChange("title")}
-                  placeholder="Sarlavhani kiriting"
-                  required
-                />
-              </div>
+              <FormField
+                id="title"
+                label="Sarlavha"
+                value={formData.title}
+                onChange={handleTitleChange}
+                placeholder="Sarlavhani kiriting"
+                required
+              />
 
-              <div>
-                <Label htmlFor="date">Sana</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={handleInputChange("date")}
-                  required
-                />
-              </div>
+              <FormField
+                id="date"
+                label="Sana"
+                type="date"
+                value={formData.date}
+                onChange={handleDateChange}
+                required
+              />
 
-              <div>
-                <Label htmlFor="locomotive">Lokomotiv</Label>
-                <Select
-                  value={formData.locomotive}
-                  onValueChange={handleLocomotiveSelect}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Lokomotivni tanlang" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locomotiveOptions.map((option) => (
-                      <SelectItem key={option.id} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <LocomotiveSelect
+                value={formData.locomotive}
+                onChange={handleLocomotiveChange}
+                options={locomotiveOptions}
+                isLoading={isLoadingLocomotives}
+              />
 
-              <div>
-                <Label htmlFor="department">Mas'ul tashkilot</Label>
-                <Input
-                  id="department"
-                  value={formData.department}
-                  onChange={handleInputChange("department")}
-                  placeholder="Mas'ul tashkilotni kiriting"
-                  required
-                />
-              </div>
+              <FormField
+                id="department"
+                label="Mas'ul tashkilot"
+                value={formData.department}
+                onChange={handleDepartmentChange}
+                placeholder="Mas'ul tashkilotni kiriting"
+                required
+              />
 
-              <div>
-                <Label htmlFor="section">Uchastka</Label>
-                <Input
-                  id="section"
-                  value={formData.section}
-                  onChange={handleInputChange("section")}
-                  placeholder="Uchastkani kiriting"
-                  required
-                />
-              </div>
+              <FormField
+                id="section"
+                label="Uchastka"
+                value={formData.section}
+                onChange={handleSectionChange}
+                placeholder="Uchastkani kiriting"
+                required
+              />
 
-              <div>
-                <Label htmlFor="damage">Zarar summasi</Label>
-                <Input
-                  id="damage"
-                  type="number"
-                  step="0.01"
-                  value={formData.damage}
-                  onChange={handleInputChange("damage")}
-                  placeholder="Zarar summasini kiriting"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Hodisa tavsifi</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={handleInputChange("description")}
-                placeholder="Hodisa tavsifini kiriting"
-                rows={4}
+              <FormField
+                id="damage"
+                label="Zarar summasi"
+                type="number"
+                step="0.01"
+                value={formData.damage}
+                onChange={handleDamageChange}
+                placeholder="Zarar summasini kiriting"
                 required
               />
             </div>
+
+            <FormField
+              id="description"
+              label="Hodisa tavsifi"
+              type="textarea"
+              rows={4}
+              value={formData.description}
+              onChange={handleDescriptionChange}
+              placeholder="Hodisa tavsifini kiriting"
+              required
+            />
 
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleClose}
+                onClick={handleCancel}
                 disabled={isPending}
               >
                 Bekor qilish
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? pendingText : submitText}
+                {isPending ? modalTexts.pending : modalTexts.submit}
               </Button>
             </div>
           </form>
@@ -317,4 +425,4 @@ export function PantographModal({
       </DialogContent>
     </Dialog>
   );
-}
+});
