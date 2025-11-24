@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, memo, FC } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  memo,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import { Modal } from "@/ui/modal";
 import { Input } from "@/ui/input";
 import { Textarea } from "@/ui/textarea";
@@ -14,12 +22,13 @@ import {
 import { Button } from "@/ui/button";
 import { Label } from "@/ui/label";
 import { Card } from "@/ui/card";
-import {
+import type {
   OrderData,
   CreateOrderPayload,
   UpdateOrderPayload,
 } from "@/api/types/orders";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
+import { FormField } from "@/ui/form-field";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -36,28 +45,67 @@ type LocomotiveOption = {
   value: string;
 };
 
-const LocomotiveSelect: FC<{
-  value: string;
-  onChange: (value: string) => void;
-  options: LocomotiveOption[];
-  disabled?: boolean;
-}> = memo(({ value, onChange, options, disabled }) => {
-  return (
-    <Select value={value} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger id="locomotive">
-        <SelectValue placeholder="Lokomotivni tanlang" />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem key={option.id} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-});
+type FormData = {
+  train_number: string;
+  responsible_department: string;
+  responsible_person: string;
+  damage_amount: string;
+  locomotive: string;
+  case_description: string;
+  date: string;
+};
 
+const INITIAL_FORM_DATA: FormData = {
+  train_number: "",
+  responsible_department: "",
+  responsible_person: "",
+  damage_amount: "",
+  locomotive: "",
+  case_description: "",
+  date: "",
+};
+
+const LocomotiveSelect = memo(
+  ({
+    value,
+    onChange,
+    options,
+    isLoading,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+    options: LocomotiveOption[];
+    isLoading: boolean;
+  }) => {
+    return (
+      <div>
+        <Label htmlFor="locomotive">Lokomotiv</Label>
+        <Select value={value} onValueChange={onChange} disabled={isLoading}>
+          <SelectTrigger id="locomotive">
+            <SelectValue placeholder="Lokomotivni tanlang" />
+          </SelectTrigger>
+          <SelectContent>
+            {isLoading ? (
+              <SelectItem value="loading" disabled>
+                Yuklanmoqda...
+              </SelectItem>
+            ) : options.length ? (
+              options.map((option) => (
+                <SelectItem key={option.id} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="empty" disabled>
+                Lokomotiv topilmadi
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  }
+);
 LocomotiveSelect.displayName = "LocomotiveSelect";
 
 export function OrderModal({
@@ -68,127 +116,119 @@ export function OrderModal({
   mode,
   isPending,
 }: OrderModalProps) {
-  const [formData, setFormData] = useState({
-    train_number: "",
-    responsible_department: "",
-    responsible_person: "",
-    damage_amount: "",
-    locomotive: "",
-    case_description: "",
-    date: "",
-  });
+  const [formData, setFormData] = useState<FormData>(() => ({
+    ...INITIAL_FORM_DATA,
+  }));
 
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
-    useGetLocomotives();
+    useGetLocomotives(isOpen);
 
-  // Memoize locomotive options for better performance
   const locomotiveOptions = useMemo<LocomotiveOption[]>(() => {
     if (!locomotivesData) return [];
     return locomotivesData.map((locomotive) => ({
       id: locomotive.id,
-      label: `${locomotive.name} (${locomotive.locomotive_model.name})`,
+      label: `${locomotive.name} (${locomotive.model_name})`,
       value: locomotive.id.toString(),
     }));
   }, [locomotivesData]);
 
-  // Initialize form data when modal opens or order changes
   useEffect(() => {
-    if (order && mode === "edit") {
-      // Format date from ISO string to datetime-local format (YYYY-MM-DDTHH:mm)
+    if (!isOpen) return;
+
+    if (mode === "edit" && order) {
       const dateValue = order.date
         ? new Date(order.date).toISOString().slice(0, 16)
         : "";
 
       setFormData({
-        train_number: order.train_number || "",
-        responsible_department: order.responsible_department || "",
-        responsible_person: order.responsible_person || "",
-        damage_amount: order.damage_amount || "",
+        train_number: order.train_number ?? "",
+        responsible_department: order.responsible_department ?? "",
+        responsible_person: order.responsible_person ?? "",
+        damage_amount: order.damage_amount ?? "",
         locomotive: order.locomotive ? String(order.locomotive) : "",
-        case_description: order.case_description || "",
+        case_description: order.case_description ?? "",
         date: dateValue,
       });
     } else {
-      // Reset form for create mode
-      setFormData({
-        train_number: "",
-        responsible_department: "",
-        responsible_person: "",
-        damage_amount: "",
-        locomotive: "",
-        case_description: "",
-        date: "",
-      });
+      setFormData(() => ({ ...INITIAL_FORM_DATA }));
     }
-  }, [order, mode, isOpen]);
+  }, [isOpen, mode, order]);
 
-  // Optimized input handlers using useCallback
-  const handleInputChange = useCallback(
-    (field: keyof typeof formData) =>
-      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData((prev) => ({
-          ...prev,
-          [field]: e.target.value,
-        }));
-      },
-    []
-  );
+  const handleTrainNumberChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.train_number === value) return prev;
+      return { ...prev, train_number: value };
+    });
+  }, []);
 
-  const handleSelectChange = useCallback((field: keyof typeof formData) => {
-    return (value: string) => {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    };
+  const handleDateChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.date === value) return prev;
+      return { ...prev, date: value };
+    });
+  }, []);
+
+  const handleLocomotiveChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.locomotive === value) return prev;
+      return { ...prev, locomotive: value };
+    });
+  }, []);
+
+  const handleDepartmentChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.responsible_department === value) return prev;
+      return { ...prev, responsible_department: value };
+    });
+  }, []);
+
+  const handlePersonChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.responsible_person === value) return prev;
+      return { ...prev, responsible_person: value };
+    });
+  }, []);
+
+  const handleDamageChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.damage_amount === value) return prev;
+      return { ...prev, damage_amount: value };
+    });
+  }, []);
+
+  const handleDescriptionChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.case_description === value) return prev;
+      return { ...prev, case_description: value };
+    });
   }, []);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
+    (event: FormEvent) => {
+      event.preventDefault();
+      if (!formData.locomotive) return;
 
-      // Convert date from datetime-local to ISO string
       const dateISO = formData.date
         ? new Date(formData.date).toISOString()
         : "";
 
-      if (mode === "create") {
-        const payload: CreateOrderPayload = {
-          train_number: formData.train_number.trim(),
-          responsible_department: formData.responsible_department.trim(),
-          responsible_person: formData.responsible_person.trim(),
-          damage_amount: formData.damage_amount.trim(),
-          locomotive: parseInt(formData.locomotive),
-          case_description: formData.case_description.trim(),
-          date: dateISO,
-        };
-        onSave(payload);
-      } else {
-        const payload: UpdateOrderPayload = {
-          train_number: formData.train_number.trim(),
-          responsible_department: formData.responsible_department.trim(),
-          responsible_person: formData.responsible_person.trim(),
-          damage_amount: formData.damage_amount.trim(),
-          locomotive: parseInt(formData.locomotive),
-          case_description: formData.case_description.trim(),
-          date: dateISO,
-        };
-        onSave(payload);
-      }
+      const payload = {
+        train_number: formData.train_number.trim(),
+        responsible_department: formData.responsible_department.trim(),
+        responsible_person: formData.responsible_person.trim(),
+        damage_amount: formData.damage_amount.trim(),
+        locomotive: Number(formData.locomotive),
+        case_description: formData.case_description.trim(),
+        date: dateISO,
+      };
+
+      onSave(payload);
     },
-    [formData, mode, onSave]
+    [formData, onSave]
   );
 
   const handleClose = useCallback(() => {
-    setFormData({
-      train_number: "",
-      responsible_department: "",
-      responsible_person: "",
-      damage_amount: "",
-      locomotive: "",
-      case_description: "",
-      date: "",
-    });
+    setFormData(() => ({ ...INITIAL_FORM_DATA }));
     onClose();
   }, [onClose]);
 
@@ -203,94 +243,72 @@ export function OrderModal({
       <Card className="border-none p-0 mt-4">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Train Number */}
-            <div>
-              <Label htmlFor="train_number">Poyezd raqami</Label>
-              <Input
-                id="train_number"
-                value={formData.train_number}
-                onChange={handleInputChange("train_number")}
-                placeholder="Poyezd raqamini kiriting"
-                required
-              />
-            </div>
+            <FormField
+              id="train_number"
+              label="Poyezd raqami"
+              value={formData.train_number}
+              onChange={handleTrainNumberChange}
+              placeholder="Poyezd raqamini kiriting"
+              required
+            />
 
-            {/* Date */}
-            <div>
-              <Label htmlFor="date">Sana va vaqt</Label>
-              <Input
-                id="date"
-                type="datetime-local"
-                value={formData.date}
-                onChange={handleInputChange("date")}
-                required
-              />
-            </div>
+            <FormField
+              id="date"
+              label="Sana va vaqt"
+              type="datetime-local"
+              value={formData.date}
+              onChange={handleDateChange}
+              required
+            />
 
-            {/* Locomotive */}
-            <div>
-              <Label htmlFor="locomotive">Lokomotiv</Label>
-              <LocomotiveSelect
-                value={formData.locomotive}
-                onChange={handleSelectChange("locomotive")}
-                options={locomotiveOptions}
-                disabled={isLoadingLocomotives}
-              />
-            </div>
+            <LocomotiveSelect
+              value={formData.locomotive}
+              onChange={handleLocomotiveChange}
+              options={locomotiveOptions}
+              isLoading={isLoadingLocomotives}
+            />
 
-            {/* Responsible Department */}
-            <div>
-              <Label htmlFor="responsible_department">Mas'ul tashkilot</Label>
-              <Input
-                id="responsible_department"
-                value={formData.responsible_department}
-                onChange={handleInputChange("responsible_department")}
-                placeholder="Mas'ul tashkilotni kiriting"
-                required
-              />
-            </div>
+            <FormField
+              id="responsible_department"
+              label="Mas'ul tashkilot"
+              value={formData.responsible_department}
+              onChange={handleDepartmentChange}
+              placeholder="Mas'ul tashkilotni kiriting"
+              required
+            />
 
-            {/* Responsible Person */}
-            <div>
-              <Label htmlFor="responsible_person">Mas'ul shaxs</Label>
-              <Input
-                id="responsible_person"
-                value={formData.responsible_person}
-                onChange={handleInputChange("responsible_person")}
-                placeholder="Mas'ul shaxsni kiriting"
-                required
-              />
-            </div>
+            <FormField
+              id="responsible_person"
+              label="Mas'ul shaxs"
+              value={formData.responsible_person}
+              onChange={handlePersonChange}
+              placeholder="Mas'ul shaxsni kiriting"
+              required
+            />
 
-            {/* Damage Amount */}
-            <div>
-              <Label htmlFor="damage_amount">Zarar summasi</Label>
-              <Input
-                id="damage_amount"
-                type="number"
-                step="0.01"
-                value={formData.damage_amount}
-                onChange={handleInputChange("damage_amount")}
-                placeholder="Zarar summasini kiriting"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Case Description */}
-          <div>
-            <Label htmlFor="case_description">Hodisa tavsifi</Label>
-            <Textarea
-              id="case_description"
-              value={formData.case_description}
-              onChange={handleInputChange("case_description")}
-              placeholder="Hodisa tavsifini kiriting"
-              rows={4}
+            <FormField
+              id="damage_amount"
+              label="Zarar summasi"
+              type="number"
+              step="0.01"
+              value={formData.damage_amount}
+              onChange={handleDamageChange}
+              placeholder="Zarar summasini kiriting"
               required
             />
           </div>
 
-          {/* Form Actions */}
+          <FormField
+            id="case_description"
+            label="Hodisa tavsifi"
+            type="textarea"
+            rows={4}
+            value={formData.case_description}
+            onChange={handleDescriptionChange}
+            placeholder="Hodisa tavsifini kiriting"
+            required
+          />
+
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"

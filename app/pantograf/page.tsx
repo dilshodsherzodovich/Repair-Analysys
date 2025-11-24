@@ -120,12 +120,6 @@ export default function PantografPage() {
     // Implement export logic
   };
 
-  // Handle bulk delete
-  const handleBulkDelete = () => {
-    console.log("Bulk delete:", selectedIds);
-    // Implement bulk delete logic
-  };
-
   const handleSave = useCallback(
     (
       payload: CreatePantographJournalPayload | UpdatePantographJournalPayload
@@ -231,7 +225,7 @@ export default function PantografPage() {
       header: "Lokomotiv",
       accessor: (row) =>
         row.locomotive_info
-          ? `${row.locomotive_info.name} (${row.locomotive_info.locomotive_model.name})`
+          ? `${row.locomotive_info.name} (${row.locomotive_info.model_name})`
           : "-",
     },
     {

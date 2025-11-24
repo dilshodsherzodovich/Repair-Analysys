@@ -191,24 +191,12 @@ export const PantographModal = memo(function PantographModal({
     if (!locomotivesData) return [];
     return locomotivesData.map((locomotive) => ({
       id: locomotive.id,
-      label: `${locomotive.name} (${
-        locomotive.locomotive_model?.name ||
-        (locomotive as { model_name?: string })?.model_name ||
-        "—"
-      })`,
+      label: `${locomotive.name} (${locomotive.model_name})`,
       value: locomotive.id.toString(),
     }));
   }, [locomotivesData]);
 
-  // Initialize form data when modal opens or entry changes
-  // Only update when modal actually opens or entry/mode changes while open
   useEffect(() => {
-    if (!isOpen) {
-      // Only reset when closing to avoid unnecessary state updates
-      return;
-    }
-
-    // When modal opens, initialize form based on mode
     if (entry && mode === "edit") {
       setFormData({
         title: entry.title ?? "",
