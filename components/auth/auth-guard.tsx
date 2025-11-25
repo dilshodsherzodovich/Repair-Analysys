@@ -46,7 +46,6 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // If not authenticated and not on login page, show loading while redirecting
   if (!isLoginPage && !authService.isAuthenticated()) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -58,7 +57,6 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // If authenticated and on login page, show loading while redirecting
   if (isLoginPage && authService.isAuthenticated()) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -70,6 +68,5 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // Render children for all other cases
   return <>{children}</>;
 }

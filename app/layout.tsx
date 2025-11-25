@@ -13,8 +13,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Document Management System",
-  description: "Corporate document management platform",
+  title: "Elektron ta'mir tahlili tizimi",
+  description:
+    "Lokomotiv ta'mir tahlillarini elektron boshqarish va hisobot yuritish tizimi",
   generator: "Smart Depo",
 };
 
