@@ -25,6 +25,11 @@ import { OrderModal } from "@/components/orders/order-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
+import { truncateFilename } from "@/utils/format-filename";
+
+const journalTypeLabels: Record<string, string> = {
+  mpr: "Buyruq MPR",
+};
 
 export default function OrdersPage() {
   const searchParams = useSearchParams();
@@ -197,6 +202,12 @@ export default function OrdersPage() {
   // Table columns based on API response structure
   const columns: TableColumn<OrderData>[] = [
     {
+      key: "type_of_journal",
+      header: "Jurnal turi",
+      accessor: (row) =>
+        journalTypeLabels[row.type_of_journal] || row.type_of_journal || "",
+    },
+    {
       key: "date",
       header: "Sana",
       accessor: (row) => formatDate(row.date),
@@ -236,6 +247,23 @@ export default function OrdersPage() {
       key: "damage_amount",
       header: "Zarar summasi",
       accessor: (row) => formatDamageAmount(row.damage_amount),
+    },
+    {
+      key: "file",
+      header: "Biriktirilgan fayl",
+      accessor: (row) =>
+        row.file ? (
+          <a
+            className="text-primary underline"
+            href={row.file}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {truncateFilename(row.file ?? "", { length: 20 })}
+          </a>
+        ) : (
+          "—"
+        ),
     },
   ];
 

@@ -15,6 +15,8 @@ export interface OrderData {
   organization_info: string;
   user_info: string;
   locomotive_info: LocomotiveData | null;
+  type_of_journal: string;
+  file: string | null;
 }
 
 // Order create request payload
@@ -26,6 +28,8 @@ export interface CreateOrderPayload {
   locomotive: number;
   case_description: string;
   date: string; // ISO 8601 datetime format
+  type_of_journal: string;
+  file?: File | null;
 }
 
 export interface UpdateOrderPayload {
@@ -36,6 +40,8 @@ export interface UpdateOrderPayload {
   locomotive?: number;
   case_description?: string;
   date?: string; // ISO 8601 datetime format
+  type_of_journal?: string;
+  file?: File | null;
 }
 
 // Parameters for getting orders

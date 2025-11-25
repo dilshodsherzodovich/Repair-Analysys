@@ -1,3 +1,6 @@
+import { LocomotiveInfo } from "./locomotive";
+import { InspectionTypeInfo } from "./inspectionTypes";
+
 export interface DefectiveWorkEntry {
   id: number;
   locomotive: number;
@@ -9,8 +12,8 @@ export interface DefectiveWorkEntry {
   date: string;
   created_time: string;
   last_updated_time: string;
-  locomotive_info: string;
-  inspection_type_info: string;
+  locomotive_info: LocomotiveInfo;
+  inspection_type_info: InspectionTypeInfo;
   organization_info: string;
   user_info: string;
 }

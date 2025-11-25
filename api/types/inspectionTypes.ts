@@ -5,3 +5,9 @@ export interface InspectionType {
   name_ru: string;
   is_interval: boolean;
 }
+
+export interface InspectionTypeInfo {
+  id: number;
+  name: string;
+  inspection_type: string;
+}

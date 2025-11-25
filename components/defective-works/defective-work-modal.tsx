@@ -59,27 +59,20 @@ const INITIAL_FORM_DATA: FormData = {
 };
 
 function LocomotiveSelectField({
-  value,
   name,
-  onChange,
+  defaultValue,
   locomotives,
   isLoading,
 }: {
-  value?: string;
   name: string;
-  onChange?: (value: string) => void;
+  defaultValue?: string;
   locomotives: LocomotiveData[];
   isLoading: boolean;
 }) {
   return (
     <div>
       <Label htmlFor="locomotive">Lokomotiv</Label>
-      <Select
-        name={name}
-        value={value}
-        onValueChange={onChange}
-        disabled={isLoading}
-      >
+      <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
         <SelectTrigger id="locomotive">
           <SelectValue placeholder="Lokomotivni tanlang" />
         </SelectTrigger>
@@ -107,17 +100,19 @@ function LocomotiveSelectField({
 
 function InspectionTypesSelectField({
   name,
+  defaultValue,
   inspectionTypes,
   isLoading,
 }: {
   name: string;
+  defaultValue?: string;
   inspectionTypes: InspectionType[];
   isLoading: boolean;
 }) {
   return (
     <div>
       <Label htmlFor="inspection-types">Texnik ko'rik turi</Label>
-      <Select name={name} disabled={isLoading}>
+      <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
         <SelectTrigger id="inspection-types">
           <SelectValue placeholder="Texnik ko'rik turini tanlang" />
         </SelectTrigger>
@@ -249,12 +244,14 @@ export function DefectiveWorkModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <LocomotiveSelectField
               name="locomotive"
+              defaultValue={formDefaults.locomotive}
               locomotives={locomotivesData || []}
               isLoading={isLoadingLocomotives}
             />
 
             <InspectionTypesSelectField
               name="inspection_type"
+              defaultValue={formDefaults.inspection_type}
               inspectionTypes={inspectionTypes || []}
               isLoading={isLoadingInspectionTypes}
             />

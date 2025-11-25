@@ -3,3 +3,9 @@ export interface LocomotiveData {
   name: string;
   model_name: string;
 }
+
+export interface LocomotiveInfo {
+  id: number;
+  name: string;
+  locomotive_model: string;
+}

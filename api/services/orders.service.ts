@@ -7,6 +7,27 @@ import {
   UpdateOrderPayload,
 } from "../types/orders";
 
+const buildOrderFormData = (
+  orderData: CreateOrderPayload | UpdateOrderPayload
+) => {
+  const formData = new FormData();
+
+  Object.entries(orderData).forEach(([key, value]) => {
+    if (value === undefined || value === null) {
+      return;
+    }
+
+    if (value instanceof Blob) {
+      formData.append(key, value);
+      return;
+    }
+
+    formData.append(key, String(value));
+  });
+
+  return formData;
+};
+
 export const ordersService = {
   getOrders: async (
     params?: OrdersGetParams
@@ -32,7 +53,10 @@ export const ordersService = {
   },
   createOrder: async (orderData: CreateOrderPayload): Promise<OrderData> => {
     try {
-      const response = await api.post<OrderData>("/mpr-journal/", orderData);
+      const payload = buildOrderFormData(orderData);
+      const response = await api.post<OrderData>("/mpr-journal/", payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return response.data;
     } catch (error) {
       console.error("Error creating order:", error);
@@ -44,9 +68,13 @@ export const ordersService = {
     orderData: UpdateOrderPayload
   ): Promise<OrderData> => {
     try {
+      const payload = buildOrderFormData(orderData);
       const response = await api.put<OrderData>(
         `/mpr-journal/${id}/`,
-        orderData
+        payload,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
       return response.data;
     } catch (error) {

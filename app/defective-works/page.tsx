@@ -194,12 +194,14 @@ export default function DefectiveWorksPage() {
     {
       key: "locomotive_info",
       header: "Lokomotiv",
-      accessor: (row) => row.locomotive_info || "-",
+      accessor: (row) =>
+        `${row.locomotive_info.name} (${row.locomotive_info.locomotive_model})`,
     },
     {
       key: "inspection_type_info",
       header: "Tekshiruv turi",
-      accessor: (row) => row.inspection_type_info || "-",
+      accessor: (row) =>
+        `${row.inspection_type_info.name} (${row.inspection_type_info.inspection_type})`,
     },
     {
       key: "train_driver",

@@ -6,12 +6,9 @@ import {
   useCallback,
   useMemo,
   memo,
-  type ChangeEvent,
   type FormEvent,
 } from "react";
 import { Modal } from "@/ui/modal";
-import { Input } from "@/ui/input";
-import { Textarea } from "@/ui/textarea";
 import {
   Select,
   SelectTrigger,
@@ -29,6 +26,9 @@ import type {
 } from "@/api/types/orders";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { FormField } from "@/ui/form-field";
+import { FileUpload } from "@/ui/file-upload";
+import { DatePicker } from "@/ui/date-picker";
+import { truncateFilename } from "@/utils/format-filename";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -45,25 +45,31 @@ type LocomotiveOption = {
   value: string;
 };
 
-type FormData = {
+type OrderFormState = {
   train_number: string;
   responsible_department: string;
   responsible_person: string;
   damage_amount: string;
   locomotive: string;
   case_description: string;
-  date: string;
+  date: Date | null;
+  type_of_journal: string;
+  file: File | null;
 };
 
-const INITIAL_FORM_DATA: FormData = {
+const INITIAL_FORM_STATE: OrderFormState = {
   train_number: "",
   responsible_department: "",
   responsible_person: "",
   damage_amount: "",
   locomotive: "",
   case_description: "",
-  date: "",
+  date: null,
+  type_of_journal: "mpr",
+  file: null,
 };
+
+const journalTypeOptions = [{ value: "mpr", label: "Buyruq MPR" }];
 
 const LocomotiveSelect = memo(
   ({
@@ -116,8 +122,8 @@ export function OrderModal({
   mode,
   isPending,
 }: OrderModalProps) {
-  const [formData, setFormData] = useState<FormData>(() => ({
-    ...INITIAL_FORM_DATA,
+  const [formData, setFormData] = useState<OrderFormState>(() => ({
+    ...INITIAL_FORM_STATE,
   }));
 
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
@@ -136,10 +142,6 @@ export function OrderModal({
     if (!isOpen) return;
 
     if (mode === "edit" && order) {
-      const dateValue = order.date
-        ? new Date(order.date).toISOString().slice(0, 16)
-        : "";
-
       setFormData({
         train_number: order.train_number ?? "",
         responsible_department: order.responsible_department ?? "",
@@ -147,10 +149,12 @@ export function OrderModal({
         damage_amount: order.damage_amount ?? "",
         locomotive: order.locomotive ? String(order.locomotive) : "",
         case_description: order.case_description ?? "",
-        date: dateValue,
+        date: order.date ? new Date(order.date) : null,
+        type_of_journal: order.type_of_journal ?? "mpr",
+        file: null,
       });
     } else {
-      setFormData(() => ({ ...INITIAL_FORM_DATA }));
+      setFormData(() => ({ ...INITIAL_FORM_STATE }));
     }
   }, [isOpen, mode, order]);
 
@@ -161,12 +165,11 @@ export function OrderModal({
     });
   }, []);
 
-  const handleDateChange = useCallback((value: string) => {
+  const handleDateChange = (value: Date | undefined) => {
     setFormData((prev) => {
-      if (prev.date === value) return prev;
-      return { ...prev, date: value };
+      return { ...prev, date: value ?? null };
     });
-  }, []);
+  };
 
   const handleLocomotiveChange = useCallback((value: string) => {
     setFormData((prev) => {
@@ -203,14 +206,24 @@ export function OrderModal({
     });
   }, []);
 
+  const handleJournalTypeChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.type_of_journal === value) return prev;
+      return { ...prev, type_of_journal: value };
+    });
+  }, []);
+
+  const handleFileChange = useCallback((files: File[]) => {
+    const file = files[0] ?? null;
+    setFormData((prev) => ({ ...prev, file }));
+  }, []);
+
   const handleSubmit = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
       if (!formData.locomotive) return;
 
-      const dateISO = formData.date
-        ? new Date(formData.date).toISOString()
-        : "";
+      const dateISO = formData.date ? formData.date.toISOString() : "";
 
       const payload = {
         train_number: formData.train_number.trim(),
@@ -220,6 +233,8 @@ export function OrderModal({
         locomotive: Number(formData.locomotive),
         case_description: formData.case_description.trim(),
         date: dateISO,
+        type_of_journal: formData.type_of_journal,
+        ...(formData.file ? { file: formData.file } : {}),
       };
 
       onSave(payload);
@@ -228,7 +243,7 @@ export function OrderModal({
   );
 
   const handleClose = useCallback(() => {
-    setFormData(() => ({ ...INITIAL_FORM_DATA }));
+    setFormData(() => ({ ...INITIAL_FORM_STATE }));
     onClose();
   }, [onClose]);
 
@@ -243,6 +258,25 @@ export function OrderModal({
       <Card className="border-none p-0 mt-4">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="type_of_journal">Jurnal turi</Label>
+              <Select
+                value={formData.type_of_journal}
+                onValueChange={handleJournalTypeChange}
+              >
+                <SelectTrigger id="type_of_journal">
+                  <SelectValue placeholder="Jurnal turini tanlang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {journalTypeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <FormField
               id="train_number"
               label="Poyezd raqami"
@@ -252,13 +286,11 @@ export function OrderModal({
               required
             />
 
-            <FormField
-              id="date"
-              label="Sana va vaqt"
-              type="datetime-local"
-              value={formData.date}
-              onChange={handleDateChange}
-              required
+            <DatePicker
+              label="Sana"
+              value={formData.date ?? new Date()}
+              onValueChange={handleDateChange}
+              placeholder="DD/MM/YYYY"
             />
 
             <LocomotiveSelect
@@ -296,6 +328,26 @@ export function OrderModal({
               placeholder="Zarar summasini kiriting"
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <FileUpload
+              label="Biriktirilgan fayl"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+              maxFiles={1}
+              filesUploaded={formData.file ? [formData.file] : []}
+              onFilesChange={handleFileChange}
+            />
+            {!formData.file && order?.file ? (
+              <a
+                href={order.file}
+                className="text-sm text-primary underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {order.file}
+              </a>
+            ) : null}
           </div>
 
           <FormField

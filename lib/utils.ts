@@ -23,14 +23,11 @@ export const formatDate = (dateString: string) => {
 
 export const getRoleName = (roleName: UserRole): string => {
   switch (roleName) {
-    case "ADMIN": {
+    case "admin": {
       return "Administrator";
     }
-    case "MODERATOR": {
-      return "Moderator";
-    }
-    case "OBSERVER": {
-      return "Foydalanuvchi";
+    case "tamir tehnik": {
+      return "Ta'mir tehnik";
     }
     default: {
       return "";
