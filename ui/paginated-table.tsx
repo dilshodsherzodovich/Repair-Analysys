@@ -446,7 +446,7 @@ export function PaginatedTable<T extends Record<string, any>>({
               value={itemsPerPage.toString()}
               onValueChange={(value) => handleItemsPerPageChange(Number(value))}
             >
-              <SelectTrigger className="w-[80px] h-9 border border-[#E2E8F0] rounded-md bg-white text-primary">
+              <SelectTrigger className="w-[80px] h-9 border border-[#E2E8F0] rounded-md bg-white text-primary mb-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

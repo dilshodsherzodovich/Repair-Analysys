@@ -104,13 +104,13 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
-// Legacy Modal component for backward compatibility
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
+  ariaDescribedBy?: string;
   className?: string;
 }
 
@@ -120,6 +120,7 @@ export function Modal({
   title,
   children,
   size = "md",
+  ariaDescribedBy = "",
   className,
 }: ModalProps) {
   const sizeClasses = {
@@ -131,7 +132,10 @@ export function Modal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className={cn(sizeClasses[size], className)}>
+      <DialogContent
+        className={cn(sizeClasses[size], className)}
+        aria-describedby={ariaDescribedBy}
+      >
         {title && (
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>

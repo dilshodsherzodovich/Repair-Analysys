@@ -8,29 +8,41 @@ export const FormField = memo(
     id,
     label,
     value,
+    defaultValue,
     onChange,
     placeholder,
     required,
     type = "text",
     step,
     rows,
+    name,
   }: {
     id: string;
     label: string;
-    value: string;
-    onChange: (value: string) => void;
+    value?: string;
+    defaultValue?: string;
+    onChange?: (value: string) => void;
     placeholder?: string;
     required?: boolean;
     type?: string;
     step?: string;
     rows?: number;
+    name?: string;
   }) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        onChange(event.target.value);
+        onChange?.(event.target.value);
       },
       [onChange]
     );
+
+    const inputCommonProps =
+      value !== undefined
+        ? { value, onChange: handleChange }
+        : {
+            defaultValue,
+            onChange: onChange ? handleChange : undefined,
+          };
 
     if (type === "textarea") {
       return (
@@ -38,8 +50,8 @@ export const FormField = memo(
           <Label htmlFor={id}>{label}</Label>
           <Textarea
             id={id}
-            value={value}
-            onChange={handleChange}
+            name={name}
+            {...inputCommonProps}
             placeholder={placeholder}
             rows={rows}
             required={required}
@@ -53,10 +65,10 @@ export const FormField = memo(
         <Label htmlFor={id}>{label}</Label>
         <Input
           id={id}
+          name={name}
           type={type}
           step={step}
-          value={value}
-          onChange={handleChange}
+          {...inputCommonProps}
           placeholder={placeholder}
           required={required}
         />

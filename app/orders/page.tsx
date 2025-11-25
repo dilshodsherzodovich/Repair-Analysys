@@ -23,6 +23,8 @@ import {
 } from "@/api/hooks/use-orders";
 import { OrderModal } from "@/components/orders/order-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
+import { canAccessSection } from "@/lib/permissions";
+import UnauthorizedPage from "../unauthorized/page";
 
 export default function OrdersPage() {
   const searchParams = useSearchParams();
@@ -43,8 +45,11 @@ export default function OrdersPage() {
   const updateOrderMutation = useUpdateOrder();
   const deleteOrderMutation = useDeleteOrder();
 
-  // Get current page and items per page from query params for API call
-  // The table component will handle updating these URL params internally
+  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  if (!currentUser || !canAccessSection(currentUser, "orders")) {
+    return <UnauthorizedPage />;
+  }
+
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 

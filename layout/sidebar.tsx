@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Zap,
   Eye,
   FileText,
   AlertCircle,
-  Paintbrush,
   Settings,
   RotateCw,
   ChevronRight,
@@ -27,20 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/select";
-
-// Mock organizations data
-const mockOrganizations = [
-  { id: "1", name: "TCH-O`ZBEKISTON" },
-  { id: "2", name: "Toshkent Shahar" },
-  { id: "3", name: "Samarqand Viloyati" },
-  { id: "4", name: "Buxoro Viloyati" },
-  { id: "5", name: "Andijon Viloyati" },
-];
+import { useOrganizations } from "@/api/hooks/use-organizations";
 
 const navigationItems = [
   {
     name: "Pantograf",
-    href: "/pantograf",
+    href: "/",
     icon: Zap,
     section: "pantograf",
   },
@@ -57,15 +48,9 @@ const navigationItems = [
     section: "orders",
   },
   {
-    name: "Nosozlik",
-    href: "/defects",
-    icon: AlertCircle,
-    section: "defects",
-  },
-  {
-    name: "Defektiv Ishlar",
+    name: "Nosozliklar",
     href: "/defective-works",
-    icon: Paintbrush,
+    icon: AlertCircle,
     section: "defective-works",
   },
   {
@@ -85,9 +70,10 @@ const navigationItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const [user, setUser] = useState<UserData | null>(null);
-  const [selectedOrganization, setSelectedOrganization] = useState<string>(
-    mockOrganizations[0].id
-  );
+  const [selectedOrganization, setSelectedOrganization] =
+    useState<string>("all");
+
+  const { data: organizations, isLoading } = useOrganizations();
 
   // Get user from localStorage on client side only
   useEffect(() => {
@@ -107,9 +93,12 @@ export function Sidebar() {
       )
     : [];
 
-  const selectedOrg = mockOrganizations.find(
-    (org) => org.id === selectedOrganization
-  );
+  const selectedOrg =
+    selectedOrganization === "all"
+      ? { name: "Barcha depolar" }
+      : organizations?.find(
+          (org) => org.id.toString() === selectedOrganization
+        );
 
   return (
     <aside className="bg-white border-r border-sidebar-border h-full flex flex-col">
@@ -122,15 +111,14 @@ export function Sidebar() {
             </div>
             <div>
               <div className="font-bold text-foreground text-sm leading-tight">
-                E-LABS.UZ
+                Tamir Tahlili Tizimi
               </div>
               <div className="text-xs text-muted-foreground leading-tight">
-                Raqamli Laboratoriya
+                Raqamli tahlil
               </div>
             </div>
           </div>
 
-          {/* Organization Selector - Matching Figma specs exactly */}
           <Select
             value={selectedOrganization}
             onValueChange={setSelectedOrganization}
@@ -164,26 +152,18 @@ export function Sidebar() {
                     color: "#2B7FFF",
                   }}
                 />
-                {/* Text - Exact Figma specs */}
-                <SelectValue
-                  className="flex-1 text-left truncate"
-                  style={{
-                    fontFamily: "Inter",
-                    fontStyle: "normal",
-                    fontWeight: 500,
-                    fontSize: "14px",
-                    lineHeight: "20px",
-                    letterSpacing: "-0.006em",
-                    color: "#2B7FFF",
-                  }}
-                >
-                  {selectedOrg?.name || "TCH-O`ZBEKISTON"}
+
+                <SelectValue className="flex-1 text-left truncate font-[500] text-sm text-[#2B7FFF]">
+                  {selectedOrg?.name
+                    .replace(/"/g, "")
+                    .replace(/ lokomotiv depo(si)?/i, "")}
                 </SelectValue>
               </div>
             </SelectTrigger>
             <SelectContent className="w-[var(--radix-select-trigger-width)]">
-              {mockOrganizations.map((org) => (
-                <SelectItem key={org.id} value={org.id}>
+              <SelectItem value="all">Barcha depolar</SelectItem>
+              {organizations?.map((org) => (
+                <SelectItem key={org.id} value={org.id.toString()}>
                   {org.name}
                 </SelectItem>
               ))}

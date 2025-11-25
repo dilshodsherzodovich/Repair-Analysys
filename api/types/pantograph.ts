@@ -1,4 +1,3 @@
-import { LocomotiveData } from "./locomotive";
 export interface PantographJournalEntry {
   id: number;
   title: string;
@@ -10,7 +9,11 @@ export interface PantographJournalEntry {
   last_updated_time: string;
   damage: string;
   description: string;
-  locomotive_info: LocomotiveData;
+  locomotive_info: {
+    id: number;
+    name: string;
+    locomotive_model: string;
+  };
   organization_info: string;
 }
 

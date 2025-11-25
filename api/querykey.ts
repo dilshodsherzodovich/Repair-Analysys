@@ -10,11 +10,7 @@ export const queryKeys = {
     statistics: "users-statistics",
   },
   organizations: {
-    list: "organizations",
-    create: "create-organization",
-    edit: "edit-organization",
-    delete: "delete-organization",
-    statistics: "organizations-statistics",
+    list: "organizations-list",
   },
 
   monitoring: {
@@ -57,10 +53,19 @@ export const queryKeys = {
   locomotives: {
     list: "locomotives-list",
   },
+  inspectionTypes: {
+    list: "inspection-types-list",
+  },
   pantograph: {
     all: "pantograph-all",
     create: "pantograph-create",
     update: "pantograph-update",
     delete: "pantograph-delete",
+  },
+  defectiveWorks: {
+    all: "defective-works-all",
+    create: "defective-works-create",
+    update: "defective-works-update",
+    delete: "defective-works-delete",
   },
 } as const;

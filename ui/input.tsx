@@ -2,11 +2,17 @@ import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({
+  className,
+  name,
+  type,
+  ...props
+}: React.ComponentProps<"input">) {
   return (
     <input
       type={type}
       data-slot="input"
+      name={name}
       className={cn(
         "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground",
         "flex h-10 w-full min-w-0 rounded-md border border-gray-300 bg-white px-4 py-2 text-base",

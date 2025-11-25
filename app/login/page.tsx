@@ -50,7 +50,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h1 className="text-2xl font-extrabold text-[#1f2937] mb-2 tracking-tight">
-            Milliy statistika <span className="text-[#2354bf]">qo'mitasi</span>
+            <span className="text-[#2354bf]">platformasi</span>
           </h1>
           <div className="w-12 h-0.5 bg-gradient-to-r from-[#4978ce] to-[#927be3] rounded-full mx-auto"></div>
         </div>
@@ -63,7 +63,8 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-xs text-[#9e9e9e]">
-            © 2024 Milliy statistika qo'mitasi. Barcha huquqlar himoyalangan.
+            © {new Date().getFullYear()} Smart Depo. Barcha huquqlar
+            himoyalangan.
           </p>
         </div>
 

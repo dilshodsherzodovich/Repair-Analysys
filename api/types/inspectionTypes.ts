@@ -1,7 +1,7 @@
-export interface Organization {
+export interface InspectionType {
   id: number;
   name: string;
   name_uz: string;
   name_ru: string;
-  code: number;
+  is_interval: boolean;
 }

@@ -68,10 +68,10 @@ export function LoginForm() {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center pb-6">
         <CardTitle className="text-2xl font-semibold text-[#1f2937] mb-2">
-          E-LABS.UZ
+          Ta'mir tahlili tizimi
         </CardTitle>
         <p className="text-[#6b7280] text-sm">
-          Tizimga kirish uchun ma'lumotlaringizni kiriting
+          Ta'mir tahlili tizimiga kirish uchun ma'lumotlaringizni kiriting
         </p>
       </CardHeader>
       <CardContent>
