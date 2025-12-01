@@ -18,7 +18,8 @@ export type Permission =
   | "view_pantograf"
   | "create_pantograf"
   | "edit_pantograf"
-  | "delete_pantograf";
+  | "delete_pantograf"
+  | "choose_organization";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -39,6 +40,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "create_pantograf",
     "edit_pantograf",
     "delete_pantograf",
+    "choose_organization",
   ],
   repair_engineer: [
     "view_dashboard",

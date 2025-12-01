@@ -192,6 +192,11 @@ export default function DefectiveWorksPage() {
       accessor: (row) => formatDate(row.date),
     },
     {
+      key: "organization_info",
+      header: "Tashkilot",
+      accessor: (row) => row.organization_info,
+    },
+    {
       key: "locomotive_info",
       header: "Lokomotiv",
       accessor: (row) =>
@@ -205,13 +210,8 @@ export default function DefectiveWorksPage() {
     },
     {
       key: "train_driver",
-      header: "Mashinizt",
+      header: "Mashinist",
       accessor: (row) => row.train_driver,
-    },
-    {
-      key: "table_number",
-      header: "Jadval raqami",
-      accessor: (row) => row.table_number,
     },
     {
       key: "code",
@@ -226,6 +226,11 @@ export default function DefectiveWorksPage() {
           {row.issue}
         </div>
       ),
+    },
+    {
+      key: "table_number",
+      header: "Tabel raqami",
+      accessor: (row) => row.table_number,
     },
   ];
 
@@ -286,6 +291,8 @@ export default function DefectiveWorksPage() {
           onSelectionChange={setSelectedIds}
           emptyTitle="Ma'lumot topilmadi"
           emptyDescription="Nosoz ishlar mavjud emas"
+          deletePermission="delete_defective_work"
+          editPermission="edit_defective_work"
         />
       </div>
 

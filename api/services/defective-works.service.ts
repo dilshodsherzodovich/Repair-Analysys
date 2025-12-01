@@ -7,14 +7,12 @@ import {
   DefectiveWorkListParams,
 } from "../types/defective-works";
 
-const BASE_URL = "/revision-journal/";
-
 export const defectiveWorksService = {
   async getDefectiveWorks(
     params?: DefectiveWorkListParams
   ): Promise<PaginatedData<DefectiveWorkEntry>> {
     const response = await api.get<PaginatedData<DefectiveWorkEntry>>(
-      BASE_URL,
+      "/revision-journal/",
       {
         params: {
           page: params?.page,
@@ -30,7 +28,10 @@ export const defectiveWorksService = {
   async createDefectiveWork(
     payload: DefectiveWorkCreatePayload
   ): Promise<DefectiveWorkEntry> {
-    const response = await api.post<DefectiveWorkEntry>(BASE_URL, payload);
+    const response = await api.post<DefectiveWorkEntry>(
+      "/revision-journal/",
+      payload
+    );
     return response.data;
   },
   async updateDefectiveWork(
@@ -38,13 +39,13 @@ export const defectiveWorksService = {
     payload: DefectiveWorkUpdatePayload
   ): Promise<DefectiveWorkEntry> {
     const response = await api.patch<DefectiveWorkEntry>(
-      `${BASE_URL}${id}/`,
+      `/revision-journal/${id}/`,
       payload
     );
     return response.data;
   },
   async deleteDefectiveWork(id: number | string): Promise<void> {
-    await api.delete(`${BASE_URL}${id}/`);
+    await api.delete(`/revision-journal/${id}/`);
   },
 };
 

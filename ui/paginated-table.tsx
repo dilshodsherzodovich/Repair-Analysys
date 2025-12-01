@@ -40,6 +40,8 @@ import { cn } from "@/lib/utils";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useSearchParams } from "next/navigation";
 import { ConfirmationDialog } from "./confirmation-dialog";
+import { PermissionGuard } from "@/components/permission-guard";
+import { Permission } from "@/lib/permissions";
 
 export interface TableColumn<T = any> {
   key: string;
@@ -57,6 +59,7 @@ export interface TableAction<T = any> {
   onClick: (row: T) => void;
   className?: string;
   variant?: "default" | "destructive" | "outline";
+  permission?: Permission;
 }
 
 export interface PaginatedTableProps<T = any> {
@@ -82,6 +85,8 @@ export interface PaginatedTableProps<T = any> {
   extraActions?: TableAction<T>[];
   showActions?: boolean;
   actionsLabel?: string;
+  deletePermission?: Permission;
+  editPermission?: Permission;
   isDeleting?: boolean;
 
   // Empty & Error states
@@ -120,6 +125,8 @@ export function PaginatedTable<T extends Record<string, any>>({
   onItemsPerPageChange: externalOnItemsPerPageChange,
   updateQueryParams = true,
   onEdit,
+  deletePermission,
+  editPermission,
   onDelete,
   isDeleting = false,
   extraActions = [],

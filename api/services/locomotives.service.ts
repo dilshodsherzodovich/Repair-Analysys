@@ -5,7 +5,7 @@ export const locomotivesService = {
   getLocomotives: async (): Promise<LocomotiveData[]> => {
     try {
       const response = await api.get<LocomotiveData[]>(
-        "/locomotive-sorted/?no_page"
+        "/sorted/locomotives/?no_page"
       );
       return response.data;
     } catch (error) {

@@ -27,6 +27,8 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { useOrganizations } from "@/api/hooks/use-organizations";
+import { authService } from "@/api/services/auth.service";
+import { PermissionGuard } from "@/components/permission-guard";
 
 const navigationItems = [
   {
@@ -69,23 +71,12 @@ const navigationItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [user, setUser] = useState<UserData | null>(null);
+
   const [selectedOrganization, setSelectedOrganization] =
     useState<string>("all");
 
-  const { data: organizations, isLoading } = useOrganizations();
-
-  // Get user from localStorage on client side only
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
-      }
-    }
-  }, []);
+  const { data: organizations } = useOrganizations();
+  const user = authService.getUser();
 
   const filteredNavigationItems = user
     ? navigationItems.filter((navItem) =>
@@ -119,56 +110,58 @@ export function Sidebar() {
             </div>
           </div>
 
-          <Select
-            value={selectedOrganization}
-            onValueChange={setSelectedOrganization}
-          >
-            <SelectTrigger
-              size="default"
-              className={cn(
-                "!w-full !bg-[#F1F5F9] !border !border-[#E2E8F0] !rounded-lg",
-                "hover:!border-primary/50 focus:!border-primary focus:!ring-2 focus:!ring-primary/20",
-                "!mb-0 !shadow-none justify-start",
-                "!h-12 !min-h-12",
-                "[&>svg:last-child]:!text-[#1E293B] [&>svg:last-child]:!w-4 [&>svg:last-child]:!h-4 [&>svg:last-child]:ml-auto [&>svg:last-child]:flex-shrink-0",
-                "[&_*]:data-[slot=select-value]:!text-[#2B7FFF] [&_*]:data-[slot=select-value]:!font-medium"
-              )}
+          <PermissionGuard permission="choose_organization">
+            <Select
+              value={selectedOrganization}
+              onValueChange={setSelectedOrganization}
             >
-              {/* Frame container - icon and text with exact Figma specs */}
-              <div
-                className="flex items-center flex-1 min-w-0"
-                style={{
-                  gap: "12px",
-                  height: "20px",
-                  padding: 0,
-                }}
+              <SelectTrigger
+                size="default"
+                className={cn(
+                  "!w-full !bg-[#F1F5F9] !border !border-[#E2E8F0] !rounded-lg",
+                  "hover:!border-primary/50 focus:!border-primary focus:!ring-2 focus:!ring-primary/20",
+                  "!mb-0 !shadow-none justify-start",
+                  "!h-12 !min-h-12",
+                  "[&>svg:last-child]:!text-[#1E293B] [&>svg:last-child]:!w-4 [&>svg:last-child]:!h-4 [&>svg:last-child]:ml-auto [&>svg:last-child]:flex-shrink-0",
+                  "[&_*]:data-[slot=select-value]:!text-[#2B7FFF] [&_*]:data-[slot=select-value]:!font-medium"
+                )}
               >
-                {/* Icon - 20px × 20px, color #2B7FFF (Brand/50) */}
-                <Building2
-                  className="flex-shrink-0"
+                {/* Frame container - icon and text with exact Figma specs */}
+                <div
+                  className="flex items-center flex-1 min-w-0"
                   style={{
-                    width: "20px",
+                    gap: "12px",
                     height: "20px",
-                    color: "#2B7FFF",
+                    padding: 0,
                   }}
-                />
+                >
+                  {/* Icon - 20px × 20px, color #2B7FFF (Brand/50) */}
+                  <Building2
+                    className="flex-shrink-0"
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      color: "#2B7FFF",
+                    }}
+                  />
 
-                <SelectValue className="flex-1 text-left truncate font-[500] text-sm text-[#2B7FFF]">
-                  {selectedOrg?.name
-                    .replace(/"/g, "")
-                    .replace(/ lokomotiv depo(si)?/i, "")}
-                </SelectValue>
-              </div>
-            </SelectTrigger>
-            <SelectContent className="w-[var(--radix-select-trigger-width)]">
-              <SelectItem value="all">Barcha depolar</SelectItem>
-              {organizations?.map((org) => (
-                <SelectItem key={org.id} value={org.id.toString()}>
-                  {org.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                  <SelectValue className="flex-1 text-left truncate font-[500] text-sm text-[#2B7FFF]">
+                    {selectedOrg?.name
+                      .replace(/"/g, "")
+                      .replace(/ lokomotiv depo(si)?/i, "")}
+                  </SelectValue>
+                </div>
+              </SelectTrigger>
+              <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                <SelectItem value="all">Barcha depolar</SelectItem>
+                {organizations?.map((org) => (
+                  <SelectItem key={org.id} value={org.id.toString()}>
+                    {org.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </PermissionGuard>
         </div>
 
         {/* Navigation - Scrollable */}
