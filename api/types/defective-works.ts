@@ -20,9 +20,10 @@ export interface DefectiveWorkEntry {
 
 export interface DefectiveWorkCreatePayload {
   locomotive: number;
-  inspection_type: number;
+  inspection_type?: number;
   train_driver?: string;
   table_number?: string;
+  organization?: number;
   issue: string;
   code?: string;
   date?: string;

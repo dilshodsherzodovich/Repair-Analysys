@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
-import { DatePicker } from "@/ui/date-picker";
 import { Label } from "@/ui/label";
 import {
   Select,
@@ -15,32 +14,71 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { useSnackbar } from "@/providers/snackbar-provider";
+import { authService } from "@/api/services/auth.service";
+import type { LoginCredentials } from "@/api/types/auth";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
-import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
+import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useCreateDefectiveWork } from "@/api/hooks/use-defective-works";
 import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
 
 export default function PublicDefectiveWorkCreatePage() {
   const [formResetKey, setFormResetKey] = useState(0);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const locomotiveInputRef = useRef<HTMLInputElement | null>(null);
-  const inspectionInputRef = useRef<HTMLInputElement | null>(null);
   const { showSuccess, showError } = useSnackbar();
 
   const { data: locomotives = [], isPending: isLoadingLocomotives } =
     useGetLocomotives(true);
-  const { data: inspectionTypes = [], isPending: isLoadingInspectionTypes } =
-    useGetInspectionTypes(true);
+  const { data: organizations = [], isPending: isLoadingOrganizations } =
+    useOrganizations();
   const { mutateAsync: createDefectiveWork, isPending } =
     useCreateDefectiveWork();
+
+  const performLogin = async () => {
+    setIsAuthLoading(true);
+    setAuthError(null);
+
+    const credentials: LoginCredentials = {
+      username: "admin20",
+      password: "QO123456",
+    };
+
+    try {
+      const data = await authService.login(credentials);
+      const { access, refresh, ...userData } = data;
+      const expiryDate = authService.getTokenExpiry(access);
+
+      authService.storeAuth(
+        access,
+        refresh,
+        userData,
+        expiryDate?.toISOString()
+      );
+
+      setIsAuthLoading(false);
+    } catch (error: any) {
+      console.error("Auto login failed:", error);
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Avto-kirishda xatolik yuz berdi.";
+      setAuthError(message);
+      showError("Tizimga kirishda xatolik yuz berdi", message);
+      setIsAuthLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void performLogin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const resetForm = () => {
     formRef.current?.reset();
     if (locomotiveInputRef.current) {
       locomotiveInputRef.current.value = "";
-    }
-    if (inspectionInputRef.current) {
-      inspectionInputRef.current.value = "";
     }
 
     setFormResetKey((prev) => prev + 1);
@@ -53,18 +91,17 @@ export default function PublicDefectiveWorkCreatePage() {
     const formData = new FormData(formElement);
 
     const locomotive = (formData.get("locomotive") as string | null) ?? "";
-    const inspectionType =
-      (formData.get("inspection_type") as string | null) ?? "";
+    const organization = (formData.get("organization") as string | null) ?? "";
     const issue = (formData.get("issue") as string | null) ?? "";
 
-    if (!locomotive || !inspectionType || !issue.trim()) {
+    if (!locomotive || !organization || !issue.trim()) {
       showError("Iltimos, barcha majburiy maydonlarni to'ldiring.");
       return;
     }
 
     const payload: DefectiveWorkCreatePayload = {
       locomotive: Number(locomotive),
-      inspection_type: Number(inspectionType),
+      organization: Number(organization),
       issue: issue.trim(),
       date: new Date().toISOString(),
     };
@@ -83,12 +120,33 @@ export default function PublicDefectiveWorkCreatePage() {
     }
   };
 
-  const handleSelectChange =
-    (ref: React.RefObject<HTMLInputElement | null>) => (value: string) => {
-      if (ref.current) {
-        ref.current.value = value;
-      }
-    };
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
+        <Card className="border border-[#E2E8F0] bg-white p-6 shadow-xl md:p-8">
+          <p className="text-center text-sm text-[#475569]">
+            Tizimga avtomatik kirilmoqda...
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
+        <Card className="border border-red-200 bg-white p-6 shadow-xl md:p-8 space-y-4">
+          <h1 className="text-lg font-semibold text-red-700">
+            Tizimga kirishda xatolik yuz berdi
+          </h1>
+          <p className="text-sm text-[#475569] break-words">{authError}</p>
+          <div className="flex justify-end">
+            <Button onClick={performLogin}>Qayta urinib ko&apos;rish</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
@@ -152,25 +210,25 @@ export default function PublicDefectiveWorkCreatePage() {
 
               <div>
                 <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                  Texnik ko'rik turi
+                  Tashkilot
                 </Label>
-                <Select
-                  name="inspection_type"
-                  disabled={isLoadingInspectionTypes}
-                >
+                <Select name="organization" disabled={isLoadingOrganizations}>
                   <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Texnik ko'rik turini tanlang" />
+                    <SelectValue placeholder="Tashkilotni tanlang" />
                   </SelectTrigger>
                   <SelectContent>
-                    {inspectionTypes.length ? (
-                      inspectionTypes.map((type) => (
-                        <SelectItem key={type.id} value={type.id.toString()}>
-                          {type.name}
+                    {organizations.length ? (
+                      organizations.map((organization) => (
+                        <SelectItem
+                          key={organization.id}
+                          value={organization.id.toString()}
+                        >
+                          {organization.name_uz || organization.name}
                         </SelectItem>
                       ))
                     ) : (
                       <SelectItem value="empty" disabled>
-                        Texnik ko'rik turlari topilmadi
+                        Tashkilotlar topilmadi
                       </SelectItem>
                     )}
                   </SelectContent>
