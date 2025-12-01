@@ -3,7 +3,7 @@
 import { Organization } from "./organizations";
 
 // User Roles
-export type UserRole = "admin" | "tamir tehnik";
+export type UserRole = "admin" | "repair_engineer";
 
 // Interface for the ProfileModel object
 export interface ProfileModel {

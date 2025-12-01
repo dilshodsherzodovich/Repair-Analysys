@@ -40,7 +40,25 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_pantograf",
     "delete_pantograf",
   ],
-  "tamir tehnik": ["view_dashboard"],
+  repair_engineer: [
+    "view_dashboard",
+    "view_reports",
+    "view_defects",
+    "view_defective_works",
+    "view_stations",
+    "view_orders",
+    "create_order",
+    "edit_order",
+    "delete_order",
+    "create_defective_work",
+    "edit_defective_work",
+    "delete_defective_work",
+    "view_autoconnecters",
+    "view_pantograf",
+    "create_pantograf",
+    "edit_pantograf",
+    "delete_pantograf",
+  ],
 };
 
 export function hasPermission(
