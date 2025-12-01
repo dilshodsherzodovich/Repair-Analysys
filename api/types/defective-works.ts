@@ -21,11 +21,11 @@ export interface DefectiveWorkEntry {
 export interface DefectiveWorkCreatePayload {
   locomotive: number;
   inspection_type: number;
-  train_driver: string;
-  table_number: string;
+  train_driver?: string;
+  table_number?: string;
   issue: string;
-  code: string;
-  date: string;
+  code?: string;
+  date?: string;
 }
 
 export interface DefectiveWorkUpdatePayload {

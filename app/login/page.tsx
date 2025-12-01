@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LoginForm } from "@/components/login/login-form";
 import { BackgroundPattern } from "@/components/login/background-pattern";
 
@@ -58,6 +59,18 @@ export default function LoginPage() {
         {/* Login Form Container */}
         <div className="w-full max-w-md mx-auto">
           <LoginForm />
+          <div className="mt-6 text-center text-sm text-[#4b5563]">
+            <p>
+              Nosoz ishni tezda yuborish kerakmi?{" "}
+              <Link
+                href="/defective-works/create"
+                className="font-semibold text-[#2354bf] hover:underline"
+              >
+                Xabar berish sahifasiga o'ting
+              </Link>
+              .
+            </p>
+          </div>
         </div>
 
         {/* Footer */}

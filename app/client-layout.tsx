@@ -12,13 +12,15 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isLoginPage = usePathname() === "/login";
+  const pathname = usePathname();
+  const publicRoutes = ["/login", "/defective-works/create"];
+  const isPublicRoute = publicRoutes.includes(pathname);
 
   return (
     <QueryProvider>
       <SnackbarProvider>
-        <AuthGuard>
-          {isLoginPage ? children : <MainLayout>{children}</MainLayout>}
+        <AuthGuard publicRoutes={publicRoutes}>
+          {isPublicRoute ? children : <MainLayout>{children}</MainLayout>}
         </AuthGuard>
       </SnackbarProvider>
 

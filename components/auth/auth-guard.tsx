@@ -1,18 +1,26 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { authService } from "@/api/services/auth.service";
 
 interface AuthGuardProps {
   children: React.ReactNode;
+  publicRoutes?: string[];
 }
 
-export function AuthGuard({ children }: AuthGuardProps) {
+const DEFAULT_PUBLIC_ROUTES = ["/login"];
+
+export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 
+  const safePublicRoutes = useMemo(
+    () => publicRoutes || DEFAULT_PUBLIC_ROUTES,
+    [publicRoutes]
+  );
   const isLoginPage = pathname === "/login";
+  const isPublicRoute = safePublicRoutes.includes(pathname);
 
   // Wait for client-side hydration
   useEffect(() => {
@@ -25,14 +33,14 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
     const isAuthenticated = authService.isAuthenticated();
 
-    if (!isAuthenticated && !isLoginPage) {
+    if (!isAuthenticated && !isPublicRoute) {
       // User is not authenticated and not on login page, redirect to login
       router.push("/login");
     } else if (isAuthenticated && isLoginPage) {
       // User is authenticated but on login page, redirect to home
       router.push("/");
     }
-  }, [isClient, isLoginPage, router]);
+  }, [isClient, isLoginPage, isPublicRoute, router]);
 
   // Show loading state while initializing
   if (!isClient) {
@@ -46,7 +54,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  if (!isLoginPage && !authService.isAuthenticated()) {
+  if (!isPublicRoute && !authService.isAuthenticated()) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

@@ -7,6 +7,7 @@ export const FormField = memo(
   ({
     id,
     label,
+    labelClassNames,
     value,
     defaultValue,
     onChange,
@@ -19,6 +20,7 @@ export const FormField = memo(
   }: {
     id: string;
     label: string;
+    labelClassNames?: string;
     value?: string;
     defaultValue?: string;
     onChange?: (value: string) => void;
@@ -47,7 +49,9 @@ export const FormField = memo(
     if (type === "textarea") {
       return (
         <div>
-          <Label htmlFor={id}>{label}</Label>
+          <Label className={labelClassNames} htmlFor={id}>
+            {label}
+          </Label>
           <Textarea
             id={id}
             name={name}
@@ -62,7 +66,9 @@ export const FormField = memo(
 
     return (
       <div>
-        <Label htmlFor={id}>{label}</Label>
+        <Label className={labelClassNames} htmlFor={id}>
+          {label}
+        </Label>
         <Input
           id={id}
           name={name}
