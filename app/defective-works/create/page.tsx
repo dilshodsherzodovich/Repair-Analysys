@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Card } from "@/ui/card";
@@ -25,6 +24,7 @@ export default function PublicDefectiveWorkCreatePage() {
   const [formResetKey, setFormResetKey] = useState(0);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [issues, setIssues] = useState<string[]>([]);
   const formRef = useRef<HTMLFormElement | null>(null);
   const locomotiveInputRef = useRef<HTMLInputElement | null>(null);
   const { showSuccess, showError } = useSnackbar();
@@ -81,7 +81,38 @@ export default function PublicDefectiveWorkCreatePage() {
       locomotiveInputRef.current.value = "";
     }
 
+    setIssues([]);
+    if (formRef.current) {
+      const issueTextarea = formRef.current.querySelector<HTMLTextAreaElement>(
+        'textarea[name="currentIssue"]'
+      );
+      if (issueTextarea) {
+        issueTextarea.value = "";
+      }
+    }
     setFormResetKey((prev) => prev + 1);
+  };
+
+  const handleAddIssue = () => {
+    if (!formRef.current) return;
+
+    const formData = new FormData(formRef.current);
+    const rawValue = (formData.get("currentIssue") as string | null) ?? "";
+    const value = rawValue.trim();
+    if (!value) return;
+
+    setIssues((prev) => [...prev, value]);
+
+    const issueTextarea = formRef.current.querySelector<HTMLTextAreaElement>(
+      'textarea[name="currentIssue"]'
+    );
+    if (issueTextarea) {
+      issueTextarea.value = "";
+    }
+  };
+
+  const handleRemoveIssue = (index: number) => {
+    setIssues((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -92,24 +123,40 @@ export default function PublicDefectiveWorkCreatePage() {
 
     const locomotive = (formData.get("locomotive") as string | null) ?? "";
     const organization = (formData.get("organization") as string | null) ?? "";
-    const issue = (formData.get("issue") as string | null) ?? "";
+    const trainDriver = (formData.get("train_driver") as string | null) ?? "";
+    const currentIssueFromForm =
+      (formData.get("currentIssue") as string | null) ?? "";
+    const trimmedCurrent = currentIssueFromForm.trim();
+    const allIssues = trimmedCurrent
+      ? [...issues, trimmedCurrent]
+      : [...issues];
 
-    if (!locomotive || !organization || !issue.trim()) {
+    if (
+      !locomotive ||
+      !organization ||
+      !trainDriver.trim() ||
+      allIssues.length === 0
+    ) {
       showError("Iltimos, barcha majburiy maydonlarni to'ldiring.");
       return;
     }
 
-    const payload: DefectiveWorkCreatePayload = {
-      locomotive: Number(locomotive),
-      organization: Number(organization),
-      issue: issue.trim(),
-      date: new Date().toISOString(),
-    };
-
     try {
-      await createDefectiveWork(payload);
+      for (const issueText of allIssues) {
+        const payload: DefectiveWorkCreatePayload = {
+          locomotive: Number(locomotive),
+          organization_id: Number(organization),
+          train_driver: trainDriver.trim(),
+          issue: issueText,
+          date: new Date().toISOString(),
+        };
+        await createDefectiveWork(payload);
+      }
+
       showSuccess(
-        "Nosoz ish muvaffaqiyatli yuborildi. Mutaxassislar tez orada bog'lanadi."
+        allIssues.length > 1
+          ? "Nosoz ishlar muvaffaqiyatli yuborildi. Mutaxassislar tez orada bog'lanadi."
+          : "Nosoz ish muvaffaqiyatli yuborildi. Mutaxassislar tez orada bog'lanadi."
       );
       resetForm();
     } catch (error: any) {
@@ -269,15 +316,62 @@ export default function PublicDefectiveWorkCreatePage() {
               </div> */}
             </div>
 
-            <FormField
-              id="issue"
-              name="issue"
-              label="Nosozlik tavsifi"
-              type="textarea"
-              rows={4}
-              placeholder="Nosozlik haqida batafsil ma'lumot kiriting"
-              required
-            />
+            <div className="space-y-3">
+              <FormField
+                id="issue"
+                name="currentIssue"
+                label="Nosozlik tavsifi"
+                type="textarea"
+                rows={4}
+                placeholder="Nosozlik haqida batafsil ma'lumot kiriting"
+              />
+
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs text-[#64748B]">
+                  Bir nechta nosozliklarni bir xil lokomotiv va mashinist uchun
+                  yuborish mumkin. Matnni yozib, ro&apos;yxatga qo&apos;shing.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleAddIssue}
+                  disabled={isPending}
+                  className="border-[#CBD5F5] text-[#1D4ED8] hover:bg-[#EEF2FF] whitespace-nowrap"
+                >
+                  Ro&apos;yxatga qo&apos;shish
+                </Button>
+              </div>
+
+              {issues.length > 0 && (
+                <div className="rounded-md border border-dashed border-[#CBD5F5] bg-[#F8FAFF] p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-xs font-medium text-[#1E293B]">
+                      Qo&apos;shilgan nosozliklar: {issues.length} ta
+                    </p>
+                  </div>
+                  <ul className="space-y-1 max-h-32 overflow-y-auto pr-1 text-xs text-[#475569]">
+                    {issues.map((text, index) => (
+                      <li
+                        key={index}
+                        className="flex items-start justify-between gap-2"
+                      >
+                        <span className="flex-1">
+                          {index + 1}. {text}
+                        </span>
+                        <button
+                          type="button"
+                          className="text-[11px] text-red-600 hover:text-red-700"
+                          onClick={() => handleRemoveIssue(index)}
+                          disabled={isPending}
+                        >
+                          O&apos;chirish
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <p className="text-sm text-[#475569]">

@@ -1,5 +1,6 @@
 import { LocomotiveInfo } from "./locomotive";
 import { InspectionTypeInfo } from "./inspectionTypes";
+import { Organization } from "./organizations";
 
 export interface DefectiveWorkEntry {
   id: number;
@@ -14,7 +15,7 @@ export interface DefectiveWorkEntry {
   last_updated_time: string;
   locomotive_info: LocomotiveInfo;
   inspection_type_info: InspectionTypeInfo;
-  organization_info: string;
+  organization_info: Organization;
   user_info: string;
 }
 
@@ -23,7 +24,7 @@ export interface DefectiveWorkCreatePayload {
   inspection_type?: number;
   train_driver?: string;
   table_number?: string;
-  organization?: number;
+  organization_id?: number;
   issue: string;
   code?: string;
   date?: string;

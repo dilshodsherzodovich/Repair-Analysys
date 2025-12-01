@@ -194,7 +194,7 @@ export default function DefectiveWorksPage() {
     {
       key: "organization_info",
       header: "Tashkilot",
-      accessor: (row) => row.organization_info,
+      accessor: (row) => row.organization_info.name,
     },
     {
       key: "locomotive_info",
