@@ -189,48 +189,50 @@ export default function DefectiveWorksPage() {
     {
       key: "date",
       header: "Sana",
-      accessor: (row) => formatDate(row.date),
+      accessor: (row) => (row?.date ? formatDate(row.date) : ""),
     },
     {
       key: "organization_info",
       header: "Tashkilot",
-      accessor: (row) => row.organization_info.name,
+      accessor: (row) => row.organization_info?.name,
     },
     {
       key: "locomotive_info",
       header: "Lokomotiv",
       accessor: (row) =>
-        `${row.locomotive_info.name} (${row.locomotive_info.locomotive_model})`,
+        `${row.locomotive_info?.name} (${row.locomotive_info?.locomotive_model})`,
     },
     {
       key: "inspection_type_info",
       header: "Tekshiruv turi",
       accessor: (row) =>
-        `${row.inspection_type_info.name} (${row.inspection_type_info.inspection_type})`,
+        `${row.inspection_type_info?.name || "-"} (${
+          row.inspection_type_info?.inspection_type || "-"
+        })`,
     },
     {
       key: "train_driver",
       header: "Mashinist",
-      accessor: (row) => row.train_driver,
+      accessor: (row) => row?.train_driver,
     },
     {
       key: "code",
       header: "Kod",
-      accessor: (row) => row.code,
+      accessor: (row) => row?.code,
     },
     {
       key: "issue",
       header: "Nosozlik",
       accessor: (row) => (
         <div className="max-w-[400px] whitespace-pre-wrap break-words">
-          {row.issue}
+          {row?.issue}
         </div>
       ),
     },
     {
       key: "table_number",
       header: "Tabel raqami",
-      accessor: (row) => row.table_number,
+      accessor: (row) => row?.table_number,
     },
   ];
 
