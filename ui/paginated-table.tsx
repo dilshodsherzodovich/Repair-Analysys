@@ -107,6 +107,9 @@ export interface PaginatedTableProps<T = any> {
   rowClassName?: string | ((row: T) => string);
   showCheckbox?: boolean;
 
+  // Density
+  size?: "xs" | "sm" | "md" | "lg";
+
   // Loading
   skeletonRows?: number;
 }
@@ -145,6 +148,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   rowClassName,
   showCheckbox = false,
   skeletonRows = 10,
+  size = "md",
 }: PaginatedTableProps<T>) {
   const {
     currentPage,
@@ -179,6 +183,39 @@ export function PaginatedTable<T extends Record<string, any>>({
 
   const hasActions =
     showActions && (onEdit || onDelete || extraActions.length > 0);
+
+  const sizeClasses = React.useMemo(() => {
+    switch (size) {
+      case "xs":
+        return {
+          // Extra dense: slightly smaller than "sm"
+          rowCell: "py-0 px-2",
+          checkboxCell: "py-0.5 px-2",
+          // smaller font + tighter line-height so content is truly shorter
+          textSize: "text-xs leading-tight",
+        };
+      case "sm":
+        return {
+          rowCell: "py-1 px-3 h-10 min-h-10",
+          checkboxCell: "py-1 px-3",
+          textSize: "text-sm",
+        };
+      case "lg":
+        return {
+          rowCell: "py-3 px-5 h-[64px] min-h-[64px]",
+          checkboxCell: "py-3 px-5",
+          textSize: "text-lg",
+        };
+      case "md":
+      default:
+        return {
+          rowCell: "py-2 px-4 h-[56px] min-h-[56px]",
+          checkboxCell: "py-2 px-4",
+          // Tailwind doesn't have text-md, use base
+          textSize: "text-base",
+        };
+    }
+  }, [size]);
 
   // Add actions column if actions are available
   const displayColumns = React.useMemo(() => {
@@ -375,7 +412,12 @@ export function PaginatedTable<T extends Record<string, any>>({
                   )}
                 >
                   {showCheckbox && (
-                    <TableCell className="py-2 px-4 transition-colors">
+                    <TableCell
+                      className={cn(
+                        "transition-colors",
+                        sizeClasses.checkboxCell
+                      )}
+                    >
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -395,14 +437,20 @@ export function PaginatedTable<T extends Record<string, any>>({
                       <TableCell
                         key={column.key}
                         className={cn(
-                          "py-2 px-4 transition-colors h-[56px] min-h-[56px]",
+                          "transition-colors",
+                          sizeClasses.rowCell,
                           column.className
                         )}
                         style={{
                           boxSizing: "border-box",
                         }}
                       >
-                        <span className="text-sm  font-medium text-[#475569]  peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        <span
+                          className={cn(
+                            "font-medium text-[#475569] peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+                            sizeClasses.textSize
+                          )}
+                        >
                           {cellContent ?? "-"}
                         </span>
                       </TableCell>

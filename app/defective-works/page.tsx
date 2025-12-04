@@ -9,6 +9,7 @@ import PageFilters from "@/ui/filters";
 import { FileSpreadsheet } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
+import { Badge } from "@/ui/badge";
 import {
   DefectiveWorkEntry,
   DefectiveWorkCreatePayload,
@@ -53,7 +54,7 @@ export default function DefectiveWorksPage() {
   const deleteMutation = useDeleteDefectiveWork();
 
   const currentPage = page ? parseInt(page) : 1;
-  const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
+  const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
 
   const {
     data: apiResponse,
@@ -171,19 +172,24 @@ export default function DefectiveWorksPage() {
     console.log("Defective works export");
   }, []);
 
-  const formatDate = useCallback((dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      return `${day}.${month}.${year} ${hours}:${minutes}`;
-    } catch {
-      return dateString;
-    }
-  }, []);
+  const formatDate = useCallback(
+    (dateString: string, isTime: boolean = true) => {
+      try {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return isTime
+          ? `${day}.${month}.${year} ${hours}:${minutes}`
+          : `${day}.${month}.${year}`;
+      } catch {
+        return dateString;
+      }
+    },
+    []
+  );
 
   const columns: TableColumn<DefectiveWorkEntry>[] = [
     {
@@ -234,6 +240,18 @@ export default function DefectiveWorksPage() {
       header: "Tabel raqami",
       accessor: (row) => row?.table_number,
     },
+    {
+      key: "status",
+      header: "Holati",
+      accessor: (row) => {
+        const isDone = !!row?.table_number;
+        return (
+          <Badge variant={isDone ? "success" : "destructive"}>
+            {isDone ? "Bajarilgan" : "Bajarilmagan"}
+          </Badge>
+        );
+      },
+    },
   ];
 
   const breadcrumbs = [
@@ -249,17 +267,15 @@ export default function DefectiveWorksPage() {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* <div className="px-6">
+      <div className="px-6">
         <Tabs value={currentTab} onValueChange={handleTabChange}>
           <TabsList className="bg-[#F1F5F9] p-1 gap-0 border-0 rounded-lg inline-flex">
             <TabsTrigger value="all">Barcha yozuvlar</TabsTrigger>
-            <TabsTrigger value="chinese">Xitoy Elektrovoz</TabsTrigger>
-            <TabsTrigger value="3p9e">3P9E - VL80c - VL60k</TabsTrigger>
-            <TabsTrigger value="teplovoz">Teplovoz</TabsTrigger>
-            <TabsTrigger value="statistics">Statistika</TabsTrigger>
+            <TabsTrigger value="done">Bajarilgan</TabsTrigger>
+            <TabsTrigger value="not_done">Bajarilmagan</TabsTrigger>
           </TabsList>
         </Tabs>
-      </div> */}
+      </div>
 
       <div className="px-6 py-4">
         <PageFilters
@@ -280,6 +296,16 @@ export default function DefectiveWorksPage() {
           columns={columns}
           data={paginatedData}
           getRowId={(row) => row.id}
+          itemsPerPage={25}
+          size="xs"
+          rowClassName={(row) =>
+            formatDate(new Date(row.date).toISOString(), false) ===
+            formatDate(new Date().toISOString(), false)
+              ? "bg-emerald-50 hover:bg-emerald-100 [&>td]:bg-emerald-50 [&>td]:group-hover:bg-emerald-100"
+              : !row?.table_number
+              ? "bg-red-50 hover:bg-red-100 [&>td]:bg-red-50 [&>td]:group-hover:bg-red-100"
+              : ""
+          }
           isLoading={isLoading}
           error={error}
           totalPages={totalPages}
