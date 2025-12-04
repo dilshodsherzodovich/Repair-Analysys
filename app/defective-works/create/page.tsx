@@ -17,63 +17,60 @@ import { authService } from "@/api/services/auth.service";
 import type { LoginCredentials } from "@/api/types/auth";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import { useCreateDefectiveWork } from "@/api/hooks/use-defective-works";
+import { defectiveWorksService } from "@/api/services/defective-works.service";
 import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
+import { XIcon } from "lucide-react";
 
 export default function PublicDefectiveWorkCreatePage() {
   const [formResetKey, setFormResetKey] = useState(0);
+  const [issues, setIssues] = useState<string[]>([]);
+  const [isPending, setIsPending] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [issues, setIssues] = useState<string[]>([]);
+  const [temporaryToken, setTemporaryToken] = useState<string | undefined>(
+    undefined
+  );
   const formRef = useRef<HTMLFormElement | null>(null);
   const locomotiveInputRef = useRef<HTMLInputElement | null>(null);
   const { showSuccess, showError } = useSnackbar();
 
-  const { data: locomotives = [], isPending: isLoadingLocomotives } =
-    useGetLocomotives(true);
-  const { data: organizations = [], isPending: isLoadingOrganizations } =
-    useOrganizations();
-  const { mutateAsync: createDefectiveWork, isPending } =
-    useCreateDefectiveWork();
+  // Perform login on mount
+  useEffect(() => {
+    const performLogin = async () => {
+      setIsAuthLoading(true);
+      setAuthError(null);
 
-  const performLogin = async () => {
-    setIsAuthLoading(true);
-    setAuthError(null);
+      const credentials: LoginCredentials = {
+        username: "repair_employee",
+        password: "123",
+      };
 
-    const credentials: LoginCredentials = {
-      username: "admin20",
-      password: "QO123456",
+      try {
+        const loginData = await authService.login(credentials);
+        // Store token in state only (not in localStorage)
+        setTemporaryToken(loginData.access);
+        setIsAuthLoading(false);
+      } catch (error: any) {
+        console.error("Auto login failed:", error);
+        const message =
+          error?.response?.data?.message ||
+          error?.message ||
+          "Avto-kirishda xatolik yuz berdi.";
+        setAuthError(message);
+        showError("Tizimga kirishda xatolik yuz berdi", message);
+        setIsAuthLoading(false);
+      }
     };
 
-    try {
-      const data = await authService.login(credentials);
-      const { access, refresh, ...userData } = data;
-      const expiryDate = authService.getTokenExpiry(access);
-
-      authService.storeAuth(
-        access,
-        refresh,
-        userData,
-        expiryDate?.toISOString()
-      );
-
-      setIsAuthLoading(false);
-    } catch (error: any) {
-      console.error("Auto login failed:", error);
-      const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Avto-kirishda xatolik yuz berdi.";
-      setAuthError(message);
-      showError("Tizimga kirishda xatolik yuz berdi", message);
-      setIsAuthLoading(false);
-    }
-  };
-
-  useEffect(() => {
     void performLogin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Only fetch data when token is available
+  const { data: locomotives = [], isPending: isLoadingLocomotives } =
+    useGetLocomotives(!!temporaryToken, temporaryToken);
+  const { data: organizations = [], isPending: isLoadingOrganizations } =
+    useOrganizations(temporaryToken);
 
   const resetForm = () => {
     formRef.current?.reset();
@@ -141,17 +138,29 @@ export default function PublicDefectiveWorkCreatePage() {
       return;
     }
 
+    if (!temporaryToken) {
+      showError("Tizimga kirishda xatolik yuz berdi", "Token topilmadi");
+      return;
+    }
+
+    setIsPending(true);
     try {
-      for (const issueText of allIssues) {
-        const payload: DefectiveWorkCreatePayload = {
+      // Prepare payloads
+      const payloads: DefectiveWorkCreatePayload[] = allIssues.map(
+        (issueText) => ({
           locomotive: Number(locomotive),
           organization_id: Number(organization),
           train_driver: trainDriver.trim(),
           issue: issueText,
           date: new Date().toISOString(),
-        };
-        await createDefectiveWork(payload);
-      }
+        })
+      );
+
+      // Make bulk create request with token from state (not stored in localStorage)
+      await defectiveWorksService.bulkCreateDefectiveWorks(
+        payloads,
+        temporaryToken
+      );
 
       showSuccess(
         allIssues.length > 1
@@ -164,9 +173,12 @@ export default function PublicDefectiveWorkCreatePage() {
         "Nosoz ishni yuborishda xatolik yuz berdi",
         error?.response?.data?.message || error?.message
       );
+    } finally {
+      setIsPending(false);
     }
   };
 
+  // Show loading state while authenticating
   if (isAuthLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
@@ -179,16 +191,21 @@ export default function PublicDefectiveWorkCreatePage() {
     );
   }
 
-  if (authError) {
+  // Show error state if authentication failed
+  if (authError || !temporaryToken) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
         <Card className="border border-red-200 bg-white p-6 shadow-xl md:p-8 space-y-4">
           <h1 className="text-lg font-semibold text-red-700">
             Tizimga kirishda xatolik yuz berdi
           </h1>
-          <p className="text-sm text-[#475569] break-words">{authError}</p>
+          <p className="text-sm text-[#475569] break-words">
+            {authError || "Token olishda xatolik"}
+          </p>
           <div className="flex justify-end">
-            <Button onClick={performLogin}>Qayta urinib ko&apos;rish</Button>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Qayta urinib ko&apos;rish
+            </Button>
           </div>
         </Card>
       </div>
@@ -343,33 +360,36 @@ export default function PublicDefectiveWorkCreatePage() {
               </div>
 
               {issues.length > 0 && (
-                <div className="rounded-md border border-dashed border-[#CBD5F5] bg-[#F8FAFF] p-3">
+                <>
                   <div className="mb-2 flex items-center justify-between">
                     <p className="text-xs font-medium text-[#1E293B]">
                       Qo&apos;shilgan nosozliklar: {issues.length} ta
                     </p>
                   </div>
-                  <ul className="space-y-1 max-h-32 overflow-y-auto pr-1 text-xs text-[#475569]">
-                    {issues.map((text, index) => (
-                      <li
+
+                  {issues.map((text, index) => (
+                    <div className="rounded-md border border-dashed border-[#CBD5F5] bg-[#F8FAFF] p-3">
+                      <div
                         key={index}
-                        className="flex items-start justify-between gap-2"
+                        className="flex items-center justify-between overflow-y-auto text-xs text-[#475569]"
                       >
                         <span className="flex-1">
                           {index + 1}. {text}
                         </span>
-                        <button
+                        <Button
                           type="button"
-                          className="text-[11px] text-red-600 hover:text-red-700"
+                          variant="destructive"
+                          size="icon"
+                          className="bg-red-400 w-6 h-6"
                           onClick={() => handleRemoveIssue(index)}
                           disabled={isPending}
                         >
-                          O&apos;chirish
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                          <XIcon className="size-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </>
               )}
             </div>
 

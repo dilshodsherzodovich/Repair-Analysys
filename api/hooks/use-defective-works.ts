@@ -69,3 +69,20 @@ export function useDeleteDefectiveWork() {
     },
   });
 }
+
+export const useBulkCreateDefectiveWorks = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: DefectiveWorkCreatePayload[]) =>
+      defectiveWorksService.bulkCreateDefectiveWorks(payload),
+    mutationKey: [queryKeys.defectiveWorks.bulkCreate],
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.defectiveWorks.all],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.defectiveWorks.bulkCreate],
+      });
+    },
+  });
+};

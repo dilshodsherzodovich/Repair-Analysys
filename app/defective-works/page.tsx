@@ -249,7 +249,7 @@ export default function DefectiveWorksPage() {
         breadcrumbs={breadcrumbs}
       />
 
-      <div className="px-6">
+      {/* <div className="px-6">
         <Tabs value={currentTab} onValueChange={handleTabChange}>
           <TabsList className="bg-[#F1F5F9] p-1 gap-0 border-0 rounded-lg inline-flex">
             <TabsTrigger value="all">Barcha yozuvlar</TabsTrigger>
@@ -259,7 +259,7 @@ export default function DefectiveWorksPage() {
             <TabsTrigger value="statistics">Statistika</TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
+      </div> */}
 
       <div className="px-6 py-4">
         <PageFilters

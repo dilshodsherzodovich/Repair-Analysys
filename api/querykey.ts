@@ -67,5 +67,6 @@ export const queryKeys = {
     create: "defective-works-create",
     update: "defective-works-update",
     delete: "defective-works-delete",
+    bulkCreate: "defective-works-bulk-create",
   },
 } as const;

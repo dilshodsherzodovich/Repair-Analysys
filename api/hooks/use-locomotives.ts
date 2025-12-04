@@ -2,10 +2,13 @@ import { locomotivesService } from "../services/locomotives.service";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../querykey";
 
-export const useGetLocomotives = (enabled: boolean = true) => {
+export const useGetLocomotives = (
+  enabled: boolean = true,
+  temporaryToken?: string
+) => {
   return useQuery({
-    queryKey: [queryKeys.locomotives.list],
-    queryFn: () => locomotivesService.getLocomotives(),
+    queryKey: [queryKeys.locomotives.list, temporaryToken],
+    queryFn: () => locomotivesService.getLocomotives(temporaryToken),
     enabled,
     staleTime: 30 * 60 * 1000,
     retry: (failureCount, error: any) => {

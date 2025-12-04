@@ -26,6 +26,11 @@ api.interceptors.request.use(
       return config;
     }
 
+    // Don't override Authorization header if it's already set (for one-time tokens)
+    if (config.headers?.Authorization) {
+      return config;
+    }
+
     const token = localStorage.getItem("auth_token");
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;

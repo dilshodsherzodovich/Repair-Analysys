@@ -47,6 +47,26 @@ export const defectiveWorksService = {
   async deleteDefectiveWork(id: number | string): Promise<void> {
     await api.delete(`/revision-journal/${id}/`);
   },
+
+  // bulk api
+  async bulkCreateDefectiveWorks(
+    payload: DefectiveWorkCreatePayload[],
+    temporaryToken?: string
+  ): Promise<DefectiveWorkEntry> {
+    const config = temporaryToken
+      ? {
+          headers: {
+            Authorization: `Bearer ${temporaryToken}`,
+          },
+        }
+      : {};
+    const response = await api.post(
+      "/revision-journal/bulk_create_values/",
+      payload,
+      config
+    );
+    return response.data;
+  },
 };
 
 export default defectiveWorksService;
