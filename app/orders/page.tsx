@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -26,17 +26,38 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { truncateFilename } from "@/utils/format-filename";
+import { useGetLocomotives } from "@/api/hooks/use-locomotives";
+import { useOrganizations } from "@/api/hooks/use-organizations";
+import { hasPermission } from "@/lib/permissions";
 
 const journalTypeLabels: Record<string, string> = {
   mpr: "Buyruq MPR",
+  invalid: "Brak",
+  defect: "Defekt",
 };
+
+const journalTypeOptions = [
+  { value: "", label: "Barcha jurnal turlari" },
+  { value: "mpr", label: "Buyruq MPR" },
+  { value: "invalid", label: "Yaroqsiz" },
+  { value: "defect", label: "Defekt" },
+];
 
 export default function OrdersPage() {
   const searchParams = useSearchParams();
   const { updateQuery } = useFilterParams();
 
   // Get query params
-  const { q, page, pageSize, tab } = Object.fromEntries(searchParams.entries());
+  const {
+    q,
+    page,
+    pageSize,
+    tab,
+    type_of_journal,
+    locomotive,
+    date,
+    organization,
+  } = Object.fromEntries(searchParams.entries());
 
   // State
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
@@ -50,13 +71,61 @@ export default function OrdersPage() {
   const updateOrderMutation = useUpdateOrder();
   const deleteOrderMutation = useDeleteOrder();
 
+  // Fetch locomotives for filter
+  const { data: locomotivesData, isLoading: isLoadingLocomotives } =
+    useGetLocomotives();
+
   const currentUser = JSON.parse(localStorage.getItem("user") || "null");
   if (!currentUser || !canAccessSection(currentUser, "orders")) {
     return <UnauthorizedPage />;
   }
 
+  // Check if user has choose_organization permission
+  const canChooseOrganization = hasPermission(
+    currentUser,
+    "choose_organization"
+  );
+
+  // Fetch organizations if user has permission
+  const { data: organizationsData, isLoading: isLoadingOrganizations } =
+    useOrganizations();
+
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
+
+  // Prepare locomotive options for filter
+  const locomotiveOptions = useMemo(() => {
+    const options = [{ value: "", label: "Barcha lokomotivlar" }];
+    if (locomotivesData && Array.isArray(locomotivesData)) {
+      locomotivesData.forEach(
+        (locomotive: { id: number; name?: string; model_name?: string }) => {
+          options.push({
+            value: locomotive.id.toString(),
+            label:
+              locomotive.name ||
+              locomotive.model_name ||
+              `Lokomotiv ${locomotive.id}`,
+          });
+        }
+      );
+    }
+    return options;
+  }, [locomotivesData]);
+
+  // Prepare organization options for filter
+  const organizationOptions = useMemo(() => {
+    const options = [{ value: "", label: "Barcha tashkilotlar" }];
+    if (canChooseOrganization && organizationsData) {
+      organizationsData?.forEach((org) => {
+        options.push({
+          value: org.id.toString(),
+          label:
+            org.name || org.name_uz || org.name_ru || `Tashkilot ${org.id}`,
+        });
+      });
+    }
+    return options;
+  }, [organizationsData, canChooseOrganization]);
 
   // Fetch orders from API
   const {
@@ -68,6 +137,10 @@ export default function OrdersPage() {
     page_size: itemsPerPage,
     search: q,
     tab: currentTab === "all" ? undefined : currentTab,
+    type_of_journal: type_of_journal || undefined,
+    locomotive: locomotive || undefined,
+    date: date || undefined,
+    organization: organization || undefined,
   });
 
   // Extract data from API response
@@ -213,6 +286,11 @@ export default function OrdersPage() {
       accessor: (row) => formatDate(row.date),
     },
     {
+      key: "organization",
+      header: "Tashkilot",
+      accessor: (row) => row.organization_info,
+    },
+    {
       key: "locomotive_info",
       header: "Lokomotiv",
       accessor: (row) => row.locomotive_info?.name || "",
@@ -283,7 +361,7 @@ export default function OrdersPage() {
       />
 
       {/* Navigation Tabs */}
-      <div className="px-6">
+      {/* <div className="px-6">
         <Tabs
           className="w-fit"
           value={currentTab}
@@ -299,14 +377,47 @@ export default function OrdersPage() {
             <TabsTrigger value="statistics">Statistika</TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
+      </div> */}
 
       {/* Filters and Actions */}
       <div className="px-6 py-4">
         <PageFilters
-          filters={[]}
+          filters={[
+            {
+              name: "type_of_journal",
+              label: "Jurnal turi",
+              isSelect: true,
+              options: journalTypeOptions,
+              placeholder: "Jurnal turini tanlang",
+              searchable: false,
+            },
+            {
+              name: "locomotive",
+              label: "Lokomotiv",
+              isSelect: true,
+              options: locomotiveOptions,
+              placeholder: "Lokomotivni tanlang",
+              searchable: false,
+              loading: isLoadingLocomotives,
+            },
+            ...(canChooseOrganization
+              ? [
+                  {
+                    name: "organization",
+                    label: "Tashkilot",
+                    isSelect: true,
+                    options: organizationOptions,
+                    placeholder: "Tashkilotni tanlang",
+                    searchable: false,
+                    loading: isLoadingOrganizations,
+                  },
+                ]
+              : []),
+          ]}
           hasSearch={true}
           searchPlaceholder="Qidiruv"
+          hasDatePicker={true}
+          datePickerLabel="Sana"
           addButtonPermittion="create_order"
           onAdd={handleCreate}
           onExport={handleExport}
@@ -331,6 +442,7 @@ export default function OrdersPage() {
           onDelete={handleDelete}
           isDeleting={deleteOrderMutation.isPending}
           selectable={true}
+          size="sm"
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
           emptyTitle="Ma'lumot topilmadi"

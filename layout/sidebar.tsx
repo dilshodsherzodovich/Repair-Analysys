@@ -75,7 +75,7 @@ export function Sidebar() {
   const [selectedOrganization, setSelectedOrganization] =
     useState<string>("all");
 
-  const { data: organizations } = useOrganizations();
+  // const { data: organizations } = useOrganizations();
   const user = authService.getUser();
 
   const filteredNavigationItems = user
@@ -84,12 +84,12 @@ export function Sidebar() {
       )
     : [];
 
-  const selectedOrg =
-    selectedOrganization === "all"
-      ? { name: "Barcha depolar" }
-      : organizations?.find(
-          (org) => org.id.toString() === selectedOrganization
-        );
+  // const selectedOrg =
+  //   selectedOrganization === "all"
+  //     ? { name: "Barcha depolar" }
+  //     : organizations?.find(
+  //         (org) => org.id.toString() === selectedOrganization
+  //       );
 
   return (
     <aside className="bg-white border-r border-sidebar-border h-full flex flex-col">
@@ -110,7 +110,7 @@ export function Sidebar() {
             </div>
           </div>
 
-          <PermissionGuard permission="choose_organization">
+          {/* <PermissionGuard permission="choose_organization">
             <Select
               value={selectedOrganization}
               onValueChange={setSelectedOrganization}
@@ -126,7 +126,6 @@ export function Sidebar() {
                   "[&_*]:data-[slot=select-value]:!text-[#2B7FFF] [&_*]:data-[slot=select-value]:!font-medium"
                 )}
               >
-                {/* Frame container - icon and text with exact Figma specs */}
                 <div
                   className="flex items-center flex-1 min-w-0"
                   style={{
@@ -135,7 +134,6 @@ export function Sidebar() {
                     padding: 0,
                   }}
                 >
-                  {/* Icon - 20px × 20px, color #2B7FFF (Brand/50) */}
                   <Building2
                     className="flex-shrink-0"
                     style={{
@@ -161,10 +159,9 @@ export function Sidebar() {
                 ))}
               </SelectContent>
             </Select>
-          </PermissionGuard>
+          </PermissionGuard> */}
         </div>
 
-        {/* Navigation - Scrollable */}
         <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
           {filteredNavigationItems.map((item) => {
             const Icon = item.icon;
@@ -211,7 +208,6 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Support Button and Footer - Fixed at bottom */}
         <div className="mt-auto pt-4 border-t border-sidebar-border flex-shrink-0">
           <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 mb-4 flex items-center justify-center space-x-2">
             <Send className="h-4 w-4" />

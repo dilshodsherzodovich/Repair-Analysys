@@ -30,6 +30,7 @@ export interface CreateOrderPayload {
   date: string; // ISO 8601 datetime format
   type_of_journal: string;
   file?: File | null;
+  organization?: number;
 }
 
 export interface UpdateOrderPayload {
@@ -42,6 +43,7 @@ export interface UpdateOrderPayload {
   date?: string; // ISO 8601 datetime format
   type_of_journal?: string;
   file?: File | null;
+  organization?: number;
 }
 
 // Parameters for getting orders
@@ -51,4 +53,8 @@ export interface OrdersGetParams {
   search?: string;
   tab?: string; // all, chinese, 3p9e, teplovoz, statistics
   no_page?: boolean;
+  type_of_journal?: string;
+  locomotive?: number | string;
+  date?: string; // Format: yyyy-MM-dd
+  organization?: number | string;
 }

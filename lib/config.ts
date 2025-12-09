@@ -24,11 +24,11 @@ const getApiBaseUrl = (): string => {
 
   if (isDev) {
     const devUrl = process.env.NEXT_PUBLIC_DEV_API_BASE_URL;
-    console.log("🔍 Dev URL from env:", devUrl);
+
     return devUrl || "https://c74bdd3d38dc.ngrok-free.app/api/";
   } else {
     const prodUrl = process.env.NEXT_PUBLIC_PROD_API_BASE_URL;
-    console.log("🔍 Prod URL from env:", prodUrl);
+
     return prodUrl || "https://c74bdd3d38dc.ngrok-free.app/api/";
   }
 };
@@ -62,20 +62,20 @@ export const validateConfig = (): void => {
   }
 
   // Always log in development for debugging
-  if (config.isDevelopment) {
-    console.log("🔧 Configuration loaded:", {
-      NODE_ENV: process.env.NODE_ENV,
-      apiBaseUrl: config.api.baseUrl,
-      timeout: config.api.timeout,
-      isDevelopment: config.isDevelopment,
-      debugEnabled: config.debug.enabled,
-      envVars: {
-        NEXT_PUBLIC_DEV_API_BASE_URL: process.env.NEXT_PUBLIC_DEV_API_BASE_URL,
-        NEXT_PUBLIC_PROD_API_BASE_URL:
-          process.env.NEXT_PUBLIC_PROD_API_BASE_URL,
-        NEXT_PUBLIC_API_TIMEOUT: process.env.NEXT_PUBLIC_API_TIMEOUT,
-        NEXT_PUBLIC_DEBUG_MODE: process.env.NEXT_PUBLIC_DEBUG_MODE,
-      },
-    });
-  }
+  // if (config.isDevelopment) {
+  //   console.log("🔧 Configuration loaded:", {
+  //     NODE_ENV: process.env.NODE_ENV,
+  //     apiBaseUrl: config.api.baseUrl,
+  //     timeout: config.api.timeout,
+  //     isDevelopment: config.isDevelopment,
+  //     debugEnabled: config.debug.enabled,
+  //     envVars: {
+  //       NEXT_PUBLIC_DEV_API_BASE_URL: process.env.NEXT_PUBLIC_DEV_API_BASE_URL,
+  //       NEXT_PUBLIC_PROD_API_BASE_URL:
+  //         process.env.NEXT_PUBLIC_PROD_API_BASE_URL,
+  //       NEXT_PUBLIC_API_TIMEOUT: process.env.NEXT_PUBLIC_API_TIMEOUT,
+  //       NEXT_PUBLIC_DEBUG_MODE: process.env.NEXT_PUBLIC_DEBUG_MODE,
+  //     },
+  //   });
+  // }
 };

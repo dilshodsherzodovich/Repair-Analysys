@@ -171,12 +171,12 @@ export default function PageFilters({
     >
       {/* Search Input */}
       {hasSearch && (
-        <div className="min-w-0 w-[350px] max-w-full">
-          <div className="relative w-full flex items-center">
+        <div className="min-w-[250px] flex-1 max-w-full">
+          <div className="relative w-full h-full flex items-center">
             <input
               type="text"
               placeholder={searchPlaceholder}
-              className="w-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
+              className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-md bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
               value={searchLocal}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
@@ -208,7 +208,7 @@ export default function PageFilters({
           ) : (
             <Input
               placeholder={filter.placeholder || filter.label}
-              className="w-full h-10 mb-0"
+              className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
               value={textValues[filter.name] ?? ""}
               onChange={(e) => {
                 const v = e.target.value;
@@ -222,15 +222,13 @@ export default function PageFilters({
 
       {/* Date Picker */}
       {hasDatePicker && (
-        <div className="min-w-0">
-          <DatePicker
-            placeholder={datePickerLabel}
-            value={currentDate}
-            onValueChange={handleDateChange}
-            className="w-full"
-            size="sm"
-          />
-        </div>
+        <DatePicker
+          placeholder={datePickerLabel}
+          value={currentDate}
+          onValueChange={handleDateChange}
+          className="flex-1 min-w-[250px]"
+          size="md"
+        />
       )}
 
       {/* Date Range Picker */}

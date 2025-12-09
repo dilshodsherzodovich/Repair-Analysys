@@ -28,7 +28,8 @@ import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { FormField } from "@/ui/form-field";
 import { FileUpload } from "@/ui/file-upload";
 import { DatePicker } from "@/ui/date-picker";
-import { truncateFilename } from "@/utils/format-filename";
+import { useOrganizations } from "@/api/hooks/use-organizations";
+import { hasPermission } from "@/lib/permissions";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -55,6 +56,7 @@ type OrderFormState = {
   date: Date | null;
   type_of_journal: string;
   file: File | null;
+  organization: string;
 };
 
 const INITIAL_FORM_STATE: OrderFormState = {
@@ -67,9 +69,14 @@ const INITIAL_FORM_STATE: OrderFormState = {
   date: null,
   type_of_journal: "mpr",
   file: null,
+  organization: "",
 };
 
-const journalTypeOptions = [{ value: "mpr", label: "Buyruq MPR" }];
+const journalTypeOptions = [
+  { value: "mpr", label: "MPR" },
+  { value: "invalid", label: "Yaroqsiz" },
+  { value: "defect", label: "Defekt" },
+];
 
 const LocomotiveSelect = memo(
   ({
@@ -129,6 +136,14 @@ export function OrderModal({
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
     useGetLocomotives(isOpen);
 
+  // Check if user has choose_organization permission
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const canChooseOrganization = hasPermission(user, "choose_organization");
+
+  // Fetch organizations if user has permission
+  const { data: organizationsData, isLoading: isLoadingOrganizations } =
+    useOrganizations();
+
   const locomotiveOptions = useMemo<LocomotiveOption[]>(() => {
     if (!locomotivesData) return [];
     return locomotivesData.map((locomotive) => ({
@@ -137,6 +152,14 @@ export function OrderModal({
       value: locomotive.id.toString(),
     }));
   }, [locomotivesData]);
+
+  const organizationOptions = useMemo(() => {
+    if (!organizationsData || !Array.isArray(organizationsData)) return [];
+    return organizationsData.map((org) => ({
+      value: org.id.toString(),
+      label: org.name || org.name_uz || org.name_ru || `Organization ${org.id}`,
+    }));
+  }, [organizationsData]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -152,6 +175,7 @@ export function OrderModal({
         date: order.date ? new Date(order.date) : null,
         type_of_journal: order.type_of_journal ?? "mpr",
         file: null,
+        organization: "", // Organization ID would need to come from API if available
       });
     } else {
       setFormData(() => ({ ...INITIAL_FORM_STATE }));
@@ -218,6 +242,13 @@ export function OrderModal({
     setFormData((prev) => ({ ...prev, file }));
   }, []);
 
+  const handleOrganizationChange = useCallback((value: string) => {
+    setFormData((prev) => {
+      if (prev.organization === value) return prev;
+      return { ...prev, organization: value };
+    });
+  }, []);
+
   const handleSubmit = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
@@ -235,6 +266,9 @@ export function OrderModal({
         date: dateISO,
         type_of_journal: formData.type_of_journal,
         ...(formData.file ? { file: formData.file } : {}),
+        ...(canChooseOrganization && formData.organization
+          ? { organization: Number(formData.organization) }
+          : {}),
       };
 
       onSave(payload);
@@ -292,6 +326,38 @@ export function OrderModal({
               onValueChange={handleDateChange}
               placeholder="DD/MM/YYYY"
             />
+
+            {canChooseOrganization && (
+              <div>
+                <Label htmlFor="organization">Tashkilot</Label>
+                <Select
+                  value={formData.organization}
+                  onValueChange={handleOrganizationChange}
+                  disabled={isLoadingOrganizations}
+                >
+                  <SelectTrigger id="organization">
+                    <SelectValue placeholder="Tashkilotni tanlang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {isLoadingOrganizations ? (
+                      <SelectItem value="loading" disabled>
+                        Yuklanmoqda...
+                      </SelectItem>
+                    ) : organizationOptions.length ? (
+                      organizationOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="empty" disabled>
+                        Tashkilot topilmadi
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <LocomotiveSelect
               value={formData.locomotive}

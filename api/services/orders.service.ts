@@ -42,6 +42,10 @@ export const ordersService = {
             search: params?.search,
             tab: params?.tab,
             no_page: params?.no_page,
+            type_of_journal: params?.type_of_journal,
+            locomotive: params?.locomotive,
+            date: params?.date,
+            organization: params?.organization,
           },
         }
       );

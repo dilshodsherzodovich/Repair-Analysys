@@ -188,11 +188,9 @@ export function PaginatedTable<T extends Record<string, any>>({
     switch (size) {
       case "xs":
         return {
-          // Extra dense: slightly smaller than "sm"
           rowCell: "py-0 px-2",
           checkboxCell: "py-0.5 px-2",
-          // smaller font + tighter line-height so content is truly shorter
-          textSize: "text-xs leading-tight",
+          textSize: "text-sm leading-tight",
         };
       case "sm":
         return {
@@ -211,13 +209,11 @@ export function PaginatedTable<T extends Record<string, any>>({
         return {
           rowCell: "py-2 px-4 h-[56px] min-h-[56px]",
           checkboxCell: "py-2 px-4",
-          // Tailwind doesn't have text-md, use base
           textSize: "text-base",
         };
     }
   }, [size]);
 
-  // Add actions column if actions are available
   const displayColumns = React.useMemo(() => {
     if (hasActions) {
       return [
@@ -241,7 +237,7 @@ export function PaginatedTable<T extends Record<string, any>>({
       <div className={cn("w-full", className)}>
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#EFF6FF] hover:bg-[#EFF6FF]">
+            <TableRow>
               {showCheckbox && (
                 <TableHead className="w-[50px] bg-[#EFF6FF] px-4 py-[14px]">
                   <input
@@ -405,7 +401,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                     "group border-b border-border transition-colors",
                     isSelected
                       ? "bg-blue-50 hover:bg-blue-100 [&>td]:bg-blue-50 [&>td]:hover:bg-blue-100"
-                      : "bg-white hover:bg-gray-50 [&>td]:bg-white [&>td]:group-hover:bg-gray-50",
+                      : "",
                     isLastRow &&
                       "[&>td:first-child]:rounded-bl-lg [&>td:last-child]:rounded-br-lg",
                     rowClass
@@ -415,7 +411,8 @@ export function PaginatedTable<T extends Record<string, any>>({
                     <TableCell
                       className={cn(
                         "transition-colors",
-                        sizeClasses.checkboxCell
+                        sizeClasses.checkboxCell,
+                        sizeClasses.rowCell
                       )}
                     >
                       <input
