@@ -165,7 +165,7 @@ export default function PageFilters({
   return (
     <div
       className={cn(
-        "flex flex-wrap md:flex-nowrap items-stretch gap-3 md:gap-4 mb-4",
+        "flex flex-wrap md:flex-nowrap overflow-auto items-stretch gap-3 md:gap-4 mb-4",
         className
       )}
     >
@@ -203,7 +203,7 @@ export default function PageFilters({
               options={filter.options || []}
               value={getQueryValue(filter.name)}
               onValueChange={(value) => handleFilterChange(filter.name, value)}
-              triggerClassName="w-full h-10 mb-0 w-[300px] max-w-full"
+              triggerClassName="w-full h-10 mb-0  w-[300px] max-w-full"
             />
           ) : (
             <Input

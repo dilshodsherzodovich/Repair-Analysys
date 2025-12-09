@@ -25,6 +25,9 @@ import { DefectiveWorkModal } from "@/components/defective-works/defective-work-
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
+import { useGetLocomotives } from "@/api/hooks/use-locomotives";
+import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
+import { useOrganizations } from "@/api/hooks/use-organizations";
 
 export default function DefectiveWorksPage() {
   const searchParams = useSearchParams();
@@ -36,10 +39,15 @@ export default function DefectiveWorksPage() {
     return <UnauthorizedPage />;
   }
 
-  const { q, page, pageSize, tab } = useMemo(
-    () => Object.fromEntries(searchParams.entries()),
-    [searchParams]
-  );
+  const {
+    q,
+    page,
+    pageSize,
+    tab,
+    organization_id,
+    inspection_type,
+    locomotive,
+  } = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams]);
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
@@ -53,6 +61,14 @@ export default function DefectiveWorksPage() {
   const updateMutation = useUpdateDefectiveWork();
   const deleteMutation = useDeleteDefectiveWork();
 
+  // Fetch filter options
+  const { data: locomotivesData, isLoading: isLoadingLocomotives } =
+    useGetLocomotives();
+  const { data: inspectionTypesData, isLoading: isLoadingInspectionTypes } =
+    useGetInspectionTypes();
+  const { data: organizationsData, isLoading: isLoadingOrganizations } =
+    useOrganizations();
+
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
 
@@ -65,6 +81,9 @@ export default function DefectiveWorksPage() {
     page_size: itemsPerPage,
     search: q,
     tab: currentTab === "all" ? undefined : currentTab,
+    organization_id: organization_id || undefined,
+    inspection_type: inspection_type || undefined,
+    locomotive: locomotive || undefined,
   });
 
   const paginatedData = apiResponse?.results ?? [];
@@ -259,6 +278,46 @@ export default function DefectiveWorksPage() {
     { label: "Nosoz ishlar jurnali", current: true },
   ];
 
+  const locomotiveOptions = useMemo(() => {
+    const options = [{ value: "", label: "Barcha lokomotivlar" }];
+    if (locomotivesData && Array.isArray(locomotivesData)) {
+      locomotivesData.forEach((loc) =>
+        options.push({
+          value: loc.id.toString(),
+          label: loc.name || loc.model_name || `Lokomotiv ${loc.id}`,
+        })
+      );
+    }
+    return options;
+  }, [locomotivesData]);
+
+  const inspectionTypeOptions = useMemo(() => {
+    const options = [{ value: "", label: "Barcha tekshiruv turlari" }];
+    if (inspectionTypesData && Array.isArray(inspectionTypesData)) {
+      inspectionTypesData.forEach((it) =>
+        options.push({
+          value: it.id.toString(),
+          label: it.name || it.name_uz || it.name_ru || `Tekshiruv ${it.id}`,
+        })
+      );
+    }
+    return options;
+  }, [inspectionTypesData]);
+
+  const organizationOptions = useMemo(() => {
+    const options = [{ value: "", label: "Barcha tashkilotlar" }];
+    if (organizationsData && Array.isArray(organizationsData)) {
+      organizationsData.forEach((org) =>
+        options.push({
+          value: org.id.toString(),
+          label:
+            org.name || org.name_uz || org.name_ru || `Tashkilot ${org.id}`,
+        })
+      );
+    }
+    return options;
+  }, [organizationsData]);
+
   return (
     <div className="min-h-screen">
       <PageHeader
@@ -279,7 +338,35 @@ export default function DefectiveWorksPage() {
 
       <div className="px-6 py-4">
         <PageFilters
-          filters={[]}
+          filters={[
+            {
+              name: "organization_id",
+              label: "Tashkilot",
+              isSelect: true,
+              options: organizationOptions,
+              placeholder: "Tashkilotni tanlang",
+              searchable: false,
+              loading: isLoadingOrganizations,
+            },
+            {
+              name: "inspection_type",
+              label: "Tekshiruv turi",
+              isSelect: true,
+              options: inspectionTypeOptions,
+              placeholder: "Tekshiruv turini tanlang",
+              searchable: false,
+              loading: isLoadingInspectionTypes,
+            },
+            {
+              name: "locomotive",
+              label: "Lokomotiv",
+              isSelect: true,
+              options: locomotiveOptions,
+              placeholder: "Lokomotivni tanlang",
+              searchable: false,
+              loading: isLoadingLocomotives,
+            },
+          ]}
           hasSearch
           searchPlaceholder="Qidiruv"
           addButtonPermittion="create_defective_work"

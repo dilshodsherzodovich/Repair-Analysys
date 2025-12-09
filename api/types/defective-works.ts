@@ -46,4 +46,7 @@ export interface DefectiveWorkListParams {
   search?: string;
   tab?: string;
   no_page?: boolean;
+  organization_id?: number | string;
+  inspection_type?: number | string;
+  locomotive?: number | string;
 }

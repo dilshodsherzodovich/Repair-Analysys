@@ -12,7 +12,10 @@ export interface OrderData {
   date: string; // ISO 8601 datetime format
   created_time: string;
   last_updated_time: string;
-  organization_info: string;
+  organization_info: {
+    id: number;
+    name: string;
+  };
   user_info: string;
   locomotive_info: LocomotiveData | null;
   type_of_journal: string;

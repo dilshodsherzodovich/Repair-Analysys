@@ -14,7 +14,10 @@ export interface PantographJournalEntry {
     name: string;
     locomotive_model: string;
   };
-  organization_info: string;
+  organization_info: {
+    id: number;
+    name: string;
+  };
 }
 
 export interface PantographJournalParams {

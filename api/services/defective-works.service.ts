@@ -20,6 +20,9 @@ export const defectiveWorksService = {
           search: params?.search,
           tab: params?.tab,
           no_page: params?.no_page,
+          organization: params?.organization_id,
+          inspection_type: params?.inspection_type,
+          locomotive: params?.locomotive,
         },
       }
     );

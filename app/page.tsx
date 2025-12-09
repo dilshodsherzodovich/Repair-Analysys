@@ -46,8 +46,6 @@ export default function PantografPage() {
   const [selectedEntry, setSelectedEntry] =
     useState<PantographJournalEntry | null>(null);
 
-  // Get current page and items per page from query params for data filtering
-  // The table component will handle updating these URL params internally
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
@@ -250,7 +248,7 @@ export default function PantografPage() {
     {
       key: "organization_info",
       header: "Tashkilot",
-      accessor: (row) => row.organization_info || "-",
+      accessor: (row) => row.organization_info?.name || "-",
     },
     {
       key: "description",
