@@ -38,7 +38,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
-import { useSearchParams } from "next/navigation";
 import { ConfirmationDialog } from "./confirmation-dialog";
 import { PermissionGuard } from "@/components/permission-guard";
 import { Permission } from "@/lib/permissions";
@@ -550,14 +549,14 @@ function usePaginationControls({
   updateQueryParams,
   totalPages,
 }: PaginationControlOptions) {
-  const { updateQuery } = useFilterParams();
-  const searchParams = useSearchParams();
+  const { updateQuery, getQueryValue } = useFilterParams();
+
   const hasInitialized = React.useRef(false);
 
   React.useEffect(() => {
     if (updateQueryParams && !externalOnPageChange && !hasInitialized.current) {
-      const pageParam = searchParams.get("page");
-      const pageSizeParam = searchParams.get("pageSize");
+      const pageParam = getQueryValue("page");
+      const pageSizeParam = getQueryValue("pageSize");
 
       if (!pageParam || !pageSizeParam) {
         hasInitialized.current = true;
@@ -568,7 +567,6 @@ function usePaginationControls({
       }
     }
   }, [
-    searchParams,
     updateQueryParams,
     externalOnPageChange,
     externalItemsPerPage,
@@ -583,18 +581,18 @@ function usePaginationControls({
   const urlPage = React.useMemo(() => {
     if (!useUrlParams) return 1;
 
-    const pageParam = searchParams.get("page");
+    const pageParam = getQueryValue("page");
     return pageParam ? parseInt(pageParam) || 1 : 1;
-  }, [searchParams, useUrlParams]);
+  }, [getQueryValue, useUrlParams]);
 
   const urlPageSize = React.useMemo(() => {
     if (!useUrlParams) return externalItemsPerPage;
 
-    const pageSizeParam = searchParams.get("pageSize");
+    const pageSizeParam = getQueryValue("pageSize");
     return pageSizeParam
       ? parseInt(pageSizeParam) || externalItemsPerPage
       : externalItemsPerPage;
-  }, [searchParams, useUrlParams, externalItemsPerPage]);
+  }, [getQueryValue, useUrlParams, externalItemsPerPage]);
 
   const currentPage = useExternalControl
     ? externalCurrentPage ?? 1

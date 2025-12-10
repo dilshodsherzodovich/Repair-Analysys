@@ -1,4 +1,5 @@
 import type React from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -27,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${inter.className}`}>
       <body className="font-sans antialiased">
-        <ClientLayout>{children}</ClientLayout>
+        <Suspense fallback={<div className="p-6">Yuklanmoqda...</div>}>
+          <ClientLayout>{children}</ClientLayout>
+        </Suspense>
       </body>
     </html>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { redirect, useSearchParams } from "next/navigation";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
@@ -27,18 +26,15 @@ import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "./unauthorized/page";
 
 export default function PantografPage() {
-  const searchParams = useSearchParams();
-  const { updateQuery } = useFilterParams();
+  const { updateQuery, getAllQueryValues } = useFilterParams();
 
   const currentUser = JSON.parse(localStorage.getItem("user") || "null");
   if (!currentUser || !canAccessSection(currentUser, "pantograf")) {
     return <UnauthorizedPage />;
   }
 
-  // Get query params
-  const { q, page, pageSize, tab } = Object.fromEntries(searchParams.entries());
+  const { q, page, pageSize, tab } = getAllQueryValues();
 
-  // State
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,7 +74,6 @@ export default function PantografPage() {
         )
     : null;
 
-  // Handle tab change
   const handleTabChange = useCallback(
     (value: string) => {
       setCurrentTab(value);
@@ -87,14 +82,12 @@ export default function PantografPage() {
     [updateQuery]
   );
 
-  // Handle edit
   const handleEdit = (row: PantographJournalEntry) => {
     setSelectedEntry(row);
     setModalMode("edit");
     setIsModalOpen(true);
   };
 
-  // Handle delete
   const handleDelete = async (row: PantographJournalEntry) => {
     try {
       await deleteEntryMutation.mutateAsync(row.id);
@@ -110,17 +103,14 @@ export default function PantografPage() {
     }
   };
 
-  // Handle create
   const handleCreate = () => {
     setSelectedEntry(null);
     setModalMode("create");
     setIsModalOpen(true);
   };
 
-  // Handle export
   const handleExport = () => {
     console.log("Export to Excel");
-    // Implement export logic
   };
 
   const handleSave = useCallback(
@@ -177,19 +167,16 @@ export default function PantografPage() {
     ]
   );
 
-  // Memoized modal close handler to prevent unnecessary re-renders
   const handleModalClose = useCallback(() => {
     setIsModalOpen(false);
     setSelectedEntry(null);
   }, []);
 
-  // Memoized pending state to prevent recalculation on every render
   const isModalPending = useMemo(
     () => createEntryMutation.isPending || updateEntryMutation.isPending,
     [createEntryMutation.isPending, updateEntryMutation.isPending]
   );
 
-  // Table columns
   const formatDate = (dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -266,7 +253,6 @@ export default function PantografPage() {
     },
   ];
 
-  // Breadcrumb items
   const breadcrumbs = [
     { label: "Asosiy", href: "/" },
     { label: "Pantograf", current: true },
@@ -274,14 +260,12 @@ export default function PantografPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Breadcrumb and Header */}
       <PageHeader
         title="Pantograf"
         description="Bu qurilmalar elektrovozning asosiy komponentlari hisoblanadi."
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Navigation Tabs */}
       <div className="px-6">
         <Tabs
           className="w-fit"
@@ -299,7 +283,6 @@ export default function PantografPage() {
         </Tabs>
       </div>
 
-      {/* Filters and Actions */}
       <div className="px-6 py-4">
         <PageFilters
           filters={[]}
@@ -315,7 +298,6 @@ export default function PantografPage() {
         />
       </div>
 
-      {/* Table */}
       <div className="px-6 pb-6">
         <PaginatedTable
           columns={columns}

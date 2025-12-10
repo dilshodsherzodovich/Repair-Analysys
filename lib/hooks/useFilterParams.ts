@@ -15,7 +15,6 @@ export const useFilterParams = () => {
       }
     });
 
-    // Reset page when filters change
     if (updates.page === undefined) {
       params.delete("page");
     }

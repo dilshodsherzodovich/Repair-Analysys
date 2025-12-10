@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, type TableColumn } from "@/ui/paginated-table";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
@@ -30,15 +29,8 @@ import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 
 export default function DefectiveWorksPage() {
-  const searchParams = useSearchParams();
+  const { getAllQueryValues } = useFilterParams();
   const { updateQuery } = useFilterParams();
-  const { showSuccess, showError } = useSnackbar();
-
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
-  if (!currentUser || !canAccessSection(currentUser, "defective-works")) {
-    return <UnauthorizedPage />;
-  }
-
   const {
     q,
     page,
@@ -47,7 +39,13 @@ export default function DefectiveWorksPage() {
     organization_id,
     inspection_type,
     locomotive,
-  } = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams]);
+  } = getAllQueryValues();
+  const { showSuccess, showError } = useSnackbar();
+
+  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  if (!currentUser || !canAccessSection(currentUser, "defective-works")) {
+    return <UnauthorizedPage />;
+  }
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");

@@ -1,15 +1,12 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
-import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import PageFilters from "@/ui/filters";
 import { FileSpreadsheet } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
-import { cn } from "@/lib/utils";
 import {
   OrderData,
   CreateOrderPayload,
@@ -44,10 +41,8 @@ const journalTypeOptions = [
 ];
 
 export default function OrdersPage() {
-  const searchParams = useSearchParams();
-  const { updateQuery } = useFilterParams();
+  const { updateQuery, getAllQueryValues } = useFilterParams();
 
-  // Get query params
   const {
     q,
     page,
@@ -57,21 +52,18 @@ export default function OrdersPage() {
     locomotive,
     date,
     organization,
-  } = Object.fromEntries(searchParams.entries());
+  } = getAllQueryValues();
 
-  // State
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
-  // Hooks
   const { showSuccess, showError } = useSnackbar();
   const createOrderMutation = useCreateOrder();
   const updateOrderMutation = useUpdateOrder();
   const deleteOrderMutation = useDeleteOrder();
 
-  // Fetch locomotives for filter
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =
     useGetLocomotives();
 
@@ -80,20 +72,17 @@ export default function OrdersPage() {
     return <UnauthorizedPage />;
   }
 
-  // Check if user has choose_organization permission
   const canChooseOrganization = hasPermission(
     currentUser,
     "choose_organization"
   );
 
-  // Fetch organizations if user has permission
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
 
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
-  // Prepare locomotive options for filter
   const locomotiveOptions = useMemo(() => {
     const options = [{ value: "", label: "Barcha lokomotivlar" }];
     if (locomotivesData && Array.isArray(locomotivesData)) {
@@ -112,7 +101,6 @@ export default function OrdersPage() {
     return options;
   }, [locomotivesData]);
 
-  // Prepare organization options for filter
   const organizationOptions = useMemo(() => {
     const options = [{ value: "", label: "Barcha tashkilotlar" }];
     if (canChooseOrganization && organizationsData) {
@@ -127,7 +115,6 @@ export default function OrdersPage() {
     return options;
   }, [organizationsData, canChooseOrganization]);
 
-  // Fetch orders from API
   const {
     data: apiResponse,
     isLoading,
@@ -143,25 +130,21 @@ export default function OrdersPage() {
     organization: organization || undefined,
   });
 
-  // Extract data from API response
   const paginatedData = apiResponse?.results || [];
   const totalItems = apiResponse?.count || 0;
   const totalPages = getPageCount(totalItems, itemsPerPage) || 1;
 
-  // Convert API error to Error object if needed
   const error = apiError
     ? apiError instanceof Error
       ? apiError
       : new Error(apiError.message || "An error occurred")
     : null;
 
-  // Handle tab change
   const handleTabChange = (value: string) => {
     setCurrentTab(value);
     updateQuery({ tab: value, page: "1" });
   };
 
-  // Handle edit
   const handleEdit = (row: OrderData) => {
     setSelectedOrder(row);
     setModalMode("edit");
@@ -186,14 +169,12 @@ export default function OrdersPage() {
     [deleteOrderMutation, showError, showSuccess]
   );
 
-  // Handle create
   const handleCreate = () => {
     setSelectedOrder(null);
     setModalMode("create");
     setIsModalOpen(true);
   };
 
-  // Handle save (create or update)
   const handleSave = (orderData: CreateOrderPayload | UpdateOrderPayload) => {
     if (modalMode === "create") {
       createOrderMutation.mutate(orderData as CreateOrderPayload, {
@@ -238,13 +219,11 @@ export default function OrdersPage() {
     }
   };
 
-  // Handle export
   const handleExport = () => {
     console.log("Export to Excel");
     // Implement export logic
   };
 
-  // Format date from ISO string to display format
   const formatDate = (dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -259,7 +238,6 @@ export default function OrdersPage() {
     }
   };
 
-  // Format damage amount (it comes as string from API)
   const formatDamageAmount = (amount: string): string => {
     try {
       const numAmount = parseFloat(amount);
@@ -272,7 +250,6 @@ export default function OrdersPage() {
     }
   };
 
-  // Table columns based on API response structure
   const columns: TableColumn<OrderData>[] = [
     {
       key: "type_of_journal",
@@ -345,7 +322,6 @@ export default function OrdersPage() {
     },
   ];
 
-  // Breadcrumb items
   const breadcrumbs = [
     { label: "Asosiy", href: "/" },
     { label: "Buyruq MPR", current: true },
@@ -353,14 +329,12 @@ export default function OrdersPage() {
 
   return (
     <div className="min-h-screen ">
-      {/* Breadcrumb and Header */}
       <PageHeader
         title="Buyruq MPR"
         description="Elektrovozlarni poezdlararo ta'mirlash"
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Navigation Tabs */}
       {/* <div className="px-6">
         <Tabs
           className="w-fit"
@@ -379,7 +353,6 @@ export default function OrdersPage() {
         </Tabs>
       </div> */}
 
-      {/* Filters and Actions */}
       <div className="px-6 py-4">
         <PageFilters
           filters={[
@@ -427,7 +400,6 @@ export default function OrdersPage() {
         />
       </div>
 
-      {/* Table */}
       <div className="px-6 pb-6">
         <PaginatedTable
           columns={columns}
@@ -450,7 +422,6 @@ export default function OrdersPage() {
         />
       </div>
 
-      {/* Order Modal */}
       <OrderModal
         isOpen={isModalOpen}
         onClose={() => {
