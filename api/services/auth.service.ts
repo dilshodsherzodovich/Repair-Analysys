@@ -18,11 +18,11 @@ export const authService = {
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
     localStorage.removeItem("auth_expiry");
-    const redirectUri =
-      typeof window !== "undefined"
-        ? encodeURIComponent(window.location.origin)
-        : "";
-    window.location.href = `${getSmartDepoUrl()}/?redirect_uri=${redirectUri}`;
+    if (typeof window !== "undefined") {
+      window.location.href = `${getSmartDepoUrl()}/?redirect_uri=${encodeURIComponent(
+        window.location.origin
+      )}&clear_session=true`;
+    }
   },
 
   isAuthenticated: (): boolean => {
