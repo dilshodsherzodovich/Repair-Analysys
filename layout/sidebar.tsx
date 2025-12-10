@@ -38,12 +38,6 @@ const navigationItems = [
     section: "pantograf",
   },
   {
-    name: "Avtostepka",
-    href: "/autoconnecters",
-    icon: Eye,
-    section: "autoconnecters",
-  },
-  {
     name: "Buyruq MPR",
     href: "/orders",
     icon: FileText,
@@ -55,18 +49,24 @@ const navigationItems = [
     icon: AlertCircle,
     section: "defective-works",
   },
-  {
-    name: "Stansiya",
-    href: "/stations",
-    icon: Settings,
-    section: "stations",
-  },
-  {
-    name: "Razzavor",
-    href: "/reports",
-    icon: RotateCw,
-    section: "reports",
-  },
+  // {
+  //   name: "Stansiya",
+  //   href: "/stations",
+  //   icon: Settings,
+  //   section: "stations",
+  // },
+  // {
+  //   name: "Razzavor",
+  //   href: "/reports",
+  //   icon: RotateCw,
+  //   section: "reports",
+  // },
+  // {
+  //   name: "Avtostepka",
+  //   href: "/autoconnecters",
+  //   icon: Eye,
+  //   section: "autoconnecters",
+  // },
 ];
 
 export function Sidebar() {
