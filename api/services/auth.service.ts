@@ -1,5 +1,6 @@
 import api from "../axios";
 import { LoginCredentials, LoginResponse, UserData } from "../types/auth";
+import { getSmartDepoUrl } from "@/lib/config";
 
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
@@ -17,7 +18,11 @@ export const authService = {
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
     localStorage.removeItem("auth_expiry");
-    window.location.href = "/login";
+    const redirectUri =
+      typeof window !== "undefined"
+        ? encodeURIComponent(window.location.origin)
+        : "";
+    window.location.href = `${getSmartDepoUrl()}/?redirect_uri=${redirectUri}`;
   },
 
   isAuthenticated: (): boolean => {

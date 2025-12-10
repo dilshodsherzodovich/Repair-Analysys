@@ -2,6 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { authService } from "@/api/services/auth.service";
+import { useFilterParams } from "@/lib/hooks/useFilterParams";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -14,6 +15,9 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const { getAllQueryValues } = useFilterParams();
+
+  const { token, user, expires, refresh_token } = getAllQueryValues();
 
   const safePublicRoutes = useMemo(
     () => publicRoutes || DEFAULT_PUBLIC_ROUTES,
@@ -22,27 +26,50 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
   const isLoginPage = pathname === "/login";
   const isPublicRoute = safePublicRoutes.includes(pathname);
 
-  // Wait for client-side hydration
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   useEffect(() => {
-    // Only run redirect logic on client side
     if (!isClient) return;
 
-    const isAuthenticated = authService.isAuthenticated();
+    const hasAuthParams = Boolean(token && user);
 
+    if (hasAuthParams) {
+      try {
+        const parsedUser = JSON.parse(decodeURIComponent(user));
+        const expiryDate = expires || undefined;
+
+        authService.storeAuth(
+          token,
+          refresh_token || "",
+          parsedUser,
+          expiryDate
+        );
+        router.replace("/");
+        return;
+      } catch (error) {
+        console.error("Failed to store auth params from URL", error);
+      }
+    }
+
+    const isAuthenticated = authService.isAuthenticated();
     if (!isAuthenticated && !isPublicRoute) {
-      // User is not authenticated and not on login page, redirect to login
       router.push("/login");
     } else if (isAuthenticated && isLoginPage) {
-      // User is authenticated but on login page, redirect to home
       router.push("/");
     }
-  }, [isClient, isLoginPage, isPublicRoute, router]);
+  }, [
+    expires,
+    isClient,
+    isLoginPage,
+    isPublicRoute,
+    refresh_token,
+    router,
+    token,
+    user,
+  ]);
 
-  // Show loading state while initializing
   if (!isClient) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

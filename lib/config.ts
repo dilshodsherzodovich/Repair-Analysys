@@ -18,6 +18,20 @@ const getEnvVar = (key: string, fallback: string = ""): string => {
   return process.env[key] || fallback;
 };
 
+export const getSmartDepoUrl = (): string => {
+  const isDev = process.env.NODE_ENV === "development";
+
+  if (isDev) {
+    return (
+      process.env.NEXT_PUBLIC_DEV_AUTH_SYS_URL || "http://localhost:3000/login"
+    );
+  } else {
+    return (
+      process.env.NEXT_PUBLIC_PROD_AUTH_SYS_URL || "http://localhost:3000/login"
+    );
+  }
+};
+
 // Get the API base URL
 const getApiBaseUrl = (): string => {
   const isDev = process.env.NODE_ENV === "development";

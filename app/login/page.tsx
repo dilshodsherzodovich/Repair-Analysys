@@ -1,8 +1,19 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { LoginForm } from "@/components/login/login-form";
 import { BackgroundPattern } from "@/components/login/background-pattern";
+import { Button } from "@/ui/button";
+import { getSmartDepoUrl } from "@/lib/config";
 
 export default function LoginPage() {
+  const [smartDepoUrl, setSmartDepoUrl] = useState("https://smartdepo.uz/");
+
+  useEffect(() => {
+    const redirectUri = encodeURIComponent(window.location.origin);
+    setSmartDepoUrl(`${getSmartDepoUrl()}/?redirect_uri=${redirectUri}`);
+  }, []);
+
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Brand Section */}
@@ -58,7 +69,18 @@ export default function LoginPage() {
 
         {/* Login Form Container */}
         <div className="w-full max-w-md mx-auto">
-          <LoginForm />
+          <div className="rounded-2xl border border-[#e5e7eb] shadow-sm p-8 bg-white">
+            <h2 className="text-2xl font-semibold text-[#1f2937] text-center mb-3">
+              Smart Depo tizimi orqali kirish
+            </h2>
+            <p className="text-[#6b7280] text-sm text-center mb-6">
+              Tizimga kirish Smart Depo autentifikatsiya xizmati orqali amalga
+              oshiriladi.
+            </p>
+            <Button asChild className="w-full h-12 text-base font-semibold">
+              <Link href={smartDepoUrl}>Smart Depo tizimi orqali kirish</Link>
+            </Button>
+          </div>
           <div className="mt-6 text-center text-sm text-[#4b5563]">
             <p>
               Nosoz ishni tezda yuborish kerakmi?{" "}
