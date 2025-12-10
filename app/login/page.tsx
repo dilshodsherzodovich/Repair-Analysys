@@ -11,9 +11,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     const redirectUri = encodeURIComponent(window.location.origin);
-    setSmartDepoUrl(
-      `${getSmartDepoUrl()}/?redirect_uri=${redirectUri}&clear_session=true`
-    );
+    setSmartDepoUrl(`${getSmartDepoUrl()}/?redirect_uri=${redirectUri}`);
   }, []);
 
   return (
