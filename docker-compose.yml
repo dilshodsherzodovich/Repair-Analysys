@@ -1,0 +1,10 @@
+services:
+  rpa_frontend:           # Change this for each project (e.g., client-a, client-b)
+    build:
+      context: .
+    container_name: rpa_frontend  # Unique name for this container
+    restart: always
+    ports:
+      - "3004:3000"        # Use a different port for each app (3001, 3002, 3003...)
+    env_file:
+      - .env
