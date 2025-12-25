@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
@@ -22,6 +23,8 @@ import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
 import { XIcon } from "lucide-react";
 
 export default function PublicDefectiveWorkCreatePage() {
+  const searchParams = useSearchParams();
+  const organizationIdFromUrl = searchParams.get("organization_id");
   const [formResetKey, setFormResetKey] = useState(0);
   const [issues, setIssues] = useState<string[]>([]);
   const [isPending, setIsPending] = useState(false);
@@ -29,6 +32,9 @@ export default function PublicDefectiveWorkCreatePage() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [temporaryToken, setTemporaryToken] = useState<string | undefined>(
     undefined
+  );
+  const [selectedOrganization, setSelectedOrganization] = useState<string>(
+    organizationIdFromUrl || ""
   );
   const formRef = useRef<HTMLFormElement | null>(null);
   const locomotiveInputRef = useRef<HTMLInputElement | null>(null);
@@ -72,6 +78,18 @@ export default function PublicDefectiveWorkCreatePage() {
   const { data: organizations = [], isPending: isLoadingOrganizations } =
     useOrganizations(temporaryToken);
 
+  // Set organization from URL when organizations are loaded
+  useEffect(() => {
+    if (organizationIdFromUrl && organizations.length > 0) {
+      const orgExists = organizations.some(
+        (org) => org.id.toString() === organizationIdFromUrl
+      );
+      if (orgExists) {
+        setSelectedOrganization(organizationIdFromUrl);
+      }
+    }
+  }, [organizationIdFromUrl, organizations]);
+
   const resetForm = () => {
     formRef.current?.reset();
     if (locomotiveInputRef.current) {
@@ -87,6 +105,8 @@ export default function PublicDefectiveWorkCreatePage() {
         issueTextarea.value = "";
       }
     }
+    // Preserve organization from URL if it exists, otherwise reset it
+    setSelectedOrganization(organizationIdFromUrl || "");
     setFormResetKey((prev) => prev + 1);
   };
 
@@ -119,7 +139,10 @@ export default function PublicDefectiveWorkCreatePage() {
     const formData = new FormData(formElement);
 
     const locomotive = (formData.get("locomotive") as string | null) ?? "";
-    const organization = (formData.get("organization") as string | null) ?? "";
+    const organization =
+      organizationIdFromUrl ||
+      (formData.get("organization") as string | null) ||
+      "";
     const trainDriver = (formData.get("train_driver") as string | null) ?? "";
     const currentIssueFromForm =
       (formData.get("currentIssue") as string | null) ?? "";
@@ -276,7 +299,19 @@ export default function PublicDefectiveWorkCreatePage() {
                 <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
                   Tashkilot
                 </Label>
-                <Select name="organization" disabled={isLoadingOrganizations}>
+                {organizationIdFromUrl && (
+                  <input
+                    type="hidden"
+                    name="organization"
+                    value={organizationIdFromUrl}
+                  />
+                )}
+                <Select
+                  name={organizationIdFromUrl ? undefined : "organization"}
+                  value={selectedOrganization}
+                  onValueChange={setSelectedOrganization}
+                  disabled={isLoadingOrganizations || !!organizationIdFromUrl}
+                >
                   <SelectTrigger className="bg-white">
                     <SelectValue placeholder="Tashkilotni tanlang" />
                   </SelectTrigger>
