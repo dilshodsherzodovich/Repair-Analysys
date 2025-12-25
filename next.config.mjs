@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // --- ADD THIS FOR DOCKER ---
+  output: 'standalone', 
+  // ---------------------------
+
   eslint: {
     ignoreDuringBuilds: true,
   },
