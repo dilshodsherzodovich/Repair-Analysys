@@ -266,7 +266,7 @@ export default function PantografPage() {
         breadcrumbs={breadcrumbs}
       />
 
-      <div className="px-6">
+      {/* <div className="px-6">
         <Tabs
           className="w-fit"
           value={currentTab}
@@ -281,7 +281,7 @@ export default function PantografPage() {
             <TabsTrigger value="statistics">Statistika</TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
+      </div> */}
 
       <div className="px-6 py-4">
         <PageFilters
@@ -291,9 +291,9 @@ export default function PantografPage() {
           onAdd={handleCreate}
           addButtonText="Yangi qo'shish"
           addButtonPermittion="create_pantograf"
-          onExport={handleExport}
-          exportButtonText="Export EXCEL"
-          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
+          // onExport={handleExport}
+          // exportButtonText="Export EXCEL"
+          // exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
           className="!mb-0"
         />
       </div>

@@ -369,9 +369,9 @@ export default function DefectiveWorksPage() {
           searchPlaceholder="Qidiruv"
           addButtonPermittion="create_defective_work"
           onAdd={handleCreate}
-          onExport={handleExport}
-          exportButtonText="Export EXCEL"
-          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
+          // onExport={handleExport}
+          // exportButtonText="Export EXCEL"
+          // exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
           className="!mb-0"
         />
       </div>
