@@ -69,4 +69,12 @@ export const queryKeys = {
     delete: "defective-works-delete",
     bulkCreate: "defective-works-bulk-create",
   },
+  delays: {
+    all: "delays-all",
+    detail: (id: string | number) => `delays-detail-${id}`,
+    create: "delays-create",
+    update: "delays-update",
+    delete: "delays-delete",
+    bulkCreate: "delays-bulk-create",
+  },
 } as const;

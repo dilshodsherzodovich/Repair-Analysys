@@ -40,7 +40,7 @@ import { cn } from "@/lib/utils";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { ConfirmationDialog } from "./confirmation-dialog";
 import { PermissionGuard } from "@/components/permission-guard";
-import { Permission } from "@/lib/permissions";
+import { Permission, hasPermission } from "@/lib/permissions";
 
 export interface TableColumn<T = any> {
   key: string;
@@ -459,6 +459,8 @@ export function PaginatedTable<T extends Record<string, any>>({
                         onEdit={onEdit}
                         onDelete={onDelete ? handleDeleteClick : undefined}
                         extraActions={extraActions}
+                        editPermission={editPermission}
+                        deletePermission={deletePermission}
                       />
                     </TableCell>
                   )}
@@ -879,17 +881,95 @@ function ActionsDropdown<T>({
   onEdit,
   onDelete,
   extraActions,
+  editPermission,
+  deletePermission,
 }: {
   row: T;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void | Promise<void>;
   extraActions?: TableAction<T>[];
+  editPermission?: Permission;
+  deletePermission?: Permission;
 }) {
   const hasActions =
     onEdit || onDelete || (extraActions && extraActions.length > 0);
 
   if (!hasActions) {
     return null;
+  }
+
+  // Filter actions based on permissions
+  const filteredExtraActions = React.useMemo(() => {
+    if (!extraActions) return [];
+    return extraActions.filter((action) => {
+      if (action.permission) {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        return hasPermission(user, action.permission);
+      }
+      return true;
+    });
+  }, [extraActions]);
+
+  const canEdit =
+    onEdit &&
+    (!editPermission ||
+      hasPermission(
+        JSON.parse(localStorage.getItem("user") || "null"),
+        editPermission
+      ));
+  const canDelete =
+    onDelete &&
+    (!deletePermission ||
+      hasPermission(
+        JSON.parse(localStorage.getItem("user") || "null"),
+        deletePermission
+      ));
+
+  const totalActions =
+    (canEdit ? 1 : 0) + (canDelete ? 1 : 0) + filteredExtraActions.length;
+
+  // If only one action, show as button instead of dropdown
+  if (totalActions === 1) {
+    if (canEdit) {
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 px-3 hover:bg-gray-100"
+          onClick={() => onEdit(row)}
+        >
+          <Edit className="h-4 w-4 mr-2" />
+          Tahrirlash
+        </Button>
+      );
+    }
+    if (canDelete) {
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 px-3 hover:bg-gray-100 text-red-600 hover:text-red-700"
+          onClick={() => onDelete(row)}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          O'chirish
+        </Button>
+      );
+    }
+    if (filteredExtraActions.length === 1) {
+      const action = filteredExtraActions[0];
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn("h-8 px-3 hover:bg-gray-100", action.className)}
+          onClick={() => action.onClick(row)}
+        >
+          {action.icon}
+          {action.label}
+        </Button>
+      );
+    }
   }
 
   const [isOpen, setIsOpen] = React.useState(false);
@@ -929,7 +1009,7 @@ function ActionsDropdown<T>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">
-        {onEdit && (
+        {canEdit && (
           <DropdownMenuItem
             onClick={handleEdit}
             className="flex items-center gap-2"
@@ -938,20 +1018,19 @@ function ActionsDropdown<T>({
             Tahrirlash
           </DropdownMenuItem>
         )}
-        {extraActions &&
-          extraActions.map((action, index) => (
-            <DropdownMenuItem
-              key={index}
-              onClick={() => handleExtraAction(action)}
-              className={cn("flex items-center gap-2", action.className)}
-            >
-              {action.icon}
-              {action.label}
-            </DropdownMenuItem>
-          ))}
-        {onDelete && (
+        {filteredExtraActions.map((action, index) => (
+          <DropdownMenuItem
+            key={index}
+            onClick={() => handleExtraAction(action)}
+            className={cn("flex items-center gap-2", action.className)}
+          >
+            {action.icon}
+            {action.label}
+          </DropdownMenuItem>
+        ))}
+        {canDelete && (
           <>
-            {(onEdit || (extraActions && extraActions.length > 0)) && (
+            {(canEdit || filteredExtraActions.length > 0) && (
               <DropdownMenuSeparator />
             )}
             <DropdownMenuItem

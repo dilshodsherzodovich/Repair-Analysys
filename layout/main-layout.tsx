@@ -13,15 +13,10 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="h-screen grid grid-cols-[256px_1fr] grid-rows-[1fr] bg-background overflow-hidden">
-      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main Content Area */}
       <div className="grid grid-rows-[auto_1fr] overflow-hidden">
-        {/* Header */}
         <Header user={user!} />
-
-        {/* Main Content - Scrollable */}
         <main className="overflow-y-auto overflow-x-hidden p-4 bg-background-secondary">
           {children}
         </main>

@@ -1,7 +1,5 @@
 export interface Organization {
   id: number;
   name: string;
-  name_uz: string;
-  name_ru: string;
   code: number;
 }

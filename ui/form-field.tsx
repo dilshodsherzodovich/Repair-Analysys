@@ -15,6 +15,7 @@ export const FormField = memo(
     required,
     type = "text",
     step,
+    min,
     rows,
     name,
   }: {
@@ -28,6 +29,7 @@ export const FormField = memo(
     required?: boolean;
     type?: string;
     step?: string;
+    min?: string;
     rows?: number;
     name?: string;
   }) => {
@@ -74,6 +76,7 @@ export const FormField = memo(
           name={name}
           type={type}
           step={step}
+          min={min}
           {...inputCommonProps}
           placeholder={placeholder}
           required={required}

@@ -19,6 +19,11 @@ export type Permission =
   | "create_pantograf"
   | "edit_pantograf"
   | "delete_pantograf"
+  | "view_delays"
+  | "create_delay"
+  | "edit_delay"
+  | "delete_delay"
+  | "upload_delay_report"
   | "choose_organization";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -29,6 +34,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_defective_works",
     "view_stations",
     "view_orders",
+    "view_delays",
     "create_order",
     "edit_order",
     "delete_order",
@@ -81,6 +87,14 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_pantograf",
     "delete_pantograf",
   ],
+  sriv_admin: [
+    "view_dashboard",
+    "view_delays",
+    "create_delay",
+    "edit_delay",
+    "delete_delay",
+  ],
+  sriv_moderator: ["view_delays", "edit_delay", "upload_delay_report"],
 };
 
 export function hasPermission(
@@ -136,6 +150,9 @@ export function canAccessSection(
     }
     case "pantograf": {
       return hasPermission(user, "view_pantograf");
+    }
+    case "delays": {
+      return hasPermission(user, "view_delays");
     }
     default:
       return false;

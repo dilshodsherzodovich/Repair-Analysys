@@ -308,8 +308,7 @@ export default function DefectiveWorksPage() {
       organizationsData.forEach((org) =>
         options.push({
           value: org.id.toString(),
-          label:
-            org.name || org.name_uz || org.name_ru || `Tashkilot ${org.id}`,
+          label: org.name || `Tashkilot ${org.id}`,
         })
       );
     }
