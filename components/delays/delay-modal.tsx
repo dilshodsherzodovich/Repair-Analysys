@@ -44,6 +44,7 @@ type FormData = {
   damage_amount: string;
   responsible_org: string;
   status: string;
+  archive: string;
 };
 
 const INITIAL_FORM_DATA: FormData = {
@@ -54,7 +55,8 @@ const INITIAL_FORM_DATA: FormData = {
   reason: "",
   damage_amount: "0",
   responsible_org: "",
-  status: "true",
+  status: "true", // Defaults to true when creating
+  archive: "false", // Defaults to false (not archived)
 };
 
 function OrganizationSelectField({
@@ -112,12 +114,18 @@ export function DelayModal({
   isPending,
   user,
 }: DelayModalProps) {
+  const isModerateMode = mode === "moderate";
   const canUploadReport = hasPermission(user ?? null, "upload_delay_report");
-  const canChangeStatus = hasPermission(user ?? null, "upload_delay_report");
+  // sriv_moderator can change status and upload report
+  const canChangeStatus = hasPermission(user ?? null, "upload_delay_report"); // sriv_moderator can change status
+  // sriv_admin can change status when editing (but not in moderate mode)
+  const canChangeStatusAdmin =
+    hasPermission(user ?? null, "edit_delay") &&
+    !hasPermission(user ?? null, "upload_delay_report") &&
+    !isModerateMode;
   const canEditFields =
     hasPermission(user ?? null, "edit_delay") &&
     !hasPermission(user ?? null, "upload_delay_report");
-  const isModerateMode = mode === "moderate";
   const [formDefaults, setFormDefaults] = useState<FormData>(INITIAL_FORM_DATA);
   const [formKey, setFormKey] = useState(0);
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -131,7 +139,7 @@ export function DelayModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    if (entry && mode === "edit") {
+    if (entry && (mode === "edit" || mode === "moderate")) {
       // Parse delay_time (format: "HH:mm:ss" or "HH:mm")
       const timeStr = entry.delay_time || "";
       const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
@@ -147,7 +155,8 @@ export function DelayModal({
         responsible_org: entry.responsible_org
           ? String(entry.responsible_org)
           : "",
-        status: entry.status ? "true" : "false",
+        status: entry.status ? "true" : "false", // Use actual entry status
+        archive: entry.archive ? "true" : "false",
       };
       setFormDefaults(defaults);
       setSelectedDate(
@@ -159,6 +168,10 @@ export function DelayModal({
       setSelectedDate(undefined);
       setReportFile(null);
     }
+    // Reset archive to false when opening modal
+    if (mode === "create") {
+      setFormDefaults((prev) => ({ ...prev, archive: "false" }));
+    }
     setFormKey((prev) => prev + 1);
   }, [entry, mode, isOpen]);
 
@@ -168,10 +181,10 @@ export function DelayModal({
     const data = new FormData(formElement);
 
     if (isModerateMode) {
-      // In moderate mode, only status (set to false) and report can be changed
-      // Status defaults to false (closed) when moderator clicks "Yopish"
+      // In moderate mode, sriv_moderator can change status and upload report
+      const statusValue = (data.get("status") as string) === "true";
       const payload: DelayUpdatePayload = {
-        status: false, // Always set to false (closed) when moderator closes the delay
+        status: statusValue, // sriv_moderator can change status
         ...(canUploadReport && reportFile && { report: reportFile }),
       };
       onSave(payload);
@@ -216,7 +229,12 @@ export function DelayModal({
       damage_amount: Number.parseFloat(damageAmount) || 0,
       responsible_org: Number(responsibleOrg),
       incident_date: formattedDate,
-      ...(canChangeStatus && { status }),
+      // Status defaults to true when creating, can be changed by sriv_moderator or sriv_admin when editing
+      ...(mode === "create"
+        ? { status: true }
+        : (canChangeStatus || canChangeStatusAdmin) && { status }),
+      // Archive defaults to false, only changed by sriv_admin via "Tasdiqlash" action
+      ...(mode === "create" ? { archive: false } : {}),
       ...(canUploadReport && reportFile && { report: reportFile }),
     };
 
@@ -353,22 +371,22 @@ export function DelayModal({
                 />
               </>
             )}
-
-            {canChangeStatus && !isModerateMode && (
-              <div>
-                <Label htmlFor="status">Holati</Label>
-                <Select name="status" defaultValue={formDefaults.status}>
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Holatni tanlang" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="true">Faol</SelectItem>
-                    <SelectItem value="false">Nofaol</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
           </div>
+
+          {(canChangeStatus || canChangeStatusAdmin) && (
+            <div className="w-full flex-1">
+              <Label htmlFor="status">Holat</Label>
+              <Select name="status" defaultValue={formDefaults.status}>
+                <SelectTrigger className="mb-0 w-full" id="status">
+                  <SelectValue placeholder="Holatni tanlang" />
+                </SelectTrigger>
+                <SelectContent className="mb-0">
+                  <SelectItem value="true">Sriv</SelectItem>
+                  <SelectItem value="false">Sriv emas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {!isModerateMode && (
             <FormField
@@ -384,17 +402,19 @@ export function DelayModal({
           )}
 
           {canUploadReport && (
-            <div>
-              <FileUpload
-                label="Hisobot fayli"
-                filesUploaded={reportFile ? [reportFile] : []}
-                onFilesChange={(files) => setReportFile(files[0] || null)}
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
-                multiple={false}
-                maxSize={10}
-                hint="PDF, Word yoki Excel fayl yuklash mumkin (maksimal 10MB)"
-              />
-            </div>
+            <>
+              <div>
+                <FileUpload
+                  label="Hisobot fayli"
+                  filesUploaded={reportFile ? [reportFile] : []}
+                  onFilesChange={(files) => setReportFile(files[0] || null)}
+                  accept=".pdf,.doc,.docx,.xls,.xlsx"
+                  multiple={false}
+                  maxSize={10}
+                  hint="PDF, Word yoki Excel fayl yuklash mumkin (maksimal 10MB)"
+                />
+              </div>
+            </>
           )}
 
           <div className="flex justify-end gap-3 pt-4">

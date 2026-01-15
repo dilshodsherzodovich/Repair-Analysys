@@ -39,6 +39,7 @@ export interface DelayEntry {
   report_filename?: string;
   incident_date: string; // YYYY-MM-DD
   status: boolean;
+  archive: boolean;
   status_display?: string;
   created_at?: string; // ISO datetime string
 }
@@ -53,7 +54,8 @@ export interface DelayCreatePayload {
   responsible_org: number;
   report?: File | null;
   incident_date: string; // YYYY-MM-DD
-  status: boolean;
+  status?: boolean; // Defaults to false when creating
+  archive?: boolean; // Defaults to false when creating
 }
 
 export interface DelayUpdatePayload {
@@ -67,6 +69,7 @@ export interface DelayUpdatePayload {
   report?: File | null;
   incident_date?: string;
   status?: boolean;
+  archive?: boolean;
 }
 
 export interface DelayListParams {
@@ -77,5 +80,6 @@ export interface DelayListParams {
   station?: string;
   responsible_org?: number | string;
   status?: boolean;
-  incident_date?: string; // YYYY-MM-DD format
+  archive?: boolean;
+  incident_date?: string;
 }

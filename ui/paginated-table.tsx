@@ -59,6 +59,7 @@ export interface TableAction<T = any> {
   className?: string;
   variant?: "default" | "destructive" | "outline";
   permission?: Permission;
+  shouldShow?: (row: T) => boolean; // Optional function to conditionally show action
 }
 
 export interface PaginatedTableProps<T = any> {
@@ -454,14 +455,19 @@ export function PaginatedTable<T extends Record<string, any>>({
                   })}
                   {hasActions && (
                     <TableCell className="text-center py-2 px-4 h-14 transition-colors">
-                      <ActionsDropdown
-                        row={row}
-                        onEdit={onEdit}
-                        onDelete={onDelete ? handleDeleteClick : undefined}
-                        extraActions={extraActions}
-                        editPermission={editPermission}
-                        deletePermission={deletePermission}
-                      />
+                      {/* Check if row is archived - if so, don't show actions */}
+                      {((row as any)?.archive === true) ? (
+                        <span className="text-gray-400 text-sm">-</span>
+                      ) : (
+                        <ActionsDropdown
+                          row={row}
+                          onEdit={onEdit}
+                          onDelete={onDelete ? handleDeleteClick : undefined}
+                          extraActions={extraActions}
+                          editPermission={editPermission}
+                          deletePermission={deletePermission}
+                        />
+                      )}
                     </TableCell>
                   )}
                 </TableRow>
@@ -898,17 +904,24 @@ function ActionsDropdown<T>({
     return null;
   }
 
-  // Filter actions based on permissions
+  // Filter actions based on permissions and row conditions
   const filteredExtraActions = React.useMemo(() => {
     if (!extraActions) return [];
     return extraActions.filter((action) => {
+      // Check permission
       if (action.permission) {
         const user = JSON.parse(localStorage.getItem("user") || "null");
-        return hasPermission(user, action.permission);
+        if (!hasPermission(user, action.permission)) {
+          return false;
+        }
+      }
+      // Check shouldShow condition
+      if (action.shouldShow && !action.shouldShow(row)) {
+        return false;
       }
       return true;
     });
-  }, [extraActions]);
+  }, [extraActions, row]);
 
   const canEdit =
     onEdit &&

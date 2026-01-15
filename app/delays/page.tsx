@@ -22,7 +22,11 @@ import {
 } from "@/api/hooks/use-delays";
 import { DelayModal } from "@/components/delays/delay-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import { canAccessSection, hasPermission } from "@/lib/permissions";
+import {
+  canAccessSection,
+  hasPermission,
+  type Permission,
+} from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import type { TableAction } from "@/ui/paginated-table";
@@ -109,6 +113,27 @@ export default function DelaysPage() {
     setModalMode("moderate");
     setIsModalOpen(true);
   }, []);
+
+  const handleApprove = useCallback(
+    async (row: DelayEntry) => {
+      try {
+        await updateMutation.mutateAsync({
+          id: row.id,
+          payload: { archive: true },
+        });
+        showSuccess("Kechikish tasdiqlandi va arxivga o'tkazildi");
+      } catch (error: any) {
+        showError(
+          "Xatolik yuz berdi",
+          error?.response?.data?.message ||
+            error?.message ||
+            "Kechikishni tasdiqlashda xatolik"
+        );
+        throw error;
+      }
+    },
+    [updateMutation, showError, showSuccess]
+  );
 
   const handleDelete = useCallback(
     async (row: DelayEntry) => {
@@ -219,6 +244,32 @@ export default function DelaysPage() {
     }
   }, []);
 
+  const truncateFilename = useCallback(
+    (filename: string, maxLength: number = 25) => {
+      if (!filename || filename.length <= maxLength) {
+        return filename;
+      }
+
+      // Extract file extension
+      const lastDotIndex = filename.lastIndexOf(".");
+      if (lastDotIndex === -1) {
+        // No extension, just truncate
+        return filename.substring(0, maxLength) + "...";
+      }
+
+      const extension = filename.substring(lastDotIndex);
+      const nameWithoutExt = filename.substring(0, lastDotIndex);
+      const availableLength = maxLength - extension.length;
+
+      if (nameWithoutExt.length <= availableLength) {
+        return filename;
+      }
+
+      return nameWithoutExt.substring(0, availableLength) + "..." + extension;
+    },
+    []
+  );
+
   const columns: TableColumn<DelayEntry>[] = [
     {
       key: "incident_date",
@@ -275,12 +326,36 @@ export default function DelaysPage() {
     },
     {
       key: "status",
-      header: "Holati",
+      header: "Ishonchlilik",
       accessor: (row) => {
-        const isActive = row?.status;
+        const isReliable = row?.status;
         return (
-          <Badge variant={isActive ? "success" : "destructive"}>
-            {isActive ? "Faol" : "Nofaol"}
+          <Badge variant={isReliable ? "success" : "destructive"}>
+            {isReliable ? "Ishonchli" : "Ishonchsiz"}
+          </Badge>
+        );
+      },
+    },
+    {
+      key: "archive",
+      header: "Arxiv",
+      accessor: (row) => {
+        const isArchived = row?.archive;
+        return (
+          <Badge variant={isArchived ? "default" : "outline"}>
+            {isArchived ? "Arxivlangan" : "Arxivlanmagan"}
+          </Badge>
+        );
+      },
+    },
+    {
+      key: "report_uploaded",
+      header: "Hisobot yuklangan",
+      accessor: (row) => {
+        const hasReport = !!(row?.report_filename || row?.report);
+        return (
+          <Badge variant={hasReport ? "success" : "outline"}>
+            {hasReport ? "Hisobot yuklangan" : "Hisobot yuklanmagan"}
           </Badge>
         );
       },
@@ -290,15 +365,20 @@ export default function DelaysPage() {
       header: "Hisobot",
       accessor: (row) => {
         if (row?.report_filename || row?.report) {
+          const filename = row.report_filename || "Hisobotni ko'rish";
+          const truncated = truncateFilename(filename, 25);
           return (
-            <a
-              href={row.report}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline text-sm"
-            >
-              {row.report_filename || "Hisobotni ko'rish"}
-            </a>
+            <div className="max-w-[200px]">
+              <a
+                href={row.report}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline text-sm truncate block"
+                title={filename}
+              >
+                {truncated}
+              </a>
+            </div>
           );
         }
         return <span className="text-gray-400">-</span>;
@@ -433,18 +513,35 @@ export default function DelaysPage() {
               ? handleDelete
               : undefined
           }
-          extraActions={
-            hasPermission(currentUser, "upload_delay_report")
+          extraActions={[
+            ...(hasPermission(currentUser, "upload_delay_report")
               ? [
                   {
-                    label: "Yopish",
+                    label: "Hisobotni yuklash",
                     onClick: handleCloseDelay,
-                    permission: "upload_delay_report",
+                    permission: "upload_delay_report" as Permission,
                     variant: "default" as const,
+                    shouldShow: (row: DelayEntry) => !row.archive,
                   },
                 ]
-              : []
-          }
+              : []),
+
+            ...(hasPermission(currentUser, "edit_delay") &&
+            !hasPermission(currentUser, "upload_delay_report")
+              ? [
+                  {
+                    label: "Tasdiqlash",
+                    onClick: handleApprove,
+                    permission: "edit_delay" as Permission,
+                    variant: "default" as const,
+                    shouldShow: (row: DelayEntry) => {
+                      const hasReport = !!(row?.report_filename || row?.report);
+                      return hasReport && !row.archive;
+                    },
+                  },
+                ]
+              : []),
+          ]}
           isDeleting={deleteMutation.isPending}
           selectable
           selectedIds={selectedIds}
