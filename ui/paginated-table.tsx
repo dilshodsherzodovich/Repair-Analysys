@@ -960,9 +960,9 @@ function ActionsDropdown<T>({
       const action = filteredExtraActions[0];
       return (
         <Button
-          variant="ghost"
+          variant={action.variant || "default"}
           size="sm"
-          className={cn("h-8 px-3 hover:bg-gray-100", action.className)}
+          className={cn("h-8 px-3", action.className)}
           onClick={() => action.onClick(row)}
         >
           {action.icon}

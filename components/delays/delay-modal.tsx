@@ -168,10 +168,10 @@ export function DelayModal({
     const data = new FormData(formElement);
 
     if (isModerateMode) {
-      // In moderate mode, only status and report can be changed
-      const status = (data.get("status") as string) === "true";
+      // In moderate mode, only status (set to false) and report can be changed
+      // Status defaults to false (closed) when moderator clicks "Yopish"
       const payload: DelayUpdatePayload = {
-        ...(canChangeStatus && { status }),
+        status: false, // Always set to false (closed) when moderator closes the delay
         ...(canUploadReport && reportFile && { report: reportFile }),
       };
       onSave(payload);
@@ -354,7 +354,7 @@ export function DelayModal({
               </>
             )}
 
-            {canChangeStatus && (
+            {canChangeStatus && !isModerateMode && (
               <div>
                 <Label htmlFor="status">Holati</Label>
                 <Select name="status" defaultValue={formDefaults.status}>

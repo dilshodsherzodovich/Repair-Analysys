@@ -440,6 +440,7 @@ export default function DelaysPage() {
                     label: "Yopish",
                     onClick: handleCloseDelay,
                     permission: "upload_delay_report",
+                    variant: "default" as const,
                   },
                 ]
               : []
