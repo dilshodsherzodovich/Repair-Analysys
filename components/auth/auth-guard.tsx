@@ -12,18 +12,15 @@ interface AuthGuardProps {
 
 const DEFAULT_PUBLIC_ROUTES = ["/login"];
 
-// Get default route based on user role
 function getDefaultRouteForRole(user: UserData | null): string {
   if (!user || !user.role) return "/";
 
   const role = user.role.toLowerCase();
 
-  // sriv_moderator and sriv_admin should go to /delays
   if (role === "sriv_moderator" || role === "sriv_admin") {
     return "/delays";
   }
 
-  // Default route for other roles
   return "/";
 }
 
@@ -62,7 +59,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
           parsedUser,
           expiryDate
         );
-        // Redirect to role-specific default route
+
         const defaultRoute = getDefaultRouteForRole(parsedUser);
         router.replace(defaultRoute);
         return;
@@ -72,19 +69,34 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     }
 
     const isAuthenticated = authService.isAuthenticated();
+
     if (!isAuthenticated && !isPublicRoute) {
       router.push("/login");
-    } else if (isAuthenticated && isLoginPage) {
-      // Get user from storage and redirect to their default route
+      return;
+    }
+
+    if (isAuthenticated) {
       const storedUser = authService.getUser();
       const defaultRoute = getDefaultRouteForRole(storedUser);
-      router.push(defaultRoute);
+
+      // If on login page, redirect to default route
+      if (isLoginPage) {
+        router.push(defaultRoute);
+        return;
+      }
+
+      // If on root path and user should be on a different default route, redirect
+      if (pathname === "/" && defaultRoute !== "/") {
+        router.replace(defaultRoute);
+        return;
+      }
     }
   }, [
     expires,
     isClient,
     isLoginPage,
     isPublicRoute,
+    pathname,
     refresh_token,
     router,
     token,
@@ -96,7 +108,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">Yuklanmoqda...</p>
         </div>
       </div>
     );
@@ -107,21 +119,41 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Redirecting to login...</p>
+          <p className="text-gray-600">
+            Avtorizatsiya sahifasiga yo'naltirilmoqda...
+          </p>
         </div>
       </div>
     );
   }
 
   if (isLoginPage && authService.isAuthenticated()) {
+    const storedUser = authService.getUser();
+    const defaultRoute = getDefaultRouteForRole(storedUser);
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Redirecting to dashboard...</p>
+          <p className="text-gray-600">Bosh sahifaga yo'naltirilmoqda...</p>
         </div>
       </div>
     );
+  }
+
+  // Check if authenticated user is on root but should be on a different default route
+  if (authService.isAuthenticated() && pathname === "/") {
+    const storedUser = authService.getUser();
+    const defaultRoute = getDefaultRouteForRole(storedUser);
+    if (defaultRoute !== "/") {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Yo'naltirilmoqda...</p>
+          </div>
+        </div>
+      );
+    }
   }
 
   return <>{children}</>;
