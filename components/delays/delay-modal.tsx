@@ -13,6 +13,7 @@ import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
 import { DatePicker } from "@/ui/date-picker";
 import { FileUpload } from "@/ui/file-upload";
+import { FileText } from "lucide-react";
 import {
   DelayEntry,
   DelayCreatePayload,
@@ -411,8 +412,21 @@ export function DelayModal({
                   accept=".pdf,.doc,.docx,.xls,.xlsx"
                   multiple={false}
                   maxSize={10}
-                  hint="PDF, Word yoki Excel fayl yuklash mumkin (maksimal 10MB)"
                 />
+                {!reportFile && entry?.report && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600 mb-1">Joriy hisobot:</p>
+                    <a
+                      href={entry.report}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                      <FileText className="h-4 w-4" />
+                      {entry.report_filename || "Hisobotni ko'rish"}
+                    </a>
+                  </div>
+                )}
               </div>
             </>
           )}

@@ -54,7 +54,7 @@ export interface TableColumn<T = any> {
 
 export interface TableAction<T = any> {
   label: string;
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | ((row: T) => React.ReactNode);
   onClick: (row: T) => void;
   className?: string;
   variant?: "default" | "destructive" | "outline";
@@ -88,6 +88,7 @@ export interface PaginatedTableProps<T = any> {
   deletePermission?: Permission;
   editPermission?: Permission;
   isDeleting?: boolean;
+  actionsDisplayMode?: "dropdown" | "row"; // How to display actions: dropdown (default) or row of buttons
 
   // Empty & Error states
   emptyTitle?: string;
@@ -135,6 +136,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   extraActions = [],
   showActions = true,
   actionsLabel = "Amallar",
+  actionsDisplayMode = "dropdown",
   emptyTitle = "Ma'lumot topilmadi",
   emptyDescription = "Jadvalda ko'rsatish uchun ma'lumot yo'q",
   errorTitle = "Xatolik yuz berdi",
@@ -234,7 +236,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Loading state
   if (isLoading) {
     return (
-      <div className={cn("w-full", className)}>
+      <div className={cn("w-full bg-white", className)}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -343,7 +345,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className={cn("w-full space-y-4", className)}>
+    <div className={cn("w-full space-y-4 bg-white pb-2", className)}>
       <div className="bg-transparent rounded-lg overflow-hidden">
         <Table className="">
           <TableHeader>
@@ -455,19 +457,15 @@ export function PaginatedTable<T extends Record<string, any>>({
                   })}
                   {hasActions && (
                     <TableCell className="text-center py-2 px-4 h-14 transition-colors">
-                      {/* Check if row is archived - if so, don't show actions */}
-                      {((row as any)?.archive === true) ? (
-                        <span className="text-gray-400 text-sm">-</span>
-                      ) : (
-                        <ActionsDropdown
-                          row={row}
-                          onEdit={onEdit}
-                          onDelete={onDelete ? handleDeleteClick : undefined}
-                          extraActions={extraActions}
-                          editPermission={editPermission}
-                          deletePermission={deletePermission}
-                        />
-                      )}
+                      <ActionsDropdown
+                        row={row}
+                        onEdit={onEdit}
+                        onDelete={onDelete ? handleDeleteClick : undefined}
+                        extraActions={extraActions}
+                        editPermission={editPermission}
+                        deletePermission={deletePermission}
+                        actionsDisplayMode={actionsDisplayMode}
+                      />
                     </TableCell>
                   )}
                 </TableRow>
@@ -889,6 +887,7 @@ function ActionsDropdown<T>({
   extraActions,
   editPermission,
   deletePermission,
+  actionsDisplayMode = "dropdown",
 }: {
   row: T;
   onEdit?: (row: T) => void;
@@ -896,6 +895,7 @@ function ActionsDropdown<T>({
   extraActions?: TableAction<T>[];
   editPermission?: Permission;
   deletePermission?: Permission;
+  actionsDisplayMode?: "dropdown" | "row";
 }) {
   const hasActions =
     onEdit || onDelete || (extraActions && extraActions.length > 0);
@@ -941,7 +941,10 @@ function ActionsDropdown<T>({
   const totalActions =
     (canEdit ? 1 : 0) + (canDelete ? 1 : 0) + filteredExtraActions.length;
 
-  // If only one action, show as button instead of dropdown
+  if (totalActions === 0) {
+    return null;
+  }
+
   if (totalActions === 1) {
     if (canEdit) {
       return (
@@ -964,13 +967,15 @@ function ActionsDropdown<T>({
           className="h-8 px-3 hover:bg-gray-100 text-red-600 hover:text-red-700"
           onClick={() => onDelete(row)}
         >
-          <Trash2 className="h-4 w-4 mr-2" />
+          <Trash2 className="h-4 w-4 mr-2" color="text-red-600" />
           O'chirish
         </Button>
       );
     }
     if (filteredExtraActions.length === 1) {
       const action = filteredExtraActions[0];
+      const iconElement =
+        typeof action.icon === "function" ? action.icon(row) : action.icon;
       return (
         <Button
           variant={action.variant || "default"}
@@ -978,7 +983,7 @@ function ActionsDropdown<T>({
           className={cn("h-8 px-3", action.className)}
           onClick={() => action.onClick(row)}
         >
-          {action.icon}
+          {iconElement}
           {action.label}
         </Button>
       );
@@ -1009,6 +1014,53 @@ function ActionsDropdown<T>({
     [row, closeMenu]
   );
 
+  // Render as row of buttons (icons only, no labels)
+  if (actionsDisplayMode === "row") {
+    return (
+      <div className="flex items-center gap-2 justify-center">
+        {filteredExtraActions.map((action, index) => {
+          const iconElement =
+            typeof action.icon === "function" ? action.icon(row) : action.icon;
+          return (
+            <Button
+              key={index}
+              variant={action.variant || "outline"}
+              size="sm"
+              className={cn("h-8 w-8 p-0", action.className)}
+              onClick={() => action.onClick(row)}
+              title={action.label || "Action"}
+            >
+              {iconElement}
+            </Button>
+          );
+        })}
+        {canEdit && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 w-8 p-0 hover:bg-gray-100"
+            onClick={() => onEdit?.(row)}
+            title="Tahrirlash"
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+        )}
+        {canDelete && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 w-8 p-0 hover:bg-gray-100 text-red-600 hover:text-red-700"
+            onClick={() => onDelete?.(row)}
+            title="O'chirish"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  // Render as dropdown (default)
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
@@ -1031,16 +1083,20 @@ function ActionsDropdown<T>({
             Tahrirlash
           </DropdownMenuItem>
         )}
-        {filteredExtraActions.map((action, index) => (
-          <DropdownMenuItem
-            key={index}
-            onClick={() => handleExtraAction(action)}
-            className={cn("flex items-center gap-2", action.className)}
-          >
-            {action.icon}
-            {action.label}
-          </DropdownMenuItem>
-        ))}
+        {filteredExtraActions.map((action, index) => {
+          const iconElement =
+            typeof action.icon === "function" ? action.icon(row) : action.icon;
+          return (
+            <DropdownMenuItem
+              key={index}
+              onClick={() => handleExtraAction(action)}
+              className={cn("flex items-center gap-2", action.className)}
+            >
+              {iconElement}
+              {action.label}
+            </DropdownMenuItem>
+          );
+        })}
         {canDelete && (
           <>
             {(canEdit || filteredExtraActions.length > 0) && (

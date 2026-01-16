@@ -29,7 +29,7 @@ import {
 } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import type { TableAction } from "@/ui/paginated-table";
+import { FileUp, FileEdit, CheckCircle } from "lucide-react";
 
 export default function DelaysPage() {
   const { getAllQueryValues } = useFilterParams();
@@ -43,6 +43,7 @@ export default function DelaysPage() {
     responsible_org,
     station,
     status,
+    archive,
   } = getAllQueryValues();
   const { showSuccess, showError } = useSnackbar();
 
@@ -73,6 +74,10 @@ export default function DelaysPage() {
   const statusFilter =
     status === "true" ? true : status === "false" ? false : undefined;
 
+  // Parse archive from query string
+  const archiveFilter =
+    archive === "true" ? true : archive === "false" ? false : undefined;
+
   const {
     data: apiResponse,
     isLoading,
@@ -88,6 +93,7 @@ export default function DelaysPage() {
     station: station || undefined,
     responsible_org: responsible_org || undefined,
     status: statusFilter,
+    archive: archiveFilter,
     incident_date: date || undefined, // Map "date" query param to "incident_date" API param
   });
 
@@ -102,11 +108,17 @@ export default function DelaysPage() {
       ? new Error(apiError?.message || "Xatolik yuz berdi")
       : null;
 
-  const handleEdit = useCallback((row: DelayEntry) => {
-    setSelectedEntry(row);
-    setModalMode("edit");
-    setIsModalOpen(true);
-  }, []);
+  const handleEdit = useCallback(
+    (row: DelayEntry) => {
+      setSelectedEntry(row);
+      // If user is sriv_moderator, open in moderate mode (can only edit status and report)
+      // Otherwise, open in edit mode (can edit all fields)
+      const isModerator = hasPermission(currentUser, "upload_delay_report");
+      setModalMode(isModerator ? "moderate" : "edit");
+      setIsModalOpen(true);
+    },
+    [currentUser]
+  );
 
   const handleCloseDelay = useCallback((row: DelayEntry) => {
     setSelectedEntry(row);
@@ -326,12 +338,11 @@ export default function DelaysPage() {
     },
     {
       key: "status",
-      header: "Ishonchlilik",
+      header: "Holati",
       accessor: (row) => {
-        const isReliable = row?.status;
         return (
-          <Badge variant={isReliable ? "success" : "destructive"}>
-            {isReliable ? "Ishonchli" : "Ishonchsiz"}
+          <Badge variant={row?.status ? "destructive" : "success"}>
+            {row?.status ? "Sriv" : "Sriv emas"}
           </Badge>
         );
       },
@@ -344,18 +355,6 @@ export default function DelaysPage() {
         return (
           <Badge variant={isArchived ? "default" : "outline"}>
             {isArchived ? "Arxivlangan" : "Arxivlanmagan"}
-          </Badge>
-        );
-      },
-    },
-    {
-      key: "report_uploaded",
-      header: "Hisobot yuklangan",
-      accessor: (row) => {
-        const hasReport = !!(row?.report_filename || row?.report);
-        return (
-          <Badge variant={hasReport ? "success" : "outline"}>
-            {hasReport ? "Hisobot yuklangan" : "Hisobot yuklanmagan"}
           </Badge>
         );
       },
@@ -428,12 +427,12 @@ export default function DelaysPage() {
 
   const statusOptions = [
     { value: "", label: "Barcha holatlar" },
-    { value: "true", label: "Faol" },
-    { value: "false", label: "Nofaol" },
+    { value: "true", label: "Sriv" },
+    { value: "false", label: "Sriv emas" },
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
       <PageHeader
         title="Kechikishlar"
         description="Poyezd kechikishlarini kuzatish va boshqarish"
@@ -502,6 +501,7 @@ export default function DelaysPage() {
           totalPages={totalPages}
           totalItems={totalItems}
           updateQueryParams
+          actionsDisplayMode="row"
           onEdit={
             hasPermission(currentUser, "edit_delay") &&
             !hasPermission(currentUser, "upload_delay_report")
@@ -517,11 +517,18 @@ export default function DelaysPage() {
             ...(hasPermission(currentUser, "upload_delay_report")
               ? [
                   {
-                    label: "Hisobotni yuklash",
+                    label: "",
+                    icon: (row: DelayEntry) =>
+                      row?.report || row?.report_filename ? (
+                        <FileEdit className="h-4 w-4" />
+                      ) : (
+                        <FileUp className="h-4 w-4" />
+                      ),
                     onClick: handleCloseDelay,
                     permission: "upload_delay_report" as Permission,
-                    variant: "default" as const,
+                    variant: "outline" as const,
                     shouldShow: (row: DelayEntry) => !row.archive,
+                    className: "text-blue-600 hover:text-blue-700",
                   },
                 ]
               : []),
@@ -530,10 +537,11 @@ export default function DelaysPage() {
             !hasPermission(currentUser, "upload_delay_report")
               ? [
                   {
-                    label: "Tasdiqlash",
+                    label: "",
+                    icon: <CheckCircle className="h-4 w-4" />,
                     onClick: handleApprove,
                     permission: "edit_delay" as Permission,
-                    variant: "default" as const,
+                    variant: "outline" as const,
                     shouldShow: (row: DelayEntry) => {
                       const hasReport = !!(row?.report_filename || row?.report);
                       return hasReport && !row.archive;

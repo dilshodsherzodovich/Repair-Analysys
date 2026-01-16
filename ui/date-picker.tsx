@@ -3,7 +3,7 @@
 import * as React from "react";
 import { format } from "date-fns";
 import { uz } from "date-fns/locale";
-import { CalendarIcon, AlertCircle, CheckCircle } from "lucide-react";
+import { CalendarIcon, AlertCircle, CheckCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
 import { Calendar } from "@/ui/calendar";
@@ -77,6 +77,19 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
                 ? format(value, "dd.MM.yyyy", { locale: uz })
                 : placeholder}
               <div className="ml-auto flex items-center space-x-1">
+                {value && !disabled && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onValueChange?.(undefined);
+                    }}
+                    className="hover:bg-gray-100 rounded p-0.5 transition-colors"
+                    aria-label="Clear date"
+                  >
+                    <X className="h-4 w-4 text-gray-500" />
+                  </button>
+                )}
                 {hasError && <AlertCircle className="h-4 w-4 text-[#ff5959]" />}
                 {hasSuccess && (
                   <CheckCircle className="h-4 w-4 text-[#10b981]" />
