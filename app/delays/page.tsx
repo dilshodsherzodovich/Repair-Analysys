@@ -30,7 +30,7 @@ import {
 } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import { FileUp, FileEdit, CheckCircle } from "lucide-react";
+import { FileUp, FileEdit, CheckCircle, Edit, Trash2 } from "lucide-react";
 
 export default function DelaysPage() {
   const { getAllQueryValues } = useFilterParams();
@@ -113,6 +113,10 @@ export default function DelaysPage() {
 
   const handleEdit = useCallback(
     (row: DelayEntry) => {
+      // Don't allow editing archived entries
+      if (row.archive) {
+        return;
+      }
       setSelectedEntry(row);
       // If user is sriv_moderator, open in moderate mode (can only edit status and report)
       // Otherwise, open in edit mode (can edit all fields)
@@ -124,12 +128,20 @@ export default function DelaysPage() {
   );
 
   const handleCloseDelay = useCallback((row: DelayEntry) => {
+    // Don't allow editing archived entries
+    if (row.archive) {
+      return;
+    }
     setSelectedEntry(row);
     setModalMode("moderate");
     setIsModalOpen(true);
   }, []);
 
   const handleApproveClick = useCallback((row: DelayEntry) => {
+    // Don't allow approving archived entries
+    if (row.archive) {
+      return;
+    }
     setApproveEntry(row);
     setIsApproveModalOpen(true);
   }, []);
@@ -157,6 +169,10 @@ export default function DelaysPage() {
 
   const handleDelete = useCallback(
     async (row: DelayEntry) => {
+      // Don't allow deleting archived entries
+      if (row.archive) {
+        return;
+      }
       try {
         await deleteMutation.mutateAsync(row.id);
         showSuccess("Kechikish muvaffaqiyatli o'chirildi");
@@ -511,18 +527,39 @@ export default function DelaysPage() {
           totalItems={totalItems}
           updateQueryParams
           actionsDisplayMode="row"
-          onEdit={
-            hasPermission(currentUser, "edit_delay") &&
-            !hasPermission(currentUser, "upload_delay_report")
-              ? handleEdit
-              : undefined
-          }
-          onDelete={
-            hasPermission(currentUser, "delete_delay")
-              ? handleDelete
-              : undefined
-          }
           extraActions={[
+            // Edit action (for sriv_admin only)
+            ...(hasPermission(currentUser, "edit_delay") &&
+            !hasPermission(currentUser, "upload_delay_report")
+              ? [
+                  {
+                    label: "",
+                    icon: <Edit className="h-4 w-4" />,
+                    onClick: handleEdit,
+                    permission: "edit_delay" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) => !row.archive,
+                  },
+                ]
+              : []),
+
+            // Delete action (for sriv_admin only)
+            ...(hasPermission(currentUser, "delete_delay")
+              ? [
+                  {
+                    label: "",
+                    icon: <Trash2 className="h-4 w-4" />,
+                    onClick: handleDelete,
+                    permission: "delete_delay" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) => !row.archive,
+                    className:
+                      "border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10",
+                  },
+                ]
+              : []),
+
+            // Upload/Edit report action (for sriv_moderator)
             ...(hasPermission(currentUser, "upload_delay_report")
               ? [
                   {
@@ -541,6 +578,7 @@ export default function DelaysPage() {
                 ]
               : []),
 
+            // Approve action (for sriv_admin only, when report is uploaded)
             ...(hasPermission(currentUser, "edit_delay") &&
             !hasPermission(currentUser, "upload_delay_report")
               ? [
