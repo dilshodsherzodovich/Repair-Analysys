@@ -24,7 +24,8 @@ export type Permission =
   | "edit_delay"
   | "delete_delay"
   | "upload_delay_report"
-  | "choose_organization";
+  | "choose_organization"
+  | "filter_delay_station";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -47,6 +48,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_pantograf",
     "delete_pantograf",
     "choose_organization",
+    "filter_delay_station",
   ],
   moderator: [
     "view_dashboard",
@@ -55,6 +57,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_defective_works",
     "view_stations",
     "view_orders",
+    "view_delays",
     "create_order",
     "edit_order",
     "delete_order",
@@ -67,6 +70,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_pantograf",
     "delete_pantograf",
     "choose_organization",
+    "filter_delay_station",
   ],
   repair_engineer: [
     "view_dashboard",
@@ -93,6 +97,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "create_delay",
     "edit_delay",
     "delete_delay",
+    "filter_delay_station",
   ],
   sriv_moderator: ["view_delays", "edit_delay", "upload_delay_report"],
 };

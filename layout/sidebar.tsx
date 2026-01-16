@@ -49,6 +49,12 @@ const navigationItems = [
     icon: AlertCircle,
     section: "defective-works",
   },
+  {
+    name: "Sriv",
+    href: "/delays",
+    icon: AlertCircle,
+    section: "delays",
+  },
   // {
   //   name: "Stansiya",
   //   href: "/stations",
@@ -72,10 +78,6 @@ const navigationItems = [
 export function Sidebar() {
   const pathname = usePathname();
 
-  const [selectedOrganization, setSelectedOrganization] =
-    useState<string>("all");
-
-  // const { data: organizations } = useOrganizations();
   const user = authService.getUser();
 
   const filteredNavigationItems = user
@@ -83,13 +85,6 @@ export function Sidebar() {
         canAccessSection(user, navItem.section)
       )
     : [];
-
-  // const selectedOrg =
-  //   selectedOrganization === "all"
-  //     ? { name: "Barcha depolar" }
-  //     : organizations?.find(
-  //         (org) => org.id.toString() === selectedOrganization
-  //       );
 
   return (
     <aside className="bg-white border-r border-sidebar-border h-full flex flex-col">
@@ -109,57 +104,6 @@ export function Sidebar() {
               </div>
             </div>
           </div>
-
-          {/* <PermissionGuard permission="choose_organization">
-            <Select
-              value={selectedOrganization}
-              onValueChange={setSelectedOrganization}
-            >
-              <SelectTrigger
-                size="default"
-                className={cn(
-                  "!w-full !bg-[#F1F5F9] !border !border-[#E2E8F0] !rounded-lg",
-                  "hover:!border-primary/50 focus:!border-primary focus:!ring-2 focus:!ring-primary/20",
-                  "!mb-0 !shadow-none justify-start",
-                  "!h-12 !min-h-12",
-                  "[&>svg:last-child]:!text-[#1E293B] [&>svg:last-child]:!w-4 [&>svg:last-child]:!h-4 [&>svg:last-child]:ml-auto [&>svg:last-child]:flex-shrink-0",
-                  "[&_*]:data-[slot=select-value]:!text-[#2B7FFF] [&_*]:data-[slot=select-value]:!font-medium"
-                )}
-              >
-                <div
-                  className="flex items-center flex-1 min-w-0"
-                  style={{
-                    gap: "12px",
-                    height: "20px",
-                    padding: 0,
-                  }}
-                >
-                  <Building2
-                    className="flex-shrink-0"
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      color: "#2B7FFF",
-                    }}
-                  />
-
-                  <SelectValue className="flex-1 text-left truncate font-[500] text-sm text-[#2B7FFF]">
-                    {selectedOrg?.name
-                      .replace(/"/g, "")
-                      .replace(/ lokomotiv depo(si)?/i, "")}
-                  </SelectValue>
-                </div>
-              </SelectTrigger>
-              <SelectContent className="w-[var(--radix-select-trigger-width)]">
-                <SelectItem value="all">Barcha depolar</SelectItem>
-                {organizations?.map((org) => (
-                  <SelectItem key={org.id} value={org.id.toString()}>
-                    {org.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </PermissionGuard> */}
         </div>
 
         <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
@@ -215,8 +159,8 @@ export function Sidebar() {
           </Button>
 
           <div className="space-y-0.5 text-xs text-muted-foreground text-center">
-            <div>E-labs.uz</div>
-            <div>Raqamli Laboratoriya</div>
+            <div>Smart Depo</div>
+            <div>Raqamli tahliliy tizim</div>
             <div>{new Date().getFullYear()}</div>
           </div>
         </div>

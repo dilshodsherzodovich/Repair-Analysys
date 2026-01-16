@@ -3,6 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { authService } from "@/api/services/auth.service";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import type { UserData } from "@/api/types/auth";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -10,6 +11,21 @@ interface AuthGuardProps {
 }
 
 const DEFAULT_PUBLIC_ROUTES = ["/login"];
+
+// Get default route based on user role
+function getDefaultRouteForRole(user: UserData | null): string {
+  if (!user || !user.role) return "/";
+
+  const role = user.role.toLowerCase();
+
+  // sriv_moderator and sriv_admin should go to /delays
+  if (role === "sriv_moderator" || role === "sriv_admin") {
+    return "/delays";
+  }
+
+  // Default route for other roles
+  return "/";
+}
 
 export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
   const pathname = usePathname();
@@ -46,7 +62,9 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
           parsedUser,
           expiryDate
         );
-        router.replace("/");
+        // Redirect to role-specific default route
+        const defaultRoute = getDefaultRouteForRole(parsedUser);
+        router.replace(defaultRoute);
         return;
       } catch (error) {
         console.error("Failed to store auth params from URL", error);
@@ -57,7 +75,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     if (!isAuthenticated && !isPublicRoute) {
       router.push("/login");
     } else if (isAuthenticated && isLoginPage) {
-      router.push("/");
+      // Get user from storage and redirect to their default route
+      const storedUser = authService.getUser();
+      const defaultRoute = getDefaultRouteForRole(storedUser);
+      router.push(defaultRoute);
     }
   }, [
     expires,

@@ -35,6 +35,7 @@ interface FiltersQuery {
   clearable?: boolean;
   loading?: boolean;
   minWidth?: string;
+  permission?: Permission;
 }
 
 interface PageFiltersProps {
@@ -193,32 +194,65 @@ export default function PageFilters({
       )}
 
       {/* Dynamic Filters */}
-      {filters.map((filter) => (
-        <div key={filter.name} className="min-w-0">
-          {filter.isSelect ? (
-            <SelectWithSearch
-              placeholder={filter.placeholder || `Tanlang...`}
-              searchable={filter.searchable !== false}
-              loading={filter.loading}
-              options={filter.options || []}
-              value={getQueryValue(filter.name)}
-              onValueChange={(value) => handleFilterChange(filter.name, value)}
-              triggerClassName="w-full h-10 mb-0  w-[300px] max-w-full"
-            />
-          ) : (
-            <Input
-              placeholder={filter.placeholder || filter.label}
-              className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
-              value={textValues[filter.name] ?? ""}
-              onChange={(e) => {
-                const v = e.target.value;
-                setTextValues((prev) => ({ ...prev, [filter.name]: v }));
-                scheduleDebounce(filter.name, v);
-              }}
-            />
-          )}
-        </div>
-      ))}
+      {filters.map((filter) =>
+        filter.permission ? (
+          <PermissionGuard permission={filter.permission}>
+            <div key={filter.name} className="min-w-0">
+              {filter.isSelect ? (
+                <SelectWithSearch
+                  placeholder={filter.placeholder || `Tanlang...`}
+                  searchable={filter.searchable !== false}
+                  loading={filter.loading}
+                  options={filter.options || []}
+                  value={getQueryValue(filter.name)}
+                  onValueChange={(value) =>
+                    handleFilterChange(filter.name, value)
+                  }
+                  triggerClassName="w-full h-10 mb-0  w-[300px] max-w-full"
+                />
+              ) : (
+                <Input
+                  placeholder={filter.placeholder || filter.label}
+                  className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
+                  value={textValues[filter.name] ?? ""}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setTextValues((prev) => ({ ...prev, [filter.name]: v }));
+                    scheduleDebounce(filter.name, v);
+                  }}
+                />
+              )}
+            </div>
+          </PermissionGuard>
+        ) : (
+          <div key={filter.name} className="min-w-0">
+            {filter.isSelect ? (
+              <SelectWithSearch
+                placeholder={filter.placeholder || `Tanlang...`}
+                searchable={filter.searchable !== false}
+                loading={filter.loading}
+                options={filter.options || []}
+                value={getQueryValue(filter.name)}
+                onValueChange={(value) =>
+                  handleFilterChange(filter.name, value)
+                }
+                triggerClassName="w-full h-10 mb-0  w-[300px] max-w-full"
+              />
+            ) : (
+              <Input
+                placeholder={filter.placeholder || filter.label}
+                className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
+                value={textValues[filter.name] ?? ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTextValues((prev) => ({ ...prev, [filter.name]: v }));
+                  scheduleDebounce(filter.name, v);
+                }}
+              />
+            )}
+          </div>
+        )
+      )}
 
       {/* Date Picker */}
       {hasDatePicker && (

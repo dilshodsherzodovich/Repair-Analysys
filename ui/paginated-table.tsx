@@ -1049,7 +1049,7 @@ function ActionsDropdown<T>({
           <Button
             variant="outline"
             size="sm"
-            className="h-8 w-8 p-0 hover:bg-gray-100 text-red-600 hover:text-red-700"
+            className="h-8 w-8 p-0  border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10"
             onClick={() => onDelete?.(row)}
             title="O'chirish"
           >

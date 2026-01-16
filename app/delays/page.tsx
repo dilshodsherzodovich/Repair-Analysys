@@ -21,6 +21,7 @@ import {
   useUpdateDelay,
 } from "@/api/hooks/use-delays";
 import { DelayModal } from "@/components/delays/delay-modal";
+import { ApproveConfirmationModal } from "@/components/delays/approve-confirmation-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import {
   canAccessSection,
@@ -58,6 +59,8 @@ export default function DelaysPage() {
     "create"
   );
   const [selectedEntry, setSelectedEntry] = useState<DelayEntry | null>(null);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [approveEntry, setApproveEntry] = useState<DelayEntry | null>(null);
 
   const createMutation = useCreateDelay();
   const updateMutation = useUpdateDelay();
@@ -126,26 +129,31 @@ export default function DelaysPage() {
     setIsModalOpen(true);
   }, []);
 
-  const handleApprove = useCallback(
-    async (row: DelayEntry) => {
-      try {
-        await updateMutation.mutateAsync({
-          id: row.id,
-          payload: { archive: true },
-        });
-        showSuccess("Kechikish tasdiqlandi va arxivga o'tkazildi");
-      } catch (error: any) {
-        showError(
-          "Xatolik yuz berdi",
-          error?.response?.data?.message ||
-            error?.message ||
-            "Kechikishni tasdiqlashda xatolik"
-        );
-        throw error;
-      }
-    },
-    [updateMutation, showError, showSuccess]
-  );
+  const handleApproveClick = useCallback((row: DelayEntry) => {
+    setApproveEntry(row);
+    setIsApproveModalOpen(true);
+  }, []);
+
+  const handleApproveConfirm = useCallback(async () => {
+    if (!approveEntry) return;
+    try {
+      await updateMutation.mutateAsync({
+        id: approveEntry.id,
+        payload: { archive: true },
+      });
+      showSuccess("Kechikish tasdiqlandi va arxivga o'tkazildi");
+      setIsApproveModalOpen(false);
+      setApproveEntry(null);
+    } catch (error: any) {
+      showError(
+        "Xatolik yuz berdi",
+        error?.response?.data?.message ||
+          error?.message ||
+          "Kechikishni tasdiqlashda xatolik"
+      );
+      throw error;
+    }
+  }, [approveEntry, updateMutation, showError, showSuccess]);
 
   const handleDelete = useCallback(
     async (row: DelayEntry) => {
@@ -459,6 +467,7 @@ export default function DelaysPage() {
               placeholder: "Stansiyani tanlang",
               searchable: false,
               loading: false,
+              permission: "filter_delay_station",
             },
             {
               name: "responsible_org",
@@ -528,7 +537,6 @@ export default function DelaysPage() {
                     permission: "upload_delay_report" as Permission,
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) => !row.archive,
-                    className: "text-blue-600 hover:text-blue-700",
                   },
                 ]
               : []),
@@ -539,13 +547,15 @@ export default function DelaysPage() {
                   {
                     label: "",
                     icon: <CheckCircle className="h-4 w-4" />,
-                    onClick: handleApprove,
+                    onClick: handleApproveClick,
                     permission: "edit_delay" as Permission,
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) => {
                       const hasReport = !!(row?.report_filename || row?.report);
                       return hasReport && !row.archive;
                     },
+                    className:
+                      "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
                   },
                 ]
               : []),
@@ -572,6 +582,17 @@ export default function DelaysPage() {
         mode={modalMode}
         isPending={createMutation.isPending || updateMutation.isPending}
         user={currentUser}
+      />
+
+      <ApproveConfirmationModal
+        isOpen={isApproveModalOpen}
+        onClose={() => {
+          setIsApproveModalOpen(false);
+          setApproveEntry(null);
+        }}
+        onConfirm={handleApproveConfirm}
+        entry={approveEntry}
+        isPending={updateMutation.isPending}
       />
     </div>
   );
