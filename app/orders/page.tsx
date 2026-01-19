@@ -134,9 +134,8 @@ export default function OrdersPage() {
   } = useOrders({
     page: currentPage,
     page_size: itemsPerPage,
-    search: q,
+    search: q || responsible_department,
     type_of_journal: type_of_journal || undefined,
-    responsible_department: responsible_department || undefined,
     locomotive: locomotive || undefined,
     date: date || undefined,
     organization: organization || undefined,
