@@ -223,8 +223,8 @@ export function PaginatedTable<T extends Record<string, any>>({
         {
           key: "actions",
           header: actionsLabel,
-          className: "w-[100px] text-center",
-          headerClassName: "text-center",
+          className: "w-[100px] text-center sticky right-0 bg-white z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+          headerClassName: "text-center sticky right-0 bg-[#EFF6FF] z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
         } as TableColumn<T>,
       ];
     }
@@ -456,7 +456,14 @@ export function PaginatedTable<T extends Record<string, any>>({
                     );
                   })}
                   {hasActions && (
-                    <TableCell className="text-center py-2 px-4 h-14 transition-colors">
+                    <TableCell 
+                      className={cn(
+                        "text-center py-2 px-4 h-14 transition-colors sticky right-0 z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+                        isSelected
+                          ? "bg-blue-50"
+                          : "bg-white"
+                      )}
+                    >
                       <ActionsDropdown
                         row={row}
                         onEdit={onEdit}
@@ -498,23 +505,6 @@ export function PaginatedTable<T extends Record<string, any>>({
 
       {shouldShowPagination && (
         <div className="flex items-center justify-between pt-4 px-0">
-          <div className="flex items-center gap-2">
-            <Select
-              value={itemsPerPage.toString()}
-              onValueChange={(value) => handleItemsPerPageChange(Number(value))}
-            >
-              <SelectTrigger className="w-[80px] h-9 border border-[#E2E8F0] rounded-md bg-white text-primary mb-0">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-              </SelectContent>
-            </Select>
-            <span className="text-sm text-gray-600">Sahifa raqami</span>
-          </div>
 
           {totalPages > 1 && (
             <div className="flex items-center gap-4">

@@ -78,4 +78,10 @@ export const queryKeys = {
     delete: "delays-delete",
     bulkCreate: "delays-bulk-create",
   },
+  tu152: {
+    all: "tu152-all",
+    locomotives: "tu152-locomotives",
+    locomotiveModels: "tu152-locomotive-models",
+    update: "tu152-update",
+  },
 } as const;
