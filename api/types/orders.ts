@@ -4,6 +4,7 @@ import type { LocomotiveData } from "./locomotive";
 export interface OrderData {
   id: number;
   train_number: string;
+  confirm: boolean;
   responsible_department: string;
   responsible_person: string;
   damage_amount: string;
@@ -34,6 +35,7 @@ export interface CreateOrderPayload {
   type_of_journal: string;
   file?: File | null;
   organization?: number;
+  confirm?: boolean; // Defaults to false
 }
 
 export interface UpdateOrderPayload {
@@ -47,6 +49,7 @@ export interface UpdateOrderPayload {
   type_of_journal?: string;
   file?: File | null;
   organization?: number;
+  confirm?: boolean;
 }
 
 // Parameters for getting orders

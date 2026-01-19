@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
-import { FileSpreadsheet } from "lucide-react";
+import { FileSpreadsheet, CheckCircle } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
 import {
@@ -17,6 +17,7 @@ import {
   useCreateOrder,
   useUpdateOrder,
   useDeleteOrder,
+  useConfirmOrder,
 } from "@/api/hooks/use-orders";
 import { OrderModal } from "@/components/orders/order-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
@@ -25,7 +26,9 @@ import UnauthorizedPage from "../unauthorized/page";
 import { truncateFilename } from "@/utils/format-filename";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import { hasPermission } from "@/lib/permissions";
+import { hasPermission, type Permission } from "@/lib/permissions";
+import { Badge } from "@/ui/badge";
+import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 
 const journalTypeLabels: Record<string, string> = {
   mpr: "Buyruq MPR",
@@ -59,10 +62,13 @@ export default function OrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [orderToConfirm, setOrderToConfirm] = useState<OrderData | null>(null);
   const { showSuccess, showError } = useSnackbar();
   const createOrderMutation = useCreateOrder();
   const updateOrderMutation = useUpdateOrder();
   const deleteOrderMutation = useDeleteOrder();
+  const confirmOrderMutation = useConfirmOrder();
 
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =
     useGetLocomotives();
@@ -76,6 +82,12 @@ export default function OrdersPage() {
     currentUser,
     "choose_organization"
   );
+
+  // Check if user is admin (admin doesn't have create/edit/delete permissions)
+  const isAdmin =
+    !hasPermission(currentUser, "create_order") &&
+    !hasPermission(currentUser, "edit_order") &&
+    !hasPermission(currentUser, "delete_order");
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
@@ -107,8 +119,7 @@ export default function OrdersPage() {
       organizationsData?.forEach((org) => {
         options.push({
           value: org.id.toString(),
-          label:
-            org.name || org.name_uz || org.name_ru || `Tashkilot ${org.id}`,
+          label: org.name || `Tashkilot ${org.id}`,
         });
       });
     }
@@ -169,6 +180,29 @@ export default function OrdersPage() {
     [deleteOrderMutation, showError, showSuccess]
   );
 
+  const handleConfirmClick = useCallback((row: OrderData) => {
+    setOrderToConfirm(row);
+    setIsConfirmModalOpen(true);
+  }, []);
+
+  const handleConfirmOrder = useCallback(async () => {
+    if (!orderToConfirm) return;
+    try {
+      await confirmOrderMutation.mutateAsync(orderToConfirm.id);
+      showSuccess("Buyruq MPR muvaffaqiyatli tasdiqlandi");
+      setIsConfirmModalOpen(false);
+      setOrderToConfirm(null);
+    } catch (error: any) {
+      showError(
+        "Xatolik yuz berdi",
+        error?.response?.data?.message ||
+          error.message ||
+          "Buyruq MPR ni tasdiqlashda xatolik"
+      );
+      throw error;
+    }
+  }, [orderToConfirm, confirmOrderMutation, showError, showSuccess]);
+
   const handleCreate = () => {
     setSelectedOrder(null);
     setModalMode("create");
@@ -217,11 +251,6 @@ export default function OrdersPage() {
         );
       }
     }
-  };
-
-  const handleExport = () => {
-    console.log("Export to Excel");
-    // Implement export logic
   };
 
   const formatDate = (dateString: string): string => {
@@ -320,6 +349,15 @@ export default function OrdersPage() {
           "—"
         ),
     },
+    {
+      key: "confirm",
+      header: "Holati",
+      accessor: (row) => (
+        <Badge variant={row.confirm ? "success_outline" : "warning_outline"}>
+          {row.confirm ? "Tasdiqlangan" : "Tasdiqlanmagan"}
+        </Badge>
+      ),
+    },
   ];
 
   const breadcrumbs = [
@@ -334,24 +372,6 @@ export default function OrdersPage() {
         description="Elektrovozlarni poezdlararo ta'mirlash"
         breadcrumbs={breadcrumbs}
       />
-
-      {/* <div className="px-6">
-        <Tabs
-          className="w-fit"
-          value={currentTab}
-          onValueChange={handleTabChange}
-        >
-          <TabsList className="bg-[#F1F5F9] p-1 gap-0 border-0 rounded-lg inline-flex">
-            <TabsTrigger value="all" className={cn()}>
-              Barcha lokomotivlar
-            </TabsTrigger>
-            <TabsTrigger value="chinese">Xitoy Elektrovoz</TabsTrigger>
-            <TabsTrigger value="3p9e">3P9E - VL80c - VL60k</TabsTrigger>
-            <TabsTrigger value="teplovoz">Teplovoz</TabsTrigger>
-            <TabsTrigger value="statistics">Statistika</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div> */}
 
       <div className="px-6 py-4">
         <PageFilters
@@ -391,8 +411,8 @@ export default function OrdersPage() {
           searchPlaceholder="Qidiruv"
           hasDatePicker={true}
           datePickerLabel="Sana"
-          addButtonPermittion="create_order"
-          onAdd={handleCreate}
+          addButtonPermittion={isAdmin ? undefined : "create_order"}
+          onAdd={isAdmin ? undefined : handleCreate}
           // onExport={handleExport}
           // exportButtonText="Export EXCEL"
           // exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
@@ -410,9 +430,28 @@ export default function OrdersPage() {
           totalPages={totalPages}
           totalItems={totalItems}
           updateQueryParams={true}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+          onEdit={isAdmin ? undefined : handleEdit}
+          onDelete={isAdmin ? undefined : handleDelete}
+          deletePermission="delete_order"
+          editPermission="edit_order"
           isDeleting={deleteOrderMutation.isPending}
+          actionsDisplayMode="row"
+          extraActions={
+            isAdmin
+              ? [
+                  {
+                    label: "",
+                    icon: <CheckCircle className="h-4 w-4" />,
+                    onClick: handleConfirmClick,
+                    permission: "view_orders" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: OrderData) => !row.confirm,
+                    className:
+                      "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
+                  },
+                ]
+              : []
+          }
           selectable={true}
           size="sm"
           selectedIds={selectedIds}
@@ -434,6 +473,26 @@ export default function OrdersPage() {
         isPending={
           createOrderMutation.isPending || updateOrderMutation.isPending
         }
+      />
+
+      <ConfirmationDialog
+        isOpen={isConfirmModalOpen}
+        onClose={() => {
+          setIsConfirmModalOpen(false);
+          setOrderToConfirm(null);
+        }}
+        onConfirm={handleConfirmOrder}
+        title="Buyruq MPR ni tasdiqlash"
+        message={
+          orderToConfirm
+            ? `"${orderToConfirm.train_number}" poyezd raqamli buyruqni tasdiqlashni xohlaysizmi?`
+            : "Buyruqni tasdiqlashni xohlaysizmi?"
+        }
+        confirmText="Tasdiqlash"
+        cancelText="Bekor qilish"
+        variant="info"
+        isDoingAction={confirmOrderMutation.isPending}
+        isDoingActionText="Tasdiqlanmoqda..."
       />
     </div>
   );

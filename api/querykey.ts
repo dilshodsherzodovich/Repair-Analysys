@@ -49,6 +49,7 @@ export const queryKeys = {
     create: "orders-create",
     delete: "delete-order",
     edit: "edit-order",
+    confirm: "confirm-order",
   },
   locomotives: {
     list: "locomotives-list",

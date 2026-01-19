@@ -61,3 +61,14 @@ export function useDeleteOrder() {
     },
   });
 }
+
+export function useConfirmOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number | string) => ordersService.confirmOrder(id),
+    mutationKey: [queryKeys.orders.confirm],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.orders.all] });
+    },
+  });
+}

@@ -265,6 +265,7 @@ export function OrderModal({
         case_description: formData.case_description.trim(),
         date: dateISO,
         type_of_journal: formData.type_of_journal,
+        confirm: mode === "create" ? false : undefined,
         ...(formData.file ? { file: formData.file } : {}),
         ...(canChooseOrganization && formData.organization
           ? { organization: Number(formData.organization) }

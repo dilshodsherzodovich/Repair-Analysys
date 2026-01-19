@@ -94,6 +94,17 @@ export const ordersService = {
       throw error;
     }
   },
+  confirmOrder: async (id: number | string): Promise<OrderData> => {
+    try {
+      const response = await api.patch<OrderData>(`/mpr-journal/${id}/`, {
+        confirm: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error confirming order:", error);
+      throw error;
+    }
+  },
 };
 
 export default ordersService;
