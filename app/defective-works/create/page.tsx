@@ -20,10 +20,19 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { defectiveWorksService } from "@/api/services/defective-works.service";
 import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
 import { XIcon } from "lucide-react";
+import { DatePicker } from "@/ui/date-picker";
+
+interface IssueWithDate {
+  text: string;
+  date: Date | undefined;
+}
 
 export default function PublicDefectiveWorkCreatePage() {
   const [formResetKey, setFormResetKey] = useState(0);
-  const [issues, setIssues] = useState<string[]>([]);
+  const [issues, setIssues] = useState<IssueWithDate[]>([]);
+  const [currentIssueDate, setCurrentIssueDate] = useState<Date | undefined>(
+    undefined
+  );
   const [isPending, setIsPending] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -79,6 +88,7 @@ export default function PublicDefectiveWorkCreatePage() {
     }
 
     setIssues([]);
+    setCurrentIssueDate(undefined);
     if (formRef.current) {
       const issueTextarea = formRef.current.querySelector<HTMLTextAreaElement>(
         'textarea[name="currentIssue"]'
@@ -98,7 +108,10 @@ export default function PublicDefectiveWorkCreatePage() {
     const value = rawValue.trim();
     if (!value) return;
 
-    setIssues((prev) => [...prev, value]);
+    setIssues((prev) => [
+      ...prev,
+      { text: value, date: currentIssueDate || new Date() },
+    ]);
 
     const issueTextarea = formRef.current.querySelector<HTMLTextAreaElement>(
       'textarea[name="currentIssue"]'
@@ -110,6 +123,12 @@ export default function PublicDefectiveWorkCreatePage() {
 
   const handleRemoveIssue = (index: number) => {
     setIssues((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateIssueDate = (index: number, date: Date | undefined) => {
+    setIssues((prev) =>
+      prev.map((issue, i) => (i === index ? { ...issue, date } : issue))
+    );
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -124,8 +143,10 @@ export default function PublicDefectiveWorkCreatePage() {
     const currentIssueFromForm =
       (formData.get("currentIssue") as string | null) ?? "";
     const trimmedCurrent = currentIssueFromForm.trim();
-    const allIssues = trimmedCurrent
-      ? [...issues, trimmedCurrent]
+
+    // Combine existing issues with current issue if it exists
+    const allIssues: IssueWithDate[] = trimmedCurrent
+      ? [...issues, { text: trimmedCurrent, date: currentIssueDate || new Date() }]
       : [...issues];
 
     if (
@@ -138,6 +159,16 @@ export default function PublicDefectiveWorkCreatePage() {
       return;
     }
 
+    // Validate that all issues have dates
+    const issuesWithoutDates = allIssues.filter((issue) => !issue.date);
+    if (issuesWithoutDates.length > 0) {
+      showError(
+        "Iltimos, barcha nosozliklar uchun sanani tanlang.",
+        `${issuesWithoutDates.length} ta nosozlik uchun sana tanlanmagan.`
+      );
+      return;
+    }
+
     if (!temporaryToken) {
       showError("Tizimga kirishda xatolik yuz berdi", "Token topilmadi");
       return;
@@ -145,14 +176,14 @@ export default function PublicDefectiveWorkCreatePage() {
 
     setIsPending(true);
     try {
-      // Prepare payloads
+      // Prepare payloads with individual dates
       const payloads: DefectiveWorkCreatePayload[] = allIssues.map(
-        (issueText) => ({
+        (issue) => ({
           locomotive: Number(locomotive),
           organization_id: Number(organization),
           train_driver: trainDriver.trim(),
-          issue: issueText,
-          date: new Date().toISOString(),
+          issue: issue.text,
+          date: issue.date!.toISOString(),
         })
       );
 
@@ -307,30 +338,14 @@ export default function PublicDefectiveWorkCreatePage() {
                 required
               />
 
-              {/* <FormField
-                id="table_number"
-                name="table_number"
-                label="Tabel raqam"
-                placeholder="Masalan, 12345"
-                required
-              /> */}
-
-              {/* <FormField
-                id="code"
-                name="code"
-                label="Nosozlik kodi"
-                placeholder="Kod kiriting"
-                required
-              /> */}
-
-              {/* <div>
+              <div>
                 <DatePicker
                   label="Nosozlik aniqlangan sana"
-                  value={selectedDate}
-                  onValueChange={setSelectedDate}
+                  value={currentIssueDate}
+                  onValueChange={setCurrentIssueDate}
                   placeholder="DD/MM/YYYY"
                 />
-              </div> */}
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -346,7 +361,7 @@ export default function PublicDefectiveWorkCreatePage() {
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs text-[#64748B]">
                   Bir nechta nosozliklarni bir xil lokomotiv va mashinist uchun
-                  yuborish mumkin. Matnni yozib, ro&apos;yxatga qo&apos;shing.
+                  yuborish mumkin. Matnni yozib, sanani tanlab, ro&apos;yxatga qo&apos;shing.
                 </p>
                 <Button
                   type="button"
@@ -367,15 +382,27 @@ export default function PublicDefectiveWorkCreatePage() {
                     </p>
                   </div>
 
-                  {issues.map((text, index) => (
-                    <div className="rounded-md border border-dashed border-[#CBD5F5] bg-[#F8FAFF] p-3">
-                      <div
-                        key={index}
-                        className="flex items-center justify-between overflow-y-auto text-xs text-[#475569]"
-                      >
-                        <span className="flex-1">
-                          {index + 1}. {text}
+                  {issues.map((issue, index) => (
+                    <div
+                      key={index}
+                      className="rounded-md border-2 border-dashed border-[#CBD5F5]  bg-[#F8FAFF] p-3 space-y-3"
+                    >
+                      <div className="flex items-center justify-between overflow-y-auto text-xs text-[#475569]">
+                       <div className="flex items-center gap-2">
+                       <span className="flex-1">
+                          {index + 1}. {issue.text}
                         </span>
+
+                        <DatePicker  
+                          value={issue.date}
+                          onValueChange={(date) =>
+                            handleUpdateIssueDate(index, date)
+                          }
+                          placeholder="DD/MM/YYYY"
+                          size="sm"
+                        />
+                       </div>
+
                         <Button
                           type="button"
                           variant="destructive"
