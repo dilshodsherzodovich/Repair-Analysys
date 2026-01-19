@@ -29,6 +29,7 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { hasPermission, type Permission } from "@/lib/permissions";
 import { Badge } from "@/ui/badge";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
+import { responsibleOrganizations } from "@/data";
 
 const journalTypeLabels: Record<string, string> = {
   mpr: "Buyruq MPR",
@@ -55,10 +56,10 @@ export default function OrdersPage() {
     locomotive,
     date,
     organization,
+    responsible_department,
   } = getAllQueryValues();
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
-  const [currentTab, setCurrentTab] = useState<string>(tab || "all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
@@ -134,8 +135,8 @@ export default function OrdersPage() {
     page: currentPage,
     page_size: itemsPerPage,
     search: q,
-    tab: currentTab === "all" ? undefined : currentTab,
     type_of_journal: type_of_journal || undefined,
+    responsible_department: responsible_department || undefined,
     locomotive: locomotive || undefined,
     date: date || undefined,
     organization: organization || undefined,
@@ -150,11 +151,6 @@ export default function OrdersPage() {
       ? apiError
       : new Error(apiError.message || "An error occurred")
     : null;
-
-  const handleTabChange = (value: string) => {
-    setCurrentTab(value);
-    updateQuery({ tab: value, page: "1" });
-  };
 
   const handleEdit = (row: OrderData) => {
     setSelectedOrder(row);
@@ -365,6 +361,17 @@ export default function OrdersPage() {
     { label: "Buyruq MPR", current: true },
   ];
 
+  const responsibleOrganizationOptions = useMemo(() => {
+    const options = [{ value: "", label: "Barcha mas'ul tashkilotlar" }];
+    responsibleOrganizations.forEach((org) =>
+      options.push({
+        value: org,
+        label: org,
+      })
+    );
+    return options;
+  }, []);
+
   return (
     <div className="min-h-screen ">
       <PageHeader
@@ -382,6 +389,14 @@ export default function OrdersPage() {
               isSelect: true,
               options: journalTypeOptions,
               placeholder: "Jurnal turini tanlang",
+              searchable: false,
+            },
+            {
+              name: "responsible_department",
+              label: "Mas'ul tashkilot",
+              isSelect: true,
+              options: responsibleOrganizationOptions,
+              placeholder: "Mas'ul tashkilotni tanlang",
               searchable: false,
             },
             {

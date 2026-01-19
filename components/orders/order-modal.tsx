@@ -30,6 +30,7 @@ import { FileUpload } from "@/ui/file-upload";
 import { DatePicker } from "@/ui/date-picker";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { hasPermission } from "@/lib/permissions";
+import { responsibleOrganizations } from "@/data";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -157,7 +158,7 @@ export function OrderModal({
     if (!organizationsData || !Array.isArray(organizationsData)) return [];
     return organizationsData.map((org) => ({
       value: org.id.toString(),
-      label: org.name || org.name_uz || org.name_ru || `Organization ${org.id}`,
+      label: org.name || `Tashkilot ${org.id}`,
     }));
   }, [organizationsData]);
 
@@ -175,10 +176,10 @@ export function OrderModal({
         date: order.date ? new Date(order.date) : null,
         type_of_journal: order.type_of_journal ?? "mpr",
         file: null,
-        organization: "", // Organization ID would need to come from API if available
+        organization: "",
       });
     } else {
-      setFormData(() => ({ ...INITIAL_FORM_STATE }));
+      setFormData(() => ({ ...INITIAL_FORM_STATE, date: new Date() }));
     }
   }, [isOpen, mode, order]);
 
@@ -254,7 +255,9 @@ export function OrderModal({
       event.preventDefault();
       if (!formData.locomotive) return;
 
-      const dateISO = formData.date ? formData.date.toISOString() : "";
+      const dateISO = formData.date
+        ? formData.date.toISOString()
+        : new Date().toISOString();
 
       const payload = {
         train_number: formData.train_number.trim(),
@@ -367,14 +370,24 @@ export function OrderModal({
               isLoading={isLoadingLocomotives}
             />
 
-            <FormField
-              id="responsible_department"
-              label="Mas'ul tashkilot"
-              value={formData.responsible_department}
-              onChange={handleDepartmentChange}
-              placeholder="Mas'ul tashkilotni kiriting"
-              required
-            />
+            <div>
+              <Label htmlFor="type_of_journal">Mas'ul tashkilot</Label>
+              <Select
+                value={formData.responsible_department}
+                onValueChange={handleDepartmentChange}
+              >
+                <SelectTrigger id="responsible_organization">
+                  <SelectValue placeholder="Mas'ul tashkilotni tanlang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {responsibleOrganizations.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             <FormField
               id="responsible_person"

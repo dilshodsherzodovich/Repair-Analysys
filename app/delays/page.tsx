@@ -31,6 +31,7 @@ import {
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { FileUp, FileEdit, CheckCircle, Edit, Trash2 } from "lucide-react";
+import { responsibleOrganizations } from "@/data";
 
 export default function DelaysPage() {
   const { getAllQueryValues } = useFilterParams();
@@ -65,10 +66,6 @@ export default function DelaysPage() {
   const createMutation = useCreateDelay();
   const updateMutation = useUpdateDelay();
   const deleteMutation = useDeleteDelay();
-
-  // Fetch filter options
-  const { data: organizationsData, isLoading: isLoadingOrganizations } =
-    useOrganizations();
 
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
@@ -438,16 +435,15 @@ export default function DelaysPage() {
 
   const organizationOptions = useMemo(() => {
     const options = [{ value: "", label: "Barcha tashkilotlar" }];
-    if (organizationsData && Array.isArray(organizationsData)) {
-      organizationsData.forEach((org) =>
-        options.push({
-          value: org.id.toString(),
-          label: org.name || `Tashkilot ${org.id}`,
-        })
-      );
-    }
+    responsibleOrganizations.forEach((org) =>
+      options.push({
+        value: org,
+        label: org,
+      })
+    );
+
     return options;
-  }, [organizationsData]);
+  }, []);
 
   const statusOptions = [
     { value: "", label: "Barcha holatlar" },
@@ -490,9 +486,9 @@ export default function DelaysPage() {
               label: "Mas'ul tashkilot",
               isSelect: true,
               options: organizationOptions,
-              placeholder: "Tashkilotni tanlang",
+              placeholder: "Mas'ul tashkilotni tanlang",
               searchable: false,
-              loading: isLoadingOrganizations,
+              loading: false,
             },
             {
               name: "status",

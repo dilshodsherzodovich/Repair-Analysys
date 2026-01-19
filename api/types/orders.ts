@@ -61,6 +61,7 @@ export interface OrdersGetParams {
   no_page?: boolean;
   type_of_journal?: string;
   locomotive?: number | string;
+  responsible_department?: string;
   date?: string; // Format: yyyy-MM-dd
   organization?: number | string;
 }
