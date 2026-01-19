@@ -13,6 +13,7 @@ export const tu152Service = {
     try {
       const response = await api.post<TU152ListResponse>(
         "/enakl/tu152/list/",
+        {},
         {
           params: {
             p_create_date_from: params?.p_create_date_from,
