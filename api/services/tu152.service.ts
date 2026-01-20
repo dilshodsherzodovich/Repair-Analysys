@@ -61,7 +61,7 @@ export const tu152Service = {
   ): Promise<TU152ListResponse> {
     try {
       const response = await api.post<TU152ListResponse>(
-        `/enakl/tu152/update/`,
+        `/enakl/tu152/patch/`,
         {
           id,
           ...payload,
