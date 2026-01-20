@@ -80,6 +80,6 @@ export const TU152_STATUSES = [
 
 export interface TU152UpdatePayload {
   status_id: number;
-  answer: string;
+  comment: string;
 }
 

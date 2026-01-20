@@ -63,7 +63,7 @@ export const tu152Service = {
       const response = await api.post<TU152ListResponse>(
         `/enakl/tu152/patch/`,
         {
-          id,
+         parent_id: id,
           ...payload,
         }
       );

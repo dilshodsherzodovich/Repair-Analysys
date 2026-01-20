@@ -54,7 +54,7 @@ export function TU152Modal({
 
     const payload: TU152UpdatePayload = {
       status_id: parseInt(statusId),
-      answer: answer.trim(),
+      comment: answer.trim(),
     };
 
     onSave(payload);
