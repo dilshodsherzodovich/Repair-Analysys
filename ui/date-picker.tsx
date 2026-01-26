@@ -78,17 +78,26 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
                 : placeholder}
               <div className="ml-auto flex items-center space-x-1">
                 {value && !disabled && (
-                  <button
-                    type="button"
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={(e) => {
                       e.stopPropagation();
+                      e.preventDefault();
                       onValueChange?.(undefined);
                     }}
-                    className="hover:bg-gray-100 rounded p-0.5 transition-colors"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        onValueChange?.(undefined);
+                      }
+                    }}
+                    className="hover:bg-gray-100 rounded p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400"
                     aria-label="Clear date"
                   >
                     <X className="h-4 w-4 text-gray-500" />
-                  </button>
+                  </div>
                 )}
                 {hasError && <AlertCircle className="h-4 w-4 text-[#ff5959]" />}
                 {hasSuccess && (

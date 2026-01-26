@@ -5,6 +5,8 @@ import {
   DelayCreatePayload,
   DelayUpdatePayload,
   DelayListParams,
+  DelayReportParams,
+  DelayReportResponse,
 } from "../types/delays";
 
 const buildDelayFormData = (
@@ -113,6 +115,19 @@ export const delaysService = {
 
   async deleteDelay(id: number | string): Promise<void> {
     await api.delete(`/sriv/delays/${id}/`);
+  },
+
+  async getDelayReports(
+    params: DelayReportParams
+  ): Promise<DelayReportResponse> {
+    const response = await api.get<DelayReportResponse>("/sriv/reports/", {
+      params: {
+        start_date: params.start_date,
+        end_date: params.end_date,
+        organizations: params.organizations,
+      },
+    });
+    return response.data;
   },
 };
 

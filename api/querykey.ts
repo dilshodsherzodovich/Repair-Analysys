@@ -77,6 +77,7 @@ export const queryKeys = {
     update: "delays-update",
     delete: "delays-delete",
     bulkCreate: "delays-bulk-create",
+    reports: "delays-reports",
   },
   tu152: {
     all: "tu152-all",

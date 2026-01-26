@@ -55,6 +55,12 @@ const navigationItems = [
     icon: AlertCircle,
     section: "delays",
   },
+  {
+    name: "Sriv hisobotlar",
+    href: "/delay-reports",
+    icon: FileText,
+    section: "delays",
+  },
   // {
   //   name: "Stansiya",
   //   href: "/stations",

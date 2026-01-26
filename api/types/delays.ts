@@ -281,3 +281,36 @@ export interface DelayListParams {
   train_type?: TrainType | string;
   group_reason?: GroupReason | string;
 }
+
+// Delay Reports Types
+export interface DelayReportCategory {
+  count: number;
+  total_delay_time_minutes: number;
+  total_delay_time: string; // Format: "HH:MM:SS"
+  total_damage: number;
+}
+
+export interface DelayReportRow {
+  depo: string;
+  po_otpravleniyu: DelayReportCategory;
+  po_prosledovaniyu: DelayReportCategory;
+  total: DelayReportCategory;
+}
+
+export interface DelayReportTotal {
+  po_otpravleniyu: DelayReportCategory;
+  po_prosledovaniyu: DelayReportCategory;
+  total: DelayReportCategory;
+  depo: string; // "Всего"
+}
+
+export interface DelayReportResponse {
+  rows: DelayReportRow[];
+  total: DelayReportTotal;
+}
+
+export interface DelayReportParams {
+  start_date: string; // Required, format: "YYYY-MM-DD"
+  end_date: string; // Required, format: "YYYY-MM-DD"
+  organizations?: string; // Optional, comma-separated IDs like "1,2"
+}
