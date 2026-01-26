@@ -196,8 +196,8 @@ export default function PageFilters({
       {/* Dynamic Filters */}
       {filters.map((filter) =>
         filter.permission ? (
-          <PermissionGuard permission={filter.permission}>
-            <div key={filter.name} className="min-w-0">
+          <PermissionGuard  key={filter.name}  permission={filter.permission}>
+            <div className="min-w-0">
               {filter.isSelect ? (
                 <SelectWithSearch
                   placeholder={filter.placeholder || `Tanlang...`}

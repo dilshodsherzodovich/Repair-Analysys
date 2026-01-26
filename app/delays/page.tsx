@@ -33,7 +33,6 @@ import {
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { FileUp, FileEdit, CheckCircle, Edit, Trash2 } from "lucide-react";
-import { responsibleOrganizations } from "@/data";
 
 export default function DelaysPage() {
   const { getAllQueryValues } = useFilterParams();
@@ -70,6 +69,9 @@ export default function DelaysPage() {
   const createMutation = useCreateDelay();
   const updateMutation = useUpdateDelay();
   const deleteMutation = useDeleteDelay();
+
+  const { data: organizationsData, isLoading: isLoadingOrganizations } =
+    useOrganizations();
 
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
@@ -482,15 +484,16 @@ export default function DelaysPage() {
 
   const organizationOptions = useMemo(() => {
     const options = [{ value: "", label: "Barcha tashkilotlar" }];
-    responsibleOrganizations.forEach((org) =>
-      options.push({
-        value: org,
-        label: org,
-      })
-    );
-
+    if (organizationsData) {
+      organizationsData?.forEach((org) =>
+        options.push({
+          value: String(org.id),
+          label: org.name,
+        })
+      );
+    }
     return options;
-  }, []);
+  }, [organizationsData]);
 
   const statusOptions = [
     { value: "", label: "Barcha holatlar" },
@@ -575,7 +578,7 @@ export default function DelaysPage() {
               options: organizationOptions,
               placeholder: "Mas'ul tashkilotni tanlang",
               searchable: false,
-              loading: false,
+              loading: isLoadingOrganizations,
             },
             {
               name: "status",

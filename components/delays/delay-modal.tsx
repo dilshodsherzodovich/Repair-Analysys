@@ -29,7 +29,7 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { hasPermission } from "@/lib/permissions";
 import type { UserData } from "@/api/types/auth";
-import { responsibleOrganizations } from "@/data";
+import type { Organization } from "@/api/types/organizations";
 
 interface DelayModalProps {
   isOpen: boolean;
@@ -99,7 +99,7 @@ function OrganizationSelectField({
 }: {
   name: string;
   defaultValue?: string;
-  organizations: string[];
+  organizations: Organization[];
   isLoading: boolean;
   disabled?: boolean;
 }) {
@@ -121,8 +121,8 @@ function OrganizationSelectField({
             </SelectItem>
           ) : organizations.length ? (
             organizations.map((org) => (
-              <SelectItem key={org} value={org}>
-                {org}
+              <SelectItem key={org.id} value={String(org.id)}>
+                {org.name}
               </SelectItem>
             ))
           ) : (
@@ -164,8 +164,8 @@ export function DelayModal({
   const [reportFile, setReportFile] = useState<File | null>(null);
   const { showError } = useSnackbar();
 
-  // const { data: organizationsData, isLoading: isLoadingOrganizations } =
-  //   useOrganizations();
+  const { data: organizationsData, isLoading: isLoadingOrganizations } =
+    useOrganizations();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -444,8 +444,8 @@ export function DelayModal({
                 <OrganizationSelectField
                   name="responsible_org"
                   defaultValue={formDefaults.responsible_org}
-                  organizations={responsibleOrganizations || []}
-                  isLoading={false}
+                  organizations={organizationsData || []}
+                  isLoading={isLoadingOrganizations}
                   disabled={!canEditFields && mode === "edit"}
                 />
 

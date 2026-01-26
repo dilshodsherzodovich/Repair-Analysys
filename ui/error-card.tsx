@@ -61,7 +61,7 @@ export function ErrorCard({
   const { iconBg, iconColor, icon: Icon } = getVariantStyles();
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="min-h-[40vh] flex items-center justify-center">
       <Card className={cn("p-8 max-w-md w-full text-center", className)}>
         <div className="flex flex-col items-center space-y-4">
           <div className={cn("p-4 rounded-full", iconBg)}>
