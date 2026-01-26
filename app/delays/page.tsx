@@ -13,6 +13,8 @@ import {
   DelayUpdatePayload,
   DELAY_TYPE_OPTIONS,
   STATION_OPTIONS,
+  TRAIN_TYPE_OPTIONS,
+  GROUP_REASON_OPTIONS,
 } from "@/api/types/delays";
 import {
   useCreateDelay,
@@ -46,6 +48,8 @@ export default function DelaysPage() {
     station,
     status,
     archive,
+    train_type,
+    group_reason,
   } = getAllQueryValues();
   const { showSuccess, showError } = useSnackbar();
 
@@ -95,6 +99,8 @@ export default function DelaysPage() {
     status: statusFilter,
     archive: archiveFilter,
     incident_date: date || undefined, // Map "date" query param to "incident_date" API param
+    train_type: train_type || undefined,
+    group_reason: group_reason || undefined,
   });
 
   const paginatedData = apiResponse?.results ?? [];
@@ -266,10 +272,14 @@ export default function DelaysPage() {
 
   const formatTime = useCallback((timeString: string) => {
     try {
-      // Handle ISO time string like "11:26:53.951Z" or "HH:mm"
-      const match = timeString.match(/(\d{1,2}):(\d{2})/);
+      // Handle HH:MM:SS format (e.g., "01:03:00" for 1 hour 3 minutes)
+      // Also handle legacy formats like "11:26:53.951Z" or "HH:mm"
+      const match = timeString.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
       if (match) {
-        return `${match[1].padStart(2, "0")}:${match[2]}`;
+        const hours = match[1].padStart(2, "0");
+        const minutes = match[2].padStart(2, "0");
+        // Display as HH:MM (hours and minutes only)
+        return `${hours}:${minutes}`;
       }
       return timeString;
     } catch {
@@ -310,20 +320,56 @@ export default function DelaysPage() {
       accessor: (row) =>
         row?.incident_date ? formatDate(row.incident_date, false) : "-",
     },
-    {
-      key: "delay_type",
-      header: "Kechikish turi",
-      accessor: (row) => row?.delay_type || "-",
-    },
+    
     {
       key: "train_number",
       header: "Poyezd raqami",
       accessor: (row) => row?.train_number || "-",
+      width: "20px",
+    },
+    {
+      key: "train_type",
+      header: "Poyezd turi",
+      accessor: (row) => {
+        if (row?.train_type_display) {
+          return row.train_type_display;
+        }
+        if (row?.train_type) {
+          const option = TRAIN_TYPE_OPTIONS.find(
+            (opt) => opt.value === row.train_type
+          );
+          return option?.label || row.train_type;
+        }
+        return "-";
+      },
+    },
+    {
+      key: "delay_type",
+      header: "Kechikish turi",
+      accessor: (row) => row?.delay_type || "-",
+      width: "150px"
+    },
+    {
+      key: "group_reason",
+      header: "Guruh sababi",
+      accessor: (row) => {
+        if (row?.group_reason_display) {
+          return row.group_reason_display;
+        }
+        if (row?.group_reason) {
+          const option = GROUP_REASON_OPTIONS.find(
+            (opt) => opt.value === row.group_reason
+          );
+          return option?.label || row.group_reason;
+        }
+        return "-";
+      },
     },
     {
       key: "station",
       header: "Stansiya",
       accessor: (row) => row?.station || "-",
+      width: "100px"
     },
     {
       key: "delay_time",
@@ -367,6 +413,7 @@ export default function DelaysPage() {
           </Badge>
         );
       },
+      width: "100px"
     },
     {
       key: "archive",
@@ -451,6 +498,28 @@ export default function DelaysPage() {
     { value: "false", label: "Sriv emas" },
   ];
 
+  const trainTypeOptions = useMemo(() => {
+    const options = [{ value: "", label: "Barcha poyezd turlari" }];
+    TRAIN_TYPE_OPTIONS.forEach((type) =>
+      options.push({
+        value: type.value,
+        label: type.label,
+      })
+    );
+    return options;
+  }, []);
+
+  const groupReasonOptions = useMemo(() => {
+    const options = [{ value: "", label: "Barcha sabablar" }];
+    GROUP_REASON_OPTIONS.forEach((reason) =>
+      options.push({
+        value: reason.value,
+        label: reason.label,
+      })
+    );
+    return options;
+  }, []);
+
   return (
     <div className="min-h-screen ">
       <PageHeader
@@ -468,6 +537,24 @@ export default function DelaysPage() {
               isSelect: true,
               options: delayTypeOptions,
               placeholder: "Kechikish turini tanlang",
+              searchable: false,
+              loading: false,
+            },
+            {
+              name: "train_type",
+              label: "Poyezd turi",
+              isSelect: true,
+              options: trainTypeOptions,
+              placeholder: "Poyezd turini tanlang",
+              searchable: false,
+              loading: false,
+            },
+            {
+              name: "group_reason",
+              label: "Guruh sababi",
+              isSelect: true,
+              options: groupReasonOptions,
+              placeholder: "Guruh sababini tanlang",
               searchable: false,
               loading: false,
             },
@@ -500,7 +587,7 @@ export default function DelaysPage() {
               loading: false,
             },
           ]}
-          hasSearch
+          hasSearch={false}
           hasDatePicker
           datePickerLabel="Voqea sanasi"
           searchPlaceholder="Qidiruv"
@@ -524,7 +611,6 @@ export default function DelaysPage() {
           updateQueryParams
           actionsDisplayMode="row"
           extraActions={[
-            // Edit action (for sriv_admin only)
             ...(hasPermission(currentUser, "edit_delay") &&
             !hasPermission(currentUser, "upload_delay_report")
               ? [
@@ -539,7 +625,7 @@ export default function DelaysPage() {
                 ]
               : []),
 
-            // Delete action (for sriv_admin only)
+             // Delete action (for sriv_admin only)
             ...(hasPermission(currentUser, "delete_delay")
               ? [
                   {

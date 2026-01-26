@@ -179,6 +179,37 @@ export interface ResponsibleOrgDetail {
   organization: Organization;
 }
 
+export type TrainType = "passenger" | "freight" | "electric" | "shunt" | "high_speed";
+
+export type GroupReason =
+  | "repair"
+  | "speed_violation"
+  | "crew_waiting"
+  | "autoblock_center"
+  | "driver_dispute"
+  | "fuel_finished"
+  | "late_loco_exit"
+  | "other";
+
+export const TRAIN_TYPE_OPTIONS: Array<{ value: TrainType; label: string }> = [
+  { value: "passenger", label: "Yo'lovchi" },
+  { value: "freight", label: "Yuk" },
+  { value: "electric", label: "Elektr" },
+  { value: "shunt", label: "Manyovr" },
+  { value: "high_speed", label: "Yuqori tezlikda harakatlanuvchi" },
+];
+
+export const GROUP_REASON_OPTIONS: Array<{ value: GroupReason; label: string }> = [
+  { value: "repair", label: "Lokomotiv ta'mirlash" },
+  { value: "speed_violation", label: "Tezlik buzilishi" },
+  { value: "crew_waiting", label: "Ekipaj kutish" },
+  { value: "autoblock_center", label: "Avtoblok markazi" },
+  { value: "driver_dispute", label: "Mashinist bahs-munozarasi" },
+  { value: "fuel_finished", label: "Yoqilg'i tugashi" },
+  { value: "late_loco_exit", label: "Lokomotiv kech chiqishi" },
+  { value: "other", label: "Boshqa" },
+];
+
 export interface DelayEntry {
   id: number;
   delay_type: DelayType;
@@ -197,13 +228,17 @@ export interface DelayEntry {
   archive: boolean;
   status_display?: string;
   created_at?: string; // ISO datetime string
+  group_reason?: GroupReason;
+  group_reason_display?: string;
+  train_type?: TrainType;
+  train_type_display?: string;
 }
 
 export interface DelayCreatePayload {
   delay_type: DelayType;
   train_number: string;
   station: string;
-  delay_time: string; // Format: "HH:mm" or "H:m" or ISO time string
+  delay_time: string; // Format: "HH:MM:SS" (e.g., "01:03:00" for 1 hour 3 minutes)
   reason: string;
   damage_amount: number;
   responsible_org: number;
@@ -211,13 +246,15 @@ export interface DelayCreatePayload {
   incident_date: string; // YYYY-MM-DD
   status?: boolean; // Defaults to false when creating
   archive?: boolean; // Defaults to false when creating
+  group_reason: GroupReason;
+  train_type: TrainType;
 }
 
 export interface DelayUpdatePayload {
   delay_type?: DelayType;
   train_number?: string;
   station?: string;
-  delay_time?: string;
+  delay_time?: string; // Format: "HH:MM:SS" (e.g., "01:03:00" for 1 hour 3 minutes)
   reason?: string;
   damage_amount?: number;
   responsible_org?: number;
@@ -225,6 +262,8 @@ export interface DelayUpdatePayload {
   incident_date?: string;
   status?: boolean;
   archive?: boolean;
+  group_reason?: GroupReason;
+  train_type?: TrainType;
 }
 
 export interface DelayListParams {
@@ -237,4 +276,6 @@ export interface DelayListParams {
   status?: boolean;
   archive?: boolean;
   incident_date?: string;
+  train_type?: TrainType | string;
+  group_reason?: GroupReason | string;
 }

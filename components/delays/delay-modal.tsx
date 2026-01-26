@@ -20,6 +20,10 @@ import {
   DelayUpdatePayload,
   DELAY_TYPE_OPTIONS,
   STATION_OPTIONS,
+  TRAIN_TYPE_OPTIONS,
+  GROUP_REASON_OPTIONS,
+  TrainType,
+  GroupReason,
 } from "@/api/types/delays";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useSnackbar } from "@/providers/snackbar-provider";
@@ -41,25 +45,50 @@ type FormData = {
   delay_type: string;
   train_number: string;
   station: string;
-  delay_time: string;
+  delay_time: string; // Minutes as string
   reason: string;
   damage_amount: string;
   responsible_org: string;
   status: string;
   archive: string;
+  group_reason: string;
+  train_type: string;
 };
 
 const INITIAL_FORM_DATA: FormData = {
   delay_type: "",
   train_number: "",
   station: "",
-  delay_time: "",
+  delay_time: "", // Minutes
   reason: "",
   damage_amount: "0",
   responsible_org: "",
   status: "true", // Defaults to true when creating
   archive: "false", // Defaults to false (not archived)
+  group_reason: "",
+  train_type: "",
 };
+
+// Convert minutes to HH:MM:SS format
+function minutesToTimeString(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  const secs = 0; // Always 0 for seconds
+  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+// Convert HH:MM:SS or HH:MM to minutes
+function timeStringToMinutes(timeStr: string): number {
+  if (!timeStr) return 0;
+  // Handle formats: "HH:MM:SS", "HH:MM", "H:M"
+  const match = timeStr.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (match) {
+    const hours = parseInt(match[1], 10) || 0;
+    const minutes = parseInt(match[2], 10) || 0;
+    return hours * 60 + minutes;
+  }
+  return 0;
+}
 
 function OrganizationSelectField({
   name,
@@ -142,16 +171,14 @@ export function DelayModal({
     if (!isOpen) return;
 
     if (entry && (mode === "edit" || mode === "moderate")) {
-      // Parse delay_time (format: "HH:mm:ss" or "HH:mm")
-      const timeStr = entry.delay_time || "";
-      const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
-      const formattedTime = timeMatch ? `${timeMatch[1]}:${timeMatch[2]}` : "";
+      // Convert delay_time from HH:MM:SS to minutes
+      const minutes = timeStringToMinutes(entry.delay_time || "");
 
       const defaults = {
         delay_type: entry.delay_type || "",
         train_number: entry.train_number || "",
         station: entry.station || "",
-        delay_time: formattedTime,
+        delay_time: minutes > 0 ? String(minutes) : "",
         reason: entry.reason || "",
         damage_amount: String(entry.damage_amount || 0),
         responsible_org: entry.responsible_org
@@ -159,6 +186,8 @@ export function DelayModal({
           : "",
         status: entry.status ? "true" : "false", // Use actual entry status
         archive: entry.archive ? "true" : "false",
+        group_reason: entry.group_reason || "",
+        train_type: entry.train_type || "",
       };
       setFormDefaults(defaults);
       setSelectedDate(
@@ -196,14 +225,26 @@ export function DelayModal({
     const delayType = (data.get("delay_type") as string) || "";
     const trainNumber = (data.get("train_number") as string) || "";
     const station = (data.get("station") as string) || "";
-    const delayTime = (data.get("delay_time") as string) || "";
+    const delayTimeMinutes = (data.get("delay_time") as string) || "";
     const reason = (data.get("reason") as string) || "";
     const damageAmount = (data.get("damage_amount") as string) || "0";
     const responsibleOrg = (data.get("responsible_org") as string) || "";
     const status = (data.get("status") as string) === "true";
+    const groupReason = (data.get("group_reason") as string) || "";
+    const trainType = (data.get("train_type") as string) || "";
 
     if (!delayType || !trainNumber || !station || !responsibleOrg) {
       showError("Iltimos, barcha majburiy maydonlarni to'ldiring");
+      return;
+    }
+
+    if (mode === "create" && (!groupReason || !trainType)) {
+      showError("Iltimos, guruh sababi va poyezd turini tanlang");
+      return;
+    }
+
+    if (!delayTimeMinutes || isNaN(Number(delayTimeMinutes)) || Number(delayTimeMinutes) < 0) {
+      showError("Iltimos, kechikish vaqtini daqiqalarda kiriting");
       return;
     }
 
@@ -215,12 +256,9 @@ export function DelayModal({
     // Format date as YYYY-MM-DD
     const formattedDate = selectedDate.toISOString().split("T")[0];
 
-    // Format time - ensure it's in HH:mm format
-    const timeParts = delayTime.split(":");
-    const formattedTime =
-      timeParts.length >= 2
-        ? `${timeParts[0].padStart(2, "0")}:${timeParts[1].padStart(2, "0")}`
-        : delayTime;
+    // Convert minutes to HH:MM:SS format
+    const minutes = parseInt(delayTimeMinutes, 10);
+    const formattedTime = minutesToTimeString(minutes);
 
     const payload: DelayCreatePayload | DelayUpdatePayload = {
       delay_type: delayType as "Po prosledovaniyu" | "Po otpravleniyu",
@@ -238,6 +276,16 @@ export function DelayModal({
       // Archive defaults to false, only changed by sriv_admin via "Tasdiqlash" action
       ...(mode === "create" ? { archive: false } : {}),
       ...(canUploadReport && reportFile && { report: reportFile }),
+      // Add new fields
+      ...(mode === "create"
+        ? {
+            group_reason: groupReason as GroupReason,
+            train_type: trainType as TrainType,
+          }
+        : {
+            ...(groupReason && { group_reason: groupReason as GroupReason }),
+            ...(trainType && { train_type: trainType as TrainType }),
+          }),
     };
 
     onSave(payload);
@@ -284,6 +332,38 @@ export function DelayModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {!isModerateMode && (
               <>
+              
+
+                <FormField
+                  id="train_number"
+                  name="train_number"
+                  label="Poyezd raqami"
+                  defaultValue={formDefaults.train_number}
+                  placeholder="Poyezd raqamini kiriting"
+                  required
+                />
+
+                <div>
+                  <Label htmlFor="train_type">Poyezd turi</Label>
+                  <Select
+                    name="train_type"
+                    defaultValue={formDefaults.train_type}
+                    required
+                    disabled={!canEditFields && mode === "edit"}
+                  >
+                    <SelectTrigger id="train_type">
+                      <SelectValue placeholder="Poyezd turini tanlang" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TRAIN_TYPE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div>
                   <Label htmlFor="delay_type">Kechikish turi</Label>
                   <Select
@@ -304,15 +384,6 @@ export function DelayModal({
                     </SelectContent>
                   </Select>
                 </div>
-
-                <FormField
-                  id="train_number"
-                  name="train_number"
-                  label="Poyezd raqami"
-                  defaultValue={formDefaults.train_number}
-                  placeholder="Poyezd raqamini kiriting"
-                  required
-                />
 
                 <div>
                   <Label htmlFor="station">Stansiya</Label>
@@ -338,12 +409,37 @@ export function DelayModal({
                 <FormField
                   id="delay_time"
                   name="delay_time"
-                  label="Kechikish vaqti"
-                  type="time"
+                  label="Kechikish vaqti (daqiqalar)"
+                  type="number"
                   defaultValue={formDefaults.delay_time}
-                  placeholder="HH:mm"
+                  placeholder="Masalan: 72 (1 soat 12 daqiqa)"
                   required
+                  min="0"
+                  step="1"
                 />
+
+               
+
+                <div>
+                  <Label htmlFor="group_reason">Guruh sababi</Label>
+                  <Select
+                    name="group_reason"
+                    defaultValue={formDefaults.group_reason}
+                    required
+                    disabled={!canEditFields && mode === "edit"}
+                  >
+                    <SelectTrigger id="group_reason">
+                      <SelectValue placeholder="Guruh sababini tanlang" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GROUP_REASON_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 <OrganizationSelectField
                   name="responsible_org"

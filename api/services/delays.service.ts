@@ -41,7 +41,10 @@ export const delaysService = {
         station: params?.station,
         responsible_org: params?.responsible_org,
         status: params?.status,
+        archive: params?.archive,
         incident_date: params?.incident_date,
+        train_type: params?.train_type,
+        group_reason: params?.group_reason,
       },
     });
     return response.data;
