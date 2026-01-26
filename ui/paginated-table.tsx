@@ -913,12 +913,30 @@ function ActionsDropdown<T>({
   deletePermission?: Permission;
   actionsDisplayMode?: "dropdown" | "row";
 }) {
-  const hasActions =
-    onEdit || onDelete || (extraActions && extraActions.length > 0);
+  // All hooks must be called unconditionally at the top
+  const [isOpen, setIsOpen] = React.useState(false);
 
-  if (!hasActions) {
-    return null;
-  }
+  const closeMenu = React.useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  const handleEdit = React.useCallback(() => {
+    onEdit?.(row);
+    closeMenu();
+  }, [onEdit, row, closeMenu]);
+
+  const handleDelete = React.useCallback(() => {
+    onDelete?.(row);
+    closeMenu();
+  }, [onDelete, row, closeMenu]);
+
+  const handleExtraAction = React.useCallback(
+    (action: TableAction<T>) => {
+      action.onClick(row);
+      closeMenu();
+    },
+    [row, closeMenu]
+  );
 
   // Filter actions based on permissions and row conditions
   const filteredExtraActions = React.useMemo(() => {
@@ -938,6 +956,13 @@ function ActionsDropdown<T>({
       return true;
     });
   }, [extraActions, row]);
+
+  const hasActions =
+    onEdit || onDelete || (extraActions && extraActions.length > 0);
+
+  if (!hasActions) {
+    return null;
+  }
 
   const canEdit =
     onEdit &&
@@ -1005,30 +1030,6 @@ function ActionsDropdown<T>({
       );
     }
   }
-
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const closeMenu = React.useCallback(() => {
-    setIsOpen(false);
-  }, []);
-
-  const handleEdit = React.useCallback(() => {
-    onEdit?.(row);
-    closeMenu();
-  }, [onEdit, row, closeMenu]);
-
-  const handleDelete = React.useCallback(() => {
-    onDelete?.(row);
-    closeMenu();
-  }, [onDelete, row, closeMenu]);
-
-  const handleExtraAction = React.useCallback(
-    (action: TableAction<T>) => {
-      action.onClick(row);
-      closeMenu();
-    },
-    [row, closeMenu]
-  );
 
   // Render as row of buttons (icons only, no labels)
   if (actionsDisplayMode === "row") {
