@@ -166,13 +166,13 @@ export default function PageFilters({
   return (
     <div
       className={cn(
-        "flex flex-wrap md:flex-nowrap overflow-auto items-stretch gap-3 md:gap-4 mb-4",
+        "flex flex-wrap items-stretch gap-3 md:gap-4 mb-4",
         className
       )}
     >
       {/* Search Input */}
       {hasSearch && (
-        <div className="min-w-[250px] flex-1 max-w-full">
+        <div className="min-w-[200px] flex-1 max-w-[400px] flex-shrink-0">
           <div className="relative w-full h-full flex items-center">
             <input
               type="text"
@@ -197,7 +197,7 @@ export default function PageFilters({
       {filters.map((filter) =>
         filter.permission ? (
           <PermissionGuard  key={filter.name}  permission={filter.permission}>
-            <div className="min-w-0">
+            <div className="min-w-[200px] flex-shrink-0">
               {filter.isSelect ? (
                 <SelectWithSearch
                   placeholder={filter.placeholder || `Tanlang...`}
@@ -208,12 +208,12 @@ export default function PageFilters({
                   onValueChange={(value) =>
                     handleFilterChange(filter.name, value)
                   }
-                  triggerClassName="w-full h-10 mb-0  w-[300px] max-w-full"
+                  triggerClassName="w-full h-10 mb-0 min-w-[200px] max-w-[300px]"
                 />
               ) : (
                 <Input
                   placeholder={filter.placeholder || filter.label}
-                  className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
+                  className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors min-w-[200px] max-w-[300px]"
                   value={textValues[filter.name] ?? ""}
                   onChange={(e) => {
                     const v = e.target.value;
@@ -225,7 +225,7 @@ export default function PageFilters({
             </div>
           </PermissionGuard>
         ) : (
-          <div key={filter.name} className="min-w-0">
+          <div key={filter.name} className="min-w-[200px] flex-shrink-0">
             {filter.isSelect ? (
               <SelectWithSearch
                 placeholder={filter.placeholder || `Tanlang...`}
@@ -236,12 +236,12 @@ export default function PageFilters({
                 onValueChange={(value) =>
                   handleFilterChange(filter.name, value)
                 }
-                triggerClassName="w-full h-10 mb-0  w-[300px] max-w-full"
+                triggerClassName="w-full h-10 mb-0 min-w-[200px] max-w-[300px]"
               />
             ) : (
               <Input
                 placeholder={filter.placeholder || filter.label}
-                className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
+                className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors min-w-[200px] max-w-[300px]"
                 value={textValues[filter.name] ?? ""}
                 onChange={(e) => {
                   const v = e.target.value;
@@ -256,18 +256,20 @@ export default function PageFilters({
 
       {/* Date Picker */}
       {hasDatePicker && (
-        <DatePicker
-          placeholder={datePickerLabel}
-          value={currentDate}
-          onValueChange={handleDateChange}
-          className="flex-1 min-w-[250px]"
-          size="md"
-        />
+        <div className="min-w-[200px] flex-shrink-0">
+          <DatePicker
+            placeholder={datePickerLabel}
+            value={currentDate}
+            onValueChange={handleDateChange}
+            className="w-full min-w-[200px] max-w-[300px]"
+            size="md"
+          />
+        </div>
       )}
 
       {/* Date Range Picker */}
       {hasDateRangePicker && (
-        <div className="min-w-0">
+        <div className="min-w-[400px] flex-shrink-0">
           <div className="grid grid-cols-2 gap-2">
             <DatePicker
               placeholder={`${dateRangePickerLabel} dan`}
@@ -276,7 +278,7 @@ export default function PageFilters({
                 handleDateRangeChange(date, currentEndDate)
               }
               className="w-full"
-              size="sm"
+              size="md"
             />
             <DatePicker
               placeholder={`${dateRangePickerLabel} gacha`}
@@ -285,7 +287,7 @@ export default function PageFilters({
                 handleDateRangeChange(currentStartDate, date)
               }
               className="w-full"
-              size="sm"
+              size="md"
             />
           </div>
         </div>
@@ -293,7 +295,7 @@ export default function PageFilters({
 
       {/* Action Buttons */}
       {(onAdd || onExport) && (
-        <div className="ms-auto shrink-0 flex items-center gap-2">
+        <div className="ml-auto shrink-0 flex items-center gap-2 w-full sm:w-auto">
           {/* Create/Add Button */}
           {onAdd && (
             <PermissionGuard permission={addButtonPermittion}>
@@ -328,7 +330,7 @@ export default function PageFilters({
 
       {/* Bulk Actions */}
       {selectedCount > 0 && onBulkDelete && (
-        <div className="ms-auto shrink-0 flex items-center gap-2">
+        <div className="ml-auto shrink-0 flex items-center gap-2 w-full sm:w-auto">
           <span className="text-sm text-[#6b7280]">
             {selectedCount} ta tanlangan
           </span>

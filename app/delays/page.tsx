@@ -42,7 +42,8 @@ export default function DelaysPage() {
     page,
     pageSize,
     delay_type,
-    date, // Date picker uses "date" as query param
+    start_date, // Date range picker uses "start_date" and "end_date" as query params
+    end_date,
     responsible_org,
     station,
     status,
@@ -100,7 +101,8 @@ export default function DelaysPage() {
     responsible_org: responsible_org || undefined,
     status: statusFilter,
     archive: archiveFilter,
-    incident_date: date || undefined, // Map "date" query param to "incident_date" API param
+    from_date: start_date || undefined, // Map "start_date" query param to "from_date" API param
+    end_date: end_date || undefined, // Map "end_date" query param to "end_date" API param
     train_type: train_type || undefined,
     group_reason: group_reason || undefined,
   });
@@ -584,8 +586,8 @@ export default function DelaysPage() {
             },
           ]}
           hasSearch={false}
-          hasDatePicker
-          datePickerLabel="Sana"
+          hasDateRangePicker
+          dateRangePickerLabel=""
           searchPlaceholder="Qidiruv"
           addButtonPermittion="create_delay"
           onAdd={handleCreate}

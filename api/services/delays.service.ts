@@ -43,6 +43,8 @@ export const delaysService = {
         status: params?.status,
         archive: params?.archive,
         incident_date: params?.incident_date,
+        from_date: params?.from_date,
+        end_date: params?.end_date,
         train_type: params?.train_type,
         group_reason: params?.group_reason,
       },

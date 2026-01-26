@@ -276,6 +276,8 @@ export interface DelayListParams {
   status?: boolean;
   archive?: boolean;
   incident_date?: string;
+  from_date?: string;
+  end_date?: string;
   train_type?: TrainType | string;
   group_reason?: GroupReason | string;
 }
