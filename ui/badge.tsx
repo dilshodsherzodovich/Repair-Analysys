@@ -17,11 +17,11 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-[#dc2626] text-white hover:bg-[#b91c1c]",
         destructive_outline:
-          "border-transparent border-[#dc2626] bg-[#dc2626] text-white hover:bg-[#b91c1c]",
+          "border-transparent border-[#dc2626] bg-[#dc2626]/10 text-[#dc2626] hover:bg-[#b91c1c]/20 hover:text-[#b91c1c]",
         success:
           "border-transparent bg-[#10b981] text-white hover:bg-[#059669]",
         success_outline:
-          "border-transparent border-[#10b981] bg-[#10b981] text-white hover:bg-[#059669]",
+          "border-transparent border-[#10b981] bg-[#10b981]/10 text-[#10b981] hover:bg-[#059669]/20 hover:text-[#059669]",
         warning:
           "border-transparent bg-[#f59e0b] text-white hover:bg-[#d97706]",
         warning_outline:

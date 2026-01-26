@@ -279,13 +279,13 @@ export function DelayModal({
       // Add new fields
       ...(mode === "create"
         ? {
-            group_reason: groupReason as GroupReason,
-            train_type: trainType as TrainType,
-          }
+          group_reason: groupReason as GroupReason,
+          train_type: trainType as TrainType,
+        }
         : {
-            ...(groupReason && { group_reason: groupReason as GroupReason }),
-            ...(trainType && { train_type: trainType as TrainType }),
-          }),
+          ...(groupReason && { group_reason: groupReason as GroupReason }),
+          ...(trainType && { train_type: trainType as TrainType }),
+        }),
     };
 
     onSave(payload);
@@ -306,8 +306,8 @@ export function DelayModal({
         mode === "create"
           ? "Kechikish qo'shish"
           : mode === "moderate"
-          ? "Kechikishni boshqarish"
-          : "Kechikishni tahrirlash",
+            ? "Kechikishni boshqarish"
+            : "Kechikishni tahrirlash",
       submit: mode === "create" ? "Qo'shish" : "Saqlash",
       pending: mode === "create" ? "Qo'shilmoqda..." : "Saqlanmoqda...",
     }),
@@ -332,7 +332,7 @@ export function DelayModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {!isModerateMode && (
               <>
-              
+
 
                 <FormField
                   id="train_number"
@@ -418,10 +418,10 @@ export function DelayModal({
                   step="1"
                 />
 
-               
+
 
                 <div>
-                  <Label htmlFor="group_reason">Guruh sababi</Label>
+                  <Label htmlFor="group_reason">Guruh</Label>
                   <Select
                     name="group_reason"
                     defaultValue={formDefaults.group_reason}
@@ -467,24 +467,26 @@ export function DelayModal({
                   onValueChange={setSelectedDate}
                   placeholder="DD/MM/YYYY"
                 />
+
+                {(canChangeStatus || canChangeStatusAdmin) && (
+                  <div className="w-full flex-1">
+                    <Label htmlFor="status">Holat</Label>
+                    <Select name="status" defaultValue={formDefaults.status}>
+                      <SelectTrigger className="mb-0 w-full" id="status">
+                        <SelectValue placeholder="Holatni tanlang" />
+                      </SelectTrigger>
+                      <SelectContent className="mb-0">
+                        <SelectItem value="true">Sriv</SelectItem>
+                        <SelectItem value="false">Sriv emas</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </>
             )}
           </div>
 
-          {(canChangeStatus || canChangeStatusAdmin) && (
-            <div className="w-full flex-1">
-              <Label htmlFor="status">Holat</Label>
-              <Select name="status" defaultValue={formDefaults.status}>
-                <SelectTrigger className="mb-0 w-full" id="status">
-                  <SelectValue placeholder="Holatni tanlang" />
-                </SelectTrigger>
-                <SelectContent className="mb-0">
-                  <SelectItem value="true">Sriv</SelectItem>
-                  <SelectItem value="false">Sriv emas</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+
 
           {!isModerateMode && (
             <FormField

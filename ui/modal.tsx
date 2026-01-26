@@ -136,11 +136,11 @@ export function Modal({
         className={cn(sizeClasses[size], className)}
         aria-describedby={ariaDescribedBy}
       >
-        {title && (
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-          </DialogHeader>
-        )}
+        <DialogHeader>
+          <DialogTitle className={!title ? "sr-only" : ""}>
+            {title || "Dialog"}
+          </DialogTitle>
+        </DialogHeader>
         {children}
       </DialogContent>
     </Dialog>

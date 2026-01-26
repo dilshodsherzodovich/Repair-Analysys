@@ -77,12 +77,12 @@ export function useUpdateDelay() {
       payload: DelayUpdatePayload;
     }) => delaysService.updateDelay(id, payload),
     mutationKey: [queryKeys.delays.update],
-    onSuccess: () => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.delays.all],
       });
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.delays.detail],
+        queryKey: [queryKeys.delays.detail(id)],
       });
     },
   });

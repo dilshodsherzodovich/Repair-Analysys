@@ -149,23 +149,26 @@ export default function DelaysPage() {
 
   const handleApproveConfirm = useCallback(async () => {
     if (!approveEntry) return;
-    try {
-      await updateMutation.mutateAsync({
-        id: approveEntry.id,
-        payload: { archive: true },
-      });
-      showSuccess("Kechikish tasdiqlandi va arxivga o'tkazildi");
-      setIsApproveModalOpen(false);
-      setApproveEntry(null);
-    } catch (error: any) {
-      showError(
-        "Xatolik yuz berdi",
-        error?.response?.data?.message ||
-        error?.message ||
-        "Kechikishni tasdiqlashda xatolik"
-      );
-      throw error;
-    }
+     updateMutation.mutate({
+      id: approveEntry.id,
+      payload: {
+        archive: true,
+      },
+    }, {
+      onSuccess: () => {
+        showSuccess("Kechikish muvaffaqiyatli tasdiqlandi");
+        setIsApproveModalOpen(false);
+        setApproveEntry(null);
+      },
+      onError: (error: any) => {
+        showError(
+          "Xatolik yuz berdi",
+          error?.response?.data?.message ||
+          error?.message ||
+          "Kechikishni tasdiqlashda xatolik"
+        );
+      },
+    });
   }, [approveEntry, updateMutation, showError, showSuccess]);
 
   const handleDelete = useCallback(
@@ -308,7 +311,7 @@ export default function DelaysPage() {
   const columns: TableColumn<DelayEntry>[] = [
     {
       key: "incident_date",
-      header: "Voqea sanasi",
+      header: "Sana",
       accessor: (row) =>
         row?.incident_date ? formatDate(row.incident_date, false) : "-",
     },
@@ -343,7 +346,7 @@ export default function DelaysPage() {
     },
     {
       key: "group_reason",
-      header: "Guruh sababi",
+      header: "Guruh",
       accessor: (row) => {
         if (row?.group_reason_display) {
           return row.group_reason_display;
@@ -379,7 +382,7 @@ export default function DelaysPage() {
     },
     {
       key: "damage_amount",
-      header: "Zarar miqdori",
+      header: "Zarar",
       accessor: (row) =>
         row?.damage_amount
           ? new Intl.NumberFormat("uz-UZ", {
@@ -400,7 +403,7 @@ export default function DelaysPage() {
       header: "Holati",
       accessor: (row) => {
         return (
-          <Badge variant={row?.status ? "destructive" : "success"}>
+          <Badge variant={row?.status ? "destructive_outline" : "success_outline"}>
             {row?.status ? "Sriv" : "Sriv emas"}
           </Badge>
         );
@@ -544,7 +547,7 @@ export default function DelaysPage() {
             },
             {
               name: "group_reason",
-              label: "Guruh sababi",
+              label: "Guruh",
               isSelect: true,
               options: groupReasonOptions,
               placeholder: "Guruh sababini tanlang",
@@ -582,7 +585,7 @@ export default function DelaysPage() {
           ]}
           hasSearch={false}
           hasDatePicker
-          datePickerLabel="Voqea sanasi"
+          datePickerLabel="Sana"
           searchPlaceholder="Qidiruv"
           addButtonPermittion="create_delay"
           onAdd={handleCreate}
