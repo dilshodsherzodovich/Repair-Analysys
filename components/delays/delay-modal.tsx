@@ -332,8 +332,6 @@ export function DelayModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {!isModerateMode && (
               <>
-
-
                 <FormField
                   id="train_number"
                   name="train_number"
@@ -503,6 +501,20 @@ export function DelayModal({
 
           {canUploadReport && (
             <>
+              {(canChangeStatus || canChangeStatusAdmin) && (
+                <div className="w-full flex-1">
+                  <Label htmlFor="status">Holat</Label>
+                  <Select name="status" defaultValue={formDefaults.status}>
+                    <SelectTrigger className="mb-0 w-full" id="status">
+                      <SelectValue placeholder="Holatni tanlang" />
+                    </SelectTrigger>
+                    <SelectContent className="mb-0">
+                      <SelectItem value="true">Sriv</SelectItem>
+                      <SelectItem value="false">Sriv emas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div>
                 <FileUpload
                   label="Hisobot fayli"
