@@ -113,18 +113,16 @@ export default function DelaysPage() {
     apiError instanceof Error
       ? apiError
       : apiError
-      ? new Error(apiError?.message || "Xatolik yuz berdi")
-      : null;
+        ? new Error(apiError?.message || "Xatolik yuz berdi")
+        : null;
 
   const handleEdit = useCallback(
     (row: DelayEntry) => {
-      // Don't allow editing archived entries
+
       if (row.archive) {
         return;
       }
       setSelectedEntry(row);
-      // If user is sriv_moderator, open in moderate mode (can only edit status and report)
-      // Otherwise, open in edit mode (can edit all fields)
       const isModerator = hasPermission(currentUser, "upload_delay_report");
       setModalMode(isModerator ? "moderate" : "edit");
       setIsModalOpen(true);
@@ -133,7 +131,6 @@ export default function DelaysPage() {
   );
 
   const handleCloseDelay = useCallback((row: DelayEntry) => {
-    // Don't allow editing archived entries
     if (row.archive) {
       return;
     }
@@ -143,7 +140,6 @@ export default function DelaysPage() {
   }, []);
 
   const handleApproveClick = useCallback((row: DelayEntry) => {
-    // Don't allow approving archived entries
     if (row.archive) {
       return;
     }
@@ -165,8 +161,8 @@ export default function DelaysPage() {
       showError(
         "Xatolik yuz berdi",
         error?.response?.data?.message ||
-          error?.message ||
-          "Kechikishni tasdiqlashda xatolik"
+        error?.message ||
+        "Kechikishni tasdiqlashda xatolik"
       );
       throw error;
     }
@@ -174,7 +170,6 @@ export default function DelaysPage() {
 
   const handleDelete = useCallback(
     async (row: DelayEntry) => {
-      // Don't allow deleting archived entries
       if (row.archive) {
         return;
       }
@@ -185,8 +180,8 @@ export default function DelaysPage() {
         showError(
           "Xatolik yuz berdi",
           error?.response?.data?.message ||
-            error?.message ||
-            "Kechikishni o'chirishda xatolik"
+          error?.message ||
+          "Kechikishni o'chirishda xatolik"
         );
         throw error;
       }
@@ -213,8 +208,8 @@ export default function DelaysPage() {
             showError(
               "Xatolik yuz berdi",
               error?.response?.data?.message ||
-                error?.message ||
-                "Kechikishni qo'shishda xatolik"
+              error?.message ||
+              "Kechikishni qo'shishda xatolik"
             );
           },
         });
@@ -234,8 +229,8 @@ export default function DelaysPage() {
               showError(
                 "Xatolik yuz berdi",
                 error?.response?.data?.message ||
-                  error?.message ||
-                  "Kechikishni yangilashda xatolik"
+                error?.message ||
+                "Kechikishni yangilashda xatolik"
               );
             },
           }
@@ -274,13 +269,10 @@ export default function DelaysPage() {
 
   const formatTime = useCallback((timeString: string) => {
     try {
-      // Handle HH:MM:SS format (e.g., "01:03:00" for 1 hour 3 minutes)
-      // Also handle legacy formats like "11:26:53.951Z" or "HH:mm"
       const match = timeString.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
       if (match) {
         const hours = match[1].padStart(2, "0");
         const minutes = match[2].padStart(2, "0");
-        // Display as HH:MM (hours and minutes only)
         return `${hours}:${minutes}`;
       }
       return timeString;
@@ -295,10 +287,8 @@ export default function DelaysPage() {
         return filename;
       }
 
-      // Extract file extension
       const lastDotIndex = filename.lastIndexOf(".");
       if (lastDotIndex === -1) {
-        // No extension, just truncate
         return filename.substring(0, maxLength) + "...";
       }
 
@@ -322,7 +312,7 @@ export default function DelaysPage() {
       accessor: (row) =>
         row?.incident_date ? formatDate(row.incident_date, false) : "-",
     },
-    
+
     {
       key: "train_number",
       header: "Poyezd raqami",
@@ -393,10 +383,10 @@ export default function DelaysPage() {
       accessor: (row) =>
         row?.damage_amount
           ? new Intl.NumberFormat("uz-UZ", {
-              style: "currency",
-              currency: "UZS",
-              minimumFractionDigits: 0,
-            }).format(row.damage_amount)
+            style: "currency",
+            currency: "UZS",
+            minimumFractionDigits: 0,
+          }).format(row.damage_amount)
           : "0",
     },
     {
@@ -615,72 +605,71 @@ export default function DelaysPage() {
           actionsDisplayMode="row"
           extraActions={[
             ...(hasPermission(currentUser, "edit_delay") &&
-            !hasPermission(currentUser, "upload_delay_report")
+              !hasPermission(currentUser, "upload_delay_report")
               ? [
-                  {
-                    label: "",
-                    icon: <Edit className="h-4 w-4" />,
-                    onClick: handleEdit,
-                    permission: "edit_delay" as Permission,
-                    variant: "outline" as const,
-                    shouldShow: (row: DelayEntry) => !row.archive,
-                  },
-                ]
+                {
+                  label: "",
+                  icon: <Edit className="h-4 w-4" />,
+                  onClick: handleEdit,
+                  permission: "edit_delay" as Permission,
+                  variant: "outline" as const,
+                  shouldShow: (row: DelayEntry) => !row.archive,
+                },
+              ]
               : []),
 
-             // Delete action (for sriv_admin only)
+            // Delete action (for sriv_admin only)
             ...(hasPermission(currentUser, "delete_delay")
               ? [
-                  {
-                    label: "",
-                    icon: <Trash2 className="h-4 w-4" />,
-                    onClick: handleDelete,
-                    permission: "delete_delay" as Permission,
-                    variant: "outline" as const,
-                    shouldShow: (row: DelayEntry) => !row.archive,
-                    className:
-                      "border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10",
-                  },
-                ]
+                {
+                  label: "",
+                  icon: <Trash2 className="h-4 w-4" />,
+                  onClick: handleDelete,
+                  permission: "delete_delay" as Permission,
+                  variant: "outline" as const,
+                  shouldShow: (row: DelayEntry) => !row.archive,
+                  className:
+                    "border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10",
+                },
+              ]
               : []),
 
-            // Upload/Edit report action (for sriv_moderator)
             ...(hasPermission(currentUser, "upload_delay_report")
               ? [
-                  {
-                    label: "",
-                    icon: (row: DelayEntry) =>
-                      row?.report || row?.report_filename ? (
-                        <FileEdit className="h-4 w-4" />
-                      ) : (
-                        <FileUp className="h-4 w-4" />
-                      ),
-                    onClick: handleCloseDelay,
-                    permission: "upload_delay_report" as Permission,
-                    variant: "outline" as const,
-                    shouldShow: (row: DelayEntry) => !row.archive,
-                  },
-                ]
+                {
+                  label: "",
+                  icon: (row: DelayEntry) =>
+                    row?.report || row?.report_filename ? (
+                      <FileEdit className="h-4 w-4" />
+                    ) : (
+                      <FileUp className="h-4 w-4" />
+                    ),
+                  onClick: handleCloseDelay,
+                  permission: "upload_delay_report" as Permission,
+                  variant: "outline" as const,
+                  shouldShow: (row: DelayEntry) => !row.archive,
+                },
+              ]
               : []),
 
             // Approve action (for sriv_admin only, when report is uploaded)
             ...(hasPermission(currentUser, "edit_delay") &&
-            !hasPermission(currentUser, "upload_delay_report")
+              !hasPermission(currentUser, "upload_delay_report")
               ? [
-                  {
-                    label: "",
-                    icon: <CheckCircle className="h-4 w-4" />,
-                    onClick: handleApproveClick,
-                    permission: "edit_delay" as Permission,
-                    variant: "outline" as const,
-                    shouldShow: (row: DelayEntry) => {
-                      const hasReport = !!(row?.report_filename || row?.report);
-                      return hasReport && !row.archive;
-                    },
-                    className:
-                      "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
+                {
+                  label: "",
+                  icon: <CheckCircle className="h-4 w-4" />,
+                  onClick: handleApproveClick,
+                  permission: "edit_delay" as Permission,
+                  variant: "outline" as const,
+                  shouldShow: (row: DelayEntry) => {
+                    const hasReport = !!(row?.report_filename || row?.report);
+                    return hasReport && !row.archive;
                   },
-                ]
+                  className:
+                    "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
+                },
+              ]
               : []),
           ]}
           isDeleting={deleteMutation.isPending}

@@ -50,6 +50,7 @@ export interface TableColumn<T = any> {
   headerClassName?: string;
   sortable?: boolean;
   width?: string;
+  permission?: Permission;
 }
 
 export interface TableAction<T = any> {
@@ -251,23 +252,26 @@ export function PaginatedTable<T extends Record<string, any>>({
                 </TableHead>
               )}
               {displayColumns.map((column) => (
-                <TableHead
-                  key={column.key}
-                  className={cn(
-                    "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
-                    column.headerClassName
-                  )}
-                  style={{
-                    width: column.width,
-                    letterSpacing: "-0.005em",
-                    lineHeight: "16px",
-                    boxSizing: "border-box",
-                  }}
-                >
-                  <div className="flex flex-row items-center gap-3">
-                    {column.header}
-                  </div>
-                </TableHead>
+                <PermissionGuard key={column.key} permission={column.permission}>
+                  <TableHead
+                    key={column.key}
+                    className={cn(
+                      "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
+                      column.headerClassName
+                    )}
+                    style={{
+                      width: column.width,
+                      letterSpacing: "-0.005em",
+                      lineHeight: "16px",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <div className="flex flex-row items-center gap-3">
+                      {column.header}
+                    </div>
+                  </TableHead>
+                </PermissionGuard>
+
               ))}
             </TableRow>
           </TableHeader>
@@ -365,24 +369,46 @@ export function PaginatedTable<T extends Record<string, any>>({
                 </TableHead>
               )}
               {displayColumns.map((column) => (
-                <TableHead
-                  key={column.key}
-                  className={cn(
-                    "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
-                    column.headerClassName,
-                    headerClassName
-                  )}
-                  style={{
-                    width: column.width,
-                    letterSpacing: "-0.005em",
-                    lineHeight: "16px",
-                    boxSizing: "border-box",
-                  }}
-                >
-                  <div className="flex flex-row items-center gap-3">
-                    {column.header}
-                  </div>
-                </TableHead>
+                column.permission ?
+                  <PermissionGuard key={column.key} permission={column.permission}>
+                    <TableHead
+                      key={column.key}
+                      className={cn(
+                        "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
+                        column.headerClassName,
+                        headerClassName
+                      )}
+                      style={{
+                        width: column.width,
+                        letterSpacing: "-0.005em",
+                        lineHeight: "16px",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      <div className="flex flex-row items-center gap-3">
+                        {column.header}
+                      </div>
+                    </TableHead>
+                  </PermissionGuard>
+                  :
+                  <TableHead
+                    key={column.key}
+                    className={cn(
+                      "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
+                      column.headerClassName,
+                      headerClassName
+                    )}
+                    style={{
+                      width: column.width,
+                      letterSpacing: "-0.005em",
+                      lineHeight: "16px",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <div className="flex flex-row items-center gap-3">
+                      {column.header}
+                    </div>
+                  </TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -405,7 +431,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                       ? "bg-blue-50 hover:bg-blue-100 [&>td]:bg-blue-50 [&>td]:hover:bg-blue-100"
                       : "",
                     isLastRow &&
-                      "[&>td:first-child]:rounded-bl-lg [&>td:last-child]:rounded-br-lg",
+                    "[&>td:first-child]:rounded-bl-lg [&>td:last-child]:rounded-br-lg",
                     rowClass
                   )}
                 >
@@ -456,7 +482,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                     );
                   })}
                   {hasActions && (
-                    <TableCell 
+                    <TableCell
                       className={cn(
                         "text-center py-2 px-4 h-14 transition-colors sticky right-0 z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
                         isSelected
@@ -492,8 +518,8 @@ export function PaginatedTable<T extends Record<string, any>>({
             deleteState.error
               ? `Xatolik yuz berdi: ${deleteState.error.message}. Iltimos, qayta urinib ko'ring yoki bekor qiling.`
               : deleteState.row
-              ? "Bu ma'lumotni o'chirishni xohlaysizmi? Bu amalni bekor qilib bo'lmaydi."
-              : "Bu ma'lumotni o'chirishni xohlaysizmi?"
+                ? "Bu ma'lumotni o'chirishni xohlaysizmi? Bu amalni bekor qilib bo'lmaydi."
+                : "Bu ma'lumotni o'chirishni xohlaysizmi?"
           }
           confirmText={deleteState.error ? "Qayta urinish" : "O'chirish"}
           cancelText="Bekor qilish"
@@ -593,14 +619,14 @@ function usePaginationControls({
   const currentPage = useExternalControl
     ? externalCurrentPage ?? 1
     : useUrlParams
-    ? urlPage
-    : externalCurrentPage ?? 1;
+      ? urlPage
+      : externalCurrentPage ?? 1;
 
   const itemsPerPage = useExternalControl
     ? externalItemsPerPage
     : useUrlParams
-    ? urlPageSize
-    : externalItemsPerPage;
+      ? urlPageSize
+      : externalItemsPerPage;
 
   const handlePageChange = React.useCallback(
     (page: number) => {
