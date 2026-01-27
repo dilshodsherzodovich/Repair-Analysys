@@ -309,8 +309,68 @@ export interface DelayReportResponse {
   total: DelayReportTotal;
 }
 
+// Freight Report Types (with additional "v_tom_chisle" breakdown)
+export interface DelayReportSubCategory {
+  count: number;
+  total_delay_time_minutes: number;
+  total_delay_time: string; // Format: "HH:MM:SS"
+}
+
+export interface DelayReportVTomChisle {
+  net_elektrovaza: DelayReportSubCategory; // нет электровоза
+  net_teplovaza: DelayReportSubCategory; // нет тепловоза
+  po_vine_depo: DelayReportSubCategory; // по вине депо
+}
+
+export interface DelayReportFreightRow {
+  depo: string;
+  po_otpravleniyu: DelayReportCategory;
+  po_prosledovaniyu: DelayReportCategory;
+  total: DelayReportCategory;
+  v_tom_chisle: DelayReportVTomChisle;
+}
+
+export interface DelayReportFreightTotal {
+  po_otpravleniyu: DelayReportCategory;
+  po_prosledovaniyu: DelayReportCategory;
+  total: DelayReportCategory;
+  v_tom_chisle: DelayReportVTomChisle;
+  depo: string; // "Итого"
+}
+
+export interface DelayReportFreightResponse {
+  rows: DelayReportFreightRow[];
+  total: DelayReportFreightTotal;
+}
+
+// Depot Reason Reports Types
+export interface DepotReasonReportRow {
+  reason: string;
+  reason_label: string;
+  // Dynamic depot/summary columns like "depo", "shch", "total"
+  [key: string]: string | number;
+}
+
+export interface DepotReasonReportTotal extends DepotReasonReportRow {}
+
+export interface DepotReasonReportSummary {
+  total_cases: number;
+  total_hours: number;
+  total_minutes: number;
+  total_delay_time_formatted: string;
+}
+
+export interface DepotReasonReportResponse {
+  headers: string[];
+  rows: DepotReasonReportRow[];
+  total: DepotReasonReportTotal;
+  summary: DepotReasonReportSummary;
+}
+
 export interface DelayReportParams {
   start_date: string; // Required, format: "YYYY-MM-DD"
   end_date: string; // Required, format: "YYYY-MM-DD"
   organizations?: string; // Optional, comma-separated IDs like "1,2"
+  train_types?: string; // Optional, comma-separated train types like "passenger,electric,high_speed"
+  train_type?: string; // Optional, single train type like "freight" for detailed reports
 }

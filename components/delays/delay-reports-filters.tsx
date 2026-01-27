@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { format, subDays, startOfMonth, endOfDay } from "date-fns";
 
 export function DelayReportsFilters() {
@@ -23,7 +24,11 @@ export function DelayReportsFilters() {
     organizations: organizationsParam,
     year: yearParam,
     month: monthParam,
+    service_type: serviceTypeParam,
   } = getAllQueryValues();
+
+  // Get active service type (default to "passenger")
+  const activeServiceType = serviceTypeParam || "passenger";
 
   // Initialize default dates (last 30 days) if not set
   useEffect(() => {
@@ -190,6 +195,14 @@ export function DelayReportsFilters() {
     [updateQuery]
   );
 
+  // Handle service type tab change
+  const handleServiceTypeChange = useCallback(
+    (value: string) => {
+      updateQuery({ service_type: value });
+    },
+    [updateQuery]
+  );
+
   // Determine which quick filter is active
   const activeQuickFilter = useMemo(() => {
     if (!startDate || !endDate || !start_date || !end_date) return null;
@@ -224,9 +237,28 @@ export function DelayReportsFilters() {
 
   return (
     <div className="px-6 py-4">
+      {/* Service Type Tabs */}
+      <div className="mb-6">
+        <Tabs value={activeServiceType} onValueChange={handleServiceTypeChange}>
+          <TabsList className="bg-white border-1 border-gray-200 p-1 gap-2 rounded-md inline-flex">
+            <TabsTrigger 
+              value="passenger"
+              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
+            >
+              Yo'lovchi tashuvchi
+            </TabsTrigger>
+            <TabsTrigger 
+              value="freight"
+              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
+            >
+              Yuk tashuvchi
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
       <div className="bg-white border rounded-lg p-4 mb-4 flex justify-between">
         <div className="flex flex-wrap items-end gap-4">
-          {/* Date Range Pickers */}
           <div className="min-w-[200px] flex-shrink-0">
             <DatePicker
               placeholder="Boshlanish sanasi"

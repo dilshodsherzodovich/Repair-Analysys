@@ -78,6 +78,7 @@ export const queryKeys = {
     delete: "delays-delete",
     bulkCreate: "delays-bulk-create",
     reports: "delays-reports",
+    depotReasonReports: "delays-depot-reason-reports",
   },
   tu152: {
     all: "tu152-all",

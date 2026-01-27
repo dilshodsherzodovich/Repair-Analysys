@@ -102,11 +102,41 @@ export function useDeleteDelay() {
   });
 }
 
-export function useDelayReports(params?: DelayReportParams) {
+export function useDelayReportsByPassengerTrain(params?: DelayReportParams) {
   return useQuery({
     queryKey: [queryKeys.delays.reports, params],
-    queryFn: () => delaysService.getDelayReports(params!),
+    queryFn: () => delaysService.getDelayReportsByPassengerTrain(params!),
     enabled: !!params?.start_date && !!params?.end_date,
+    staleTime: 5 * 60 * 1000,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+}
+
+export function useDelayReportsByFreightTrain(params?: DelayReportParams) {
+  return useQuery({
+    queryKey: [queryKeys.delays.reports, "freight", params],
+    queryFn: () => delaysService.getDelayReportsByFreightTrain(params!),
+    enabled: !!params?.start_date && !!params?.end_date,
+    staleTime: 5 * 60 * 1000,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+}
+
+export function useDepotReasonReports(params?: DelayReportParams) {
+  return useQuery({
+    queryKey: [queryKeys.delays.depotReasonReports, params],
+    queryFn: () => delaysService.getDepotReasonReports(params!),
+    enabled: !!params?.start_date && !!params?.end_date && !!params?.train_type,
     staleTime: 5 * 60 * 1000,
     retry: (failureCount, error: any) => {
       if (error?.response?.status === 401 || error?.response?.status === 403) {

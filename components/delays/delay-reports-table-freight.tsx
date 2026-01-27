@@ -2,12 +2,12 @@
 
 import { useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { DelayReportResponse } from "@/api/types/delays";
+import { DelayReportFreightResponse } from "@/api/types/delays";
 import { ErrorCard } from "@/ui/error-card";
 import { DepotReasonReportsTable } from "./depot-reason-reports-table";
 
-interface DelayReportsTableByDelayTypeProps {
-  data: DelayReportResponse | undefined;
+interface DelayReportsTableFreightProps {
+  data: DelayReportFreightResponse | undefined;
   isLoading: boolean;
   error: Error | null;
   startDate: Date | undefined;
@@ -16,7 +16,7 @@ interface DelayReportsTableByDelayTypeProps {
   end_date?: string;
 }
 
-export function DelayReportsTableByDelayType({
+export function DelayReportsTableFreight({
   data,
   isLoading,
   error,
@@ -24,7 +24,7 @@ export function DelayReportsTableByDelayType({
   endDate,
   start_date,
   end_date,
-}: DelayReportsTableByDelayTypeProps) {
+}: DelayReportsTableFreightProps) {
   // Format number with comma as decimal separator
   const formatNumber = useCallback((num: number) => {
     return num?.toFixed(1)?.replace(".", ",");
@@ -36,7 +36,7 @@ export function DelayReportsTableByDelayType({
         <ErrorCard
           title="Xatolik yuz berdi"
           message={error.message || "Xatolik yuz berdi"}
-          onRetry={() => {}}
+          onRetry={() => { }}
           showRetry={false}
           showBack={false}
           className="mb-4"
@@ -44,18 +44,18 @@ export function DelayReportsTableByDelayType({
       )}
 
       {isLoading && (
-        <div className="bg-white border rounded-lg overflow-hidden">
+        <div className="bg-white rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               {/* Table Header */}
               <thead>
                 {/* Main Header Row */}
-                <tr className="border-b-1 border-gray-300">
+                <tr className="bg-gray-100 border-b-1 border-gray-300">
                   <th
-                    rowSpan={2}
+                    rowSpan={3}
                     className="border border-gray-300 px-4 py-3 text-left font-semibold text-sm bg-gray-100"
                   >
-                    Депо
+                    ДЕПО
                   </th>
                   <th
                     colSpan={3}
@@ -75,35 +75,80 @@ export function DelayReportsTableByDelayType({
                   >
                     Всего
                   </th>
+                  <th
+                    colSpan={6}
+                    className="border border-gray-300 px-4 py-3 text-center font-semibold text-sm bg-gray-100"
+                  >
+                    В том числе:
+                  </th>
                 </tr>
-                {/* Sub-header Row */}
+                {/* Second-level Header Row */}
+                <tr className="border-b border-gray-300">
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Кол-во
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Время
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Сумма
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Кол-во
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Время
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Сумма
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                    Кол-во
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                    Время
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                    Сумма
+                  </th>
+                  <th
+                    colSpan={2}
+                    className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100"
+                  >
+                    нет электровоза
+                  </th>
+                  <th
+                    colSpan={2}
+                    className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100"
+                  >
+                    нет тепловоза
+                  </th>
+                  <th
+                    colSpan={2}
+                    className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100"
+                  >
+                    по вине депо
+                  </th>
+                </tr>
+                {/* Third-level Header Row */}
                 <tr className="bg-gray-50 border-b border-gray-300">
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Количество
+                    Кол-во
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Время задержки
+                    Время
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Ущерб
+                    Кол-во
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Количество
+                    Время
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Время задержки
+                    Кол-во
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Ущерб
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
-                    Количество
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
-                    Время задержки
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
-                    Ущерб
+                    Время
                   </th>
                 </tr>
               </thead>
@@ -120,7 +165,7 @@ export function DelayReportsTableByDelayType({
                     <td className="border border-gray-300 px-4 py-3">
                       <div className="h-4 bg-gray-200 rounded animate-pulse" />
                     </td>
-                    {Array.from({ length: 9 }).map((_, colIndex) => (
+                    {Array.from({ length: 15 }).map((_, colIndex) => (
                       <td
                         key={colIndex}
                         className="border border-gray-300 px-4 py-3"
@@ -137,7 +182,7 @@ export function DelayReportsTableByDelayType({
       )}
 
       {!isLoading && !error && data && (
-        <div className="bg-white border rounded-md overflow-hidden">
+        <div className="bg-white rounded-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               {/* Table Header */}
@@ -145,10 +190,10 @@ export function DelayReportsTableByDelayType({
                 {/* Main Header Row */}
                 <tr className="bg-gray-100 border-b-1 border-gray-300">
                   <th
-                    rowSpan={2}
+                    rowSpan={3}
                     className="border border-gray-300 px-4 py-3 text-left font-semibold text-sm bg-gray-100"
                   >
-                    Депо
+                    ДЕПО
                   </th>
                   <th
                     colSpan={3}
@@ -168,34 +213,80 @@ export function DelayReportsTableByDelayType({
                   >
                     Всего
                   </th>
+                  <th
+                    colSpan={6}
+                    className="border border-gray-300 px-4 py-3 text-center font-semibold text-sm bg-gray-100"
+                  >
+                    В том числе:
+                  </th>
                 </tr>
+                {/* Second-level Header Row */}
+                <tr className="bg-gray-100 border-b border-gray-300">
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Кол-во
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Время
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Сумма
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Кол-во
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Время
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100">
+                    Сумма
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                    Кол-во
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                    Время
+                  </th>
+                  <th rowSpan={2} className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                    Сумма
+                  </th>
+                  <th
+                    colSpan={2}
+                    className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100"
+                  >
+                    нет электровоза
+                  </th>
+                  <th
+                    colSpan={2}
+                    className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-100"
+                  >
+                    нет тепловоза
+                  </th>
+                  <th
+                    colSpan={2}
+                    className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200"
+                  >
+                    по вине депо
+                  </th>
+                </tr>
+                {/* Third-level Header Row */}
                 <tr className="bg-gray-50 border-b border-gray-300">
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Количество
+                    Кол-во
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Время задержки
+                    Время
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Ущерб
+                    Кол-во
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Количество
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Время задержки
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
-                    Ущерб
+                    Время
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
-                    Количество
+                    Кол-во
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
-                    Время задержки
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
-                    Ущерб
+                    Время
                   </th>
                 </tr>
               </thead>
@@ -242,6 +333,27 @@ export function DelayReportsTableByDelayType({
                     <td className="border border-gray-300 px-4 py-2 text-sm text-right bg-gray-200">
                       {formatNumber(row?.total?.total_damage)}
                     </td>
+                    {/* В том числе: нет электровоза */}
+                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                      {row?.v_tom_chisle?.net_elektrovaza?.count}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                      {row?.v_tom_chisle?.net_elektrovaza?.total_delay_time}
+                    </td>
+                    {/* В том числе: нет тепловоза */}
+                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                      {row?.v_tom_chisle?.net_teplovaza?.count}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                      {row?.v_tom_chisle?.net_teplovaza?.total_delay_time}
+                    </td>
+                    {/* В том числе: по вине депо */}
+                    <td className="border border-gray-300 px-4 py-2 text-sm text-right bg-gray-200">
+                      {row?.v_tom_chisle?.po_vine_depo?.count}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm text-right bg-gray-200">
+                      {row?.v_tom_chisle?.po_vine_depo?.total_delay_time}
+                    </td>
                   </tr>
                 ))}
                 {/* Total Row */}
@@ -280,6 +392,27 @@ export function DelayReportsTableByDelayType({
                     <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
                       {formatNumber(data?.total?.total?.total_damage)}
                     </td>
+                    {/* В том числе: нет электровоза Total */}
+                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                      {data?.total?.v_tom_chisle?.net_elektrovaza?.count}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                      {data?.total?.v_tom_chisle?.net_elektrovaza?.total_delay_time}
+                    </td>
+                    {/* В том числе: нет тепловоза Total */}
+                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                      {data?.total?.v_tom_chisle?.net_teplovaza?.count}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                      {data?.total?.v_tom_chisle?.net_teplovaza?.total_delay_time}
+                    </td>
+                    {/* В том числе: по вине депо Total */}
+                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                      {data?.total?.v_tom_chisle?.po_vine_depo?.count}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                      {data?.total?.v_tom_chisle?.po_vine_depo?.total_delay_time}
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -288,12 +421,10 @@ export function DelayReportsTableByDelayType({
         </div>
       )}
 
-      
       <DepotReasonReportsTable />
-      
 
       {!isLoading && !error && !data && startDate && endDate && (
-        <div className="bg-white border rounded-lg p-8 text-center">
+        <div className="bg-white rounded-lg p-8 text-center">
           <p className="text-gray-500 text-sm">
             Ma'lumotlar topilmadi. Iltimos, boshqa sana oralig'ini tanlang.
           </p>
@@ -301,7 +432,7 @@ export function DelayReportsTableByDelayType({
       )}
 
       {!isLoading && !error && !startDate && !endDate && !start_date && !end_date && (
-        <div className="bg-white border rounded-lg p-8 text-center">
+        <div className="bg-white rounded-lg p-8 text-center">
           <p className="text-gray-500 text-sm">
             Hisobotni ko'rish uchun boshlanish va tugash sanalarini tanlang.
           </p>

@@ -7,6 +7,8 @@ import {
   DelayListParams,
   DelayReportParams,
   DelayReportResponse,
+  DelayReportFreightResponse,
+  DepotReasonReportResponse,
 } from "../types/delays";
 
 const buildDelayFormData = (
@@ -117,7 +119,7 @@ export const delaysService = {
     await api.delete(`/sriv/delays/${id}/`);
   },
 
-  async getDelayReports(
+  async getDelayReportsByPassengerTrain(
     params: DelayReportParams
   ): Promise<DelayReportResponse> {
     const response = await api.get<DelayReportResponse>("/sriv/reports/", {
@@ -125,8 +127,43 @@ export const delaysService = {
         start_date: params.start_date,
         end_date: params.end_date,
         organizations: params.organizations,
+        train_types: params.train_types,
       },
     });
+    return response.data;
+  },
+
+  async getDelayReportsByFreightTrain(
+    params: DelayReportParams
+  ): Promise<DelayReportFreightResponse> {
+    const response = await api.get<DelayReportFreightResponse>(
+      "/sriv/detailed-reports/",
+      {
+        params: {
+          start_date: params.start_date,
+          end_date: params.end_date,
+          organizations: params.organizations,
+          train_type: params.train_type,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  async getDepotReasonReports(
+    params: DelayReportParams
+  ): Promise<DepotReasonReportResponse> {
+    const response = await api.get<DepotReasonReportResponse>(
+      "/sriv/depot-reason-reports/",
+      {
+        params: {
+          start_date: params.start_date,
+          end_date: params.end_date,
+          organizations: params.organizations,
+          train_type: params.train_type,
+        },
+      }
+    );
     return response.data;
   },
 };
