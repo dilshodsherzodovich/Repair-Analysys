@@ -913,7 +913,7 @@ function ActionsDropdown<T>({
   deletePermission?: Permission;
   actionsDisplayMode?: "dropdown" | "row";
 }) {
-  // All hooks must be called unconditionally at the top
+    // All hooks must be called unconditionally at the top
   const [isOpen, setIsOpen] = React.useState(false);
 
   const closeMenu = React.useCallback(() => {
