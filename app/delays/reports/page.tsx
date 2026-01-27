@@ -6,7 +6,10 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import {
   useDelayReportsByPassengerTrain,
   useDelayReportsByFreightTrain,
+  useDepotReasonReports,
 } from "@/api/hooks/use-delays";
+import { exportDelayReportsToDoc } from "@/utils/export-delay-reports";
+import { useCallback } from "react";
 import { format, subDays } from "date-fns";
 import {
   canAccessSection,
@@ -100,6 +103,23 @@ export default function DelayReportsPage() {
     error: freightError,
   } = useDelayReportsByFreightTrain(freightReportParams);
 
+  // Prepare params for depot reason reports
+  const depotReasonParams = useMemo(() => {
+    if (!startDate || !endDate) return undefined;
+    const params: any = {
+      start_date: format(startDate, "yyyy-MM-dd"),
+      end_date: format(endDate, "yyyy-MM-dd"),
+      train_type: activeServiceType,
+    };
+    if (selectedOrganizations.length > 0) {
+      params.organizations = selectedOrganizations.join(",");
+    }
+    return params;
+  }, [startDate, endDate, selectedOrganizations, activeServiceType]);
+
+  // Fetch depot reason reports
+  const { data: depotReasonData } = useDepotReasonReports(depotReasonParams);
+
   const breadcrumbs = [
     { label: "Asosiy", href: "/" },
     { label: "Sriv hisobotlar", current: true },
@@ -123,6 +143,34 @@ export default function DelayReportsPage() {
   const error =
     activeServiceType === "passenger" ? passengerErrorObj : freightErrorObj;
 
+  // Export handler
+  const handleExport = useCallback(() => {
+    if (!start_date || !end_date) {
+      alert("Iltimos, boshlanish va tugash sanalarini tanlang.");
+      return;
+    }
+
+    const mainReportData =
+      activeServiceType === "passenger"
+        ? passengerReportData
+        : freightReportData;
+
+    exportDelayReportsToDoc({
+      mainReportData: mainReportData || null,
+      depotReasonData: depotReasonData || null,
+      startDate: start_date,
+      endDate: end_date,
+      serviceType: activeServiceType as "passenger" | "freight",
+    });
+  }, [
+    start_date,
+    end_date,
+    activeServiceType,
+    passengerReportData,
+    freightReportData,
+    depotReasonData,
+  ]);
+
   return (
     <div className="min-h-screen">
       <PageHeader
@@ -131,7 +179,7 @@ export default function DelayReportsPage() {
         breadcrumbs={breadcrumbs}
       />
 
-      <DelayReportsFilters />
+      <DelayReportsFilters onExport={handleExport} />
 
       {/* Show table for passenger trains */}
       {activeServiceType === "passenger" && (

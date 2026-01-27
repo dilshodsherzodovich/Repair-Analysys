@@ -115,6 +115,21 @@ export function DepotReasonReportsTable() {
       {!isLoading && !error && data && (
         <div className="mt-6 bg-white rounded-md overflow-hidden">
           <div className="overflow-x-auto">
+
+            {data?.summary && (
+              <div className="mb-2 border-gray-200 bg-gray-50 text-md text-gray-700 flex justify-center">
+                <div className="font-semibold flex items-center gap-1">
+                  Всего по вине локомотивных депо:
+                  <span>
+                    {data.summary.total_cases} сл. на{" "}
+                  </span>
+                  <span>
+                    {data.summary.total_delay_time_formatted}
+                  </span>
+                </div>
+              </div>
+            )}
+
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-300">
@@ -170,8 +185,6 @@ export function DepotReasonReportsTable() {
               </tbody>
             </table>
           </div>
-
-
         </div>
       )}
     </div>

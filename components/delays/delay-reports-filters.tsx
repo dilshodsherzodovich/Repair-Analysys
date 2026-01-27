@@ -15,8 +15,13 @@ import {
 import { Button } from "@/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { format, subDays, startOfMonth, endOfDay } from "date-fns";
+import { Download } from "lucide-react";
 
-export function DelayReportsFilters() {
+interface DelayReportsFiltersProps {
+  onExport?: () => void;
+}
+
+export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
   const { getAllQueryValues, updateQuery } = useFilterParams();
   const {
     start_date,
@@ -241,13 +246,13 @@ export function DelayReportsFilters() {
       <div className="mb-6">
         <Tabs value={activeServiceType} onValueChange={handleServiceTypeChange}>
           <TabsList className="bg-white border-1 border-gray-200 p-1 gap-2 rounded-md inline-flex">
-            <TabsTrigger 
+            <TabsTrigger
               value="passenger"
               className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
             >
               Yo'lovchi tashuvchi
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="freight"
               className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
             >
@@ -257,7 +262,7 @@ export function DelayReportsFilters() {
         </Tabs>
       </div>
 
-      <div className="bg-white border rounded-lg p-4 mb-4 flex justify-between">
+      <div className="bg-white border rounded-lg p-4 mb-4 flex justify-between items-center">
         <div className="flex flex-wrap items-end gap-4">
           <div className="min-w-[200px] flex-shrink-0">
             <DatePicker
@@ -293,7 +298,20 @@ export function DelayReportsFilters() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
+          {/* Export Button */}
+          {onExport && (
+            <Button
+              variant="default"
+              size="md"
+              onClick={onExport}
+              className="rounded-md bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              DOC ga eksport qilish
+            </Button>
+          )}
+          
           {/* Year Select */}
           <div className="min-w-[120px] flex-shrink-0">
             <Select
