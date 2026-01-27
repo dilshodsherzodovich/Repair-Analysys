@@ -64,38 +64,45 @@ export function exportDelayReportsToDoc({
 <w:Zoom>90</w:Zoom>
 <w:DoNotOptimizeForBrowser/>
 </w:WordDocument>
+<w:LatentStyles DefLockedState="false" DefUnhideWhenUsed="false" DefSemiHidden="false" DefQFormat="false" DefPriority="99" LatentStyleCount="376">
+<w:LsdException Locked="false" Priority="0" SemiHidden="false" UnhideWhenUsed="false" QFormat="true" Name="Normal"/>
+</w:LatentStyles>
 </xml>
 <![endif]-->
 <style>
 @page {
   size: landscape;
-  margin: 0.5cm;
+  margin: 0.3cm;
 }
 body {
   font-family: "Roboto", Arial, sans-serif;
-  font-size: 9pt;
+  font-size: 7pt;
+  line-height: 1;
   margin: 0;
-  padding: 8px;
+  padding: 4px;
   width: 100%;
 }
 .title {
   text-align: center;
   font-weight: bold;
-  font-size: 12pt;
-  margin-bottom: 10px;
+  font-size: 9pt;
+  line-height: 1;
+  margin-bottom: 6px;
 }
 table {
   border-collapse: collapse;
   width: 100%;
-  margin-bottom: 15px;
-  font-size: 8pt;
+  margin-bottom: 8px;
+  font-size: 6pt;
   table-layout: fixed;
 }
 table th, table td {
   border: 1px solid #000;
-  padding: 2px 4px;
+  padding: 1px 2px;
   text-align: center;
   vertical-align: middle;
+  font-size: 6pt;
+  line-height: 1;
 }
 table th:first-child, table td:first-child {
   text-align: left;
@@ -116,14 +123,16 @@ table .total-col {
   font-weight: bold;
 }
 .summary {
-  margin: 8px 0;
-  font-size: 10pt;
+  margin: 5px 0;
+  font-size: 9pt;
+  line-height: 1;
   text-align: center;
 }
 .footer {
-  margin-top: 20px;
+  margin-top: 15px;
   text-align: right;
-  font-size: 10pt;
+  font-size: 9pt;
+  line-height: 1;
 }
 <!--[if gte mso 9]>
 div.Section1 {
@@ -131,10 +140,11 @@ div.Section1 {
 }
 @page Section1 {
   size: 11.69in 8.27in;
-  margin: 0.5in 0.5in 0.5in 0.5in;
-  mso-header-margin: 0.5in;
-  mso-footer-margin: 0.5in;
+  margin: 0.3in 0.3in 0.3in 0.3in;
+  mso-header-margin: 0.3in;
+  mso-footer-margin: 0.3in;
   mso-paper-source: 0;
+  mso-orientation: landscape;
 }
 <![endif]-->
 </style>
@@ -167,6 +177,10 @@ div.Section1 {
 <div class="footer">Начальник управления по эксплуатации локомотивов<br>Туляганов Ш.Т.</div>
 <!--[if gte mso 9]>
 </div>
+<w:sectPr>
+<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>
+<w:pgMar w:top="567" w:right="567" w:bottom="567" w:left="567" w:header="567" w:footer="567" w:gutter="0"/>
+</w:sectPr>
 <![endif]-->
 </body>
 </html>
