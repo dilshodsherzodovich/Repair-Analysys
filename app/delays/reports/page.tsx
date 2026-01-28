@@ -18,8 +18,10 @@ import UnauthorizedPage from "@/app/unauthorized/page";
 import { DelayReportsFilters } from "@/components/delays/delay-reports-filters";
 import { DelayReportsTableByDelayType } from "@/components/delays/delay-reports-table-by-delay-type";
 import { DelayReportsTableFreight } from "@/components/delays/delay-reports-table-freight";
+import { useTranslations } from "next-intl";
 
 export default function DelayReportsPage() {
+  const t = useTranslations("DelayReportsPage");
   const { getAllQueryValues, updateQuery } = useFilterParams();
   const {
     start_date,
@@ -121,8 +123,8 @@ export default function DelayReportsPage() {
   const { data: depotReasonData } = useDepotReasonReports(depotReasonParams);
 
   const breadcrumbs = [
-    { label: "Главная", href: "/" },
-    { label: "Отчеты по срывам", current: true },
+    { label: t("breadcrumbs.home"), href: "/" },
+    { label: t("breadcrumbs.current"), current: true },
   ];
 
   // Determine error based on active tab
@@ -146,7 +148,7 @@ export default function DelayReportsPage() {
   // Export handler
   const handleExport = useCallback(() => {
     if (!start_date || !end_date) {
-      alert("Пожалуйста, выберите дату начала и окончания.");
+      alert(t("export.date_required"));
       return;
     }
 
@@ -174,8 +176,8 @@ export default function DelayReportsPage() {
   return (
     <div className="min-h-screen">
       <PageHeader
-        title="Отчеты по срывам"
-        description="Отчеты о задержках поездов"
+        title={t("title")}
+        description={t("description")}
         breadcrumbs={breadcrumbs}
       />
 

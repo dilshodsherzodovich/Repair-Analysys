@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "./client-layout";
+import { NextIntlClientProvider } from "next-intl";
+import { cookies } from "next/headers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,16 +22,23 @@ export const metadata: Metadata = {
   generator: "Smart Depo",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const rawLocale = cookieStore.get("locale")?.value;
+  const locale = rawLocale === "ru" ? "ru" : "uz";
+  const messages = (await import(`../messages/${locale}.json`)).default;
+
   return (
-    <html lang="en" className={`${inter.variable} ${inter.className}`}>
+    <html lang="uz" className={`${inter.variable} ${inter.className}`}>
       <body className="font-sans antialiased">
         <Suspense fallback={<div className="p-6">Yuklanmoqda...</div>}>
-          <ClientLayout>{children}</ClientLayout>
+          <NextIntlClientProvider messages={messages} locale={locale}>
+            <ClientLayout>{children}</ClientLayout>
+          </NextIntlClientProvider>
         </Suspense>
       </body>
     </html>

@@ -1,0 +1,159 @@
+{
+  "HomePage": {
+    "title": "Система электронного анализа ремонта"
+  },
+  "DelaysPage": {
+    "title": "Задержки",
+    "description": "Просмотр и управление задержками поездов",
+    "breadcrumbs": {
+      "home": "Главная",
+      "current": "Задержки"
+    },
+    "columns": {
+      "incident_date": "Дата",
+      "train_number": "Номер поезда",
+      "train_type": "Тип поезда",
+      "delay_type": "Тип задержки",
+      "group_reason": "Группа",
+      "station": "Станция",
+      "delay_time": "Время задержки",
+      "reason": "Причина",
+      "damage_amount": "Ущерб",
+      "responsible_org": "Ответственная организация",
+      "status": "Статус",
+      "archive": "Архив",
+      "report": "Отчет"
+    },
+    "status": {
+      "label_disruption": "Срыв",
+      "label_no_disruption": "Не срыв"
+    },
+    "archive": {
+      "archived": "Архивировано",
+      "not_archived": "Не архивировано"
+    },
+    "filters": {
+      "delay_type": "Тип задержки",
+      "delay_type_placeholder": "Выберите тип задержки",
+      "delay_type_all": "Все типы",
+      "train_type": "Тип поезда",
+      "train_type_placeholder": "Выберите тип поезда",
+      "group_reason": "Группа",
+      "group_reason_placeholder": "Выберите группу причины",
+      "station": "Станция",
+      "station_placeholder": "Выберите станцию",
+      "responsible_org": "Ответственная организация",
+      "responsible_org_placeholder": "Выберите ответственную организацию",
+      "status": "Статус",
+      "status_placeholder": "Выберите статус",
+      "status_all": "Все статусы",
+      "status_disruption": "Срыв",
+      "status_no_disruption": "Не срыв",
+      "search_placeholder": "Поиск"
+    },
+    "train_types": {
+      "passenger": "Пассажирский",
+      "freight": "Грузовой",
+      "electric": "Электропоезд",
+      "shunt": "Маневровый",
+      "high_speed": "Скоростной"
+    },
+    "group_reasons": {
+      "repair": "Ремонт локомотива",
+      "speed_violation": "Нарушение скорости",
+      "crew_waiting": "Ожидание бригады",
+      "autoblock_center": "Центр автоблокировки",
+      "driver_dispute": "Спор с машинистом",
+      "fuel_finished": "Закончилось топливо",
+      "late_loco_exit": "Поздний выход локомотива",
+      "no_electric_loco": "Нет электровоза",
+      "no_diesel_loco": "Нет тепловоза",
+      "other": "Другое"
+    },
+    "delay_types": {
+      "Po prosledovaniyu": "По проследованию",
+      "Po otpravleniyu": "По отправлению"
+    },
+    "empty": {
+      "title": "Данные не найдены",
+      "description": "Задержки отсутствуют"
+    },
+    "messages": {
+      "approve_success": "Задержка успешно подтверждена",
+      "approve_error_title": "Произошла ошибка",
+      "approve_error_message": "Ошибка при подтверждении задержки",
+      "delete_success": "Задержка успешно удалена",
+      "delete_error_title": "Произошла ошибка",
+      "delete_error_message": "Ошибка при удалении задержки",
+      "create_success": "Задержка успешно добавлена",
+      "create_error_title": "Произошла ошибка",
+      "create_error_message": "Ошибка при добавлении задержки",
+      "update_success": "Задержка успешно обновлена",
+      "update_error_title": "Произошла ошибка",
+      "update_error_message": "Ошибка при обновлении задержки",
+      "generic_error": "Произошла ошибка"
+    }
+  },
+  "Sidebar": {
+    "brand_title": "Система анализа ремонта",
+    "brand_subtitle": "Цифровая аналитика",
+    "nav": {
+      "pantograph": "Пантограф",
+      "orders": "Приказ МПР",
+      "defective_works": "Неисправности",
+      "delays": "Срывы",
+      "delay_reports": "Отчёты по срывам"
+    },
+    "support_button": "Техническая поддержка",
+    "footer_company": "Smart Depo",
+    "footer_description": "Цифровая аналитическая система"
+  },
+  "PaginatedTable": {
+    "actions_label": "Действия",
+    "empty_title": "Данные не найдены",
+    "empty_description": "Нет данных для отображения в таблице",
+    "error_title": "Произошла ошибка",
+    "error_message": "Произошла ошибка при загрузке данных",
+    "delete_confirm_title": "Подтверждение удаления",
+    "delete_confirm_message_with_row": "Вы уверены, что хотите удалить эту запись? Это действие нельзя отменить.",
+    "delete_confirm_message_no_row": "Вы уверены, что хотите удалить эту запись?",
+    "delete_error_title": "Ошибка",
+    "delete_error_message": "Произошла ошибка: {error}. Пожалуйста, повторите попытку или отмените действие.",
+    "delete_confirm_button": "Удалить",
+    "delete_retry_button": "Повторить попытку",
+    "delete_cancel_button": "Отмена",
+    "deleting": "Удаление...",
+    "pagination_prev": "Назад",
+    "pagination_next": "Вперёд",
+    "showing": "Показаны записи с {from} по {to} из {total}"
+  },
+  "DatePicker": {
+    "placeholder": "ДД.ММ.ГГГГ",
+    "clear_aria": "Очистить дату"
+  },
+  "FileUpload": {
+    "cta_main": "Нажмите, чтобы выбрать файл",
+    "cta_hint": "или перетащите файлы сюда",
+    "formats": "Поддерживаемые форматы: {accept}",
+    "max_size": "Максимальный размер: {maxSize}МБ",
+    "max_files": "До {maxFiles} файлов",
+    "selected_files_title": "Выбранные файлы ({count})",
+    "error_too_big": "Файл \"{name}\" превышает максимальный размер {maxSize}МБ",
+    "error_too_many": "Максимальное количество файлов: {maxFiles}"
+  },
+  "DelayReportsPage": {
+    "title": "Отчеты по срывам",
+    "description": "Отчеты о задержках поездов",
+    "breadcrumbs": {
+      "home": "Главная",
+      "current": "Отчеты по срывам"
+    },
+    "export": {
+      "date_required": "Пожалуйста, выберите дату начала и окончания."
+    },
+    "messages": {
+      "generic_error": "Произошла ошибка"
+    }
+  }
+}
+

@@ -1,7 +1,11 @@
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // --- ADD THIS FOR DOCKER ---
-  output: 'standalone', 
+  output: "standalone",
   // ---------------------------
 
   eslint: {
@@ -13,6 +17,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
+};
 
-export default nextConfig
+export default withNextIntl(nextConfig);

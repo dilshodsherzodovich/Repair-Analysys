@@ -1,0 +1,159 @@
+{
+  "HomePage": {
+    "title": "Elektron ta'mir tahlili tizimi"
+  },
+  "DelaysPage": {
+    "title": "Kechikishlar",
+    "description": "Poyezd kechikishlarini ko‘rish va boshqarish",
+    "breadcrumbs": {
+      "home": "Asosiy",
+      "current": "Kechikishlar"
+    },
+    "columns": {
+      "incident_date": "Sana",
+      "train_number": "Poyezd raqami",
+      "train_type": "Poyezd turi",
+      "delay_type": "Kechikish turi",
+      "group_reason": "Sabab guruhi",
+      "station": "Stansiya",
+      "delay_time": "Kechikish vaqti",
+      "reason": "Sabab",
+      "damage_amount": "Zarar",
+      "responsible_org": "Mas’ul tashkilot",
+      "status": "Holati",
+      "archive": "Arxiv",
+      "report": "Hisobot"
+    },
+    "status": {
+      "label_disruption": "Suv",
+      "label_no_disruption": "Suv emas"
+    },
+    "archive": {
+      "archived": "Arxivlangan",
+      "not_archived": "Arxivlanmagan"
+    },
+    "filters": {
+      "delay_type": "Kechikish turi",
+      "delay_type_placeholder": "Kechikish turini tanlang",
+      "delay_type_all": "Barcha turlar",
+      "train_type": "Poyezd turi",
+      "train_type_placeholder": "Poyezd turini tanlang",
+      "group_reason": "Sabab guruhi",
+      "group_reason_placeholder": "Sabab guruhini tanlang",
+      "station": "Stansiya",
+      "station_placeholder": "Stansiyani tanlang",
+      "responsible_org": "Mas’ul tashkilot",
+      "responsible_org_placeholder": "Mas’ul tashkilotni tanlang",
+      "status": "Holati",
+      "status_placeholder": "Holatni tanlang",
+      "status_all": "Barcha holatlar",
+      "status_disruption": "Suv",
+      "status_no_disruption": "Suv emas",
+      "search_placeholder": "Qidiruv"
+    },
+    "train_types": {
+      "passenger": "Yo'lovchi",
+      "freight": "Yuk",
+      "electric": "Elektr",
+      "shunt": "Manyovr",
+      "high_speed": "Yuqori tezlikdagi"
+    },
+    "group_reasons": {
+      "repair": "Lokomotiv ta'mirlash",
+      "speed_violation": "Tezlik buzilishi",
+      "crew_waiting": "Ekipaj kutish",
+      "autoblock_center": "Avtoblok markazi",
+      "driver_dispute": "Mashinist bahs-munozarasi",
+      "fuel_finished": "Yoqilg'i tugashi",
+      "late_loco_exit": "Lokomotiv kech chiqishi",
+      "no_electric_loco": "Elektrovoz yoq",
+      "no_diesel_loco": "Teplovoz yoq",
+      "other": "Boshqa"
+    },
+    "delay_types": {
+      "Po prosledovaniyu": "Po prosledovaniyu",
+      "Po otpravleniyu": "Po otpravleniyu"
+    },
+    "empty": {
+      "title": "Ma’lumot topilmadi",
+      "description": "Kechikishlar topilmadi"
+    },
+    "messages": {
+      "approve_success": "Kechikish muvaffaqiyatli tasdiqlandi",
+      "approve_error_title": "Xatolik yuz berdi",
+      "approve_error_message": "Kechikishni tasdiqlashda xatolik yuz berdi",
+      "delete_success": "Kechikish muvaffaqiyatli o‘chirildi",
+      "delete_error_title": "Xatolik yuz berdi",
+      "delete_error_message": "Kechikishni o‘chirishda xatolik yuz berdi",
+      "create_success": "Kechikish muvaffaqiyatli qo‘shildi",
+      "create_error_title": "Xatolik yuz berdi",
+      "create_error_message": "Kechikishni qo‘shishda xatolik yuz berdi",
+      "update_success": "Kechikish muvaffaqiyatli yangilandi",
+      "update_error_title": "Xatolik yuz berdi",
+      "update_error_message": "Kechikishni yangilashda xatolik yuz berdi",
+      "generic_error": "Xatolik yuz berdi"
+    }
+  },
+  "Sidebar": {
+    "brand_title": "Ta'mir Tahlili Tizimi",
+    "brand_subtitle": "Raqamli tahlil",
+    "nav": {
+      "pantograph": "Pantograf",
+      "orders": "Buyruq MPR",
+      "defective_works": "Nosozliklar",
+      "delays": "Sriv",
+      "delay_reports": "Sriv hisobotlar"
+    },
+    "support_button": "Texnik yordam markazi",
+    "footer_company": "Smart Depo",
+    "footer_description": "Raqamli tahliliy tizim"
+  },
+  "PaginatedTable": {
+    "actions_label": "Amallar",
+    "empty_title": "Ma'lumot topilmadi",
+    "empty_description": "Jadvalda ko'rsatish uchun ma'lumot yo'q",
+    "error_title": "Xatolik yuz berdi",
+    "error_message": "Ma'lumotlarni yuklashda xatolik yuz berdi",
+    "delete_confirm_title": "O'chirishni tasdiqlash",
+    "delete_confirm_message_with_row": "Bu ma'lumotni o'chirishni xohlaysizmi? Bu amalni bekor qilib bo'lmaydi.",
+    "delete_confirm_message_no_row": "Bu ma'lumotni o'chirishni xohlaysizmi?",
+    "delete_error_title": "Xatolik",
+    "delete_error_message": "Xatolik yuz berdi: {error}. Iltimos, qayta urinib ko'ring yoki bekor qiling.",
+    "delete_confirm_button": "O'chirish",
+    "delete_retry_button": "Qayta urinish",
+    "delete_cancel_button": "Bekor qilish",
+    "deleting": "O'chirilmoqda...",
+    "pagination_prev": "Orqaga",
+    "pagination_next": "Oldinga",
+    "showing": "Ko'rsatilmoqda {from} dan {to} gacha, jami {total} ta natija"
+  },
+  "DatePicker": {
+    "placeholder": "DD.MM.YYYY",
+    "clear_aria": "Sanani tozalash"
+  },
+  "FileUpload": {
+    "cta_main": "Fayl tanlash uchun bosing",
+    "cta_hint": "yoki fayllarni bu yerga sudrab keling",
+    "formats": "Qo'llab-quvvatlanadigan formatlar: {accept}",
+    "max_size": "Maksimal hajm: {maxSize}MB",
+    "max_files": "{maxFiles} tagacha fayl",
+    "selected_files_title": "Tanlangan fayllar ({count})",
+    "error_too_big": "Fayl \"{name}\" maksimal hajm {maxSize}MB dan oshib ketdi",
+    "error_too_many": "Maksimal fayllar soni: {maxFiles}"
+  },
+  "DelayReportsPage": {
+    "title": "Suvlar bo‘yicha hisobotlar",
+    "description": "Poyezd kechikishlari bo‘yicha hisobotlar",
+    "breadcrumbs": {
+      "home": "Asosiy",
+      "current": "Suvlar bo‘yicha hisobotlar"
+    },
+    "export": {
+      "date_required": "Iltimos, boshlanish va tugash sanalarini tanlang."
+    },
+    "messages": {
+      "generic_error": "Xatolik yuz berdi"
+    }
+  }
+}
+

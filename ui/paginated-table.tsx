@@ -41,6 +41,7 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { ConfirmationDialog } from "./confirmation-dialog";
 import { PermissionGuard } from "@/components/permission-guard";
 import { Permission, hasPermission } from "@/lib/permissions";
+import { useTranslations } from "next-intl";
 
 export interface TableColumn<T = any> {
   key: string;
@@ -136,12 +137,12 @@ export function PaginatedTable<T extends Record<string, any>>({
   isDeleting = false,
   extraActions = [],
   showActions = true,
-  actionsLabel = "Amallar",
+  actionsLabel,
   actionsDisplayMode = "dropdown",
-  emptyTitle = "Ma'lumot topilmadi",
-  emptyDescription = "Jadvalda ko'rsatish uchun ma'lumot yo'q",
-  errorTitle = "Xatolik yuz berdi",
-  errorMessage = "Ma'lumotlarni yuklashda xatolik yuz berdi",
+  emptyTitle,
+  emptyDescription,
+  errorTitle,
+  errorMessage,
   onRetry,
   selectable = false,
   selectedIds = [],
@@ -153,6 +154,15 @@ export function PaginatedTable<T extends Record<string, any>>({
   skeletonRows = 10,
   size = "md",
 }: PaginatedTableProps<T>) {
+  const t = useTranslations("PaginatedTable");
+
+  const resolvedActionsLabel = actionsLabel ?? t("actions_label");
+  const resolvedEmptyTitle = emptyTitle ?? t("empty_title");
+  const resolvedEmptyDescription =
+    emptyDescription ?? t("empty_description");
+  const resolvedErrorTitle = errorTitle ?? t("error_title");
+  const resolvedErrorMessage =
+    errorMessage ?? t("error_message");
   const {
     currentPage,
     itemsPerPage,
@@ -223,14 +233,16 @@ export function PaginatedTable<T extends Record<string, any>>({
         ...columns,
         {
           key: "actions",
-          header: actionsLabel,
-          className: "w-[100px] text-center sticky right-0 bg-white z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
-          headerClassName: "text-center sticky right-0 bg-[#EFF6FF] z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+          header: resolvedActionsLabel,
+          className:
+            "w-[100px] text-center sticky right-0 bg-white z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+          headerClassName:
+            "text-center sticky right-0 bg-[#EFF6FF] z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
         } as TableColumn<T>,
       ];
     }
     return columns;
-  }, [columns, hasActions, actionsLabel]);
+  }, [columns, hasActions, resolvedActionsLabel]);
 
   const totalColumnCount = displayColumns.length + (showCheckbox ? 1 : 0);
 
@@ -292,8 +304,8 @@ export function PaginatedTable<T extends Record<string, any>>({
     return (
       <div className={cn("w-full", className)}>
         <ErrorCard
-          title={errorTitle}
-          message={errorMessage || error.message}
+          title={resolvedErrorTitle}
+          message={resolvedErrorMessage || error.message}
           onRetry={onRetry}
           showBack={false}
           className=""
@@ -337,8 +349,8 @@ export function PaginatedTable<T extends Record<string, any>>({
               <TableCell colSpan={totalColumnCount} className="">
                 <EmptyState
                   icon={<AlertCircle className="h-12 w-12" />}
-                  title={emptyTitle}
-                  description={emptyDescription}
+                  title={resolvedEmptyTitle}
+                  description={resolvedEmptyDescription}
                 />
               </TableCell>
             </TableRow>
@@ -513,19 +525,29 @@ export function PaginatedTable<T extends Record<string, any>>({
           isOpen={deleteState.isOpen}
           onClose={handleDeleteCancel}
           onConfirm={handleDeleteConfirm}
-          title={deleteState.error ? "Xatolik" : "O'chirishni tasdiqlash"}
+          title={
+            deleteState.error
+              ? t("delete_error_title")
+              : t("delete_confirm_title")
+          }
           message={
             deleteState.error
-              ? `Xatolik yuz berdi: ${deleteState.error.message}. Iltimos, qayta urinib ko'ring yoki bekor qiling.`
+              ? t("delete_error_message", {
+                  error: deleteState.error.message,
+                })
               : deleteState.row
-                ? "Bu ma'lumotni o'chirishni xohlaysizmi? Bu amalni bekor qilib bo'lmaydi."
-                : "Bu ma'lumotni o'chirishni xohlaysizmi?"
+              ? t("delete_confirm_message_with_row")
+              : t("delete_confirm_message_no_row")
           }
-          confirmText={deleteState.error ? "Qayta urinish" : "O'chirish"}
-          cancelText="Bekor qilish"
+          confirmText={
+            deleteState.error
+              ? t("delete_retry_button")
+              : t("delete_confirm_button")
+          }
+          cancelText={t("delete_cancel_button")}
           variant={deleteState.error ? "warning" : "danger"}
           isDoingAction={isDeleting}
-          isDoingActionText="O'chirilmoqda..."
+          isDoingActionText={t("deleting")}
         />
       )}
 
@@ -541,9 +563,14 @@ export function PaginatedTable<T extends Record<string, any>>({
               />
               {totalItems && (
                 <span className="text-sm text-gray-600 whitespace-nowrap">
-                  Showing{" "}
-                  {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}{" "}
-                  of {totalItems} results
+                  {t("showing", {
+                    from: Math.min(
+                      (currentPage - 1) * itemsPerPage + 1,
+                      totalItems
+                    ),
+                    to: Math.min(currentPage * itemsPerPage, totalItems),
+                    total: totalItems,
+                  })}
                 </span>
               )}
             </div>
@@ -811,6 +838,7 @@ function PaginationControls({
   totalPages: number;
   onPageChange: (page: number) => void;
 }) {
+  const t = useTranslations("PaginatedTable");
   const getVisiblePages = () => {
     const pages: (number | string)[] = [];
     const maxVisible = 5;
@@ -859,7 +887,7 @@ function PaginationControls({
             className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
           >
             <ChevronLeft className="h-4 w-4" />
-            <span>Orqaga</span>
+            <span>{t("pagination_prev")}</span>
           </button>
         </li>
       )}
@@ -886,7 +914,7 @@ function PaginationControls({
             onClick={() => onPageChange(currentPage + 1)}
             className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
           >
-            <span>Oldinga</span>
+            <span>{t("pagination_next")}</span>
             <ChevronRight className="h-4 w-4" />
           </button>
         </li>

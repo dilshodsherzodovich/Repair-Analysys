@@ -33,8 +33,10 @@ import {
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { FileUp, FileEdit, CheckCircle, Edit, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function DelaysPage() {
+  const t = useTranslations("DelaysPage");
   const { getAllQueryValues } = useFilterParams();
   const { updateQuery } = useFilterParams();
   const {
@@ -85,6 +87,21 @@ export default function DelaysPage() {
   const archiveFilter =
     archive === "true" ? true : archive === "false" ? false : undefined;
 
+  const getTrainTypeLabel = (value?: string | null) => {
+    if (!value) return "-";
+    return t(`train_types.${value}` as any);
+  };
+
+  const getGroupReasonLabel = (value?: string | null) => {
+    if (!value) return "-";
+    return t(`group_reasons.${value}` as any);
+  };
+
+  const getDelayTypeLabel = (value?: string | null) => {
+    if (!value) return "-";
+    return t(`delay_types.${value}` as any);
+  };
+
   const {
     data: apiResponse,
     isLoading,
@@ -115,7 +132,7 @@ export default function DelaysPage() {
     apiError instanceof Error
       ? apiError
       : apiError
-        ? new Error(apiError?.message || "Произошла ошибка")
+        ? new Error(apiError?.message || t("messages.generic_error"))
         : null;
 
   const handleEdit = useCallback(
@@ -158,16 +175,16 @@ export default function DelaysPage() {
       },
     }, {
       onSuccess: () => {
-        showSuccess("Задержка успешно подтверждена");
+        showSuccess(t("messages.approve_success"));
         setIsApproveModalOpen(false);
         setApproveEntry(null);
       },
       onError: (error: any) => {
         showError(
-          "Произошла ошибка",
+          t("messages.approve_error_title"),
           error?.response?.data?.message ||
           error?.message ||
-          "Ошибка при подтверждении задержки"
+          t("messages.approve_error_message")
         );
       },
     });
@@ -180,13 +197,13 @@ export default function DelaysPage() {
       }
       try {
         await deleteMutation.mutateAsync(row.id);
-        showSuccess("Задержка успешно удалена");
+        showSuccess(t("messages.delete_success"));
       } catch (error: any) {
         showError(
-          "Произошла ошибка",
+          t("messages.delete_error_title"),
           error?.response?.data?.message ||
           error?.message ||
-          "Ошибка при удалении задержки"
+          t("messages.delete_error_message")
         );
         throw error;
       }
@@ -205,16 +222,16 @@ export default function DelaysPage() {
       if (modalMode === "create") {
         createMutation.mutate(payload as DelayCreatePayload, {
           onSuccess: () => {
-            showSuccess("Задержка успешно добавлена");
+            showSuccess(t("messages.create_success"));
             setIsModalOpen(false);
             setSelectedEntry(null);
           },
           onError: (error: any) => {
             showError(
-              "Произошла ошибка",
+              t("messages.create_error_title"),
               error?.response?.data?.message ||
               error?.message ||
-              "Ошибка при добавлении задержки"
+              t("messages.create_error_message")
             );
           },
         });
@@ -226,16 +243,16 @@ export default function DelaysPage() {
           },
           {
             onSuccess: () => {
-              showSuccess("Задержка успешно обновлена");
+              showSuccess(t("messages.update_success"));
               setIsModalOpen(false);
               setSelectedEntry(null);
             },
             onError: (error: any) => {
               showError(
-                "Произошла ошибка",
+                t("messages.update_error_title"),
                 error?.response?.data?.message ||
                 error?.message ||
-                "Ошибка при обновлении задержки"
+                t("messages.update_error_message")
               );
             },
           }
@@ -313,69 +330,58 @@ export default function DelaysPage() {
   const columns: TableColumn<DelayEntry>[] = [
     {
       key: "incident_date",
-      header: "Дата",
+      header: t("columns.incident_date"),
       accessor: (row) =>
         row?.incident_date ? formatDate(row.incident_date, false) : "-",
     },
 
     {
       key: "train_number",
-      header: "Номер поезда",
+      header: t("columns.train_number"),
       accessor: (row) => row?.train_number || "-",
       width: "20px",
     },
     {
       key: "train_type",
-      header: "Тип поезда",
+      header: t("columns.train_type"),
       accessor: (row) => {
-        if (row?.train_type_display) {
-          return row.train_type_display;
-        }
         if (row?.train_type) {
-          const option = TRAIN_TYPE_OPTIONS.find(
-            (opt) => opt.value === row.train_type
-          );
-          return option?.label || row.train_type;
+          return getTrainTypeLabel(row.train_type);
         }
         return "-";
       },
     },
     {
       key: "delay_type",
-      header: "Тип задержки",
-      accessor: (row) => row?.delay_type || "-",
+      header: t("columns.delay_type"),
+      accessor: (row) =>
+        row?.delay_type ? getDelayTypeLabel(row.delay_type) : "-",
       width: "150px"
     },
     {
       key: "group_reason",
-      header: "Группа",
+      header: t("columns.group_reason"),
       accessor: (row) => {
-        if (row?.group_reason_display) {
-          return row.group_reason_display;
-        }
         if (row?.group_reason) {
-          const option = GROUP_REASON_OPTIONS.find(
-            (opt) => opt.value === row.group_reason
-          );
-          return option?.label || row.group_reason;
+          return getGroupReasonLabel(row.group_reason);
         }
         return "-";
       },
     },
     {
       key: "station",
-      header: "Станция",
+      header: t("columns.station"),
       accessor: (row) => row?.station || "-",
       width: "100px"
     },
     {
       key: "delay_time",
-      header: "Время задержки",
+      header: t("columns.delay_time"),
       accessor: (row) => (row?.delay_time ? formatTime(row.delay_time) : "-"),
     },
     {
       key: "reason",
-      header: "Причина",
+      header: t("columns.reason"),
       accessor: (row) => (
         <div className="max-w-[300px] whitespace-pre-wrap break-words">
           {row?.reason || "-"}
@@ -384,7 +390,7 @@ export default function DelaysPage() {
     },
     {
       key: "damage_amount",
-      header: "Ущерб",
+      header: t("columns.damage_amount"),
       accessor: (row) =>
         row?.damage_amount
           ? new Intl.NumberFormat("uz-UZ", {
@@ -396,17 +402,19 @@ export default function DelaysPage() {
     },
     {
       key: "responsible_org",
-      header: "Ответственная организация",
+      header: t("columns.responsible_org"),
       accessor: (row) =>
         row?.responsible_org_name || row?.responsible_org_detail?.name || "-",
     },
     {
       key: "status",
-      header: "Статус",
+      header: t("columns.status"),
       accessor: (row) => {
         return (
           <Badge variant={row?.status ? "destructive_outline" : "success_outline"}>
-            {row?.status ? "Срыв" : "Не срыв"}
+            {row?.status
+              ? t("status.label_disruption")
+              : t("status.label_no_disruption")}
           </Badge>
         );
       },
@@ -414,19 +422,21 @@ export default function DelaysPage() {
     },
     {
       key: "archive",
-      header: "Архив",
+      header: t("columns.archive"),
       accessor: (row) => {
         const isArchived = row?.archive;
         return (
           <Badge variant={isArchived ? "default" : "outline"}>
-            {isArchived ? "Архивировано" : "Не архивировано"}
+            {isArchived
+              ? t("archive.archived")
+              : t("archive.not_archived")}
           </Badge>
         );
       },
     },
     {
       key: "report",
-      header: "Отчет",
+      header: t("columns.report"),
       accessor: (row) => {
         if (row?.report_filename || row?.report) {
           const filename = row.report_filename || "Просмотреть отчет";
@@ -451,23 +461,23 @@ export default function DelaysPage() {
   ];
 
   const breadcrumbs = [
-    { label: "Главная", href: "/" },
-    { label: "Задержки", current: true },
+    { label: t("breadcrumbs.home"), href: "/" },
+    { label: t("breadcrumbs.current"), current: true },
   ];
 
   const delayTypeOptions = useMemo(() => {
-    const options = [{ value: "", label: "Все типы" }];
+    const options = [{ value: "", label: t("filters.delay_type_all") }];
     DELAY_TYPE_OPTIONS.forEach((type) =>
       options.push({
         value: type.value,
-        label: type.label,
+        label: getDelayTypeLabel(type.value),
       })
     );
     return options;
-  }, []);
+  }, [t]);
 
   const stationOptions = useMemo(() => {
-    const options = [{ value: "", label: "Все станции" }];
+    const options = [{ value: "", label: t("filters.station_placeholder") }];
     STATION_OPTIONS.forEach((station) =>
       options.push({
         value: station.value,
@@ -478,7 +488,9 @@ export default function DelaysPage() {
   }, []);
 
   const organizationOptions = useMemo(() => {
-    const options = [{ value: "", label: "Все организации" }];
+    const options = [
+      { value: "", label: t("filters.responsible_org_placeholder") },
+    ];
     if (organizationsData) {
       organizationsData?.forEach((org) =>
         options.push({
@@ -491,38 +503,40 @@ export default function DelaysPage() {
   }, [organizationsData]);
 
   const statusOptions = [
-    { value: "", label: "Все статусы" },
-    { value: "true", label: "Срыв" },
-    { value: "false", label: "Не срыв" },
+    { value: "", label: t("filters.status_all") },
+    { value: "true", label: t("filters.status_disruption") },
+    { value: "false", label: t("filters.status_no_disruption") },
   ];
 
   const trainTypeOptions = useMemo(() => {
-    const options = [{ value: "", label: "Все типы поездов" }];
+    const options = [{ value: "", label: t("filters.train_type_placeholder") }];
     TRAIN_TYPE_OPTIONS.forEach((type) =>
       options.push({
         value: type.value,
-        label: type.label,
+        label: getTrainTypeLabel(type.value),
       })
     );
     return options;
-  }, []);
+  }, [t]);
 
   const groupReasonOptions = useMemo(() => {
-    const options = [{ value: "", label: "Все причины" }];
+    const options = [
+      { value: "", label: t("filters.group_reason_placeholder") },
+    ];
     GROUP_REASON_OPTIONS.forEach((reason) =>
       options.push({
         value: reason.value,
-        label: reason.label,
+        label: getGroupReasonLabel(reason.value),
       })
     );
     return options;
-  }, []);
+  }, [t]);
 
   return (
     <div className="min-h-screen ">
       <PageHeader
-        title="Задержки"
-        description="Просмотр и управление задержками поездов"
+        title={t("title")}
+        description={t("description")}
         breadcrumbs={breadcrumbs}
       />
 
@@ -531,56 +545,56 @@ export default function DelaysPage() {
           filters={[
             {
               name: "delay_type",
-              label: "Тип задержки",
+              label: t("filters.delay_type"),
               isSelect: true,
               options: delayTypeOptions,
-              placeholder: "Выберите тип задержки",
+              placeholder: t("filters.delay_type_placeholder"),
               searchable: false,
               loading: false,
             },
             {
               name: "train_type",
-              label: "Тип поезда",
+              label: t("filters.train_type"),
               isSelect: true,
               options: trainTypeOptions,
-              placeholder: "Выберите тип поезда",
+              placeholder: t("filters.train_type_placeholder"),
               searchable: false,
               loading: false,
             },
             {
               name: "group_reason",
-              label: "Группа",
+              label: t("filters.group_reason"),
               isSelect: true,
               options: groupReasonOptions,
-              placeholder: "Выберите группу причины",
+              placeholder: t("filters.group_reason_placeholder"),
               searchable: false,
               loading: false,
             },
             {
               name: "station",
-              label: "Станция",
+              label: t("filters.station"),
               isSelect: true,
               options: stationOptions,
-              placeholder: "Выберите станцию",
+              placeholder: t("filters.station_placeholder"),
               searchable: false,
               loading: false,
               permission: "filter_delay_station",
             },
             {
               name: "responsible_org",
-              label: "Ответственная организация",
+              label: t("filters.responsible_org"),
               isSelect: true,
               options: organizationOptions,
-              placeholder: "Выберите ответственную организацию",
+              placeholder: t("filters.responsible_org_placeholder"),
               searchable: false,
               loading: isLoadingOrganizations,
             },
             {
               name: "status",
-              label: "Статус",
+              label: t("filters.status"),
               isSelect: true,
               options: statusOptions,
-              placeholder: "Выберите статус",
+              placeholder: t("filters.status_placeholder"),
               searchable: false,
               loading: false,
             },
@@ -588,7 +602,7 @@ export default function DelaysPage() {
           hasSearch={false}
           hasDateRangePicker
           dateRangePickerLabel=""
-          searchPlaceholder="Поиск"
+          searchPlaceholder={t("filters.search_placeholder")}
           addButtonPermittion="create_delay"
           onAdd={handleCreate}
           className="!mb-0"
@@ -681,8 +695,8 @@ export default function DelaysPage() {
           selectable
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
-          emptyTitle="Данные не найдены"
-          emptyDescription="Задержки отсутствуют"
+          emptyTitle={t("empty.title")}
+          emptyDescription={t("empty.description")}
           deletePermission="delete_delay"
           editPermission="edit_delay"
         />

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
 import { Calendar } from "@/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
+import { useTranslations } from "next-intl";
 
 export interface DatePickerProps {
   label?: string;
@@ -31,7 +32,7 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
       error,
       success,
       hint,
-      placeholder = "DD/MM/YYYY",
+      placeholder,
       value,
       onValueChange,
       disabled = false,
@@ -43,6 +44,7 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
     },
     ref
   ) => {
+    const t = useTranslations("DatePicker");
     const [isOpen, setIsOpen] = React.useState(false);
     const hasError = !!error;
     const hasSuccess = !!success && !hasError;
@@ -75,7 +77,7 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
               <CalendarIcon className="mr-2 h-4 w-4" />
               {value
                 ? format(value, "dd.MM.yyyy", { locale: uz })
-                : placeholder}
+                : placeholder ?? t("placeholder")}
               <div className="ml-auto flex items-center space-x-1">
                 {value && !disabled && (
                   <div
@@ -94,7 +96,7 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
                       }
                     }}
                     className="hover:bg-gray-100 rounded p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400"
-                    aria-label="Clear date"
+                    aria-label={t("clear_aria")}
                   >
                     <X className="h-4 w-4 text-gray-500" />
                   </div>

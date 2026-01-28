@@ -29,34 +29,35 @@ import {
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { authService } from "@/api/services/auth.service";
 import { PermissionGuard } from "@/components/permission-guard";
+import { useTranslations } from "next-intl";
 
 const navigationItems = [
   {
-    name: "Pantograf",
+    key: "pantograph",
     href: "/",
     icon: Zap,
     section: "pantograf",
   },
   {
-    name: "Buyruq MPR",
+    key: "orders",
     href: "/orders",
     icon: FileText,
     section: "orders",
   },
   {
-    name: "Nosozliklar",
+    key: "defective_works",
     href: "/defective-works",
     icon: AlertCircle,
     section: "defective-works",
   },
   {
-    name: "Sriv",
+    key: "delays",
     href: "/delays",
     icon: AlertCircle,
     section: "delays",
   },
   {
-    name: "Sriv hisobotlar",
+    key: "delay_reports",
     href: "/delays/reports",
     icon: FileText,
     section: "delays",
@@ -64,6 +65,7 @@ const navigationItems = [
 ];
 
 export function Sidebar() {
+  const t = useTranslations("Sidebar");
   const pathname = usePathname();
 
   const user = authService.getUser();
@@ -85,10 +87,10 @@ export function Sidebar() {
             </div>
             <div>
               <div className="font-bold text-foreground text-sm leading-tight">
-                Tamir Tahlili Tizimi
+                {t("brand_title")}
               </div>
               <div className="text-xs text-muted-foreground leading-tight">
-                Raqamli tahlil
+                {t("brand_subtitle")}
               </div>
             </div>
           </div>
@@ -101,7 +103,7 @@ export function Sidebar() {
 
             return (
               <Link
-                key={item.name}
+                key={item.key}
                 href={item.href}
                 className={cn(
                   "flex items-center justify-between rounded-lg text-sm font-medium transition-all px-3 py-2.5",
@@ -125,7 +127,7 @@ export function Sidebar() {
                         : "text-muted-foreground"
                     )}
                   >
-                    {item.name}
+                    {t(`nav.${item.key}` as any)}
                   </span>
                 </div>
 
@@ -143,12 +145,12 @@ export function Sidebar() {
         <div className="mt-auto pt-4 border-t border-sidebar-border flex-shrink-0">
           <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 mb-4 flex items-center justify-center space-x-2">
             <Send className="h-4 w-4" />
-            <span>Texnik yordam markazi</span>
+            <span>{t("support_button")}</span>
           </Button>
 
           <div className="space-y-0.5 text-xs text-muted-foreground text-center">
-            <div>Smart Depo</div>
-            <div>Raqamli tahliliy tizim</div>
+            <div>{t("footer_company")}</div>
+            <div>{t("footer_description")}</div>
             <div>{new Date().getFullYear()}</div>
           </div>
         </div>

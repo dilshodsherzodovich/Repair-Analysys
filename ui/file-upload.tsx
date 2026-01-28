@@ -16,6 +16,7 @@ import {
 import { truncate } from "@/lib/utils";
 import { PermissionGuard } from "@/components/permission-guard";
 import { Button } from "@/ui/button";
+import { useTranslations } from "next-intl";
 
 export interface FileUploadProps {
   label?: string;
@@ -62,6 +63,8 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     const [uploadError, setUploadError] = React.useState<string>("");
     const inputRef = React.useRef<HTMLInputElement>(null);
 
+    const t = useTranslations("FileUpload");
+
     const hasError = !!error || !!uploadError;
     const hasSuccess = !!success && !hasError;
     const hasFiles = files.length > 0;
@@ -72,7 +75,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
 
     const validateFile = (file: File): string | null => {
       if (maxSize && file.size > maxSize * 1024 * 1024) {
-        return `Fayl "${file.name}" maksimal hajm ${maxSize}MB dan oshib ketdi`;
+        return t("error_too_big", { name: file.name, maxSize });
       }
       return null;
     };
@@ -100,7 +103,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
 
       const totalFiles = multiple ? [...files, ...validFiles] : validFiles;
       if (maxFiles && totalFiles.length > maxFiles) {
-        setUploadError(`Maksimal fayllar soni: ${maxFiles}`);
+        setUploadError(t("error_too_many", { maxFiles }));
         return;
       }
 
@@ -221,21 +224,21 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
               <Upload className="mx-auto h-8 w-8 text-[#6b7280] mb-2" />
               <p className="text-sm text-[#374151] mb-1">
                 <span className="font-medium text-[#2354bf]">
-                  Fayl tanlash uchun bosing
+                  {t("cta_main")}
                 </span>{" "}
-                yoki fayllarni bu yerga sudrab keling
+                {t("cta_hint")}
               </p>
               <p className="text-xs text-[#6b7280]">
-                {accept && `Qo'llab-quvvatlanadigan formatlar: ${accept}`}
-                {maxSize && ` • Maksimal hajm: ${maxSize}MB`}
-                {multiple && maxFiles && ` • ${maxFiles} tagacha fayl`}
+                {accept && t("formats", { accept })}
+                {maxSize && <> • {t("max_size", { maxSize })}</>}
+                {multiple && maxFiles && <> • {t("max_files", { maxFiles })}</>}
               </p>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="text-center">
                 <p className="text-sm font-medium text-[#374151] mb-3">
-                  Tanlangan fayllar ({files.length})
+                  {t("selected_files_title", { count: files.length })}
                 </p>
               </div>
 

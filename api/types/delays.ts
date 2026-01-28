@@ -189,6 +189,8 @@ export type GroupReason =
   | "driver_dispute"
   | "fuel_finished"
   | "late_loco_exit"
+  | "no_electric_loco"
+  | "no_diesel_loco"
   | "other";
 
 export const TRAIN_TYPE_OPTIONS: Array<{ value: TrainType; label: string }> = [
@@ -207,6 +209,8 @@ export const GROUP_REASON_OPTIONS: Array<{ value: GroupReason; label: string }> 
   { value: "driver_dispute", label: "Mashinist bahs-munozarasi" },
   { value: "fuel_finished", label: "Yoqilg'i tugashi" },
   { value: "late_loco_exit", label: "Lokomotiv kech chiqishi" },
+  { value: "no_electric_loco", label: "Elektrovoz yoq" },
+  { value: "no_diesel_loco", label: "Teplovoz yoq" },
   { value: "other", label: "Boshqa" },
 ];
 
