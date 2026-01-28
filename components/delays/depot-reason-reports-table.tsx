@@ -42,8 +42,8 @@ export function DepotReasonReportsTable() {
     <div className="mt-8">
       {error && (
         <ErrorCard
-          title="Xatolik yuz berdi"
-          message={error.message || "Xatolik yuz berdi"}
+          title="Произошла ошибка"
+          message={error.message || "Произошла ошибка"}
           onRetry={() => { }}
           showRetry={false}
           showBack={false}

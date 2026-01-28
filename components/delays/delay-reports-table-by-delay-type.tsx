@@ -34,8 +34,8 @@ export function DelayReportsTableByDelayType({
     <div className="px-6 pb-6">
       {error && (
         <ErrorCard
-          title="Xatolik yuz berdi"
-          message={error.message || "Xatolik yuz berdi"}
+          title="Произошла ошибка"
+          message={error.message || "Произошла ошибка"}
           onRetry={() => { }}
           showRetry={false}
           showBack={false}
@@ -295,7 +295,7 @@ export function DelayReportsTableByDelayType({
       {!isLoading && !error && !data && startDate && endDate && (
         <div className="bg-white border rounded-lg p-8 text-center">
           <p className="text-gray-500 text-sm">
-            Ma'lumotlar topilmadi. Iltimos, boshqa sana oralig'ini tanlang.
+            Данные не найдены. Пожалуйста, выберите другой диапазон дат.
           </p>
         </div>
       )}
@@ -303,7 +303,7 @@ export function DelayReportsTableByDelayType({
       {!isLoading && !error && !startDate && !endDate && !start_date && !end_date && (
         <div className="bg-white border rounded-lg p-8 text-center">
           <p className="text-gray-500 text-sm">
-            Hisobotni ko'rish uchun boshlanish va tugash sanalarini tanlang.
+            Для просмотра отчета выберите дату начала и окончания.
           </p>
         </div>
       )}

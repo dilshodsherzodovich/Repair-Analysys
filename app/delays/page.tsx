@@ -115,7 +115,7 @@ export default function DelaysPage() {
     apiError instanceof Error
       ? apiError
       : apiError
-        ? new Error(apiError?.message || "Xatolik yuz berdi")
+        ? new Error(apiError?.message || "Произошла ошибка")
         : null;
 
   const handleEdit = useCallback(
@@ -158,16 +158,16 @@ export default function DelaysPage() {
       },
     }, {
       onSuccess: () => {
-        showSuccess("Kechikish muvaffaqiyatli tasdiqlandi");
+        showSuccess("Задержка успешно подтверждена");
         setIsApproveModalOpen(false);
         setApproveEntry(null);
       },
       onError: (error: any) => {
         showError(
-          "Xatolik yuz berdi",
+          "Произошла ошибка",
           error?.response?.data?.message ||
           error?.message ||
-          "Kechikishni tasdiqlashda xatolik"
+          "Ошибка при подтверждении задержки"
         );
       },
     });
@@ -180,13 +180,13 @@ export default function DelaysPage() {
       }
       try {
         await deleteMutation.mutateAsync(row.id);
-        showSuccess("Kechikish muvaffaqiyatli o'chirildi");
+        showSuccess("Задержка успешно удалена");
       } catch (error: any) {
         showError(
-          "Xatolik yuz berdi",
+          "Произошла ошибка",
           error?.response?.data?.message ||
           error?.message ||
-          "Kechikishni o'chirishda xatolik"
+          "Ошибка при удалении задержки"
         );
         throw error;
       }
@@ -205,16 +205,16 @@ export default function DelaysPage() {
       if (modalMode === "create") {
         createMutation.mutate(payload as DelayCreatePayload, {
           onSuccess: () => {
-            showSuccess("Kechikish muvaffaqiyatli qo'shildi");
+            showSuccess("Задержка успешно добавлена");
             setIsModalOpen(false);
             setSelectedEntry(null);
           },
           onError: (error: any) => {
             showError(
-              "Xatolik yuz berdi",
+              "Произошла ошибка",
               error?.response?.data?.message ||
               error?.message ||
-              "Kechikishni qo'shishda xatolik"
+              "Ошибка при добавлении задержки"
             );
           },
         });
@@ -226,16 +226,16 @@ export default function DelaysPage() {
           },
           {
             onSuccess: () => {
-              showSuccess("Kechikish muvaffaqiyatli yangilandi");
+              showSuccess("Задержка успешно обновлена");
               setIsModalOpen(false);
               setSelectedEntry(null);
             },
             onError: (error: any) => {
               showError(
-                "Xatolik yuz berdi",
+                "Произошла ошибка",
                 error?.response?.data?.message ||
                 error?.message ||
-                "Kechikishni yangilashda xatolik"
+                "Ошибка при обновлении задержки"
               );
             },
           }
@@ -313,20 +313,20 @@ export default function DelaysPage() {
   const columns: TableColumn<DelayEntry>[] = [
     {
       key: "incident_date",
-      header: "Sana",
+      header: "Дата",
       accessor: (row) =>
         row?.incident_date ? formatDate(row.incident_date, false) : "-",
     },
 
     {
       key: "train_number",
-      header: "Poyezd raqami",
+      header: "Номер поезда",
       accessor: (row) => row?.train_number || "-",
       width: "20px",
     },
     {
       key: "train_type",
-      header: "Poyezd turi",
+      header: "Тип поезда",
       accessor: (row) => {
         if (row?.train_type_display) {
           return row.train_type_display;
@@ -342,13 +342,13 @@ export default function DelaysPage() {
     },
     {
       key: "delay_type",
-      header: "Kechikish turi",
+      header: "Тип задержки",
       accessor: (row) => row?.delay_type || "-",
       width: "150px"
     },
     {
       key: "group_reason",
-      header: "Guruh",
+      header: "Группа",
       accessor: (row) => {
         if (row?.group_reason_display) {
           return row.group_reason_display;
@@ -364,18 +364,18 @@ export default function DelaysPage() {
     },
     {
       key: "station",
-      header: "Stansiya",
+      header: "Станция",
       accessor: (row) => row?.station || "-",
       width: "100px"
     },
     {
       key: "delay_time",
-      header: "Kechikish vaqti",
+      header: "Время задержки",
       accessor: (row) => (row?.delay_time ? formatTime(row.delay_time) : "-"),
     },
     {
       key: "reason",
-      header: "Sabab",
+      header: "Причина",
       accessor: (row) => (
         <div className="max-w-[300px] whitespace-pre-wrap break-words">
           {row?.reason || "-"}
@@ -384,7 +384,7 @@ export default function DelaysPage() {
     },
     {
       key: "damage_amount",
-      header: "Zarar",
+      header: "Ущерб",
       accessor: (row) =>
         row?.damage_amount
           ? new Intl.NumberFormat("uz-UZ", {
@@ -396,17 +396,17 @@ export default function DelaysPage() {
     },
     {
       key: "responsible_org",
-      header: "Mas'ul tashkilot",
+      header: "Ответственная организация",
       accessor: (row) =>
         row?.responsible_org_name || row?.responsible_org_detail?.name || "-",
     },
     {
       key: "status",
-      header: "Holati",
+      header: "Статус",
       accessor: (row) => {
         return (
           <Badge variant={row?.status ? "destructive_outline" : "success_outline"}>
-            {row?.status ? "Sriv" : "Sriv emas"}
+            {row?.status ? "Срыв" : "Не срыв"}
           </Badge>
         );
       },
@@ -414,22 +414,22 @@ export default function DelaysPage() {
     },
     {
       key: "archive",
-      header: "Arxiv",
+      header: "Архив",
       accessor: (row) => {
         const isArchived = row?.archive;
         return (
           <Badge variant={isArchived ? "default" : "outline"}>
-            {isArchived ? "Arxivlangan" : "Arxivlanmagan"}
+            {isArchived ? "Архивировано" : "Не архивировано"}
           </Badge>
         );
       },
     },
     {
       key: "report",
-      header: "Hisobot",
+      header: "Отчет",
       accessor: (row) => {
         if (row?.report_filename || row?.report) {
-          const filename = row.report_filename || "Hisobotni ko'rish";
+          const filename = row.report_filename || "Просмотреть отчет";
           const truncated = truncateFilename(filename, 25);
           return (
             <div className="max-w-[200px]">
@@ -451,12 +451,12 @@ export default function DelaysPage() {
   ];
 
   const breadcrumbs = [
-    { label: "Asosiy", href: "/" },
-    { label: "Kechikishlar", current: true },
+    { label: "Главная", href: "/" },
+    { label: "Задержки", current: true },
   ];
 
   const delayTypeOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha turlar" }];
+    const options = [{ value: "", label: "Все типы" }];
     DELAY_TYPE_OPTIONS.forEach((type) =>
       options.push({
         value: type.value,
@@ -467,7 +467,7 @@ export default function DelaysPage() {
   }, []);
 
   const stationOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha stansiyalar" }];
+    const options = [{ value: "", label: "Все станции" }];
     STATION_OPTIONS.forEach((station) =>
       options.push({
         value: station.value,
@@ -478,7 +478,7 @@ export default function DelaysPage() {
   }, []);
 
   const organizationOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha tashkilotlar" }];
+    const options = [{ value: "", label: "Все организации" }];
     if (organizationsData) {
       organizationsData?.forEach((org) =>
         options.push({
@@ -491,13 +491,13 @@ export default function DelaysPage() {
   }, [organizationsData]);
 
   const statusOptions = [
-    { value: "", label: "Barcha holatlar" },
-    { value: "true", label: "Sriv" },
-    { value: "false", label: "Sriv emas" },
+    { value: "", label: "Все статусы" },
+    { value: "true", label: "Срыв" },
+    { value: "false", label: "Не срыв" },
   ];
 
   const trainTypeOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha poyezd turlari" }];
+    const options = [{ value: "", label: "Все типы поездов" }];
     TRAIN_TYPE_OPTIONS.forEach((type) =>
       options.push({
         value: type.value,
@@ -508,7 +508,7 @@ export default function DelaysPage() {
   }, []);
 
   const groupReasonOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha sabablar" }];
+    const options = [{ value: "", label: "Все причины" }];
     GROUP_REASON_OPTIONS.forEach((reason) =>
       options.push({
         value: reason.value,
@@ -521,8 +521,8 @@ export default function DelaysPage() {
   return (
     <div className="min-h-screen ">
       <PageHeader
-        title="Kechikishlar"
-        description="Poyezd kechikishlarini kuzatish va boshqarish"
+        title="Задержки"
+        description="Просмотр и управление задержками поездов"
         breadcrumbs={breadcrumbs}
       />
 
@@ -531,56 +531,56 @@ export default function DelaysPage() {
           filters={[
             {
               name: "delay_type",
-              label: "Kechikish turi",
+              label: "Тип задержки",
               isSelect: true,
               options: delayTypeOptions,
-              placeholder: "Kechikish turini tanlang",
+              placeholder: "Выберите тип задержки",
               searchable: false,
               loading: false,
             },
             {
               name: "train_type",
-              label: "Poyezd turi",
+              label: "Тип поезда",
               isSelect: true,
               options: trainTypeOptions,
-              placeholder: "Poyezd turini tanlang",
+              placeholder: "Выберите тип поезда",
               searchable: false,
               loading: false,
             },
             {
               name: "group_reason",
-              label: "Guruh",
+              label: "Группа",
               isSelect: true,
               options: groupReasonOptions,
-              placeholder: "Guruh sababini tanlang",
+              placeholder: "Выберите группу причины",
               searchable: false,
               loading: false,
             },
             {
               name: "station",
-              label: "Stansiya",
+              label: "Станция",
               isSelect: true,
               options: stationOptions,
-              placeholder: "Stansiyani tanlang",
+              placeholder: "Выберите станцию",
               searchable: false,
               loading: false,
               permission: "filter_delay_station",
             },
             {
               name: "responsible_org",
-              label: "Mas'ul tashkilot",
+              label: "Ответственная организация",
               isSelect: true,
               options: organizationOptions,
-              placeholder: "Mas'ul tashkilotni tanlang",
+              placeholder: "Выберите ответственную организацию",
               searchable: false,
               loading: isLoadingOrganizations,
             },
             {
               name: "status",
-              label: "Holati",
+              label: "Статус",
               isSelect: true,
               options: statusOptions,
-              placeholder: "Holatni tanlang",
+              placeholder: "Выберите статус",
               searchable: false,
               loading: false,
             },
@@ -588,7 +588,7 @@ export default function DelaysPage() {
           hasSearch={false}
           hasDateRangePicker
           dateRangePickerLabel=""
-          searchPlaceholder="Qidiruv"
+          searchPlaceholder="Поиск"
           addButtonPermittion="create_delay"
           onAdd={handleCreate}
           className="!mb-0"
@@ -681,8 +681,8 @@ export default function DelaysPage() {
           selectable
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
-          emptyTitle="Ma'lumot topilmadi"
-          emptyDescription="Kechikishlar mavjud emas"
+          emptyTitle="Данные не найдены"
+          emptyDescription="Задержки отсутствуют"
           deletePermission="delete_delay"
           editPermission="edit_delay"
         />

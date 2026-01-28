@@ -68,18 +68,18 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
 
   const months = useMemo(() => {
     return [
-      { value: "1", label: "Yanvar" },
-      { value: "2", label: "Fevral" },
-      { value: "3", label: "Mart" },
-      { value: "4", label: "Aprel" },
-      { value: "5", label: "May" },
-      { value: "6", label: "Iyun" },
-      { value: "7", label: "Iyul" },
-      { value: "8", label: "Avgust" },
-      { value: "9", label: "Sentabr" },
-      { value: "10", label: "Oktabr" },
-      { value: "11", label: "Noyabr" },
-      { value: "12", label: "Dekabr" },
+      { value: "1", label: "Январь" },
+      { value: "2", label: "Февраль" },
+      { value: "3", label: "Март" },
+      { value: "4", label: "Апрель" },
+      { value: "5", label: "Май" },
+      { value: "6", label: "Июнь" },
+      { value: "7", label: "Июль" },
+      { value: "8", label: "Август" },
+      { value: "9", label: "Сентябрь" },
+      { value: "10", label: "Октябрь" },
+      { value: "11", label: "Ноябрь" },
+      { value: "12", label: "Декабрь" },
     ];
   }, []);
 
@@ -250,13 +250,13 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               value="passenger"
               className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
             >
-              Yo'lovchi tashuvchi
+              Пассажирский
             </TabsTrigger>
             <TabsTrigger
               value="freight"
               className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
             >
-              Yuk tashuvchi
+              Грузовой
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -266,7 +266,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
         <div className="flex flex-wrap items-end gap-4">
           <div className="min-w-[200px] flex-shrink-0">
             <DatePicker
-              placeholder="Boshlanish sanasi"
+              placeholder="Дата начала"
               value={startDate}
               onValueChange={handleStartDateChange}
               className="w-full"
@@ -275,7 +275,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
           </div>
           <div className="min-w-[200px] flex-shrink-0">
             <DatePicker
-              placeholder="Tugash sanasi"
+              placeholder="Дата окончания"
               value={endDate}
               onValueChange={handleEndDateChange}
               className="w-full"
@@ -289,9 +289,9 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               options={organizationOptions}
               selectedValues={selectedOrganizations}
               onSelectionChange={handleOrganizationsChange}
-              placeholder="Tashkilotlarni tanlang"
-              searchPlaceholder="Qidirish..."
-              emptyMessage="Tashkilot topilmadi"
+              placeholder="Выберите организации"
+              searchPlaceholder="Поиск..."
+              emptyMessage="Организация не найдена"
               disabled={isLoadingOrganizations}
               className="border-[#d1d5db] hover:border-[#d1d5db] focus:border-[#d1d5db] focus:ring-0 py-0 min-h-auto"
             />
@@ -308,7 +308,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               className="rounded-md bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
-              DOC ga eksport qilish
+              Экспорт в DOC
             </Button>
           )}
           
@@ -319,7 +319,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               onValueChange={handleYearChange}
             >
               <SelectTrigger className="w-full h-10 mb-0">
-                <SelectValue placeholder="Yilni tanlang" />
+                <SelectValue placeholder="Выберите год" />
               </SelectTrigger>
               <SelectContent>
                 {years.map((year) => (
@@ -338,7 +338,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               onValueChange={handleMonthChange}
             >
               <SelectTrigger className="w-full h-10 mb-0">
-                <SelectValue placeholder="Oyni tanlang" />
+                <SelectValue placeholder="Выберите месяц" />
               </SelectTrigger>
               <SelectContent>
                 {months.map((month) => (
@@ -361,7 +361,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
                 : "border-[#d1d5db] rounded-md"
             }
           >
-            Oxirgi 7 kun
+            Последние 7 дней
           </Button>
           <Button
             variant={activeQuickFilter === "30days" ? "default" : "outline"}
@@ -373,7 +373,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
                 : "border-[#d1d5db] rounded-md"
             }
           >
-            Oxirgi 30 kun
+            Последние 30 дней
           </Button>
           <Button
             variant={activeQuickFilter === "thismonth" ? "default" : "outline"}
@@ -385,7 +385,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
                 : "border-[#d1d5db] rounded-md"
             }
           >
-            Bu oy (1-{format(new Date(), "d")})
+            Этот месяц (1-{format(new Date(), "d")})
           </Button>
         </div>
       </div>

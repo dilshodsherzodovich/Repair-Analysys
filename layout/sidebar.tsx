@@ -57,28 +57,10 @@ const navigationItems = [
   },
   {
     name: "Sriv hisobotlar",
-    href: "/delay-reports",
+    href: "/delays/reports",
     icon: FileText,
     section: "delays",
   },
-  // {
-  //   name: "Stansiya",
-  //   href: "/stations",
-  //   icon: Settings,
-  //   section: "stations",
-  // },
-  // {
-  //   name: "Razzavor",
-  //   href: "/reports",
-  //   icon: RotateCw,
-  //   section: "reports",
-  // },
-  // {
-  //   name: "Avtostepka",
-  //   href: "/autoconnecters",
-  //   icon: Eye,
-  //   section: "autoconnecters",
-  // },
 ];
 
 export function Sidebar() {

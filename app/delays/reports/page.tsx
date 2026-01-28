@@ -121,8 +121,8 @@ export default function DelayReportsPage() {
   const { data: depotReasonData } = useDepotReasonReports(depotReasonParams);
 
   const breadcrumbs = [
-    { label: "Asosiy", href: "/" },
-    { label: "Sriv hisobotlar", current: true },
+    { label: "Главная", href: "/" },
+    { label: "Отчеты по срывам", current: true },
   ];
 
   // Determine error based on active tab
@@ -130,14 +130,14 @@ export default function DelayReportsPage() {
     passengerError instanceof Error
       ? passengerError
       : passengerError
-        ? new Error(passengerError?.message || "Xatolik yuz berdi")
+        ? new Error(passengerError?.message || "Произошла ошибка")
         : null;
 
   const freightErrorObj =
     freightError instanceof Error
       ? freightError
       : freightError
-        ? new Error(freightError?.message || "Xatolik yuz berdi")
+        ? new Error(freightError?.message || "Произошла ошибка")
         : null;
 
   const error =
@@ -146,7 +146,7 @@ export default function DelayReportsPage() {
   // Export handler
   const handleExport = useCallback(() => {
     if (!start_date || !end_date) {
-      alert("Iltimos, boshlanish va tugash sanalarini tanlang.");
+      alert("Пожалуйста, выберите дату начала и окончания.");
       return;
     }
 
@@ -174,8 +174,8 @@ export default function DelayReportsPage() {
   return (
     <div className="min-h-screen">
       <PageHeader
-        title="Sriv hisobotlar"
-        description="Poyezd kechikishlar hisobotlari"
+        title="Отчеты по срывам"
+        description="Отчеты о задержках поездов"
         breadcrumbs={breadcrumbs}
       />
 

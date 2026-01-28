@@ -34,11 +34,11 @@ export function ApproveConfirmationModal({
   if (!entry) return null;
 
   const hasReport = !!(entry.report_filename || entry.report);
-  const statusText = entry.status ? "Sriv" : "Sriv emas";
+  const statusText = entry.status ? "Срыв" : "Не срыв";
   const responsibleOrgName =
     entry.responsible_org_name ||
     entry.responsible_org_detail?.name ||
-    "Noma'lum";
+    "Неизвестно";
 
   return (
     <Modal
@@ -57,12 +57,11 @@ export function ApproveConfirmationModal({
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-gray-900 mb-2">
-                Kechikishni tasdiqlash
+                Подтверждение задержки
               </h3>
               <p className="text-sm font-medium text-gray-700">
-                Tasdiqlashdan oldin quyidagi ma'lumotlarni diqqat bilan ko'rib
-                chiqing. Bu amal kechikishni arxivga o'tkazadi va uni qayta
-                tahrirlash mumkin emas.
+                Перед подтверждением внимательно просмотрите следующую информацию. 
+                Это действие перенесет задержку в архив, и её нельзя будет редактировать.
               </p>
             </div>
           </div>
@@ -78,9 +77,9 @@ export function ApproveConfirmationModal({
               </div>
               <div>
                 <h4 className="text-base font-semibold text-gray-900">
-                  Hisobot
+                  Отчет
                 </h4>
-                <p className="text-xs text-gray-500">Yuklangan hisobot fayli</p>
+                <p className="text-xs text-gray-500">Загруженный файл отчета</p>
               </div>
             </div>
             {hasReport ? (
@@ -92,14 +91,14 @@ export function ApproveConfirmationModal({
                   className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
                 >
                   <FileText className="w-4 h-4" />
-                  {entry.report_filename || "Hisobotni ko'rish"}
+                  {entry.report_filename || "Просмотреть отчет"}
                   <SquareArrowOutUpRight className="w-4 h-4" />
                 </a>
               </div>
             ) : (
               <div className="pl-13">
                 <span className="text-sm text-red-600 font-medium">
-                  <AlertTriangle className="w-4 h-4" /> Hisobot yuklanmagan
+                  <AlertTriangle className="w-4 h-4" /> Отчет не загружен
                 </span>
               </div>
             )}
@@ -113,10 +112,10 @@ export function ApproveConfirmationModal({
               </div>
               <div>
                 <h4 className="text-base font-semibold text-gray-900">
-                  Ishonchlilik holati
+                  Статус надежности
                 </h4>
                 <p className="text-xs text-gray-500">
-                  Kechikishning ishonchlilik darajasi
+                  Уровень надежности задержки
                 </p>
               </div>
             </div>
@@ -138,10 +137,10 @@ export function ApproveConfirmationModal({
               </div>
               <div>
                 <h4 className="text-base font-semibold text-gray-900">
-                  Mas'ul tashkilot
+                  Ответственная организация
                 </h4>
                 <p className="text-xs text-gray-500">
-                  Kechikish uchun javobgar tashkilot
+                  Организация, ответственная за задержку
                 </p>
               </div>
             </div>
@@ -163,7 +162,7 @@ export function ApproveConfirmationModal({
               disabled={isPending}
               className="min-w-[120px]"
             >
-              Bekor qilish
+              Отмена
             </Button>
             <Button
               type="button"
@@ -174,12 +173,12 @@ export function ApproveConfirmationModal({
               {isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  Tasdiqlanmoqda...
+                  Подтверждение...
                 </>
               ) : (
                 <>
                   <CheckCircle className="h-5 w-5 mr-2" />
-                  Tasdiqlash
+                  Подтвердить
                 </>
               )}
             </Button>
