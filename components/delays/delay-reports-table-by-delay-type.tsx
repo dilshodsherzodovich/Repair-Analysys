@@ -36,7 +36,7 @@ export function DelayReportsTableByDelayType({
         <ErrorCard
           title="Xatolik yuz berdi"
           message={error.message || "Xatolik yuz berdi"}
-          onRetry={() => {}}
+          onRetry={() => { }}
           showRetry={false}
           showBack={false}
           className="mb-4"
@@ -288,9 +288,9 @@ export function DelayReportsTableByDelayType({
         </div>
       )}
 
-      
+
       <DepotReasonReportsTable />
-      
+
 
       {!isLoading && !error && !data && startDate && endDate && (
         <div className="bg-white border rounded-lg p-8 text-center">
