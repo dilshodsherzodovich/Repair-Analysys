@@ -90,4 +90,7 @@ export const queryKeys = {
     locomotiveModels: "tu152-locomotive-models",
     update: "tu152-update",
   },
+  components: {
+    list: "components-list",
+  },
 } as const;
