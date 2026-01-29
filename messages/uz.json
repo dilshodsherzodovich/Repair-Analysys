@@ -25,8 +25,8 @@
       "report": "Hisobot"
     },
     "status": {
-      "label_disruption": "Suv",
-      "label_no_disruption": "Suv emas"
+      "label_disruption": "Sriv",
+      "label_no_disruption": "Sriv emas"
     },
     "archive": {
       "archived": "Arxivlangan",
@@ -47,8 +47,8 @@
       "status": "Holati",
       "status_placeholder": "Holatni tanlang",
       "status_all": "Barcha holatlar",
-      "status_disruption": "Suv",
-      "status_no_disruption": "Suv emas",
+      "status_disruption": "Sriv",
+      "status_no_disruption": "Sriv emas",
       "search_placeholder": "Qidiruv"
     },
     "train_types": {
@@ -142,11 +142,11 @@
     "error_too_many": "Maksimal fayllar soni: {maxFiles}"
   },
   "DelayReportsPage": {
-    "title": "Suvlar bo‘yicha hisobotlar",
+    "title": "Srivlar bo‘yicha hisobotlar",
     "description": "Poyezd kechikishlari bo‘yicha hisobotlar",
     "breadcrumbs": {
       "home": "Asosiy",
-      "current": "Suvlar bo‘yicha hisobotlar"
+      "current": "Srivlar bo‘yicha hisobotlar"
     },
     "export": {
       "date_required": "Iltimos, boshlanish va tugash sanalarini tanlang."
@@ -214,8 +214,8 @@
       "incident_date": "Voqea sanasi",
       "status": "Holati",
       "status_placeholder": "Holatni tanlang",
-      "status_disruption": "Suv",
-      "status_no_disruption": "Suv emas",
+      "status_disruption": "Sriv",
+      "status_no_disruption": "Sriv emas",
       "reason": "Sabab",
       "reason_placeholder": "Kechikish sababini kiriting",
       "report_file": "Hisobot fayli",
