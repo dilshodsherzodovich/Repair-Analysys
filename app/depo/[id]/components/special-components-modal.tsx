@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/ui/modal";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -24,6 +25,7 @@ export function SpecialComponentsModal({
   locomotiveModel,
   specialComponent,
 }: SpecialComponentsModalProps) {
+  const t = useTranslations("SpecialComponentsModal");
   const { mutate: updateSpecialComponent, isPending } = useUpdateSpecialComponent();
   
   // State to hold form values for the special component
@@ -88,8 +90,8 @@ export function SpecialComponentsModal({
 
     if (!hasChanges) {
       toast({
-        title: "O'zgarishlar yo'q",
-        description: "Hech qanday o'zgarish kiritilmagan.",
+        title: t("no_changes"),
+        description: t("no_changes_description"),
       });
       return;
     }
@@ -113,18 +115,18 @@ export function SpecialComponentsModal({
           }));
           
           toast({
-            title: "Muvaffaqiyatli yangilandi",
-            description: "Maxsus komponent ma'lumotlari muvaffaqiyatli saqlandi.",
+            title: t("success_updated"),
+            description: t("success_description"),
           });
         },
         onError: (error: any) => {
           console.error("Error updating special component:", error);
           toast({
             variant: "destructive",
-            title: "Xatolik",
+            title: t("error_title"),
             description:
               error?.response?.data?.message ||
-              "Ma'lumotlarni yangilashda xatolik yuz berdi. Qayta urinib ko'ring.",
+              t("error_description"),
           });
         },
       }
@@ -145,9 +147,9 @@ export function SpecialComponentsModal({
   const formatFieldName = (fieldName: string): string => {
     const fieldNameNumber = fieldName.split("_").pop();
     if(fieldName.includes("koren")) {
-      return `Коренной-${fieldNameNumber}`;
+      return `${t("koren_prefix")}-${fieldNameNumber}`;
     } else if(fieldName.includes("shatun")) {
-      return `Шатунный-${fieldNameNumber}`;
+      return `${t("shatun_prefix")}-${fieldNameNumber}`;
     } else return fieldName
       .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -168,12 +170,12 @@ export function SpecialComponentsModal({
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold text-[#0F172B]">
-              Коленчатый вал - {locomotiveName} ({locomotiveModel})
+              {t("title")} - {locomotiveName} ({locomotiveModel})
             </DialogTitle>
           </DialogHeader>
 
           <div className="text-center py-8 text-muted-foreground">
-            Коленчатый вал topilmadi
+            {t("not_found")}
           </div>
 
           <DialogFooter>
@@ -181,7 +183,7 @@ export function SpecialComponentsModal({
               variant="outline"
               onClick={onClose}
             >
-              Yopish
+              {t("close")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -194,7 +196,7 @@ export function SpecialComponentsModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-[#0F172B]">
-            Коленчатый вал - {locomotiveName} ({locomotiveModel})
+            {t("title")} - {locomotiveName} ({locomotiveModel})
           </DialogTitle>
         </DialogHeader>
 
@@ -204,13 +206,13 @@ export function SpecialComponentsModal({
               <div className="text-sm text-muted-foreground space-y-1">
                 {specialComponent.year_of_manufacture && (
                   <div>
-                    <span className="font-medium">Ishlab chiqarilgan yili: </span>
+                    <span className="font-medium">{t("year_of_manufacture")}: </span>
                     {specialComponent.year_of_manufacture}
                   </div>
                 )}
                 {specialComponent.factory_number && (
                   <div>
-                    <span className="font-medium">Zavod raqami: </span>
+                    <span className="font-medium">{t("factory_number")}: </span>
                     {specialComponent.factory_number}
                   </div>
                 )}
@@ -236,7 +238,7 @@ export function SpecialComponentsModal({
                         handleFieldChange(fieldName, e.target.value);
                       }}
                       className="w-full"
-                      placeholder={`${formatFieldName(fieldName)} kiriting`}
+                      placeholder={`${formatFieldName(fieldName)} ${t("placeholder_enter")}`}
                     />
                   </div>
                 );
@@ -260,7 +262,7 @@ export function SpecialComponentsModal({
                         handleFieldChange(fieldName, e.target.value);
                       }}
                       className="w-full"
-                      placeholder={`${formatFieldName(fieldName)} kiriting`}
+                      placeholder={`${formatFieldName(fieldName)} ${t("placeholder_enter")}`}
                     />
                   </div>
                 );
@@ -276,14 +278,14 @@ export function SpecialComponentsModal({
             onClick={onClose}
             disabled={isPending}
           >
-            Yopish
+            {t("close")}
           </Button>
           <Button
             onClick={handleSave}
             disabled={isPending}
             variant="default"
           >
-            {isPending ? "Saqlanmoqda..." : "Saqlash"}
+            {isPending ? t("saving") : t("save")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { useGetLocomotiveDetail } from "@/api/hooks/use-locomotives";
@@ -56,6 +57,7 @@ export default function LocomotivePassportForm({
   depotId,
   locomotiveId,
 }: LocomotivePassportFormProps) {
+  const t = useTranslations("LocomotivePassportForm");
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
@@ -140,25 +142,25 @@ export default function LocomotivePassportForm({
   useEffect(() => {
     if (componentsQuery.isSuccess && !hasShownSuccessToast) {
       toast({
-        title: "Komponentlar yuklandi",
-        description: `${componentList.length} ta komponent topildi.`,
+        title: t("toast_components_loaded"),
+        description: `${componentList.length} ${t("toast_components_found")}`,
       });
       setHasShownSuccessToast(true);
     }
-  }, [componentList.length, componentsQuery.isSuccess, hasShownSuccessToast]);
+  }, [componentList.length, componentsQuery.isSuccess, hasShownSuccessToast, t]);
 
   useEffect(() => {
     if (componentsQuery.isError) {
       const errorMessage =
         (componentsQuery.error as { message?: string })?.message ||
-        "Komponentlarni yuklashda xatolik yuz berdi.";
+        t("toast_components_error_desc");
       toast({
         variant: "destructive",
-        title: "Komponentlarni yuklashda xatolik",
+        title: t("toast_components_error"),
         description: errorMessage,
       });
     }
-  }, [componentsQuery.error, componentsQuery.isError]);
+  }, [componentsQuery.error, componentsQuery.isError, t]);
 
   const handleExportPDF = async () => {
     if (
@@ -168,8 +170,8 @@ export default function LocomotivePassportForm({
     ) {
       toast({
         variant: "destructive",
-        title: "PDF eksport qilish mumkin emas",
-        description: "Ma'lumotlar to'liq yuklanmagan.",
+        title: t("toast_export_error"),
+        description: t("toast_export_error_desc"),
       });
       return;
     }
@@ -185,15 +187,15 @@ export default function LocomotivePassportForm({
         activeSection?.name
       );
       toast({
-        title: "PDF muvaffaqiyatli eksport qilindi",
-        description: "PDF fayl yuklab olindi.",
+        title: t("toast_export_success"),
+        description: t("toast_export_success_desc"),
       });
     } catch (error) {
       console.error("Failed to export PDF:", error);
       toast({
         variant: "destructive",
-        title: "PDF eksport qilishda xatolik",
-        description: "PDF faylni yaratishda muammo yuz berdi.",
+        title: t("toast_export_failed"),
+        description: t("toast_export_failed_desc"),
       });
     } finally {
       setIsExportingPDF(false);
@@ -256,8 +258,8 @@ export default function LocomotivePassportForm({
     if (!componentList.length) {
       toast({
         variant: "destructive",
-        title: "Komponentlar topilmadi",
-        description: "Saqlashdan oldin komponentlar ro'yxatini yuklab oling.",
+        title: t("toast_no_components"),
+        description: t("toast_no_components_desc"),
       });
       return;
     }
@@ -266,8 +268,8 @@ export default function LocomotivePassportForm({
     if (!payload.length) {
       toast({
         variant: "destructive",
-        title: "Yaroqli ma'lumot topilmadi",
-        description: "Iltimos, kamida bitta komponent qiymatini kiriting.",
+        title: t("toast_invalid_data"),
+        description: t("toast_invalid_data_desc"),
       });
       return;
     }
@@ -284,8 +286,8 @@ export default function LocomotivePassportForm({
         syncComponentFormValues(refetchResult.data.results);
       }
       toast({
-        title: "Ma'lumotlar saqlandi",
-        description: "Komponent qiymatlari muvaffaqiyatli yangilandi.",
+        title: t("toast_saved"),
+        description: t("toast_saved_desc"),
       });
       setIsEditing(false);
       router.push("?", { scroll: false });
@@ -293,9 +295,8 @@ export default function LocomotivePassportForm({
       console.error("Failed to save component values:", error);
       toast({
         variant: "destructive",
-        title: "Saqlashda xatolik",
-        description:
-          "Server bilan aloqa muvaffaqiyatsiz bo'ldi. Qayta urinib ko'ring.",
+        title: t("toast_save_error"),
+        description: t("toast_save_error_desc"),
       });
     }
   };
@@ -310,7 +311,7 @@ export default function LocomotivePassportForm({
             className="border-gray-300"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Orqaga
+            {t("back")}
           </Button>
           <h1 className="text-2xl font-bold">
             {locomotiveDetail?.name} - {locomotiveDetail?.model_name}
@@ -331,12 +332,12 @@ export default function LocomotivePassportForm({
             {isExportingPDF ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Eksport qilinmoqda...
+                {t("exporting")}
               </>
             ) : (
               <>
                 <FileDown className="mr-2 h-4 w-4" />
-                PDF eksport qilish
+                {t("export_pdf")}
               </>
             )}
           </Button>
@@ -348,7 +349,7 @@ export default function LocomotivePassportForm({
                   className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
                 >
                   <Save className="mr-2 h-4 w-4" />
-                  Tahrirlash
+                  {t("edit")}
                 </Button>
               ) : (
                 <>
@@ -359,7 +360,7 @@ export default function LocomotivePassportForm({
                     disabled={isSavingComponents}
                   >
                     <X className="mr-2 h-4 w-4" />
-                    Bekor qilish
+                    {t("cancel")}
                   </Button>
                   <Button
                     onClick={handleSave}
@@ -369,12 +370,12 @@ export default function LocomotivePassportForm({
                     {isSavingComponents ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saqlanmoqda...
+                        {t("saving")}
                       </>
                     ) : (
                       <>
                         <Save className="mr-2 h-4 w-4" />
-                        Saqlash
+                        {t("save")}
                       </>
                     )}
                   </Button>
@@ -387,23 +388,23 @@ export default function LocomotivePassportForm({
 
       <form className="space-y-6 pb-4 max-w-full overflow-x-hidden">
         <Card className="gap-4">
-          <h1 className="text-lg font-semibold">Lokomotiv ma'lumotlari</h1>
+          <h1 className="text-lg font-semibold">{t("locomotive_info")}</h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-0">
             <div className="min-w-0">
               <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                Depo
+                {t("depot")}
               </label>
               <Input value={depotId} disabled />
             </div>
             <div className="min-w-0">
               <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                Lokomotiv
+                {t("locomotive")}
               </label>
               <Input value={locomotiveDetail?.name ?? ""} disabled />
             </div>
             <div className="min-w-0">
               <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                Model
+                {t("model")}
               </label>
               <Input value={locomotiveDetail?.model_name ?? ""} disabled />
             </div>
@@ -413,7 +414,7 @@ export default function LocomotivePassportForm({
         {locomotiveDetail?.sections && locomotiveDetail.sections.length > 0 && (
           <Card className="gap-4">
             <div className="space-y-3">
-              <h1 className="text-lg font-semibold">Aktiv seksiya:</h1>
+              <h1 className="text-lg font-semibold">{t("active_section")}</h1>
               <Tabs
                 value={activeSectionId?.toString() ?? ""}
                 onValueChange={(value) => setActiveSectionId(Number(value))}
@@ -437,20 +438,20 @@ export default function LocomotivePassportForm({
 
         <Card className="gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold">Komponentlar</h1>
+            <h1 className="text-lg font-semibold">{t("components")}</h1>
             {isFetchingComponents && (
               <span className="text-xs text-muted-foreground flex items-center gap-2">
                 <Loader2 className="h-3 w-3 animate-spin" />
-                Yuklanmoqda...
+                {t("loading")}
               </span>
             )}
           </div>
 
           {activeSectionId === null ? (
-            <p className="text-sm text-muted-foreground">Bo'limni tanlang.</p>
+            <p className="text-sm text-muted-foreground">{t("select_section")}</p>
           ) : !componentList.length && !isFetchingComponents ? (
             <p className="text-sm text-muted-foreground">
-              Komponentlar topilmadi. Avval komponentlar ro'yxatini yarating.
+              {t("no_components")}
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -480,12 +481,12 @@ export default function LocomotivePassportForm({
                             )
                           }
                           disabled={!isEditing}
-                          placeholder="Zavod raqami"
+                          placeholder={t("factory_number")}
                         />
                       </div>
                       <div className="min-w-0">
                         <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                          {component.component} chiqarilgan yili
+                          {component.component} {t("year_manufactured")}
                         </label>
                         <Input
                           value={currentValues.date_info}
@@ -497,7 +498,7 @@ export default function LocomotivePassportForm({
                             )
                           }
                           disabled={!isEditing}
-                          placeholder="Chiqarilgan yil"
+                          placeholder={t("year_placeholder")}
                         />
                       </div>
                     </div>

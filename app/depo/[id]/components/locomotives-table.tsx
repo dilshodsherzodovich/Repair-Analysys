@@ -3,31 +3,29 @@
 import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { MapPin, Pencil, FileText, Settings } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { MapPin, Pencil, FileText } from "lucide-react";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { cn } from "@/lib/utils";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { SpecialComponentsModal } from "./special-components-modal";
 
-const actionButtons = [
-  {
-    label: "Manzil",
-    icon: MapPin,
-    className: "bg-[#E8F8ED] text-[#1CA34A] border border-[#1CA34A]",
-  },
-  {
-    label: "Tahrirlash",
-    icon: Pencil,
-    className: "bg-[#FFF4DB] text-[#D28800] border border-[#D28800]",
-  },
+const actionButtonsConfig = [
+  { className: "bg-[#E8F8ED] text-[#1CA34A] border border-[#1CA34A]" },
+  { className: "bg-[#FFF4DB] text-[#D28800] border border-[#D28800]" },
 ];
 
 export default function LocomotivesTable() {
+  const t = useTranslations("LocomotivesTable");
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
   const depotId = params.id as string;
+  const actionButtons = [
+    { label: t("action_address"), icon: MapPin, ...actionButtonsConfig[0] },
+    { label: t("action_edit"), icon: Pencil, ...actionButtonsConfig[1] },
+  ];
 
   const { q, locModel } = Object.fromEntries(searchParams.entries());
 
@@ -98,12 +96,12 @@ export default function LocomotivesTable() {
     <section className="mt-6">
       {isError && (
         <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Maʼlumotlarni yuklashda xatolik yuz berdi.{" "}
+          {t("error_load")}{" "}
           <button
             onClick={() => refetch()}
             className="font-semibold underline underline-offset-2"
           >
-            Qayta urinib ko&apos;ring.
+            {t("retry")}
           </button>
         </div>
       )}
@@ -133,7 +131,7 @@ export default function LocomotivesTable() {
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center px-2 text-center text-sm font-semibold text-muted-foreground">
-                    IMG
+                    {t("img_fallback")}
                   </div>
                 )}
               </div>
@@ -149,7 +147,7 @@ export default function LocomotivesTable() {
                       className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-[#2354BF] underline cursor-pointer hover:text-[#2354BF]/80 transition-colors"
                     >
                       <FileText className="h-4 w-4" />
-                      Pasport
+                      {t("passport")}
                     </button>
                   )}
                 </div>
@@ -193,10 +191,10 @@ export default function LocomotivesTable() {
                       "flex h-8 w-full mt-[5px] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
                       "bg-[#E8F4FD] text-[#2354BF] border border-[#2354BF]"
                     )}
-                    aria-label="Maxsus komponentlar"
-                    title="Maxsus komponentlar"
+                    aria-label={t("special_components")}
+                    title={t("special_components")}
                   >
-                    <p className="text-sm font-semibold text-[#2354BF]">Коленчатый вал</p>
+                    <p className="text-sm font-semibold text-[#2354BF]">{t("special_components_label")}</p>
                   </button>
                   )}
                 </div>
@@ -208,11 +206,10 @@ export default function LocomotivesTable() {
       {showEmpty && (
         <div className="mt-8 rounded-2xl border border-dashed border-[#C7D7F4] bg-white px-6 py-12 text-center">
           <p className="text-base font-semibold text-[#0F172B]">
-            Lokomotivlar topilmadi
+            {t("empty_title")}
           </p>
           <p className="mt-2 text-sm text-[#6B7280]">
-            Filtrlash parametrlarini o&apos;zgartirib ko&apos;ring yoki qayta
-            qidiruv qo&apos;llang.
+            {t("empty_description")}
           </p>
         </div>
       )}
