@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
@@ -28,6 +29,7 @@ interface IssueWithDate {
 }
 
 export default function PublicDefectiveWorkCreatePage() {
+  const t = useTranslations("DefectiveWorksCreatePage");
   const [formResetKey, setFormResetKey] = useState(0);
   const [issues, setIssues] = useState<IssueWithDate[]>([]);
   const [currentIssueDate, setCurrentIssueDate] = useState<Date | undefined>(
@@ -64,9 +66,9 @@ export default function PublicDefectiveWorkCreatePage() {
         const message =
           error?.response?.data?.message ||
           error?.message ||
-          "Avto-kirishda xatolik yuz berdi.";
+          t("errors.auth");
         setAuthError(message);
-        showError("Tizimga kirishda xatolik yuz berdi", message);
+        showError(t("errors.login"), message);
         setIsAuthLoading(false);
       }
     };
@@ -155,7 +157,7 @@ export default function PublicDefectiveWorkCreatePage() {
       !trainDriver.trim() ||
       allIssues.length === 0
     ) {
-      showError("Iltimos, barcha majburiy maydonlarni to'ldiring.");
+      showError(t("errors.required"));
       return;
     }
 
@@ -163,14 +165,14 @@ export default function PublicDefectiveWorkCreatePage() {
     const issuesWithoutDates = allIssues.filter((issue) => !issue.date);
     if (issuesWithoutDates.length > 0) {
       showError(
-        "Iltimos, barcha nosozliklar uchun sanani tanlang.",
-        `${issuesWithoutDates.length} ta nosozlik uchun sana tanlanmagan.`
+        t("errors.dates"),
+        t("errors.dates_count", { count: issuesWithoutDates.length })
       );
       return;
     }
 
     if (!temporaryToken) {
-      showError("Tizimga kirishda xatolik yuz berdi", "Token topilmadi");
+      showError(t("errors.login"), t("errors.token"));
       return;
     }
 
@@ -194,14 +196,12 @@ export default function PublicDefectiveWorkCreatePage() {
       );
 
       showSuccess(
-        allIssues.length > 1
-          ? "Nosoz ishlar muvaffaqiyatli yuborildi. Mutaxassislar tez orada bog'lanadi."
-          : "Nosoz ish muvaffaqiyatli yuborildi. Mutaxassislar tez orada bog'lanadi."
+        allIssues.length > 1 ? t("success_multi") : t("success_single")
       );
       resetForm();
     } catch (error: any) {
       showError(
-        "Nosoz ishni yuborishda xatolik yuz berdi",
+        t("errors.submit"),
         error?.response?.data?.message || error?.message
       );
     } finally {
@@ -215,7 +215,7 @@ export default function PublicDefectiveWorkCreatePage() {
       <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
         <Card className="border border-[#E2E8F0] bg-white p-6 shadow-xl md:p-8">
           <p className="text-center text-sm text-[#475569]">
-            Tizimga avtomatik kirilmoqda...
+            {t("loading")}
           </p>
         </Card>
       </div>
@@ -228,14 +228,14 @@ export default function PublicDefectiveWorkCreatePage() {
       <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
         <Card className="border border-red-200 bg-white p-6 shadow-xl md:p-8 space-y-4">
           <h1 className="text-lg font-semibold text-red-700">
-            Tizimga kirishda xatolik yuz berdi
+            {t("auth_error_title")}
           </h1>
           <p className="text-sm text-[#475569] break-words">
-            {authError || "Token olishda xatolik"}
+            {authError || t("auth_error_token")}
           </p>
           <div className="flex justify-end">
             <Button onClick={() => window.location.reload()} variant="outline">
-              Qayta urinib ko&apos;rish
+              {t("retry")}
             </Button>
           </div>
         </Card>
@@ -251,19 +251,18 @@ export default function PublicDefectiveWorkCreatePage() {
             Smart Depo
           </p>
           <h1 className="text-3xl font-bold md:text-4xl">
-            Nosoz ish haqida xabar berish
+            {t("title")}
           </h1>
           <p className="text-base text-[#475569] md:text-lg">
-            Formani to'ldiring va lokomotivdagi nosozlikni tizimga yuboring.
-            Ushbu sahifa login talab qilmaydi.
+            {t("subtitle")}
           </p>
           <div className="flex items-center justify-center gap-2 text-sm text-[#475569]">
-            <span>Hisobingiz bormi?</span>
+            <span>{t("has_account")}</span>
             <Link
               href="/login"
               className="font-semibold text-primary underline-offset-4 hover:underline"
             >
-              Tizimga kiring
+              {t("login_link")}
             </Link>
           </div>
         </header>
@@ -278,11 +277,11 @@ export default function PublicDefectiveWorkCreatePage() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                  Lokomotiv
+                  {t("locomotive")}
                 </Label>
                 <Select name="locomotive" disabled={isLoadingLocomotives}>
                   <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Lokomotivni tanlang" />
+                    <SelectValue placeholder={t("locomotive_placeholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {locomotives.length ? (
@@ -296,7 +295,7 @@ export default function PublicDefectiveWorkCreatePage() {
                       ))
                     ) : (
                       <SelectItem value="empty" disabled>
-                        Lokomotivlar topilmadi
+                        {t("locomotive_empty")}
                       </SelectItem>
                     )}
                   </SelectContent>
@@ -305,11 +304,11 @@ export default function PublicDefectiveWorkCreatePage() {
 
               <div>
                 <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                  Tashkilot
+                  {t("organization")}
                 </Label>
                 <Select name="organization" disabled={isLoadingOrganizations}>
                   <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Tashkilotni tanlang" />
+                    <SelectValue placeholder={t("organization_placeholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {organizations.length ? (
@@ -323,7 +322,7 @@ export default function PublicDefectiveWorkCreatePage() {
                       ))
                     ) : (
                       <SelectItem value="empty" disabled>
-                        Tashkilotlar topilmadi
+                        {t("organization_empty")}
                       </SelectItem>
                     )}
                   </SelectContent>
@@ -333,14 +332,14 @@ export default function PublicDefectiveWorkCreatePage() {
               <FormField
                 id="train_driver"
                 name="train_driver"
-                label="Mashinist"
-                placeholder="Ism va familiya"
+                label={t("train_driver")}
+                placeholder={t("train_driver_placeholder")}
                 required
               />
 
               <div>
                 <DatePicker
-                  label="Nosozlik aniqlangan sana"
+                  label={t("issue_date")}
                   value={currentIssueDate}
                   onValueChange={setCurrentIssueDate}
                   placeholder="DD/MM/YYYY"
@@ -352,16 +351,15 @@ export default function PublicDefectiveWorkCreatePage() {
               <FormField
                 id="issue"
                 name="currentIssue"
-                label="Nosozlik tavsifi"
+                label={t("issue_label")}
                 type="textarea"
                 rows={4}
-                placeholder="Nosozlik haqida batafsil ma'lumot kiriting"
+                placeholder={t("issue_placeholder")}
               />
 
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs text-[#64748B]">
-                  Bir nechta nosozliklarni bir xil lokomotiv va mashinist uchun
-                  yuborish mumkin. Matnni yozib, sanani tanlab, ro&apos;yxatga qo&apos;shing.
+                  {t("add_issue_hint")}
                 </p>
                 <Button
                   type="button"
@@ -370,7 +368,7 @@ export default function PublicDefectiveWorkCreatePage() {
                   disabled={isPending}
                   className="border-[#CBD5F5] text-[#1D4ED8] hover:bg-[#EEF2FF] whitespace-nowrap"
                 >
-                  Ro&apos;yxatga qo&apos;shish
+                  {t("add_to_list")}
                 </Button>
               </div>
 
@@ -378,7 +376,7 @@ export default function PublicDefectiveWorkCreatePage() {
                 <>
                   <div className="mb-2 flex items-center justify-between">
                     <p className="text-xs font-medium text-[#1E293B]">
-                      Qo&apos;shilgan nosozliklar: {issues.length} ta
+                      {t("added_issues", { count: issues.length })}
                     </p>
                   </div>
 
@@ -422,7 +420,7 @@ export default function PublicDefectiveWorkCreatePage() {
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <p className="text-sm text-[#475569]">
-                Yuborilgan ma'lumotlar nazorat markaziga bevosita yetkaziladi.
+                {t("submit_note")}
               </p>
               <div className="flex gap-3">
                 <Button
@@ -432,10 +430,10 @@ export default function PublicDefectiveWorkCreatePage() {
                   onClick={resetForm}
                   disabled={isPending}
                 >
-                  Tozalash
+                  {t("clear")}
                 </Button>
                 <Button type="submit" disabled={isPending}>
-                  {isPending ? "Yuborilmoqda..." : "Nosozlikni yuborish"}
+                  {isPending ? t("submitting") : t("submit")}
                 </Button>
               </div>
             </div>

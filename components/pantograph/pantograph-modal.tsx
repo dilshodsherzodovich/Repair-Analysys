@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, memo } from "react";
+import { useTranslations } from "next-intl";
 import { Card } from "@/ui/card";
 import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
@@ -128,49 +129,54 @@ const FormField = memo(
 );
 FormField.displayName = "FormField";
 
-// Memoized locomotive select component
-const LocomotiveSelect = memo(
-  ({
-    value,
-    onChange,
-    options,
-    isLoading,
-  }: {
-    value: string;
-    onChange: (value: string) => void;
-    options: LocomotiveOption[];
-    isLoading: boolean;
-  }) => {
-    return (
-      <div>
-        <Label htmlFor="locomotive">Lokomotiv</Label>
-        <Select value={value} onValueChange={onChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Lokomotivni tanlang" />
-          </SelectTrigger>
-          <SelectContent>
-            {isLoading ? (
-              <SelectItem value="loading" disabled>
-                Yuklanmoqda...
+// Memoized locomotive select component (receives t from parent to avoid hook in memo)
+function LocomotiveSelectInner({
+  value,
+  onChange,
+  options,
+  isLoading,
+  label,
+  placeholder,
+  loadingText,
+  emptyText,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: LocomotiveOption[];
+  isLoading: boolean;
+  label: string;
+  placeholder: string;
+  loadingText: string;
+  emptyText: string;
+}) {
+  return (
+    <div>
+      <Label htmlFor="locomotive">{label}</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          {isLoading ? (
+            <SelectItem value="loading" disabled>
+              {loadingText}
+            </SelectItem>
+          ) : options.length > 0 ? (
+            options.map((option) => (
+              <SelectItem key={option.id} value={option.value}>
+                {option.label}
               </SelectItem>
-            ) : options.length > 0 ? (
-              options.map((option) => (
-                <SelectItem key={option.id} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="empty" disabled>
-                Lokomotiv topilmadi
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-      </div>
-    );
-  }
-);
-LocomotiveSelect.displayName = "LocomotiveSelect";
+            ))
+          ) : (
+            <SelectItem value="empty" disabled>
+              {emptyText}
+            </SelectItem>
+          )}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
 
 export const PantographModal = memo(function PantographModal({
   isOpen,
@@ -180,6 +186,7 @@ export const PantographModal = memo(function PantographModal({
   mode,
   isPending,
 }: PantographModalProps) {
+  const t = useTranslations("PantographModal");
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
 
   // Only fetch locomotives when modal is open
@@ -265,14 +272,11 @@ export const PantographModal = memo(function PantographModal({
   // Memoized static text values
   const modalTexts = useMemo(
     () => ({
-      title:
-        mode === "create"
-          ? "Pantograf jurnalini yaratish"
-          : "Pantograf jurnalini tahrirlash",
-      submit: mode === "create" ? "Yaratish" : "Saqlash",
-      pending: mode === "create" ? "Yaratilmoqda..." : "Saqlanmoqda...",
+      title: mode === "create" ? t("title_create") : t("title_edit"),
+      submit: mode === "create" ? t("submit_create") : t("submit_edit"),
+      pending: mode === "create" ? t("pending_create") : t("pending_edit"),
     }),
-    [mode]
+    [mode, t]
   );
 
   // Form submission handler
@@ -323,7 +327,7 @@ export const PantographModal = memo(function PantographModal({
         <DialogHeader>
           <DialogTitle>{modalTexts.title}</DialogTitle>
           <DialogDescription className="sr-only">
-            {modalTexts.title} formasi
+            {modalTexts.title} {t("form_description")}
           </DialogDescription>
         </DialogHeader>
         <Card className="border-none p-0 mt-2">
@@ -331,67 +335,71 @@ export const PantographModal = memo(function PantographModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 id="title"
-                label="Sarlavha"
+                label={t("fields.title")}
                 value={formData.title}
                 onChange={handleTitleChange}
-                placeholder="Sarlavhani kiriting"
+                placeholder={t("fields.title_placeholder")}
                 required
               />
 
               <FormField
                 id="date"
-                label="Sana"
+                label={t("fields.date")}
                 type="date"
                 value={formData.date}
                 onChange={handleDateChange}
                 required
               />
 
-              <LocomotiveSelect
+              <LocomotiveSelectInner
                 value={formData.locomotive}
                 onChange={handleLocomotiveChange}
                 options={locomotiveOptions}
                 isLoading={isLoadingLocomotives}
+                label={t("fields.locomotive")}
+                placeholder={t("fields.locomotive_placeholder")}
+                loadingText={t("fields.locomotive_loading")}
+                emptyText={t("fields.locomotive_empty")}
               />
 
               <FormField
                 id="department"
-                label="Mas'ul tashkilot"
+                label={t("fields.department")}
                 value={formData.department}
                 onChange={handleDepartmentChange}
-                placeholder="Mas'ul tashkilotni kiriting"
+                placeholder={t("fields.department_placeholder")}
                 required
               />
 
               <FormField
                 id="section"
-                label="Uchastka"
+                label={t("fields.section")}
                 value={formData.section}
                 onChange={handleSectionChange}
-                placeholder="Uchastkani kiriting"
+                placeholder={t("fields.section_placeholder")}
                 required
               />
 
               <FormField
                 id="damage"
-                label="Zarar summasi"
+                label={t("fields.damage")}
                 type="number"
                 step="0.01"
                 value={formData.damage}
                 onChange={handleDamageChange}
-                placeholder="Zarar summasini kiriting"
+                placeholder={t("fields.damage_placeholder")}
                 required
               />
             </div>
 
             <FormField
               id="description"
-              label="Hodisa tavsifi"
+              label={t("fields.description")}
               type="textarea"
               rows={4}
               value={formData.description}
               onChange={handleDescriptionChange}
-              placeholder="Hodisa tavsifini kiriting"
+              placeholder={t("fields.description_placeholder")}
               required
             />
 
@@ -402,7 +410,7 @@ export const PantographModal = memo(function PantographModal({
                 onClick={handleCancel}
                 disabled={isPending}
               >
-                Bekor qilish
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={isPending}>
                 {isPending ? modalTexts.pending : modalTexts.submit}

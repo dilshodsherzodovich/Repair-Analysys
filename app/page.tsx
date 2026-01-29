@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
@@ -26,9 +27,10 @@ import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "./unauthorized/page";
 
 export default function PantografPage() {
+  const t = useTranslations("PantographPage");
   const { updateQuery, getAllQueryValues } = useFilterParams();
 
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const currentUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
   if (!currentUser || !canAccessSection(currentUser, "pantograf")) {
     return <UnauthorizedPage />;
   }
@@ -70,7 +72,7 @@ export default function PantografPage() {
       ? apiError
       : new Error(
           (apiError as any)?.message ||
-            "Pantograf jurnalini yuklashda xatolik yuz berdi"
+            t("errors.load")
         )
     : null;
 
@@ -91,13 +93,13 @@ export default function PantografPage() {
   const handleDelete = async (row: PantographJournalEntry) => {
     try {
       await deleteEntryMutation.mutateAsync(row.id);
-      showSuccess("Pantograf jurnali muvaffaqiyatli o'chirildi");
+      showSuccess(t("messages.delete_success"));
     } catch (error: any) {
       showError(
-        "Xatolik yuz berdi",
+        t("errors.generic"),
         error?.response?.data?.message ||
           error?.message ||
-          "Pantograf jurnalini o'chirishda xatolik"
+          t("errors.delete")
       );
       throw error;
     }
@@ -120,16 +122,16 @@ export default function PantografPage() {
       if (modalMode === "create") {
         createEntryMutation.mutate(payload as CreatePantographJournalPayload, {
           onSuccess: () => {
-            showSuccess("Pantograf jurnali muvaffaqiyatli yaratildi!");
+            showSuccess(t("messages.create_success"));
             setIsModalOpen(false);
             setSelectedEntry(null);
           },
           onError: (error: any) => {
             showError(
-              "Xatolik yuz berdi",
+              t("errors.generic"),
               error?.response?.data?.message ||
                 error?.message ||
-                "Pantograf jurnalini yaratishda xatolik"
+                t("errors.create")
             );
           },
         });
@@ -141,16 +143,16 @@ export default function PantografPage() {
           },
           {
             onSuccess: () => {
-              showSuccess("Pantograf jurnali muvaffaqiyatli yangilandi!");
+              showSuccess(t("messages.update_success"));
               setIsModalOpen(false);
               setSelectedEntry(null);
             },
             onError: (error: any) => {
               showError(
-                "Xatolik yuz berdi",
+                t("errors.generic"),
                 error?.response?.data?.message ||
                   error?.message ||
-                  "Pantograf jurnalini yangilashda xatolik"
+                  t("errors.update")
               );
             },
           }
@@ -164,6 +166,7 @@ export default function PantografPage() {
       updateEntryMutation,
       showSuccess,
       showError,
+      t,
     ]
   );
 
@@ -202,17 +205,17 @@ export default function PantografPage() {
   const columns: TableColumn<PantographJournalEntry>[] = [
     {
       key: "date",
-      header: "Sana",
+      header: t("columns.date"),
       accessor: (row) => formatDate(row.date),
     },
     {
       key: "title",
-      header: "Sarlavha",
+      header: t("columns.title"),
       accessor: (row) => row.title,
     },
     {
       key: "locomotive_info",
-      header: "Lokomotiv",
+      header: t("columns.locomotive"),
       accessor: (row) =>
         row.locomotive_info
           ? `${row.locomotive_info.name} (${row.locomotive_info.locomotive_model})`
@@ -220,12 +223,12 @@ export default function PantografPage() {
     },
     {
       key: "department",
-      header: "Mas'ul tashkilot",
+      header: t("columns.department"),
       accessor: (row) => row.department,
     },
     {
       key: "section",
-      header: "Uchastka",
+      header: t("columns.section"),
       accessor: (row) => (
         <div className="max-w-[300px]">
           <div className="whitespace-normal break-words">{row.section}</div>
@@ -234,12 +237,12 @@ export default function PantografPage() {
     },
     {
       key: "organization_info",
-      header: "Tashkilot",
+      header: t("columns.organization"),
       accessor: (row) => row.organization_info?.name || "-",
     },
     {
       key: "description",
-      header: "Hodisa tavsifi",
+      header: t("columns.description"),
       accessor: (row) => (
         <div className="max-w-[400px]">
           <div className="whitespace-normal break-words">{row.description}</div>
@@ -248,21 +251,21 @@ export default function PantografPage() {
     },
     {
       key: "damage",
-      header: "Zarar summasi",
+      header: t("columns.damage"),
       accessor: (row) => formatDamage(row.damage),
     },
   ];
 
   const breadcrumbs = [
-    { label: "Asosiy", href: "/" },
-    { label: "Pantograf", current: true },
+    { label: t("breadcrumbs.home"), href: "/" },
+    { label: t("breadcrumbs.current"), current: true },
   ];
 
   return (
     <div className="min-h-screen">
       <PageHeader
-        title="Pantograf"
-        description="Bu qurilmalar elektrovozning asosiy komponentlari hisoblanadi."
+        title={t("title")}
+        description={t("description")}
         breadcrumbs={breadcrumbs}
       />
 
@@ -287,9 +290,9 @@ export default function PantografPage() {
         <PageFilters
           filters={[]}
           hasSearch={true}
-          searchPlaceholder="Qidiruv"
+          searchPlaceholder={t("search_placeholder")}
           onAdd={handleCreate}
-          addButtonText="Yangi qo'shish"
+          addButtonText={t("add_button")}
           addButtonPermittion="create_pantograf"
           // onExport={handleExport}
           // exportButtonText="Export EXCEL"
@@ -314,8 +317,8 @@ export default function PantografPage() {
           selectable={true}
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
-          emptyTitle="Ma'lumot topilmadi"
-          emptyDescription="Pantograf ma'lumotlari topilmadi"
+          emptyTitle={t("empty_title")}
+          emptyDescription={t("empty_description")}
         />
       </div>
 

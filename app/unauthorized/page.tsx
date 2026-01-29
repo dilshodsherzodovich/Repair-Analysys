@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { ShieldX, ArrowLeft } from "lucide-react";
@@ -7,6 +8,8 @@ import Link from "next/link";
 import { authService } from "@/api/services/auth.service";
 
 export default function UnauthorizedPage() {
+  const t = useTranslations("UnauthorizedPage");
+
   return (
     <div className="min-h-[calc(100vh-100px)] flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
@@ -15,19 +18,18 @@ export default function UnauthorizedPage() {
             <ShieldX className="w-8 h-8 text-red-600" />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
-            Sizga ruxsat etilmagan sahifa
+            {t("title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-gray-600">
-            Bu sahifaga kirish uchun sizda ruxsat mavjud emas. Agar bu xatolik
-            bo'lsa, adminstratorga murojaat qiling.
+            {t("description")}
           </p>
           <div className="space-y-2 flex flex-col gap-1">
             <Link href="/">
               <Button className="w-full">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Bosh sahifaga qaytish
+                {t("back_home")}
               </Button>
             </Link>
             <Button
@@ -35,7 +37,7 @@ export default function UnauthorizedPage() {
               variant="outline"
               className="w-full"
             >
-              Boshqa hisobga kirish
+              {t("switch_account")}
             </Button>
           </div>
         </CardContent>

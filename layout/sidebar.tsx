@@ -2,33 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
 import {
   Zap,
-  Eye,
   FileText,
   AlertCircle,
-  Settings,
-  RotateCw,
   ChevronRight,
   Send,
   Shield,
-  Building2,
+  OctagonMinus,
+  ClipboardMinus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
-import { UserData } from "@/api/types/auth";
 import { Button } from "@/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import { useOrganizations } from "@/api/hooks/use-organizations";
-import { authService } from "@/api/services/auth.service";
-import { PermissionGuard } from "@/components/permission-guard";
+  authService } from "@/api/services/auth.service";
 import { useTranslations } from "next-intl";
 
 const navigationItems = [
@@ -53,13 +41,13 @@ const navigationItems = [
   {
     key: "delays",
     href: "/delays",
-    icon: AlertCircle,
+    icon: OctagonMinus,
     section: "delays",
   },
   {
     key: "delay_reports",
     href: "/delays/reports",
-    icon: FileText,
+    icon: ClipboardMinus,
     section: "delays-reports",
   },
 ];

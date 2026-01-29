@@ -33,7 +33,7 @@ export default function DelayReportsPage() {
   // Get active service type (default to "passenger")
   const activeServiceType = serviceTypeParam || "passenger";
 
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const currentUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
   if (!currentUser || !canAccessSection(currentUser, "delays-reports")) {
     return <UnauthorizedPage />;
   }
@@ -132,14 +132,14 @@ export default function DelayReportsPage() {
     passengerError instanceof Error
       ? passengerError
       : passengerError
-        ? new Error(passengerError?.message || "Произошла ошибка")
+        ? new Error(passengerError?.message || t("messages.generic_error"))
         : null;
 
   const freightErrorObj =
     freightError instanceof Error
       ? freightError
       : freightError
-        ? new Error(freightError?.message || "Произошла ошибка")
+        ? new Error(freightError?.message || t("messages.generic_error"))
         : null;
 
   const error =

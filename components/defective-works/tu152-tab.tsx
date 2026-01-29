@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { PaginatedTable, type TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
@@ -16,6 +17,7 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { Permission } from "@/lib/permissions";
 
 export function TU152Tab() {
+  const t = useTranslations("TU152Tab");
   const { getAllQueryValues, updateQuery, getQueryValue } = useFilterParams();
   const {
     p_create_date_from,
@@ -85,7 +87,7 @@ export function TU152Tab() {
     apiError instanceof Error
       ? apiError
       : apiError
-      ? new Error(apiError?.message || "Xatolik yuz berdi")
+      ? new Error(apiError?.message || t("errors.generic"))
       : null;
 
   const formatDate = useCallback(
@@ -130,7 +132,7 @@ export function TU152Tab() {
     // },
     {
       key: "lokomotiv_number",
-      header: "Lokomotiv",
+      header: t("columns.locomotive"),
       accessor: (row) => `${row.lokomotiv_number} (${row.lokomotiv_seriya_name})`,
       width: "150px",
       className: "min-w-[150px] whitespace-nowrap",
@@ -138,7 +140,7 @@ export function TU152Tab() {
     },
     {
       key: "group_name",
-      header: "Guruh",
+      header: t("columns.group"),
       accessor: (row) => row?.group_name || "-",
       width: "200px",
       className: "min-w-[200px]",
@@ -146,7 +148,7 @@ export function TU152Tab() {
     },
     {
       key: "mashinist_fio",
-      header: "Mashinist",
+      header: t("columns.mashinist"),
       accessor: (row) => row?.mashinist_fio || "-",
       width: "200px",
       className: "min-w-[200px]",
@@ -170,7 +172,7 @@ export function TU152Tab() {
     // },
     {
       key: "comments",
-      header: "Izoh",
+      header: t("columns.comments"),
       accessor: (row) => (
         <div className="min-w-[300px] whitespace-pre-wrap break-words">
           {row?.comments || "-"}
@@ -182,7 +184,7 @@ export function TU152Tab() {
     },
     {
       key: "answer",
-      header: "Javob",
+      header: t("columns.answer"),
       accessor: (row) => (
         <div className="min-w-[300px] whitespace-pre-wrap break-words">
           {row?.answer || "-"}
@@ -194,7 +196,7 @@ export function TU152Tab() {
     },
     {
       key: "status_name",
-      header: "Holati",
+      header: t("columns.status"),
       accessor: (row) => getStatusBadge(row?.status_id),
       width: "180px",
       className: "min-w-[180px]",
@@ -218,7 +220,7 @@ export function TU152Tab() {
     // },
     {
       key: "change_date",
-      header: "O'zgartirilgan sana",
+      header: t("columns.change_date"),
       accessor: (row) => (row?.change_date ? formatDate(row.change_date) : ""),
       width: "150px",
       className: "min-w-[150px] whitespace-nowrap",
@@ -227,7 +229,7 @@ export function TU152Tab() {
   ];
 
   const locomotiveOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha lokomotivlar" }];
+    const options = [{ value: "", label: t("options.all_locomotives") }];
     if (locomotivesData?.data && Array.isArray(locomotivesData.data)) {
       locomotivesData.data.forEach((loc) =>
         options.push({
@@ -237,10 +239,10 @@ export function TU152Tab() {
       );
     }
     return options;
-  }, [locomotivesData]);
+  }, [locomotivesData, t]);
 
   const locomotiveModelOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha seriyalar" }];
+    const options = [{ value: "", label: t("options.all_seriyas") }];
     if (locomotiveModelsData?.data && Array.isArray(locomotiveModelsData.data)) {
       locomotiveModelsData.data.forEach((model) =>
         options.push({
@@ -250,10 +252,10 @@ export function TU152Tab() {
       );
     }
     return options;
-  }, [locomotiveModelsData]);
+  }, [locomotiveModelsData, t]);
 
   const statusOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha holatlar" }];
+    const options = [{ value: "", label: t("options.all_statuses") }];
     TU152_STATUSES.forEach((status) =>
       options.push({
         value: status.id.toString(),
@@ -261,7 +263,7 @@ export function TU152Tab() {
       })
     );
     return options;
-  }, []);
+  }, [t]);
 
   const handleDateFromChange = useCallback(
     (date: Date | undefined) => {
@@ -299,22 +301,22 @@ export function TU152Tab() {
         },
         {
           onSuccess: () => {
-            showSuccess("TU152 nosozlik muvaffaqiyatli yangilandi");
+            showSuccess(t("messages.update_success"));
             setIsModalOpen(false);
             setSelectedEntry(null);
           },
           onError: (error: any) => {
             showError(
-              "Xatolik yuz berdi",
+              t("errors.generic"),
               error?.response?.data?.message ||
                 error?.message ||
-                "TU152 nosozlikni yangilashda xatolik"
+                t("errors.update")
             );
           },
         }
       );
     },
-    [selectedEntry, updateMutation, showSuccess, showError]
+    [selectedEntry, updateMutation, showSuccess, showError, t]
   );
 
   return (
@@ -327,7 +329,7 @@ export function TU152Tab() {
                 label=""
                 value={dateFrom}
                 onValueChange={handleDateFromChange}
-                placeholder="Boshlanish sanasi"
+                placeholder={t("date_from")}
               />
             </div>
             <div className="min-w-[200px] flex-1">
@@ -335,35 +337,35 @@ export function TU152Tab() {
                 label=""
                 value={dateTo}
                 onValueChange={handleDateToChange}
-                placeholder="Tugash sanasi"
+                placeholder={t("date_to")}
               />
             </div>
             <PageFilters
               filters={[
                 {
                   name: "p_lokomotiv_id",
-                  label: "Lokomotiv",
+                  label: t("filters.locomotive"),
                   isSelect: true,
                   options: locomotiveOptions,
-                  placeholder: "Lokomotivni tanlang",
+                  placeholder: t("filters.locomotive_placeholder"),
                   searchable: false,
                   loading: isLoadingLocomotives,
                 },
                 {
                   name: "p_lokomotiv_seriya_id",
-                  label: "Lokomotiv seriyasi",
+                  label: t("filters.seriya"),
                   isSelect: true,
                   options: locomotiveModelOptions,
-                  placeholder: "Seriyani tanlang",
+                  placeholder: t("filters.seriya_placeholder"),
                   searchable: false,
                   loading: isLoadingLocomotiveModels,
                 },
                 {
                   name: "p_status_id",
-                  label: "Holat",
+                  label: t("filters.status"),
                   isSelect: true,
                   options: statusOptions,
-                  placeholder: "Holatni tanlang",
+                  placeholder: t("filters.status_placeholder"),
                   searchable: false,
                 },
               ]}
@@ -391,7 +393,7 @@ export function TU152Tab() {
               extraActions={
                 [
                   {
-                    label: "Tahrirlash",
+                    label: t("edit_action"),
                     icon: <Edit className="h-4 w-4" />,
                     onClick: handleEdit,
                     variant: "outline",
@@ -407,8 +409,8 @@ export function TU152Tab() {
               selectable
               selectedIds={selectedIds}
               onSelectionChange={setSelectedIds}
-              emptyTitle="Ma'lumot topilmadi"
-              emptyDescription="TU152 nosozliklar mavjud emas"
+              emptyTitle={t("empty_title")}
+              emptyDescription={t("empty_description")}
               className="!pb-0"
               actionsDisplayMode="row"
               // onEdit={handleEdit}
@@ -432,7 +434,7 @@ export function TU152Tab() {
                         className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
                       >
                         <ChevronLeft className="h-4 w-4" />
-                        <span>Orqaga</span>
+                        <span>{t("pagination_prev")}</span>
                       </button>
                     </li>
                   )}
@@ -492,7 +494,7 @@ export function TU152Tab() {
                         onClick={() => updateQuery({ page: (currentPage + 1).toString() })}
                         className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
                       >
-                        <span>Oldinga</span>
+                        <span>{t("pagination_next")}</span>
                         <ChevronRight className="h-4 w-4" />
                       </button>
                     </li>
@@ -500,9 +502,11 @@ export function TU152Tab() {
                 </ul>
                 {totalItems && (
                   <span className="text-sm text-gray-600 whitespace-nowrap">
-                    Showing{" "}
-                    {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}{" "}
-                    of {totalItems} results
+                    {t("pagination_showing", {
+                      from: Math.min((currentPage - 1) * itemsPerPage + 1, totalItems),
+                      to: Math.min(currentPage * itemsPerPage, totalItems),
+                      total: totalItems,
+                    })}
                   </span>
                 )}
               </div>

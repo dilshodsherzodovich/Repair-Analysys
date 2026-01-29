@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { MultiSelect } from "@/ui/multi-select";
@@ -22,6 +23,7 @@ interface DelayReportsFiltersProps {
 }
 
 export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
+  const t = useTranslations("DelayReportsFilters");
   const { getAllQueryValues, updateQuery } = useFilterParams();
   const {
     start_date,
@@ -46,17 +48,15 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, []);
 
-  // Get organizations for multiselect
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
 
-  // Parse date strings to Date objects
   const startDate = start_date ? new Date(start_date) : undefined;
   const endDate = end_date ? new Date(end_date) : undefined;
 
-  // Year and month options
+
   const currentYear = new Date().getFullYear();
   const years = useMemo(() => {
     const yearsList = [];
@@ -67,37 +67,22 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
   }, [currentYear]);
 
   const months = useMemo(() => {
-    return [
-      { value: "1", label: "Январь" },
-      { value: "2", label: "Февраль" },
-      { value: "3", label: "Март" },
-      { value: "4", label: "Апрель" },
-      { value: "5", label: "Май" },
-      { value: "6", label: "Июнь" },
-      { value: "7", label: "Июль" },
-      { value: "8", label: "Август" },
-      { value: "9", label: "Сентябрь" },
-      { value: "10", label: "Октябрь" },
-      { value: "11", label: "Ноябрь" },
-      { value: "12", label: "Декабрь" },
-    ];
-  }, []);
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => ({
+      value: String(m),
+      label: t(`months.${m}`),
+    }));
+  }, [t]);
 
   const selectedYear = yearParam ? parseInt(yearParam) : currentYear;
   const selectedMonth = monthParam ? parseInt(monthParam) : undefined;
 
-  // Get selected month value for Select component
-  // Use undefined when not selected (Radix UI Select will show placeholder)
-  // Use string when selected to match SelectItem values
   const selectedMonthValue = selectedMonth ? String(selectedMonth) : undefined;
 
-  // Parse organizations from comma-separated string  
   const selectedOrganizations = useMemo(() => {
     if (!organizationsParam) return [];
     return organizationsParam.split(",").filter(Boolean);
   }, [organizationsParam]);
 
-  // Organization options for multiselect
   const organizationOptions = useMemo(() => {
     if (!organizationsData) return [];
     return organizationsData.map((org) => ({
@@ -106,12 +91,10 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     }));
   }, [organizationsData]);
 
-  // Handle date changes
   const handleStartDateChange = useCallback(
     (date: Date | undefined) => {
       const dateString = date ? format(date, "yyyy-MM-dd") : "";
-      updateQuery({ start_date: dateString });
-      updateQuery({ year: null, month: null });
+      updateQuery({ start_date: dateString, year: null, month: null });
     },
     [updateQuery]
   );
@@ -119,25 +102,25 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
   const handleEndDateChange = useCallback(
     (date: Date | undefined) => {
       const dateString = date ? format(date, "yyyy-MM-dd") : "";
-      updateQuery({ end_date: dateString });
-      updateQuery({ year: null, month: null });
+      updateQuery({ end_date: dateString, year: null, month: null });
     },
     [updateQuery]
   );
 
-  // Handle year/month changes
   const handleYearChange = useCallback(
     (year: string) => {
       const yearNum = parseInt(year);
-      updateQuery({ year });
       if (selectedMonth) {
         const monthNum = selectedMonth;
         const start = new Date(yearNum, monthNum - 1, 1);
         const end = endOfDay(new Date(yearNum, monthNum, 0));
         updateQuery({
+          year,
           start_date: format(start, "yyyy-MM-dd"),
           end_date: format(end, "yyyy-MM-dd"),
         });
+      } else {
+        updateQuery({ year });
       }
     },
     [selectedMonth, updateQuery]
@@ -146,12 +129,12 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
   const handleMonthChange = useCallback(
     (month: string) => {
       if (month && month !== "") {
-        updateQuery({ month });
         const monthNum = parseInt(month);
         const year = selectedYear || currentYear;
         const start = new Date(year, monthNum - 1, 1);
         const end = endOfDay(new Date(year, monthNum, 0));
         updateQuery({
+          month,
           start_date: format(start, "yyyy-MM-dd"),
           end_date: format(end, "yyyy-MM-dd"),
         });
@@ -162,7 +145,6 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     [selectedYear, currentYear, updateQuery]
   );
 
-  // Quick filter handlers
   const handleQuickFilter = useCallback(
     (filterType: "7days" | "30days" | "thismonth") => {
       const today = new Date();
@@ -191,7 +173,6 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     [updateQuery]
   );
 
-  // Handle organization selection
   const handleOrganizationsChange = useCallback(
     (values: string[]) => {
       const organizationsString = values.length > 0 ? values.join(",") : "";
@@ -200,7 +181,6 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     [updateQuery]
   );
 
-  // Handle service type tab change
   const handleServiceTypeChange = useCallback(
     (value: string) => {
       updateQuery({ service_type: value });
@@ -208,7 +188,6 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     [updateQuery]
   );
 
-  // Determine which quick filter is active
   const activeQuickFilter = useMemo(() => {
     if (!startDate || !endDate || !start_date || !end_date) return null;
 
@@ -216,21 +195,18 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     const todayEnd = endOfDay(today);
     const todayEndStr = format(todayEnd, "yyyy-MM-dd");
 
-    // Check for "Last 7 days"
     const sevenDaysAgo = subDays(today, 7);
     const sevenDaysAgoStr = format(sevenDaysAgo, "yyyy-MM-dd");
     if (start_date === sevenDaysAgoStr && end_date === todayEndStr) {
       return "7days";
     }
 
-    // Check for "Last 30 days"
     const thirtyDaysAgo = subDays(today, 30);
     const thirtyDaysAgoStr = format(thirtyDaysAgo, "yyyy-MM-dd");
     if (start_date === thirtyDaysAgoStr && end_date === todayEndStr) {
       return "30days";
     }
 
-    // Check for "This month"
     const monthStart = startOfMonth(today);
     const monthStartStr = format(monthStart, "yyyy-MM-dd");
     if (start_date === monthStartStr && end_date === todayEndStr) {
@@ -242,7 +218,6 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
 
   return (
     <div className="px-6 py-4">
-      {/* Service Type Tabs */}
       <div className="mb-6">
         <Tabs value={activeServiceType} onValueChange={handleServiceTypeChange}>
           <TabsList className="bg-white border-1 border-gray-200 p-1 gap-2 rounded-md inline-flex">
@@ -250,13 +225,13 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               value="passenger"
               className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
             >
-              Пассажирский
+              {t("tab_passenger")}
             </TabsTrigger>
             <TabsTrigger
               value="freight"
               className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
             >
-              Грузовой
+              {t("tab_freight")}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -266,7 +241,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
         <div className="flex flex-wrap items-end gap-4">
           <div className="min-w-[200px] flex-shrink-0">
             <DatePicker
-              placeholder="Дата начала"
+              placeholder={t("date_start")}
               value={startDate}
               onValueChange={handleStartDateChange}
               className="w-full"
@@ -275,7 +250,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
           </div>
           <div className="min-w-[200px] flex-shrink-0">
             <DatePicker
-              placeholder="Дата окончания"
+              placeholder={t("date_end")}
               value={endDate}
               onValueChange={handleEndDateChange}
               className="w-full"
@@ -289,9 +264,9 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               options={organizationOptions}
               selectedValues={selectedOrganizations}
               onSelectionChange={handleOrganizationsChange}
-              placeholder="Выберите организации"
-              searchPlaceholder="Поиск..."
-              emptyMessage="Организация не найдена"
+              placeholder={t("organizations_placeholder")}
+              searchPlaceholder={t("organizations_search")}
+              emptyMessage={t("organizations_empty")}
               disabled={isLoadingOrganizations}
               className="border-[#d1d5db] hover:border-[#d1d5db] focus:border-[#d1d5db] focus:ring-0 py-0 min-h-auto"
             />
@@ -308,7 +283,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               className="rounded-md bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
-              Экспорт в DOC
+              {t("export_button")}
             </Button>
           )}
           
@@ -319,7 +294,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               onValueChange={handleYearChange}
             >
               <SelectTrigger className="w-full h-10 mb-0">
-                <SelectValue placeholder="Выберите год" />
+                <SelectValue placeholder={t("year_placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 {years.map((year) => (
@@ -338,7 +313,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               onValueChange={handleMonthChange}
             >
               <SelectTrigger className="w-full h-10 mb-0">
-                <SelectValue placeholder="Выберите месяц" />
+                <SelectValue placeholder={t("month_placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 {months.map((month) => (
@@ -361,7 +336,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
                 : "border-[#d1d5db] rounded-md"
             }
           >
-            Последние 7 дней
+            {t("quick_7days")}
           </Button>
           <Button
             variant={activeQuickFilter === "30days" ? "default" : "outline"}
@@ -373,7 +348,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
                 : "border-[#d1d5db] rounded-md"
             }
           >
-            Последние 30 дней
+            {t("quick_30days")}
           </Button>
           <Button
             variant={activeQuickFilter === "thismonth" ? "default" : "outline"}
@@ -385,7 +360,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
                 : "border-[#d1d5db] rounded-md"
             }
           >
-            Этот месяц (1-{format(new Date(), "d")})
+            {t("quick_thismonth", { day: format(new Date(), "d") })}
           </Button>
         </div>
       </div>

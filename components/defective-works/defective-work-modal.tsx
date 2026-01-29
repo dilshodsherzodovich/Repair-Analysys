@@ -1,4 +1,7 @@
+"use client";
+
 import { useEffect, useMemo, useState, type FormEvent, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Card } from "@/ui/card";
 import { Modal } from "@/ui/modal";
 import { Label } from "@/ui/label";
@@ -63,23 +66,31 @@ function LocomotiveSelectField({
   defaultValue,
   locomotives,
   isLoading,
+  label,
+  placeholder,
+  loadingText,
+  emptyText,
 }: {
   name: string;
   defaultValue?: string;
   locomotives: LocomotiveData[];
   isLoading: boolean;
+  label: string;
+  placeholder: string;
+  loadingText: string;
+  emptyText: string;
 }) {
   return (
     <div>
-      <Label htmlFor="locomotive">Lokomotiv</Label>
+      <Label htmlFor="locomotive">{label}</Label>
       <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
         <SelectTrigger id="locomotive">
-          <SelectValue placeholder="Lokomotivni tanlang" />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           {isLoading ? (
             <SelectItem value="loading" disabled>
-              Yuklanmoqda...
+              {loadingText}
             </SelectItem>
           ) : locomotives.length ? (
             locomotives.map((option) => (
@@ -89,7 +100,7 @@ function LocomotiveSelectField({
             ))
           ) : (
             <SelectItem value="empty" disabled>
-              Lokomotivlar topilmadi
+              {emptyText}
             </SelectItem>
           )}
         </SelectContent>
@@ -103,23 +114,31 @@ function InspectionTypesSelectField({
   defaultValue,
   inspectionTypes,
   isLoading,
+  label,
+  placeholder,
+  loadingText,
+  emptyText,
 }: {
   name: string;
   defaultValue?: string;
   inspectionTypes: InspectionType[];
   isLoading: boolean;
+  label: string;
+  placeholder: string;
+  loadingText: string;
+  emptyText: string;
 }) {
   return (
     <div>
-      <Label htmlFor="inspection-types">Texnik ko'rik turi</Label>
+      <Label htmlFor="inspection-types">{label}</Label>
       <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
         <SelectTrigger id="inspection-types">
-          <SelectValue placeholder="Texnik ko'rik turini tanlang" />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           {isLoading ? (
             <SelectItem value="loading" disabled>
-              Yuklanmoqda...
+              {loadingText}
             </SelectItem>
           ) : inspectionTypes.length ? (
             inspectionTypes.map((option) => (
@@ -129,7 +148,7 @@ function InspectionTypesSelectField({
             ))
           ) : (
             <SelectItem value="empty" disabled>
-              Texnik ko'rik turlari topilmadi
+              {emptyText}
             </SelectItem>
           )}
         </SelectContent>
@@ -146,6 +165,7 @@ export function DefectiveWorkModal({
   mode,
   isPending,
 }: DefectiveWorkModalProps) {
+  const t = useTranslations("DefectiveWorkModal");
   const [formDefaults, setFormDefaults] = useState<FormData>(INITIAL_FORM_DATA);
   const [formKey, setFormKey] = useState(0);
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -191,7 +211,7 @@ export function DefectiveWorkModal({
     const issue = (data.get("issue") as string) || "";
     const code = (data.get("code") as string) || "";
     if (!locomotive || !inspectionType) {
-      showError("Lokomotiv yoki texnik ko'rik turi tanlanmagan");
+      showError(t("error_loco_inspection"));
       return;
     }
 
@@ -218,12 +238,11 @@ export function DefectiveWorkModal({
 
   const modalTexts = useMemo(
     () => ({
-      title:
-        mode === "create" ? "Nosoz ishni qo'shish" : "Nosoz ishni tahrirlash",
-      submit: mode === "create" ? "Qo'shish" : "Saqlash",
-      pending: mode === "create" ? "Qo'shilmoqda..." : "Saqlanmoqda...",
+      title: mode === "create" ? t("title_create") : t("title_edit"),
+      submit: mode === "create" ? t("submit_create") : t("submit_edit"),
+      pending: mode === "create" ? t("pending_create") : t("pending_edit"),
     }),
-    [mode]
+    [mode, t]
   );
 
   return (
@@ -247,6 +266,10 @@ export function DefectiveWorkModal({
               defaultValue={formDefaults.locomotive}
               locomotives={locomotivesData || []}
               isLoading={isLoadingLocomotives}
+              label={t("locomotive")}
+              placeholder={t("locomotive_placeholder")}
+              loadingText={t("locomotive_loading")}
+              emptyText={t("locomotive_empty")}
             />
 
             <InspectionTypesSelectField
@@ -254,37 +277,41 @@ export function DefectiveWorkModal({
               defaultValue={formDefaults.inspection_type}
               inspectionTypes={inspectionTypes || []}
               isLoading={isLoadingInspectionTypes}
+              label={t("inspection_type")}
+              placeholder={t("inspection_type_placeholder")}
+              loadingText={t("locomotive_loading")}
+              emptyText={t("inspection_type_empty")}
             />
 
             <FormField
               id="train_driver"
               name="train_driver"
-              label="Mashinist"
+              label={t("train_driver")}
               defaultValue={formDefaults.train_driver}
-              placeholder="Mashinist ism familiyasi"
+              placeholder={t("train_driver_placeholder")}
               required
             />
 
             <FormField
               id="table_number"
               name="table_number"
-              label="Jadval raqami"
+              label={t("table_number")}
               defaultValue={formDefaults.table_number}
-              placeholder="Jadval raqamini kiriting"
+              placeholder={t("table_number_placeholder")}
               required
             />
 
             <FormField
               id="code"
               name="code"
-              label="Kod"
+              label={t("code")}
               defaultValue={formDefaults.code}
-              placeholder="Kod kiriting"
+              placeholder={t("code_placeholder")}
               required
             />
 
             <DatePicker
-              label="Sana"
+              label={t("date")}
               value={selectedDate}
               onValueChange={setSelectedDate}
               placeholder="DD/MM/YYYY"
@@ -294,11 +321,11 @@ export function DefectiveWorkModal({
           <FormField
             id="issue"
             name="issue"
-            label="Nosozlik tavsifi"
+            label={t("issue")}
             type="textarea"
             rows={4}
             defaultValue={formDefaults.issue}
-            placeholder="Nosozlikni tavsiflang"
+            placeholder={t("issue_placeholder")}
             required
           />
 
@@ -309,7 +336,7 @@ export function DefectiveWorkModal({
               onClick={handleClose}
               disabled={isPending}
             >
-              Bekor qilish
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? modalTexts.pending : modalTexts.submit}

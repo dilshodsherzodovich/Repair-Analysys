@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 import { Modal } from "@/ui/modal";
 import { Label } from "@/ui/label";
 import {
@@ -30,6 +31,7 @@ export function TU152Modal({
   entry,
   isPending,
 }: TU152ModalProps) {
+  const t = useTranslations("TU152Modal");
   const [statusId, setStatusId] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
   const { showError } = useSnackbar();
@@ -48,7 +50,7 @@ export function TU152Modal({
     event.preventDefault();
 
     if (!statusId) {
-      showError("Iltimos, holatni tanlang.");
+      showError(t("error_status"));
       return;
     }
 
@@ -70,17 +72,17 @@ export function TU152Modal({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="TU152 nosozlikni tahrirlash"
+      title={t("title")}
       size="md"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="status" className="mb-2 block">
-            Holat <span className="text-red-500">*</span>
+            {t("status_label")} <span className="text-red-500">*</span>
           </Label>
           <Select value={statusId} onValueChange={setStatusId}>
             <SelectTrigger id="status">
-              <SelectValue placeholder="Holatni tanlang" />
+              <SelectValue placeholder={t("status_placeholder")} />
             </SelectTrigger>
             <SelectContent>
               {TU152_STATUSES.map((status) => (
@@ -95,10 +97,10 @@ export function TU152Modal({
         <FormField
           id="answer"
           name="answer"
-          label="Javob"
+          label={t("answer_label")}
           type="textarea"
           rows={6}
-          placeholder="Javob kiriting"
+          placeholder={t("answer_placeholder")}
           value={answer}
           onChange={setAnswer}
         />
@@ -110,10 +112,10 @@ export function TU152Modal({
             onClick={handleClose}
             disabled={isPending}
           >
-            Bekor qilish
+            {t("cancel")}
           </Button>
           <Button type="submit" disabled={isPending || !statusId}>
-            {isPending ? "Saqlanmoqda..." : "Saqlash"}
+            {isPending ? t("saving") : t("save")}
           </Button>
         </div>
       </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { PaginatedTable, type TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
@@ -24,6 +25,7 @@ import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 
 export function NosozliklarTab() {
+  const t = useTranslations("NosozliklarTab");
   const { getAllQueryValues } = useFilterParams();
   const { updateQuery } = useFilterParams();
   const {
@@ -81,7 +83,7 @@ export function NosozliklarTab() {
     apiError instanceof Error
       ? apiError
       : apiError
-      ? new Error(apiError?.message || "Xatolik yuz berdi")
+      ? new Error(apiError?.message || t("errors.generic"))
       : null;
 
   const handleEdit = useCallback((row: DefectiveWorkEntry) => {
@@ -94,18 +96,18 @@ export function NosozliklarTab() {
     async (row: DefectiveWorkEntry) => {
       try {
         await deleteMutation.mutateAsync(row.id);
-        showSuccess("Nosoz ish muvaffaqiyatli o'chirildi");
+        showSuccess(t("messages.delete_success"));
       } catch (error: any) {
         showError(
-          "Xatolik yuz berdi",
+          t("errors.generic"),
           error?.response?.data?.message ||
             error?.message ||
-            "Nosoz ishni o'chirishda xatolik"
+            t("errors.delete")
         );
         throw error;
       }
     },
-    [deleteMutation, showError, showSuccess]
+    [deleteMutation, showError, showSuccess, t]
   );
 
   const handleCreate = useCallback(() => {
@@ -119,16 +121,16 @@ export function NosozliklarTab() {
       if (modalMode === "create") {
         createMutation.mutate(payload as DefectiveWorkCreatePayload, {
           onSuccess: () => {
-            showSuccess("Nosoz ish muvaffaqiyatli qo'shildi");
+            showSuccess(t("messages.create_success"));
             setIsModalOpen(false);
             setSelectedEntry(null);
           },
           onError: (error: any) => {
             showError(
-              "Xatolik yuz berdi",
+              t("errors.generic"),
               error?.response?.data?.message ||
                 error?.message ||
-                "Nosoz ishni qo'shishda xatolik"
+                t("errors.create")
             );
           },
         });
@@ -140,16 +142,16 @@ export function NosozliklarTab() {
           },
           {
             onSuccess: () => {
-              showSuccess("Nosoz ish muvaffaqiyatli yangilandi");
+              showSuccess(t("messages.update_success"));
               setIsModalOpen(false);
               setSelectedEntry(null);
             },
             onError: (error: any) => {
               showError(
-                "Xatolik yuz berdi",
+                t("errors.generic"),
                 error?.response?.data?.message ||
                   error?.message ||
-                  "Nosoz ishni yangilashda xatolik"
+                  t("errors.update")
               );
             },
           }
@@ -163,6 +165,7 @@ export function NosozliklarTab() {
       updateMutation,
       showSuccess,
       showError,
+      t,
     ]
   );
 
@@ -188,23 +191,23 @@ export function NosozliklarTab() {
   const columns: TableColumn<DefectiveWorkEntry>[] = [
     {
       key: "date",
-      header: "Sana",
+      header: t("columns.date"),
       accessor: (row) => (row?.date ? formatDate(row.date) : ""),
     },
     {
       key: "organization_info",
-      header: "Tashkilot",
+      header: t("columns.organization"),
       accessor: (row) => row.organization_info?.name,
     },
     {
       key: "locomotive_info",
-      header: "Lokomotiv",
+      header: t("columns.locomotive"),
       accessor: (row) =>
         `${row.locomotive_info?.name} (${row.locomotive_info?.locomotive_model})`,
     },
     {
       key: "inspection_type_info",
-      header: "Tekshiruv turi",
+      header: t("columns.inspection_type"),
       accessor: (row) =>
         `${row.inspection_type_info?.name || "-"} (${
           row.inspection_type_info?.inspection_type || "-"
@@ -212,17 +215,17 @@ export function NosozliklarTab() {
     },
     {
       key: "train_driver",
-      header: "Mashinist",
+      header: t("columns.train_driver"),
       accessor: (row) => row?.train_driver,
     },
     {
       key: "code",
-      header: "Kod",
+      header: t("columns.code"),
       accessor: (row) => row?.code,
     },
     {
       key: "issue",
-      header: "Nosozlik",
+      header: t("columns.issue"),
       accessor: (row) => (
         <div className="max-w-[400px] whitespace-pre-wrap break-words">
           {row?.issue}
@@ -231,17 +234,17 @@ export function NosozliklarTab() {
     },
     {
       key: "table_number",
-      header: "Tabel raqami",
+      header: t("columns.table_number"),
       accessor: (row) => row?.table_number,
     },
     {
       key: "status",
-      header: "Holati",
+      header: t("columns.status"),
       accessor: (row) => {
         const isDone = !!row?.table_number;
         return (
           <Badge variant={isDone ? "success" : "destructive"}>
-            {isDone ? "Bajarilgan" : "Bajarilmagan"}
+            {isDone ? t("status_done") : t("status_not_done")}
           </Badge>
         );
       },
@@ -249,7 +252,7 @@ export function NosozliklarTab() {
   ];
 
   const locomotiveOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha lokomotivlar" }];
+    const options = [{ value: "", label: t("options.all_locomotives") }];
     if (locomotivesData && Array.isArray(locomotivesData)) {
       locomotivesData.forEach((loc) =>
         options.push({
@@ -259,10 +262,10 @@ export function NosozliklarTab() {
       );
     }
     return options;
-  }, [locomotivesData]);
+  }, [locomotivesData, t]);
 
   const inspectionTypeOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha tekshiruv turlari" }];
+    const options = [{ value: "", label: t("options.all_inspection_types") }];
     if (inspectionTypesData && Array.isArray(inspectionTypesData)) {
       inspectionTypesData.forEach((it) =>
         options.push({
@@ -272,10 +275,10 @@ export function NosozliklarTab() {
       );
     }
     return options;
-  }, [inspectionTypesData]);
+  }, [inspectionTypesData, t]);
 
   const organizationOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha tashkilotlar" }];
+    const options = [{ value: "", label: t("options.all_organizations") }];
     if (organizationsData && Array.isArray(organizationsData)) {
       organizationsData.forEach((org) =>
         options.push({
@@ -285,15 +288,15 @@ export function NosozliklarTab() {
       );
     }
     return options;
-  }, [organizationsData]);
+  }, [organizationsData, t]);
 
   const statusOptions = useMemo(() => {
     return [
-      { value: "", label: "Barcha yozuvlar" },
-      { value: "done", label: "Bajarilgan" },
-      { value: "not_done", label: "Bajarilmagan" },
+      { value: "", label: t("options.all_records") },
+      { value: "done", label: t("status_done") },
+      { value: "not_done", label: t("status_not_done") },
     ];
-  }, []);
+  }, [t]);
 
   return (
     <>
@@ -302,42 +305,42 @@ export function NosozliklarTab() {
           filters={[
             {
               name: "tab",
-              label: "Holat",
+              label: t("filters.status"),
               isSelect: true,
               options: statusOptions,
-              placeholder: "Holatni tanlang",
+              placeholder: t("filters.status_placeholder"),
               searchable: false,
             },
             {
               name: "organization_id",
-              label: "Tashkilot",
+              label: t("filters.organization"),
               isSelect: true,
               options: organizationOptions,
-              placeholder: "Tashkilotni tanlang",
+              placeholder: t("filters.organization_placeholder"),
               searchable: false,
               loading: isLoadingOrganizations,
             },
             {
               name: "inspection_type",
-              label: "Tekshiruv turi",
+              label: t("filters.inspection_type"),
               isSelect: true,
               options: inspectionTypeOptions,
-              placeholder: "Tekshiruv turini tanlang",
+              placeholder: t("filters.inspection_type_placeholder"),
               searchable: false,
               loading: isLoadingInspectionTypes,
             },
             {
               name: "locomotive",
-              label: "Lokomotiv",
+              label: t("filters.locomotive"),
               isSelect: true,
               options: locomotiveOptions,
-              placeholder: "Lokomotivni tanlang",
+              placeholder: t("filters.locomotive_placeholder"),
               searchable: false,
               loading: isLoadingLocomotives,
             },
           ]}
           hasSearch
-          searchPlaceholder="Qidiruv"
+          searchPlaceholder={t("search_placeholder")}
           addButtonPermittion="create_defective_work"
           onAdd={handleCreate}
           className="!mb-0"
@@ -370,8 +373,8 @@ export function NosozliklarTab() {
           selectable
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
-          emptyTitle="Ma'lumot topilmadi"
-          emptyDescription="Nosoz ishlar mavjud emas"
+          emptyTitle={t("empty_title")}
+          emptyDescription={t("empty_description")}
           deletePermission="delete_defective_work"
           editPermission="edit_defective_work"
         />

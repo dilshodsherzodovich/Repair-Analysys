@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
@@ -31,21 +32,28 @@ import { Badge } from "@/ui/badge";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { responsibleOrganizations } from "@/data";
 
-const journalTypeLabels: Record<string, string> = {
-  mpr: "Buyruq MPR",
-  invalid: "Brak",
-  defect: "Defekt",
-};
-
-const journalTypeOptions = [
-  { value: "", label: "Barcha jurnal turlari" },
-  { value: "mpr", label: "Buyruq MPR" },
-  { value: "invalid", label: "Yaroqsiz" },
-  { value: "defect", label: "Defekt" },
-];
-
 export default function OrdersPage() {
+  const t = useTranslations("OrdersPage");
   const { updateQuery, getAllQueryValues } = useFilterParams();
+
+  const journalTypeLabels: Record<string, string> = useMemo(
+    () => ({
+      mpr: t("journal_types.mpr"),
+      invalid: t("journal_types.invalid"),
+      defect: t("journal_types.defect"),
+    }),
+    [t]
+  );
+
+  const journalTypeOptions = useMemo(
+    () => [
+      { value: "", label: t("options.all_journal_types") },
+      { value: "mpr", label: t("journal_types.mpr") },
+      { value: "invalid", label: t("journal_types.invalid") },
+      { value: "defect", label: t("journal_types.defect") },
+    ],
+    [t]
+  );
 
   const {
     q,
@@ -74,7 +82,7 @@ export default function OrdersPage() {
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =
     useGetLocomotives();
 
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const currentUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
   if (!currentUser || !canAccessSection(currentUser, "orders")) {
     return <UnauthorizedPage />;
   }
@@ -97,7 +105,7 @@ export default function OrdersPage() {
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
   const locomotiveOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha lokomotivlar" }];
+    const options = [{ value: "", label: t("options.all_locomotives") }];
     if (locomotivesData && Array.isArray(locomotivesData)) {
       locomotivesData.forEach(
         (locomotive: { id: number; name?: string; model_name?: string }) => {
@@ -112,10 +120,10 @@ export default function OrdersPage() {
       );
     }
     return options;
-  }, [locomotivesData]);
+  }, [locomotivesData, t]);
 
   const organizationOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha tashkilotlar" }];
+    const options = [{ value: "", label: t("options.all_organizations") }];
     if (canChooseOrganization && organizationsData) {
       organizationsData?.forEach((org) => {
         options.push({
@@ -125,7 +133,7 @@ export default function OrdersPage() {
       });
     }
     return options;
-  }, [organizationsData, canChooseOrganization]);
+  }, [organizationsData, canChooseOrganization, t]);
 
   const {
     data: apiResponse,
@@ -148,7 +156,7 @@ export default function OrdersPage() {
   const error = apiError
     ? apiError instanceof Error
       ? apiError
-      : new Error(apiError.message || "An error occurred")
+      : new Error(apiError.message || t("errors.load"))
     : null;
 
   const handleEdit = (row: OrderData) => {
@@ -161,18 +169,18 @@ export default function OrdersPage() {
     async (row: OrderData) => {
       try {
         await deleteOrderMutation.mutateAsync(row.id);
-        showSuccess("Buyruq MPR muvaffaqiyatli o'chirildi");
+        showSuccess(t("messages.delete_success"));
       } catch (error: any) {
         showError(
-          "Xatolik yuz berdi",
+          t("errors.generic"),
           error?.response?.data?.message ||
             error.message ||
-            "Buyruq MPR o'chirishda xatolik"
+            t("errors.delete")
         );
         throw error;
       }
     },
-    [deleteOrderMutation, showError, showSuccess]
+    [deleteOrderMutation, showError, showSuccess, t]
   );
 
   const handleConfirmClick = useCallback((row: OrderData) => {
@@ -184,19 +192,19 @@ export default function OrdersPage() {
     if (!orderToConfirm) return;
     try {
       await confirmOrderMutation.mutateAsync(orderToConfirm.id);
-      showSuccess("Buyruq MPR muvaffaqiyatli tasdiqlandi");
+      showSuccess(t("messages.confirm_success"));
       setIsConfirmModalOpen(false);
       setOrderToConfirm(null);
     } catch (error: any) {
       showError(
-        "Xatolik yuz berdi",
+        t("errors.generic"),
         error?.response?.data?.message ||
           error.message ||
-          "Buyruq MPR ni tasdiqlashda xatolik"
+          t("errors.confirm")
       );
       throw error;
     }
-  }, [orderToConfirm, confirmOrderMutation, showError, showSuccess]);
+  }, [orderToConfirm, confirmOrderMutation, showError, showSuccess, t]);
 
   const handleCreate = () => {
     setSelectedOrder(null);
@@ -208,16 +216,16 @@ export default function OrdersPage() {
     if (modalMode === "create") {
       createOrderMutation.mutate(orderData as CreateOrderPayload, {
         onSuccess: () => {
-          showSuccess("Buyruq MPR muvaffaqiyatli yaratildi!");
+          showSuccess(t("messages.create_success"));
           setIsModalOpen(false);
           setSelectedOrder(null);
         },
         onError: (error: any) => {
           showError(
-            "Xatolik yuz berdi",
+            t("errors.generic"),
             error?.response?.data?.message ||
               error.message ||
-              "Buyruq MPR yaratishda xatolik"
+              t("errors.create")
           );
         },
       });
@@ -230,16 +238,16 @@ export default function OrdersPage() {
           },
           {
             onSuccess: () => {
-              showSuccess("Buyruq MPR muvaffaqiyatli yangilandi!");
+              showSuccess(t("messages.update_success"));
               setIsModalOpen(false);
               setSelectedOrder(null);
             },
             onError: (error: any) => {
               showError(
-                "Xatolik yuz berdi",
+                t("errors.generic"),
                 error?.response?.data?.message ||
                   error.message ||
-                  "Buyruq MPR yangilashda xatolik"
+                  t("errors.update")
               );
             },
           }
@@ -277,43 +285,43 @@ export default function OrdersPage() {
   const columns: TableColumn<OrderData>[] = [
     {
       key: "type_of_journal",
-      header: "Jurnal turi",
+      header: t("columns.type_of_journal"),
       accessor: (row) =>
         journalTypeLabels[row.type_of_journal] || row.type_of_journal || "",
     },
     {
       key: "date",
-      header: "Sana",
+      header: t("columns.date"),
       accessor: (row) => formatDate(row.date),
     },
     {
       key: "organization",
-      header: "Tashkilot",
+      header: t("columns.organization"),
       accessor: (row) => row.organization_info?.name,
     },
     {
       key: "locomotive_info",
-      header: "Lokomotiv",
+      header: t("columns.locomotive"),
       accessor: (row) => row.locomotive_info?.name || "",
     },
     {
       key: "train_number",
-      header: "Poyezd raqami",
+      header: t("columns.train_number"),
       accessor: (row) => row.train_number,
     },
     {
       key: "responsible_department",
-      header: "Mas'ul tashkilot",
+      header: t("columns.responsible_department"),
       accessor: (row) => row.responsible_department,
     },
     {
       key: "responsible_person",
-      header: "Mas'ul shaxs",
+      header: t("columns.responsible_person"),
       accessor: (row) => row.responsible_person,
     },
     {
       key: "case_description",
-      header: "Hodisa tavsifi",
+      header: t("columns.case_description"),
       accessor: (row) => (
         <div className="max-w-[400px]">
           <div className="whitespace-normal break-words">
@@ -324,12 +332,12 @@ export default function OrdersPage() {
     },
     {
       key: "damage_amount",
-      header: "Zarar summasi",
+      header: t("columns.damage_amount"),
       accessor: (row) => formatDamageAmount(row.damage_amount),
     },
     {
       key: "file",
-      header: "Biriktirilgan fayl",
+      header: t("columns.file"),
       accessor: (row) =>
         row.file ? (
           <a
@@ -346,22 +354,22 @@ export default function OrdersPage() {
     },
     {
       key: "confirm",
-      header: "Holati",
+      header: t("columns.status"),
       accessor: (row) => (
         <Badge variant={row.confirm ? "success_outline" : "warning_outline"}>
-          {row.confirm ? "Tasdiqlangan" : "Tasdiqlanmagan"}
+          {row.confirm ? t("status_confirmed") : t("status_not_confirmed")}
         </Badge>
       ),
     },
   ];
 
   const breadcrumbs = [
-    { label: "Asosiy", href: "/" },
-    { label: "Buyruq MPR", current: true },
+    { label: t("breadcrumbs.home"), href: "/" },
+    { label: t("breadcrumbs.current"), current: true },
   ];
 
   const responsibleOrganizationOptions = useMemo(() => {
-    const options = [{ value: "", label: "Barcha mas'ul tashkilotlar" }];
+    const options = [{ value: "", label: t("options.all_responsible") }];
     responsibleOrganizations.forEach((org) =>
       options.push({
         value: org,
@@ -369,13 +377,13 @@ export default function OrdersPage() {
       })
     );
     return options;
-  }, []);
+  }, [t]);
 
   return (
     <div className="min-h-screen ">
       <PageHeader
-        title="Buyruq MPR"
-        description="Elektrovozlarni poezdlararo ta'mirlash"
+        title={t("title")}
+        description={t("description")}
         breadcrumbs={breadcrumbs}
       />
 
@@ -384,26 +392,26 @@ export default function OrdersPage() {
           filters={[
             {
               name: "type_of_journal",
-              label: "Jurnal turi",
+              label: t("filters.journal_type"),
               isSelect: true,
               options: journalTypeOptions,
-              placeholder: "Jurnal turini tanlang",
+              placeholder: t("filters.journal_type_placeholder"),
               searchable: false,
             },
             {
               name: "responsible_department",
-              label: "Mas'ul tashkilot",
+              label: t("filters.responsible_department"),
               isSelect: true,
               options: responsibleOrganizationOptions,
-              placeholder: "Mas'ul tashkilotni tanlang",
+              placeholder: t("filters.responsible_department_placeholder"),
               searchable: false,
             },
             {
               name: "locomotive",
-              label: "Lokomotiv",
+              label: t("filters.locomotive"),
               isSelect: true,
               options: locomotiveOptions,
-              placeholder: "Lokomotivni tanlang",
+              placeholder: t("filters.locomotive_placeholder"),
               searchable: false,
               loading: isLoadingLocomotives,
             },
@@ -411,10 +419,10 @@ export default function OrdersPage() {
               ? [
                   {
                     name: "organization",
-                    label: "Tashkilot",
+                    label: t("filters.organization"),
                     isSelect: true,
                     options: organizationOptions,
-                    placeholder: "Tashkilotni tanlang",
+                    placeholder: t("filters.organization_placeholder"),
                     searchable: false,
                     loading: isLoadingOrganizations,
                   },
@@ -422,9 +430,9 @@ export default function OrdersPage() {
               : []),
           ]}
           hasSearch={true}
-          searchPlaceholder="Qidiruv"
+          searchPlaceholder={t("search_placeholder")}
           hasDatePicker={true}
-          datePickerLabel="Sana"
+          datePickerLabel={t("date_label")}
           addButtonPermittion={isAdmin ? undefined : "create_order"}
           onAdd={isAdmin ? undefined : handleCreate}
           // onExport={handleExport}
@@ -470,8 +478,8 @@ export default function OrdersPage() {
           size="sm"
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
-          emptyTitle="Ma'lumot topilmadi"
-          emptyDescription="Buyruq MPR ma'lumotlari topilmadi"
+          emptyTitle={t("empty_title")}
+          emptyDescription={t("empty_description")}
         />
       </div>
 
@@ -496,17 +504,17 @@ export default function OrdersPage() {
           setOrderToConfirm(null);
         }}
         onConfirm={handleConfirmOrder}
-        title="Buyruq MPR ni tasdiqlash"
+        title={t("confirm_dialog.title")}
         message={
           orderToConfirm
-            ? `"${orderToConfirm.train_number}" poyezd raqamli buyruqni tasdiqlashni xohlaysizmi?`
-            : "Buyruqni tasdiqlashni xohlaysizmi?"
+            ? t("confirm_dialog.message_with_train", { trainNumber: orderToConfirm.train_number })
+            : t("confirm_dialog.message_generic")
         }
-        confirmText="Tasdiqlash"
-        cancelText="Bekor qilish"
+        confirmText={t("confirm_dialog.confirm")}
+        cancelText={t("confirm_dialog.cancel")}
         variant="info"
         isDoingAction={confirmOrderMutation.isPending}
-        isDoingActionText="Tasdiqlanmoqda..."
+        isDoingActionText={t("confirm_dialog.confirming")}
       />
     </div>
   );
