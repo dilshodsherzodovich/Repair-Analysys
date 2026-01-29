@@ -199,6 +199,9 @@ export function canAccessSection(
     case "delays-reports": {
       return hasPermission(user, "view_delays_reports");
     }
+    case "depo": {
+      return hasPermission(user, "view_depo");
+    }
     default:
       return false;
   }

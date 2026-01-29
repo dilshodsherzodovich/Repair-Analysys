@@ -98,6 +98,7 @@
     "brand_title": "Ta'mir Tahlili Tizimi",
     "brand_subtitle": "Raqamli tahlil",
     "nav": {
+      "depot": "Depo",
       "pantograph": "Pantograf",
       "orders": "Buyruq MPR",
       "defective_works": "Nosozliklar",
@@ -105,6 +106,8 @@
       "delay_reports": "Sriv hisobotlar"
     },
     "support_button": "Texnik yordam markazi",
+    "sidebar_collapse": "Yon panelni yopish",
+    "sidebar_expand": "Yon panelni ochish",
     "footer_company": "Smart Depo",
     "footer_description": "Raqamli tahliliy tizim"
   },

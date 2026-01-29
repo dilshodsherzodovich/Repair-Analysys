@@ -98,6 +98,7 @@
     "brand_title": "Система анализа ремонта",
     "brand_subtitle": "Цифровая аналитика",
     "nav": {
+      "depot": "Депо",
       "pantograph": "Пантограф",
       "orders": "Приказ МПР",
       "defective_works": "Неисправности",
@@ -105,6 +106,8 @@
       "delay_reports": "Отчёты по срывам"
     },
     "support_button": "Техническая поддержка",
+    "sidebar_collapse": "Свернуть боковую панель",
+    "sidebar_expand": "Развернуть боковую панель",
     "footer_company": "Smart Depo",
     "footer_description": "Цифровая аналитическая система"
   },
