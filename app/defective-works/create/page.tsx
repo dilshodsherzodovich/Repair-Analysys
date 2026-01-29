@@ -63,10 +63,24 @@ export default function PublicDefectiveWorkCreatePage() {
         setIsAuthLoading(false);
       } catch (error: any) {
         console.error("Auto login failed:", error);
-        const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          t("errors.auth");
+        const data = error?.response?.data;
+        let message: string;
+        if (typeof data?.detail === "string") {
+          message = data.detail;
+        } else if (typeof data?.message === "string") {
+          message = data.message;
+        } else if (
+          data?.message &&
+          typeof data.message === "object" &&
+          data.message !== null &&
+          "detail" in data.message
+        ) {
+          message = String((data.message as { detail: unknown }).detail);
+        } else if (typeof error?.message === "string") {
+          message = error.message;
+        } else {
+          message = t("errors.auth");
+        }
         setAuthError(message);
         showError(t("errors.login"), message);
         setIsAuthLoading(false);

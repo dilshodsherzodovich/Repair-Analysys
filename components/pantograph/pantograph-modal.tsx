@@ -196,7 +196,7 @@ export const PantographModal = memo(function PantographModal({
   // Memoize locomotive options transformation
   const locomotiveOptions = useMemo<LocomotiveOption[]>(() => {
     if (!locomotivesData) return [];
-    return locomotivesData.map((locomotive) => ({
+    return locomotivesData.results.map((locomotive) => ({
       id: locomotive.id,
       label: `${locomotive.name} (${locomotive.model_name})`,
       value: locomotive.id.toString(),
