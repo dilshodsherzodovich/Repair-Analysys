@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { DatePicker } from "@/ui/date-picker";
@@ -64,22 +65,31 @@ export default function PageFilters({
   hasSearch = true,
   hasDatePicker = false,
   hasDateRangePicker = false,
-  searchPlaceholder = "Qidirish...",
-  datePickerLabel = "Sana",
-  dateRangePickerLabel = "Sana oralig'i",
+  searchPlaceholder,
+  datePickerLabel,
+  dateRangePickerLabel,
   onAdd,
-  addButtonText = "Yangi qo'shish",
+  addButtonText,
   addButtonIcon,
   addButtonPermittion,
   onExport,
-  exportButtonText = "Export EXCEL",
+  exportButtonText,
   exportButtonIcon,
   selectedCount = 0,
   onBulkDelete,
-  bulkDeleteText = "O'chirish",
+  bulkDeleteText,
   className,
 }: PageFiltersProps) {
+  const t = useTranslations("Filters");
   const { updateQuery, getQueryValue } = useFilterParams();
+
+  const effectiveSearchPlaceholder = searchPlaceholder ?? t("search_placeholder");
+  const effectiveDatePickerLabel = datePickerLabel ?? t("date_label");
+  const effectiveDateRangePickerLabel = dateRangePickerLabel ?? t("date_range_label");
+  const effectiveAddButtonText = addButtonText ?? t("add_button");
+  const effectiveExportButtonText = exportButtonText ?? t("export_button");
+  const effectiveBulkDeleteText = bulkDeleteText ?? t("bulk_delete");
+  const selectPlaceholder = t("select_placeholder");
 
   const searchParams = useSearchParams();
   const debounceMs = 400;
@@ -176,7 +186,7 @@ export default function PageFilters({
           <div className="relative w-full h-full flex items-center">
             <input
               type="text"
-              placeholder={searchPlaceholder}
+              placeholder={effectiveSearchPlaceholder}
               className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-md bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
               value={searchLocal}
               onChange={(e) => handleSearchChange(e.target.value)}
@@ -200,7 +210,7 @@ export default function PageFilters({
             <div className="min-w-[200px] flex-shrink-0">
               {filter.isSelect ? (
                 <SelectWithSearch
-                  placeholder={filter.placeholder || `Tanlang...`}
+                  placeholder={filter.placeholder || selectPlaceholder}
                   searchable={filter.searchable !== false}
                   loading={filter.loading}
                   options={filter.options || []}
@@ -228,7 +238,7 @@ export default function PageFilters({
           <div key={filter.name} className="min-w-[200px] flex-shrink-0">
             {filter.isSelect ? (
               <SelectWithSearch
-                placeholder={filter.placeholder || `Tanlang...`}
+                placeholder={filter.placeholder || selectPlaceholder}
                 searchable={filter.searchable !== false}
                 loading={filter.loading}
                 options={filter.options || []}
@@ -258,7 +268,7 @@ export default function PageFilters({
       {hasDatePicker && (
         <div className="min-w-[200px] flex-shrink-0">
           <DatePicker
-            placeholder={datePickerLabel}
+            placeholder={effectiveDatePickerLabel}
             value={currentDate}
             onValueChange={handleDateChange}
             className="w-full min-w-[200px] max-w-[300px]"
@@ -272,7 +282,7 @@ export default function PageFilters({
         <div className="min-w-[400px] flex-shrink-0">
           <div className="grid grid-cols-2 gap-2">
             <DatePicker
-              placeholder={`${dateRangePickerLabel} dan`}
+              placeholder={`${effectiveDateRangePickerLabel} ${t("date_range_from")}`}
               value={currentStartDate}
               onValueChange={(date) =>
                 handleDateRangeChange(date, currentEndDate)
@@ -281,7 +291,7 @@ export default function PageFilters({
               size="md"
             />
             <DatePicker
-              placeholder={`${dateRangePickerLabel} gacha`}
+              placeholder={`${effectiveDateRangePickerLabel} ${t("date_range_to")}`}
               value={currentEndDate}
               onValueChange={(date) =>
                 handleDateRangeChange(currentStartDate, date)
@@ -305,7 +315,7 @@ export default function PageFilters({
               >
                 <span className="flex items-center">
                   {addButtonIcon || <Plus className="w-4 h-4 mr-2" />}
-                  {addButtonText}
+                  {effectiveAddButtonText}
                 </span>
               </Button>
             </PermissionGuard>
@@ -321,7 +331,7 @@ export default function PageFilters({
                 {exportButtonIcon || (
                   <FileSpreadsheet className="w-4 h-4 mr-2" />
                 )}
-                {exportButtonText}
+                {effectiveExportButtonText}
               </span>
             </Button>
           )}
@@ -332,7 +342,7 @@ export default function PageFilters({
       {selectedCount > 0 && onBulkDelete && (
         <div className="ml-auto shrink-0 flex items-center gap-2 w-full sm:w-auto">
           <span className="text-sm text-[#6b7280]">
-            {selectedCount} ta tanlangan
+            {t("selected_count", { count: selectedCount })}
           </span>
           <Button
             variant="outline"
@@ -341,7 +351,7 @@ export default function PageFilters({
             onClick={onBulkDelete}
           >
             <Trash2 className="w-4 h-4 mr-1" />
-            {bulkDeleteText}
+            {effectiveBulkDeleteText}
           </Button>
         </div>
       )}
@@ -368,6 +378,7 @@ function SelectWithSearch({
   triggerClassName?: string;
   style?: Record<string, string>;
 }) {
+  const t = useTranslations("Filters");
   const [searchTerm, setSearchTerm] = React.useState("");
 
   // Map empty string option value to a non-empty sentinel for shadcn Select
@@ -420,7 +431,7 @@ function SelectWithSearch({
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7280]" />
               <input
                 type="text"
-                placeholder="Qidirish..."
+                placeholder={t("search_placeholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-8 pr-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20"
@@ -430,7 +441,7 @@ function SelectWithSearch({
         )}
         {loading ? (
           <div className="p-4 text-center text-sm text-[#6b7280]">
-            Yuklanmoqda...
+            {t("loading")}
           </div>
         ) : (
           <>
@@ -454,7 +465,7 @@ function SelectWithSearch({
             ))}
             {noFilteredOptions && (
               <div className="p-4 text-center text-sm text-[#6b7280]">
-                Natijalar yo'q
+                {t("no_results")}
               </div>
             )}
           </>

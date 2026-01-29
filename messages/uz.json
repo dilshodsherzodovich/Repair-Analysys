@@ -215,6 +215,20 @@
     "cancel": "Bekor qilish",
     "confirm": "Tasdiqlash",
     "confirming": "Tasdiqlanmoqda..."
+  },
+  "Filters": {
+    "search_placeholder": "Qidirish...",
+    "date_label": "Sana",
+    "date_range_label": "Sana oralig'i",
+    "date_range_from": "dan",
+    "date_range_to": "gacha",
+    "add_button": "Yangi qo'shish",
+    "export_button": "Export EXCEL",
+    "bulk_delete": "O'chirish",
+    "select_placeholder": "Tanlang...",
+    "loading": "Yuklanmoqda...",
+    "no_results": "Natijalar yo'q",
+    "selected_count": "{count} ta tanlangan"
   }
 }
 

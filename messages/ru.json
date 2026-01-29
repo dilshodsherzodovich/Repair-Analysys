@@ -215,6 +215,20 @@
     "cancel": "Отмена",
     "confirm": "Подтвердить",
     "confirming": "Подтверждение..."
+  },
+  "Filters": {
+    "search_placeholder": "Поиск...",
+    "date_label": "Дата",
+    "date_range_label": "Период",
+    "date_range_from": "с",
+    "date_range_to": "по",
+    "add_button": "Добавить",
+    "export_button": "Экспорт EXCEL",
+    "bulk_delete": "Удалить",
+    "select_placeholder": "Выберите...",
+    "loading": "Загрузка...",
+    "no_results": "Нет результатов",
+    "selected_count": "Выбрано: {count}"
   }
 }
 
