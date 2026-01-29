@@ -78,8 +78,9 @@ export default function PublicDefectiveWorkCreatePage() {
   }, []);
 
   // Only fetch data when token is available
-  const { data: locomotives = [], isPending: isLoadingLocomotives } =
+  const { data: locomotivesData, isPending: isLoadingLocomotives } =
     useGetLocomotives(!!temporaryToken, temporaryToken);
+  const locomotives = locomotivesData?.results ?? [];
   const { data: organizations = [], isPending: isLoadingOrganizations } =
     useOrganizations(temporaryToken);
 

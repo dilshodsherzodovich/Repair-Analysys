@@ -53,6 +53,10 @@ export const queryKeys = {
   },
   locomotives: {
     list: "locomotives-list",
+    models: {
+      list: "locomotive-models-list",
+    },
+    detail: (id: string | number) => `locomotives-detail-${id}`,
   },
   inspectionTypes: {
     list: "inspection-types-list",

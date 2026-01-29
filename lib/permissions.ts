@@ -26,7 +26,22 @@ export type Permission =
   | "upload_delay_report"
   | "view_delays_reports"
   | "choose_organization"
-  | "filter_delay_station";
+  | "filter_delay_station"
+
+  // passport permissions
+  | "view_depo"
+  | "view_duty_uzel"
+  | "create_duty_uzel_report"
+  | "view_locomotive_passport"
+  | "edit_locomotive_passport"
+  | "view_locomotive_passport_inspections"
+  | "create_locomotive_passport_inspection"
+  | "edit_locomotive_passport_inspection"
+  | "delete_locomotive_passport_inspection"
+  | "view_locomotive_replacement_oil"
+  | "create_locomotive_replacement_oil"
+  | "edit_locomotive_replacement_oil"
+  | "delete_locomotive_replacement_oil";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -48,6 +63,17 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "delete_pantograf",
     "choose_organization",
     "filter_delay_station",
+    "view_depo",
+    "view_duty_uzel",
+    "create_duty_uzel_report",
+    "view_pantograf",
+    "create_pantograf",
+    "edit_pantograf",
+    "delete_pantograf",
+    "view_locomotive_passport",
+    "edit_locomotive_passport",
+    "view_locomotive_passport_inspections",
+    "view_locomotive_replacement_oil",
   ],
   moderator: [
     "view_dashboard",
@@ -90,6 +116,15 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "create_pantograf",
     "edit_pantograf",
     "delete_pantograf",
+    "view_depo",
+    "view_locomotive_passport",
+    "view_duty_uzel",
+    "view_locomotive_passport_inspections",
+    "create_locomotive_passport_inspection",
+    "edit_locomotive_passport_inspection",
+    "view_locomotive_replacement_oil",
+    "create_locomotive_replacement_oil",
+    "edit_locomotive_replacement_oil",
   ],
   sriv_admin: [
     "view_dashboard",
