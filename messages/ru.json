@@ -99,6 +99,10 @@
     "brand_subtitle": "Цифровая аналитика",
     "nav": {
       "depot": "Депо",
+      "duty_uzel": "Узел нарядчиков",
+      "revision_journal": "Журнал неисправностей",
+      "locomotive_passport_inspections": "Профилактический график",
+      "replacement_schedule": "Записи замены",
       "pantograph": "Пантограф",
       "orders": "Приказ МПР",
       "defective_works": "Неисправности",

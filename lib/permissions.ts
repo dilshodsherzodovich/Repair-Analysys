@@ -97,7 +97,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "delete_pantograf",
     "choose_organization",
     "filter_delay_station",
+    "view_depo", "view_duty_uzel", "view_pantograf", "view_locomotive_passport", "view_locomotive_passport_inspections", "view_locomotive_replacement_oil"
   ],
+  passport_staff: ["view_depo", "view_locomotive_passport", "edit_locomotive_passport", "view_duty_uzel"],
   repair_engineer: [
     "view_dashboard",
     "view_reports",
@@ -201,6 +203,15 @@ export function canAccessSection(
     }
     case "depo": {
       return hasPermission(user, "view_depo");
+    }
+    case "duty_uzel": {
+      return hasPermission(user, "view_duty_uzel");
+    }
+    case "locomotive_passport_inspections": {
+      return hasPermission(user, "view_locomotive_passport_inspections");
+    }
+    case "replacement_schedule": {
+      return hasPermission(user, "view_locomotive_replacement_oil");
     }
     default:
       return false;

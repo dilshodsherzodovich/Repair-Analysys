@@ -8,7 +8,8 @@ export type UserRole =
   | "moderator"
   | "repair_engineer"
   | "sriv_admin"
-  | "sriv_moderator";
+  | "sriv_moderator"
+  | "passport_staff"
 
 // Interface for the ProfileModel object
 export interface ProfileModel {

@@ -99,6 +99,10 @@
     "brand_subtitle": "Raqamli tahlil",
     "nav": {
       "depot": "Depo",
+      "duty_uzel": "Navbatchi uzeli",
+      "revision_journal": "Nuqson jurnali",
+      "locomotive_passport_inspections": "Profilaktik grafik",
+      "replacement_schedule": "Almashtirish yozuvlari",
       "pantograph": "Pantograf",
       "orders": "Buyruq MPR",
       "defective_works": "Nosozliklar",
