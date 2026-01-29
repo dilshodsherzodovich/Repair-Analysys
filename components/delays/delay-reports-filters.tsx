@@ -145,34 +145,6 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     [selectedYear, currentYear, updateQuery]
   );
 
-  const handleQuickFilter = useCallback(
-    (filterType: "7days" | "30days" | "thismonth") => {
-      const today = new Date();
-      let start: Date;
-      let end: Date = endOfDay(today);
-
-      switch (filterType) {
-        case "7days":
-          start = subDays(today, 7);
-          break;
-        case "30days":
-          start = subDays(today, 30);
-          break;
-        case "thismonth":
-          start = startOfMonth(today);
-          break;
-      }
-
-      updateQuery({
-        start_date: format(start, "yyyy-MM-dd"),
-        end_date: format(end, "yyyy-MM-dd"),
-        year: null,
-        month: null,
-      });
-    },
-    [updateQuery]
-  );
-
   const handleOrganizationsChange = useCallback(
     (values: string[]) => {
       const organizationsString = values.length > 0 ? values.join(",") : "";
@@ -274,18 +246,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
         </div>
 
         <div className="flex flex-wrap gap-2 items-center">
-          {/* Export Button */}
-          {onExport && (
-            <Button
-              variant="default"
-              size="md"
-              onClick={onExport}
-              className="rounded-md bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
-            >
-              <Download className="w-4 h-4" />
-              {t("export_button")}
-            </Button>
-          )}
+         
           
           {/* Year Select */}
           <div className="min-w-[120px] flex-shrink-0">
@@ -325,43 +286,19 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
             </Select>
           </div>
 
-          {/* Quick Filter Buttons */}
-          <Button
-            variant={activeQuickFilter === "7days" ? "default" : "outline"}
-            size="md"
-            onClick={() => handleQuickFilter("7days")}
-            className={
-              activeQuickFilter === "7days"
-                ? "rounded-md bg-blue-600 text-white hover:bg-blue-700"
-                : "border-[#d1d5db] rounded-md"
-            }
-          >
-            {t("quick_7days")}
-          </Button>
-          <Button
-            variant={activeQuickFilter === "30days" ? "default" : "outline"}
-            size="md"
-            onClick={() => handleQuickFilter("30days")}
-            className={
-              activeQuickFilter === "30days"
-                ? "rounded-md bg-blue-600 text-white hover:bg-blue-700"
-                : "border-[#d1d5db] rounded-md"
-            }
-          >
-            {t("quick_30days")}
-          </Button>
-          <Button
-            variant={activeQuickFilter === "thismonth" ? "default" : "outline"}
-            size="md"
-            onClick={() => handleQuickFilter("thismonth")}
-            className={
-              activeQuickFilter === "thismonth"
-                ? "rounded-md bg-blue-600 text-white hover:bg-blue-700"
-                : "border-[#d1d5db] rounded-md"
-            }
-          >
-            {t("quick_thismonth", { day: format(new Date(), "d") })}
-          </Button>
+           {/* Export Button */}
+           {onExport && (
+            <Button
+              variant="default"
+              size="md"
+              onClick={onExport}
+              className="rounded-md bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              {t("export_button")}
+            </Button>
+          )}
+
         </div>
       </div>
     </div>
