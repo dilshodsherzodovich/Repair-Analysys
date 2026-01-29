@@ -17,11 +17,24 @@ import {
 import { LocomotivePassportInspection } from "@/api/types/locomotive-passport-inspections";
 import { PassportInspectionModal } from "./components/passport-inspection-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
+import { canAccessSection } from "@/lib/permissions";
+import UnauthorizedPage from "@/app/unauthorized/page";
 
 export default function LocomotivePassportInspectionsPage() {
   const t = useTranslations("LocomotivePassportInspectionsPage");
   const searchParams = useSearchParams();
   const { showSuccess, showError } = useSnackbar();
+
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
+  if (
+    !currentUser ||
+    !canAccessSection(currentUser, "locomotive_passport_inspections")
+  ) {
+    return <UnauthorizedPage />;
+  }
 
   // Get query params
   const { q, page, pageSize } = Object.fromEntries(searchParams.entries());

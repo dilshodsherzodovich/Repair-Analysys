@@ -5,9 +5,19 @@ import { useGetLocomotiveModels } from "@/api/hooks/use-locomotives";
 import LocomotivesTable from "./components/locomotives-table";
 import PageFilters from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
+import { canAccessSection } from "@/lib/permissions";
+import UnauthorizedPage from "@/app/unauthorized/page";
 
 export default function DepoLocomotives() {
   const t = useTranslations("DepoPage");
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
+  if (!currentUser || !canAccessSection(currentUser, "depo")) {
+    return <UnauthorizedPage />;
+  }
+
   const { data: locomotiveModelsData, isPending: gettingLocomotiveModels } =
     useGetLocomotiveModels({ no_page: true });
 

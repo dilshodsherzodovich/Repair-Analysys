@@ -743,6 +743,69 @@
     "save": "Сохранить",
     "add": "Добавить",
     "saving": "Сохранение..."
+  },
+  "ReplacementSchedulePage": {
+    "title": "Записи замены",
+    "description": "Просмотр и управление записями замены локомотивов",
+    "error_load": "Ошибка загрузки данных записей замены",
+    "success_create": "Запись замены успешно добавлена!",
+    "error_create": "Ошибка при добавлении записи замены",
+    "success_update": "Запись замены успешно обновлена!",
+    "error_update": "Ошибка при обновлении записи замены",
+    "success_delete": "Запись замены успешно удалена!",
+    "error_delete": "Ошибка при удалении записи замены",
+    "error_title": "Произошла ошибка",
+    "search_placeholder": "Поиск",
+    "add_button": "Добавить",
+    "empty_title": "Данные не найдены",
+    "empty_description": "Данные записей замены не найдены",
+    "columns": {
+      "locomotive": "Локомотив",
+      "section": "Раздел",
+      "maintenance_type": "Вид обслуживания",
+      "lubricant_type": "Вид смазки",
+      "service_date": "Дата обслуживания",
+      "consumption": "Расход"
+    }
+  },
+  "ReplacementModal": {
+    "title_edit": "Редактирование - Запись замены",
+    "title_create": "Новая запись - Запись замены",
+    "locomotive": "Локомотив",
+    "section": "Раздел",
+    "maintenance_type": "Вид обслуживания",
+    "lubricant_type": "Вид смазки",
+    "service_date": "Дата обслуживания",
+    "consumption": "Расход",
+    "placeholder_locomotive": "Выберите локомотив",
+    "placeholder_section": "Выберите раздел",
+    "placeholder_maintenance": "Выберите вид обслуживания",
+    "placeholder_lubricant": "Выберите вид смазки",
+    "placeholder_search": "Поиск...",
+    "placeholder_consumption": "Расход",
+    "locomotive_not_found": "Локомотивы не найдены",
+    "section_not_found": "Разделы не найдены",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "add": "Добавить",
+    "saving": "Сохранение...",
+    "maintenance_types": {
+      "BUKSA_BEARING": "Подшипник буксы",
+      "TED_BEARING": "Подшипник ТЭД",
+      "COMPRESSOR_OIL": "Масло компрессора",
+      "AIR_FILTER": "Воздушный фильтр",
+      "OIL_FILTER": "Масляный фильтр компрессора",
+      "LUBRICATION": "Смазка (Букса, мотор, ось)",
+      "KOZH_OIL": "Масло КОЖХ",
+      "BRAKE_RTI": "РТИ тормозной системы"
+    },
+    "lubricant_types": {
+      "ANDROL_3057M": "Androl 3057M",
+      "MOBIL_75W_90": "Mobil 75W-90",
+      "ARCANOL_MULTITOP": "Arcanol Multitop",
+      "GREAT_WALL_GREASE": "Великая стена смазка",
+      "MOBIL_TEMP_SHC_32": "Mobil Temp SHC 32"
+    }
   }
 }
 

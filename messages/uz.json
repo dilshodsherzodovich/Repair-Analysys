@@ -743,6 +743,69 @@
     "save": "Saqlash",
     "add": "Qo'shish",
     "saving": "Saqlanmoqda..."
+  },
+  "ReplacementSchedulePage": {
+    "title": "Almashtirish yozuvlari",
+    "description": "Lokomotiv almashtirish yozuvlarini ko'rish va boshqarish",
+    "error_load": "Almashtirish yozuvlari ma'lumotlarini yuklashda xatolik yuz berdi",
+    "success_create": "Almashtirish yozuvi muvaffaqiyatli qo'shildi!",
+    "error_create": "Almashtirish yozuvini qo'shishda xatolik",
+    "success_update": "Almashtirish yozuvi muvaffaqiyatli yangilandi!",
+    "error_update": "Almashtirish yozuvini yangilashda xatolik",
+    "success_delete": "Almashtirish yozuvi muvaffaqiyatli o'chirildi!",
+    "error_delete": "Almashtirish yozuvini o'chirishda xatolik",
+    "error_title": "Xatolik yuz berdi",
+    "search_placeholder": "Qidiruv",
+    "add_button": "Qo'shish",
+    "empty_title": "Ma'lumot topilmadi",
+    "empty_description": "Almashtirish yozuvlari ma'lumotlari topilmadi",
+    "columns": {
+      "locomotive": "Lokomotiv",
+      "section": "Bo'lim",
+      "maintenance_type": "Xizmat turi",
+      "lubricant_type": "Yog' turi",
+      "service_date": "Xizmat sanasi",
+      "consumption": "Iste'mol"
+    }
+  },
+  "ReplacementModal": {
+    "title_edit": "Tahrirlash - Almashtirish yozuvi",
+    "title_create": "Yangi - Almashtirish yozuvi",
+    "locomotive": "Lokomotiv",
+    "section": "Bo'lim",
+    "maintenance_type": "Xizmat turi",
+    "lubricant_type": "Yog' turi",
+    "service_date": "Xizmat sanasi",
+    "consumption": "Iste'mol",
+    "placeholder_locomotive": "Lokomotivni tanlang",
+    "placeholder_section": "Bo'limni tanlang",
+    "placeholder_maintenance": "Xizmat turini tanlang",
+    "placeholder_lubricant": "Yog' turini tanlang",
+    "placeholder_search": "Qidirish...",
+    "placeholder_consumption": "Iste'mol",
+    "locomotive_not_found": "Lokomotiv topilmadi",
+    "section_not_found": "Bo'lim topilmadi",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "add": "Qo'shish",
+    "saving": "Saqlanmoqda...",
+    "maintenance_types": {
+      "BUKSA_BEARING": "Buksa podshipnigi",
+      "TED_BEARING": "TED podshipnigi",
+      "COMPRESSOR_OIL": "Kompressor moyi",
+      "AIR_FILTER": "Havo filtri",
+      "OIL_FILTER": "Kompressor moy filtri",
+      "LUBRICATION": "Smazka (Buksa, motor, o'q)",
+      "KOZH_OIL": "KOJX moyi",
+      "BRAKE_RTI": "Tormoz tizimi RTI"
+    },
+    "lubricant_types": {
+      "ANDROL_3057M": "Androl 3057M",
+      "MOBIL_75W_90": "Mobil 75W-90",
+      "ARCANOL_MULTITOP": "Arcanol Multitop",
+      "GREAT_WALL_GREASE": "Great Wall smazka",
+      "MOBIL_TEMP_SHC_32": "Mobil Temp SHC 32"
+    }
   }
 }
 

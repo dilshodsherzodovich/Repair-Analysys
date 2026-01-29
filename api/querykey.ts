@@ -104,4 +104,10 @@ export const queryKeys = {
     update: "locomotive-passport-inspections-update",
     delete: "locomotive-passport-inspections-delete",
   },
+  locomotiveReplacementOils: {
+    all: "locomotive-replacement-oils-all",
+    create: "locomotive-replacement-oils-create",
+    update: "locomotive-replacement-oils-update",
+    delete: "locomotive-replacement-oils-delete",
+  },
 } as const;

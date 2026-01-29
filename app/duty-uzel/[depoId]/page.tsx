@@ -16,6 +16,8 @@ import {
 import { ComponentRegistryEntry } from "@/api/types/component-registry";
 import { ComponentRegistryModal } from "./components/component-registry-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
+import { canAccessSection } from "@/lib/permissions";
+import UnauthorizedPage from "@/app/unauthorized/page";
 
 export default function DutyUzelPage() {
   const t = useTranslations("DutyUzelPage");
@@ -23,6 +25,14 @@ export default function DutyUzelPage() {
   const searchParams = useSearchParams();
   const { updateQuery } = useFilterParams();
   const { showSuccess, showError } = useSnackbar();
+
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
+  if (!currentUser || !canAccessSection(currentUser, "duty_uzel")) {
+    return <UnauthorizedPage />;
+  }
 
   const depoId = params.depoId as string;
   const organizationId = depoId ? Number(depoId) : undefined;

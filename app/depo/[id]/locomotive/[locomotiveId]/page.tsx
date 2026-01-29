@@ -5,12 +5,22 @@ import { useTranslations } from "next-intl";
 import LocomotivePassportForm from "./components/locomotive-passport-form";
 import { PageHeader } from "@/ui/page-header";
 import { PermissionGuard } from "@/components/permission-guard";
+import { canAccessSection } from "@/lib/permissions";
+import UnauthorizedPage from "@/app/unauthorized/page";
 
 export default function LocomotivePassportPage() {
   const t = useTranslations("LocomotivePassportPage");
   const params = useParams();
   const depotId = params.id as string;
   const locomotiveId = params.locomotiveId as string;
+
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
+  if (!currentUser || !canAccessSection(currentUser, "depo")) {
+    return <UnauthorizedPage />;
+  }
 
   return (
     <PermissionGuard
