@@ -7,6 +7,7 @@ export type UserRole =
   | "admin"
   | "moderator"
   | "repair_engineer"
+  | "repair_staff"
   | "sriv_admin"
   | "sriv_moderator"
   | "passport_staff"

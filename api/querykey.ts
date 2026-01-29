@@ -93,4 +93,15 @@ export const queryKeys = {
   components: {
     list: "components-list",
   },
+  componentRegistry: {
+    all: "component-registry-all",
+    create: "component-registry-create",
+    delete: "component-registry-delete",
+  },
+  locomotivePassportInspections: {
+    all: "locomotive-passport-inspections-all",
+    create: "locomotive-passport-inspections-create",
+    update: "locomotive-passport-inspections-update",
+    delete: "locomotive-passport-inspections-delete",
+  },
 } as const;
