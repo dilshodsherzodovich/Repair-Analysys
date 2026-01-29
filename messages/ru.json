@@ -154,6 +154,67 @@
     "messages": {
       "generic_error": "Произошла ошибка"
     }
+  },
+  "DelayModal": {
+    "title_create": "Добавить задержку",
+    "title_edit": "Редактировать задержку",
+    "title_moderate": "Управление задержкой",
+    "submit_create": "Добавить",
+    "submit_edit": "Сохранить",
+    "pending_create": "Добавление...",
+    "pending_edit": "Сохранение...",
+    "cancel": "Отмена",
+    "fields": {
+      "train_number": "Номер поезда",
+      "train_number_placeholder": "Введите номер поезда",
+      "train_type": "Тип поезда",
+      "train_type_placeholder": "Выберите тип поезда",
+      "delay_type": "Тип задержки",
+      "delay_type_placeholder": "Выберите тип задержки",
+      "station": "Станция",
+      "station_placeholder": "Выберите станцию",
+      "delay_time": "Время задержки (минуты)",
+      "delay_time_placeholder": "Например: 72 (1 час 12 минут)",
+      "group_reason": "Группа",
+      "group_reason_placeholder": "Выберите группу причины",
+      "responsible_org": "Ответственная организация",
+      "responsible_org_placeholder": "Выберите организацию",
+      "responsible_org_loading": "Загрузка...",
+      "responsible_org_empty": "Организации не найдены",
+      "damage_amount": "Сумма ущерба",
+      "incident_date": "Дата события",
+      "status": "Статус",
+      "status_placeholder": "Выберите статус",
+      "status_disruption": "Срыв",
+      "status_no_disruption": "Не срыв",
+      "reason": "Причина",
+      "reason_placeholder": "Введите причину задержки",
+      "report_file": "Файл отчета",
+      "current_report": "Текущий отчет:",
+      "view_report": "Просмотреть отчет"
+    },
+    "errors": {
+      "required_fields": "Пожалуйста, заполните все обязательные поля",
+      "group_reason_and_train_type": "Пожалуйста, выберите группу причины и тип поезда",
+      "delay_time": "Пожалуйста, введите время задержки в минутах",
+      "incident_date": "Пожалуйста, выберите дату события"
+    }
+  },
+  "ApproveConfirmationModal": {
+    "title": "Подтверждение задержки",
+    "warning_text": "Перед подтверждением внимательно просмотрите следующую информацию. Это действие перенесет задержку в архив, и её нельзя будет редактировать.",
+    "report_title": "Отчет",
+    "report_description": "Загруженный файл отчета",
+    "view_report": "Просмотреть отчет",
+    "report_not_uploaded": "Отчет не загружен",
+    "status_title": "Статус надежности",
+    "status_description": "Уровень надежности задержки",
+    "responsible_org_title": "Ответственная организация",
+    "responsible_org_description": "Организация, ответственная за задержку",
+    "unknown": "Неизвестно",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "confirming": "Подтверждение..."
   }
 }
 

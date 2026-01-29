@@ -34,7 +34,7 @@ export default function DelayReportsPage() {
   const activeServiceType = serviceTypeParam || "passenger";
 
   const currentUser = JSON.parse(localStorage.getItem("user") || "null");
-  if (!currentUser || !canAccessSection(currentUser, "delays")) {
+  if (!currentUser || !canAccessSection(currentUser, "delays-reports")) {
     return <UnauthorizedPage />;
   }
 

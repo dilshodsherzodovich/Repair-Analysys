@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useState, type FormEvent, useRef } from "react";
 import { Card } from "@/ui/card";
 import { Modal } from "@/ui/modal";
@@ -30,6 +32,7 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { hasPermission } from "@/lib/permissions";
 import type { UserData } from "@/api/types/auth";
 import type { Organization } from "@/api/types/organizations";
+import { useTranslations } from "next-intl";
 
 interface DelayModalProps {
   isOpen: boolean;
@@ -103,21 +106,23 @@ function OrganizationSelectField({
   isLoading: boolean;
   disabled?: boolean;
 }) {
+  const t = useTranslations("DelayModal");
+  
   return (
     <div>
-      <Label htmlFor="responsible_org">Ответственная организация</Label>
+      <Label htmlFor="responsible_org">{t("fields.responsible_org")}</Label>
       <Select
         name={name}
         defaultValue={defaultValue}
         disabled={isLoading || disabled}
       >
         <SelectTrigger id="responsible_org">
-          <SelectValue placeholder="Выберите организацию" />
+          <SelectValue placeholder={t("fields.responsible_org_placeholder")} />
         </SelectTrigger>
         <SelectContent>
           {isLoading ? (
             <SelectItem value="loading" disabled>
-              Загрузка...
+              {t("fields.responsible_org_loading")}
             </SelectItem>
           ) : organizations.length ? (
             organizations.map((org) => (
@@ -127,7 +132,7 @@ function OrganizationSelectField({
             ))
           ) : (
             <SelectItem value="empty" disabled>
-              Организации не найдены
+              {t("fields.responsible_org_empty")}
             </SelectItem>
           )}
         </SelectContent>
@@ -145,6 +150,7 @@ export function DelayModal({
   isPending,
   user,
 }: DelayModalProps) {
+  const t = useTranslations("DelayModal");
   const isModerateMode = mode === "moderate";
   const canUploadReport = hasPermission(user ?? null, "upload_delay_report");
   // sriv_moderator can change status and upload report
@@ -234,22 +240,22 @@ export function DelayModal({
     const trainType = (data.get("train_type") as string) || "";
 
     if (!delayType || !trainNumber || !station || !responsibleOrg) {
-      showError("Пожалуйста, заполните все обязательные поля");
+      showError(t("errors.required_fields"));
       return;
     }
 
     if (mode === "create" && (!groupReason || !trainType)) {
-      showError("Пожалуйста, выберите группу причины и тип поезда");
+      showError(t("errors.group_reason_and_train_type"));
       return;
     }
 
     if (!delayTimeMinutes || isNaN(Number(delayTimeMinutes)) || Number(delayTimeMinutes) < 0) {
-      showError("Пожалуйста, введите время задержки в минутах");
+      showError(t("errors.delay_time"));
       return;
     }
 
     if (!selectedDate) {
-      showError("Пожалуйста, выберите дату события");
+      showError(t("errors.incident_date"));
       return;
     }
 
@@ -304,14 +310,14 @@ export function DelayModal({
     () => ({
       title:
         mode === "create"
-          ? "Добавить задержку"
+          ? t("title_create")
           : mode === "moderate"
-            ? "Управление задержкой"
-            : "Редактировать задержку",
-      submit: mode === "create" ? "Добавить" : "Сохранить",
-      pending: mode === "create" ? "Добавление..." : "Сохранение...",
+            ? t("title_moderate")
+            : t("title_edit"),
+      submit: mode === "create" ? t("submit_create") : t("submit_edit"),
+      pending: mode === "create" ? t("pending_create") : t("pending_edit"),
     }),
-    [mode]
+    [mode, t]
   );
 
   return (
@@ -335,14 +341,14 @@ export function DelayModal({
                 <FormField
                   id="train_number"
                   name="train_number"
-                  label="Номер поезда"
+                  label={t("fields.train_number")}
                   defaultValue={formDefaults.train_number}
-                  placeholder="Введите номер поезда"
+                  placeholder={t("fields.train_number_placeholder")}
                   required
                 />
 
                 <div>
-                  <Label htmlFor="train_type">Тип поезда</Label>
+                  <Label htmlFor="train_type">{t("fields.train_type")}</Label>
                   <Select
                     name="train_type"
                     defaultValue={formDefaults.train_type}
@@ -350,7 +356,7 @@ export function DelayModal({
                     disabled={!canEditFields && mode === "edit"}
                   >
                     <SelectTrigger id="train_type">
-                      <SelectValue placeholder="Выберите тип поезда" />
+                      <SelectValue placeholder={t("fields.train_type_placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {TRAIN_TYPE_OPTIONS.map((option) => (
@@ -363,7 +369,7 @@ export function DelayModal({
                 </div>
 
                 <div>
-                  <Label htmlFor="delay_type">Тип задержки</Label>
+                  <Label htmlFor="delay_type">{t("fields.delay_type")}</Label>
                   <Select
                     name="delay_type"
                     defaultValue={formDefaults.delay_type}
@@ -371,7 +377,7 @@ export function DelayModal({
                     disabled={!canEditFields && mode === "edit"}
                   >
                     <SelectTrigger id="delay_type">
-                      <SelectValue placeholder="Выберите тип задержки" />
+                      <SelectValue placeholder={t("fields.delay_type_placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {DELAY_TYPE_OPTIONS.map((option) => (
@@ -384,7 +390,7 @@ export function DelayModal({
                 </div>
 
                 <div>
-                  <Label htmlFor="station">Станция</Label>
+                  <Label htmlFor="station">{t("fields.station")}</Label>
                   <Select
                     name="station"
                     defaultValue={formDefaults.station}
@@ -392,7 +398,7 @@ export function DelayModal({
                     disabled={!canEditFields && mode === "edit"}
                   >
                     <SelectTrigger id="station">
-                      <SelectValue placeholder="Выберите станцию" />
+                      <SelectValue placeholder={t("fields.station_placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {STATION_OPTIONS.map((option) => (
@@ -407,10 +413,10 @@ export function DelayModal({
                 <FormField
                   id="delay_time"
                   name="delay_time"
-                  label="Время задержки (минуты)"
+                  label={t("fields.delay_time")}
                   type="number"
                   defaultValue={formDefaults.delay_time}
-                  placeholder="Например: 72 (1 час 12 минут)"
+                  placeholder={t("fields.delay_time_placeholder")}
                   required
                   min="0"
                   step="1"
@@ -419,7 +425,7 @@ export function DelayModal({
 
 
                 <div>
-                  <Label htmlFor="group_reason">Группа</Label>
+                  <Label htmlFor="group_reason">{t("fields.group_reason")}</Label>
                   <Select
                     name="group_reason"
                     defaultValue={formDefaults.group_reason}
@@ -427,7 +433,7 @@ export function DelayModal({
                     disabled={!canEditFields && mode === "edit"}
                   >
                     <SelectTrigger id="group_reason">
-                      <SelectValue placeholder="Выберите группу причины" />
+                      <SelectValue placeholder={t("fields.group_reason_placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {GROUP_REASON_OPTIONS.map((option) => (
@@ -450,7 +456,7 @@ export function DelayModal({
                 <FormField
                   id="damage_amount"
                   name="damage_amount"
-                  label="Сумма ущерба"
+                  label={t("fields.damage_amount")}
                   type="number"
                   defaultValue={formDefaults.damage_amount}
                   placeholder="0"
@@ -460,7 +466,7 @@ export function DelayModal({
                 />
 
                 <DatePicker
-                  label="Дата события"
+                  label={t("fields.incident_date")}
                   value={selectedDate}
                   onValueChange={setSelectedDate}
                   placeholder="DD/MM/YYYY"
@@ -468,14 +474,14 @@ export function DelayModal({
 
                 {(canChangeStatus || canChangeStatusAdmin) && (
                   <div className="w-full flex-1">
-                    <Label htmlFor="status">Статус</Label>
+                    <Label htmlFor="status">{t("fields.status")}</Label>
                     <Select name="status" defaultValue={formDefaults.status}>
                       <SelectTrigger className="mb-0 w-full" id="status">
-                        <SelectValue placeholder="Выберите статус" />
+                        <SelectValue placeholder={t("fields.status_placeholder")} />
                       </SelectTrigger>
                       <SelectContent className="mb-0">
-                        <SelectItem value="true">Срыв</SelectItem>
-                        <SelectItem value="false">Не срыв</SelectItem>
+                        <SelectItem value="true">{t("fields.status_disruption")}</SelectItem>
+                        <SelectItem value="false">{t("fields.status_no_disruption")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -490,11 +496,11 @@ export function DelayModal({
             <FormField
               id="reason"
               name="reason"
-              label="Причина"
+              label={t("fields.reason")}
               type="textarea"
               rows={4}
               defaultValue={formDefaults.reason}
-              placeholder="Введите причину задержки"
+              placeholder={t("fields.reason_placeholder")}
               required
             />
           )}
@@ -503,21 +509,21 @@ export function DelayModal({
             <>
               {(canChangeStatus || canChangeStatusAdmin) && (
                 <div className="w-full flex-1">
-                  <Label htmlFor="status">Статус</Label>
+                  <Label htmlFor="status">{t("fields.status")}</Label>
                   <Select name="status" defaultValue={formDefaults.status}>
                     <SelectTrigger className="mb-0 w-full" id="status">
-                      <SelectValue placeholder="Выберите статус" />
+                      <SelectValue placeholder={t("fields.status_placeholder")} />
                     </SelectTrigger>
                     <SelectContent className="mb-0">
-                      <SelectItem value="true">Срыв</SelectItem>
-                      <SelectItem value="false">Не срыв</SelectItem>
+                      <SelectItem value="true">{t("fields.status_disruption")}</SelectItem>
+                      <SelectItem value="false">{t("fields.status_no_disruption")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               )}
               <div>
                 <FileUpload
-                  label="Файл отчета"
+                  label={t("fields.report_file")}
                   filesUploaded={reportFile ? [reportFile] : []}
                   onFilesChange={(files) => setReportFile(files[0] || null)}
                   accept=".pdf,.doc,.docx,.xls,.xlsx"
@@ -526,7 +532,7 @@ export function DelayModal({
                 />
                 {!reportFile && entry?.report && (
                   <div className="mt-2">
-                    <p className="text-sm text-gray-600 mb-1">Текущий отчет:</p>
+                    <p className="text-sm text-gray-600 mb-1">{t("fields.current_report")}</p>
                     <a
                       href={entry.report}
                       target="_blank"
@@ -534,7 +540,7 @@ export function DelayModal({
                       className="text-sm text-blue-600 hover:underline flex items-center gap-1"
                     >
                       <FileText className="h-4 w-4" />
-                      {entry.report_filename || "Просмотреть отчет"}
+                      {entry.report_filename || t("fields.view_report")}
                     </a>
                   </div>
                 )}
@@ -549,7 +555,7 @@ export function DelayModal({
               onClick={handleClose}
               disabled={isPending}
             >
-              Отмена
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? modalTexts.pending : modalTexts.submit}

@@ -15,6 +15,7 @@ import {
   SquareArrowOutUpRight,
 } from "lucide-react";
 import type { DelayEntry } from "@/api/types/delays";
+import { useTranslations } from "next-intl";
 
 interface ApproveConfirmationModalProps {
   isOpen: boolean;
@@ -31,14 +32,19 @@ export function ApproveConfirmationModal({
   entry,
   isPending = false,
 }: ApproveConfirmationModalProps) {
+  const t = useTranslations("ApproveConfirmationModal");
+  const tDelays = useTranslations("DelaysPage");
+  
   if (!entry) return null;
 
   const hasReport = !!(entry.report_filename || entry.report);
-  const statusText = entry.status ? "Срыв" : "Не срыв";
+  const statusText = entry.status 
+    ? tDelays("status.label_disruption") 
+    : tDelays("status.label_no_disruption");
   const responsibleOrgName =
     entry.responsible_org_name ||
     entry.responsible_org_detail?.name ||
-    "Неизвестно";
+    t("unknown");
 
   return (
     <Modal
@@ -57,11 +63,10 @@ export function ApproveConfirmationModal({
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-gray-900 mb-2">
-                Подтверждение задержки
+                {t("title")}
               </h3>
               <p className="text-sm font-medium text-gray-700">
-                Перед подтверждением внимательно просмотрите следующую информацию. 
-                Это действие перенесет задержку в архив, и её нельзя будет редактировать.
+                {t("warning_text")}
               </p>
             </div>
           </div>
@@ -77,9 +82,9 @@ export function ApproveConfirmationModal({
               </div>
               <div>
                 <h4 className="text-base font-semibold text-gray-900">
-                  Отчет
+                  {t("report_title")}
                 </h4>
-                <p className="text-xs text-gray-500">Загруженный файл отчета</p>
+                <p className="text-xs text-gray-500">{t("report_description")}</p>
               </div>
             </div>
             {hasReport ? (
@@ -91,14 +96,14 @@ export function ApproveConfirmationModal({
                   className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
                 >
                   <FileText className="w-4 h-4" />
-                  {entry.report_filename || "Просмотреть отчет"}
+                  {entry.report_filename || t("view_report")}
                   <SquareArrowOutUpRight className="w-4 h-4" />
                 </a>
               </div>
             ) : (
               <div className="pl-13">
                 <span className="text-sm text-red-600 font-medium">
-                  <AlertTriangle className="w-4 h-4" /> Отчет не загружен
+                  <AlertTriangle className="w-4 h-4" /> {t("report_not_uploaded")}
                 </span>
               </div>
             )}
@@ -112,10 +117,10 @@ export function ApproveConfirmationModal({
               </div>
               <div>
                 <h4 className="text-base font-semibold text-gray-900">
-                  Статус надежности
+                  {t("status_title")}
                 </h4>
                 <p className="text-xs text-gray-500">
-                  Уровень надежности задержки
+                  {t("status_description")}
                 </p>
               </div>
             </div>
@@ -137,10 +142,10 @@ export function ApproveConfirmationModal({
               </div>
               <div>
                 <h4 className="text-base font-semibold text-gray-900">
-                  Ответственная организация
+                  {t("responsible_org_title")}
                 </h4>
                 <p className="text-xs text-gray-500">
-                  Организация, ответственная за задержку
+                  {t("responsible_org_description")}
                 </p>
               </div>
             </div>
@@ -162,7 +167,7 @@ export function ApproveConfirmationModal({
               disabled={isPending}
               className="min-w-[120px]"
             >
-              Отмена
+              {t("cancel")}
             </Button>
             <Button
               type="button"
@@ -173,12 +178,12 @@ export function ApproveConfirmationModal({
               {isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  Подтверждение...
+                  {t("confirming")}
                 </>
               ) : (
                 <>
                   <CheckCircle className="h-5 w-5 mr-2" />
-                  Подтвердить
+                  {t("confirm")}
                 </>
               )}
             </Button>

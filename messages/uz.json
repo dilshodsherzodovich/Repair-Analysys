@@ -154,6 +154,67 @@
     "messages": {
       "generic_error": "Xatolik yuz berdi"
     }
+  },
+  "DelayModal": {
+    "title_create": "Kechikish qo'shish",
+    "title_edit": "Kechikishni tahrirlash",
+    "title_moderate": "Kechikishni boshqarish",
+    "submit_create": "Qo'shish",
+    "submit_edit": "Saqlash",
+    "pending_create": "Qo'shilmoqda...",
+    "pending_edit": "Saqlanmoqda...",
+    "cancel": "Bekor qilish",
+    "fields": {
+      "train_number": "Poyezd raqami",
+      "train_number_placeholder": "Poyezd raqamini kiriting",
+      "train_type": "Poyezd turi",
+      "train_type_placeholder": "Poyezd turini tanlang",
+      "delay_type": "Kechikish turi",
+      "delay_type_placeholder": "Kechikish turini tanlang",
+      "station": "Stansiya",
+      "station_placeholder": "Stansiyani tanlang",
+      "delay_time": "Kechikish vaqti (daqiqalar)",
+      "delay_time_placeholder": "Masalan: 72 (1 soat 12 daqiqa)",
+      "group_reason": "Sabab guruhi",
+      "group_reason_placeholder": "Sabab guruhini tanlang",
+      "responsible_org": "Mas'ul tashkilot",
+      "responsible_org_placeholder": "Tashkilotni tanlang",
+      "responsible_org_loading": "Yuklanmoqda...",
+      "responsible_org_empty": "Tashkilotlar topilmadi",
+      "damage_amount": "Zarar miqdori",
+      "incident_date": "Voqea sanasi",
+      "status": "Holati",
+      "status_placeholder": "Holatni tanlang",
+      "status_disruption": "Suv",
+      "status_no_disruption": "Suv emas",
+      "reason": "Sabab",
+      "reason_placeholder": "Kechikish sababini kiriting",
+      "report_file": "Hisobot fayli",
+      "current_report": "Joriy hisobot:",
+      "view_report": "Hisobotni ko'rish"
+    },
+    "errors": {
+      "required_fields": "Iltimos, barcha majburiy maydonlarni to'ldiring",
+      "group_reason_and_train_type": "Iltimos, sabab guruhini va poyezd turini tanlang",
+      "delay_time": "Iltimos, kechikish vaqtini daqiqalarda kiriting",
+      "incident_date": "Iltimos, voqea sanasini tanlang"
+    }
+  },
+  "ApproveConfirmationModal": {
+    "title": "Kechikishni tasdiqlash",
+    "warning_text": "Tasdiqlashdan oldin quyidagi ma'lumotlarni diqqat bilan ko'rib chiqing. Bu amal kechikishni arxivga ko'chiradi va uni tahrirlab bo'lmaydi.",
+    "report_title": "Hisobot",
+    "report_description": "Yuklangan hisobot fayli",
+    "view_report": "Hisobotni ko'rish",
+    "report_not_uploaded": "Hisobot yuklanmagan",
+    "status_title": "Ishonchlilik holati",
+    "status_description": "Kechikishning ishonchlilik darajasi",
+    "responsible_org_title": "Mas'ul tashkilot",
+    "responsible_org_description": "Kechikish uchun mas'ul tashkilot",
+    "unknown": "Noma'lum",
+    "cancel": "Bekor qilish",
+    "confirm": "Tasdiqlash",
+    "confirming": "Tasdiqlanmoqda..."
   }
 }
 

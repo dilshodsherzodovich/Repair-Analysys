@@ -60,7 +60,7 @@ const navigationItems = [
     key: "delay_reports",
     href: "/delays/reports",
     icon: FileText,
-    section: "delays",
+    section: "delays-reports",
   },
 ];
 
