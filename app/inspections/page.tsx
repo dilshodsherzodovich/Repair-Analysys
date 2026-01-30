@@ -8,6 +8,7 @@ import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import PageFilters from "@/ui/filters";
+import { Badge } from "@/ui/badge";
 import { getPageCount } from "@/lib/utils";
 import { useInspections } from "@/api/hooks/use-inspections";
 import { Inspection } from "@/api/types/inspections";
@@ -336,9 +337,17 @@ export default function InspectionsPage() {
         key: "status",
         header: t("columns.status"),
         accessor: (row) => {
-          if (row.is_cancelled) return t("status_cancelled");
-          if (row.is_closed) return t("status_archive");
-          return t("status_in_progress");
+          if (row.is_cancelled)
+            return (
+              <Badge variant="destructive_outline">{t("status_cancelled")}</Badge>
+            );
+          if (row.is_closed)
+            return (
+              <Badge variant="success_outline">{t("status_archive")}</Badge>
+            );
+          return (
+            <Badge variant="warning_outline">{t("status_in_progress")}</Badge>
+          );
         },
         className: "w-[140px]",
       },

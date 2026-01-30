@@ -17,6 +17,7 @@ import {
   FlaskConical,
   Train,
   ClipboardCheck,
+  ClipboardList,
   Calendar,
   type LucideIcon,
 } from "lucide-react";
@@ -191,6 +192,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         icon: Calendar,
         section: "replacement_schedule",
         href: "/replacement-schedule",
+      });
+    }
+
+    if (user && canAccessSection(user, "inspections")) {
+      items.push({
+        key: "inspections",
+        name: t("nav.inspections"),
+        icon: ClipboardList,
+        section: "inspections",
+        href: "/inspections",
       });
     }
 
