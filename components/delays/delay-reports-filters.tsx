@@ -298,7 +298,6 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
               {t("export_button")}
             </Button>
           )}
-
         </div>
       </div>
     </div>
