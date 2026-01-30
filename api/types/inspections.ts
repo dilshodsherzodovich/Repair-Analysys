@@ -80,4 +80,6 @@ export interface InspectionsGetParams {
   page?: number;
   page_size?: number;
   search?: string;
+  start_date?: string;
+  end_date?: string;
 }

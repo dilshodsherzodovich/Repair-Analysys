@@ -211,13 +211,19 @@ export function PaginatedTable<T extends Record<string, any>>({
           checkboxCell: "py-1 px-3",
           textSize: "text-sm",
         };
+        case "md": 
+        return {
+          rowCell: "py-1.5 px-3 h-[48px] min-h-[48px]",
+          checkboxCell: "py-1.5 px-3",
+          textSize: "text-sm",
+        };
       case "lg":
         return {
           rowCell: "py-3 px-5 h-[64px] min-h-[64px]",
           checkboxCell: "py-3 px-5",
           textSize: "text-lg",
         };
-      case "md":
+     
       default:
         return {
           rowCell: "py-2 px-4 h-[56px] min-h-[56px]",

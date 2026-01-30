@@ -10,6 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/ui/table";
+import { TableSkeleton } from "@/ui/table-skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import { Badge } from "@/ui/badge";
 import {
   DropdownMenu,
@@ -87,11 +89,11 @@ export function InspectionsGroupedTable({
 
   const groupedByType = useMemo(() => {
     const map = new Map<number, { name: string; items: Inspection[] }>();
-    for (const inv of inspections) {
-      const typeId = inv.inspection_type?.id ?? 0;
-      const name = inv.inspection_type?.name ?? t("columns.inspection_type");
+    for (const inv of inspections ?? []) {
+      const typeId = inv?.inspection_type?.id ?? 0;
+      const name = inv?.inspection_type?.name ?? t("columns.inspection_type");
       if (!map.has(typeId)) map.set(typeId, { name, items: [] });
-      map.get(typeId)!.items.push(inv);
+      map.get(typeId)?.items.push(inv);
     }
     return Array.from(map.entries()).map(([id, { name, items }]) => ({
       id,
@@ -100,12 +102,42 @@ export function InspectionsGroupedTable({
     }));
   }, [inspections, t]);
 
+  const columnCount = onAction ? 11 : 10;
+
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-[#CAD5E2] overflow-hidden">
-        <div className="h-64 bg-[#F8FAFC] animate-pulse flex items-center justify-center text-[#64748B] text-sm">
-          {t("loading")}
-        </div>
+      <div className="space-y-6">
+        {[1, 2].map((groupKey) => (
+          <div
+            key={groupKey}
+            className="rounded-lg border border-[#CAD5E2] overflow-hidden"
+          >
+            <div className="bg-[#EFF6FF] px-4 py-3 border-b border-[#CAD5E2]">
+              <Skeleton className="h-5 w-24 rounded-md" />
+            </div>
+            <Table className="w-full min-w-[900px]">
+              <TableHeader>
+                <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                  {Array.from({ length: columnCount }).map((_, i) => (
+                    <TableHead
+                      key={i}
+                      className="py-3 px-4 border-r border-[#E2E8F0] last:border-r-0"
+                    >
+                      <Skeleton className="h-4 w-full max-w-[80px] rounded-md" />
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableSkeleton
+                  rows={5}
+                  columns={columnCount}
+                  cellClassName="py-3 px-4"
+                />
+              </TableBody>
+            </Table>
+          </div>
+        ))}
       </div>
     );
   }
@@ -123,114 +155,114 @@ export function InspectionsGroupedTable({
 
   return (
     <div className="space-y-6">
-      {groupedByType.map((group) => (
+      {groupedByType?.map((group) => (
         <div key={group.id} className="rounded-lg border border-[#CAD5E2] overflow-hidden">
           <div className="bg-[#EFF6FF] px-4 py-2 border-b border-[#CAD5E2]">
-            <h3 className="text-sm font-semibold text-[#0F172B]">{group.name}</h3>
+            <h3 className="text-xl font-semibold text-[#0F172B]">{group?.name}</h3>
           </div>
-          <Table>
+          <Table className="w-full min-w-[900px]">
             <TableHeader>
-              <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC]">
-                <TableHead className="w-12 text-[#475569] font-medium">
+              <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.no")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[140px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.locomotive")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[160px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.xkp")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.inspection_type")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[80px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.section")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[100px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.comment")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.author")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[130px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.created_time")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[100px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.interval")}
                 </TableHead>
-                <TableHead className="text-[#475569] font-medium">
+                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.status")}
                 </TableHead>
                 {onAction && (
-                  <TableHead className="w-[100px] text-center text-[#475569] font-medium">
+                  <TableHead className="w-[100px] min-w-[100px] py-3 px-4 text-center text-[#475569] font-medium">
                     {t("columns.actions")}
                   </TableHead>
                 )}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {group.items.map((inspection, index) => {
+              {group?.items?.map((inspection, index) => {
                 const interval = getIntervalBadge(inspection);
                 return (
                   <TableRow
                     key={inspection.id}
                     className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0"
                   >
-                    <TableCell className="text-[#0F172B] font-medium">
+                    <TableCell className="py-3 px-4 text-[#0F172B] font-medium border-r border-[#E2E8F0] last:border-r-0">
                       {index + 1}
                     </TableCell>
-                    <TableCell className="text-[#0F172B]">
+                    <TableCell className="py-3 px-4 text-[#0F172B] border-r border-[#E2E8F0] last:border-r-0">
                       {getLocomotiveDisplay(inspection)}
                     </TableCell>
-                    <TableCell className="text-[#64748B]">
+                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
                       {getBranchName(inspection)}
                     </TableCell>
-                    <TableCell className="text-[#64748B]">
-                      {inspection.inspection_type?.name ?? "—"}
+                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                      {inspection?.inspection_type?.name ?? "—"}
                     </TableCell>
-                    <TableCell className="text-[#64748B]">
-                      {inspection.section || "—"}
+                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                      {inspection?.section || "—"}
                     </TableCell>
-                    <TableCell className="text-[#64748B]">
-                      {inspection.comment || "—"}
+                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                      {inspection?.comment || "—"}
                     </TableCell>
-                    <TableCell className="text-[#64748B]">
-                      {inspection.author?.first_name
-                        ? `${inspection.author.first_name} ${inspection.author.last_name || ""}`.trim()
-                        : inspection.author?.username ?? "—"}
+                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                      {inspection?.author?.first_name
+                        ? `${inspection?.author?.first_name} ${inspection?.author?.last_name || ""}`.trim()
+                        : inspection?.author?.username ?? "—"}
                     </TableCell>
-                    <TableCell className="text-[#64748B]">
-                      {formatCreatedTime(inspection.created_time)}
+                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                      {formatCreatedTime(inspection?.created_time)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-3 px-4 border-r border-[#E2E8F0] last:border-r-0">
                       <Badge
                         variant={
-                          interval.variant === "success"
+                          interval?.variant === "success"
                             ? "success"
-                            : interval.variant === "warning"
+                            : interval?.variant === "warning"
                               ? "warning"
                               : "secondary"
                         }
                         className={cn(
-                          interval.variant === "success" && "bg-emerald-500 text-white",
-                          interval.variant === "warning" && "bg-amber-500 text-white"
+                          interval?.variant === "success" && "bg-emerald-500 text-white",
+                          interval?.variant === "warning" && "bg-amber-500 text-white"
                         )}
                       >
                         {interval.text}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-3 px-4 border-r border-[#E2E8F0] last:border-r-0">
                       <Badge variant="warning" className="bg-amber-500 text-white">
                         {t("status_in_progress")}
                       </Badge>
                     </TableCell>
                     {onAction && (
-                      <TableCell className="text-center">
+                      <TableCell className="py-3 px-4 text-center">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <button
                               type="button"
-                              className="p-1 rounded hover:bg-[#E2E8F0] inline-flex items-center justify-center"
+                              className="p-1.5 rounded hover:bg-[#E2E8F0] inline-flex items-center justify-center"
                               aria-label={t("columns.actions")}
                             >
                               <MoreVertical className="h-4 w-4 text-[#64748B]" />

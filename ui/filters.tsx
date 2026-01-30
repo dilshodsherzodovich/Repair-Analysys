@@ -6,14 +6,7 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { DatePicker } from "@/ui/date-picker";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/ui/select";
-import { Trash2, Plus, Search, FileSpreadsheet } from "lucide-react";
+import { Trash2, Plus, Search, FileSpreadsheet, ChevronsUpDown, Check } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Permission } from "@/lib/permissions";
@@ -359,7 +352,7 @@ export default function PageFilters({
   );
 }
 
-// Local Select component with built-in search using shadcn/ui Select
+// Single-select with search: same pattern as multi-select (custom dropdown + search input + filtered list)
 function SelectWithSearch({
   placeholder,
   options,
@@ -379,98 +372,146 @@ function SelectWithSearch({
   style?: Record<string, string>;
 }) {
   const t = useTranslations("Filters");
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const [searchValue, setSearchValue] = React.useState("");
+  const [dropdownPosition, setDropdownPosition] = React.useState<
+    "bottom" | "top"
+  >("bottom");
+  const triggerRef = React.useRef<HTMLDivElement>(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
-  // Map empty string option value to a non-empty sentinel for shadcn Select
-  const EMPTY_SENTINEL = "__empty__";
-  const hasEmptyOption = React.useMemo(
-    () => options.some((o) => o.value === ""),
-    [options]
-  );
-
-  const internalOptions = React.useMemo(
-    () =>
-      options.map((o) => ({
-        ...o,
-        value: o.value === "" ? EMPTY_SENTINEL : o.value,
-      })),
-    [options]
+  const selectedOption = React.useMemo(
+    () => options.find((o) => o.value === value),
+    [options, value]
   );
 
   const filteredOptions = React.useMemo(() => {
-    const source = internalOptions;
-    if (!searchable || !searchTerm) return source;
-    return source.filter((o) =>
-      o.label.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [internalOptions, searchTerm, searchable]);
+    if (!searchable || !searchValue.trim()) return options;
+    const term = searchValue.toLowerCase();
+    return options.filter((o) => o.label.toLowerCase().includes(term));
+  }, [options, searchValue, searchable]);
 
-  // When there are no options (overall or filtered), or when value is empty without an explicit empty option,
-  // use undefined to display the placeholder and avoid value becoming null.
-  const noOverallOptions = internalOptions.length === 0;
-  const noFilteredOptions = filteredOptions.length === 0;
-  const mappedExternal =
-    hasEmptyOption && value === "" ? EMPTY_SENTINEL : value;
-  const valueForSelect =
-    noOverallOptions || noFilteredOptions || (!hasEmptyOption && value === "")
-      ? undefined
-      : mappedExternal;
-  const handleChange = (v: string) => {
-    onValueChange(v === EMPTY_SENTINEL ? "" : v);
+  // Dropdown position when opening
+  React.useEffect(() => {
+    if (open && triggerRef.current) {
+      const triggerRect = triggerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = 300;
+      const spaceBelow = viewportHeight - triggerRect.bottom;
+      const spaceAbove = triggerRect.top;
+      if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+        setDropdownPosition("top");
+      } else {
+        setDropdownPosition("bottom");
+      }
+    }
+  }, [open]);
+
+  // Close on click outside, clear search
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+        setSearchValue("");
+      }
+    };
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  const handleSelect = (optionValue: string) => {
+    onValueChange(optionValue);
+    setOpen(false);
+    setSearchValue("");
   };
 
   return (
-    <Select value={valueForSelect} onValueChange={handleChange}>
-      <SelectTrigger className={cn("h-10", triggerClassName)}>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {searchable && (
-          <div className="p-2 border-b">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7280]" />
-              <input
-                type="text"
-                placeholder={t("search_placeholder")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-8 pr-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20"
-              />
-            </div>
-          </div>
+    <div className="relative w-full">
+      <div
+        ref={triggerRef}
+        className={cn(
+          "flex items-center justify-between border border-[#CAD5E2] rounded-md bg-white hover:border-[#94a3b8] focus-within:ring-2 focus-within:ring-[#2354bf]/20 focus-within:border-[#2354bf] cursor-pointer min-h-10 h-10 px-3 text-sm text-left transition-colors",
+          triggerClassName
         )}
-        {loading ? (
-          <div className="p-4 text-center text-sm text-[#6b7280]">
-            {t("loading")}
-          </div>
-        ) : (
-          <>
-            {/* Keep hidden current item only when there are some results, to preserve focus and value */}
-            {!noFilteredOptions &&
-              valueForSelect &&
-              !filteredOptions.some((o) => o.value === mappedExternal) && (
-                <SelectItem
-                  className="hidden"
-                  value={mappedExternal}
-                ></SelectItem>
-              )}
-            {filteredOptions.map((opt) => (
-              <SelectItem
-                key={opt.value}
-                value={opt.value}
-                disabled={opt.disabled}
-              >
-                {opt.label}
-              </SelectItem>
-            ))}
-            {noFilteredOptions && (
-              <div className="p-4 text-center text-sm text-[#6b7280]">
+        onClick={() => !loading && setOpen(!open)}
+      >
+        <span
+          className={cn(
+            "truncate flex-1 min-w-0",
+            !selectedOption ? "text-[#90A1B9]" : "text-[#0F172B]"
+          )}
+        >
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-[#64748B]" />
+      </div>
+
+      {open && (
+        <div
+          ref={dropdownRef}
+          className={cn(
+            "absolute left-0 right-0 bg-white border border-[#CAD5E2] rounded-lg z-[999999] overflow-hidden min-w-[200px] max-w-[300px]",
+            "animate-in fade-in-0 zoom-in-95 duration-100",
+            dropdownPosition === "top"
+              ? "bottom-full mb-1 slide-in-from-bottom-2"
+              : "top-full mt-1 slide-in-from-top-2"
+          )}
+          style={{ zIndex: 999999 }}
+        >
+          {searchable && (
+            <div className="p-2 border-b border-[#E2E8F0]">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B]" />
+                <input
+                  type="text"
+                  placeholder={t("search_placeholder")}
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  className="w-full pl-8 pr-3 py-2 text-sm border border-[#E2E8F0] rounded-md focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20 focus:border-[#2354bf]"
+                />
+              </div>
+            </div>
+          )}
+          <div className="max-h-[240px] overflow-y-auto py-0.5">
+            {loading ? (
+              <div className="p-4 text-center text-sm text-[#64748B]">
+                {t("loading")}
+              </div>
+            ) : filteredOptions.length === 0 ? (
+              <div className="py-3 text-center text-sm text-[#64748B]">
                 {t("no_results")}
               </div>
+            ) : (
+              filteredOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  disabled={opt.disabled}
+                  onClick={() => !opt.disabled && handleSelect(opt.value)}
+                  className={cn(
+                    "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-[#F1F5F9] cursor-pointer transition-colors",
+                    opt.value === value && "bg-[#EFF6FF] text-[#1d4ed8] font-medium",
+                    opt.disabled && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {opt.value === value && (
+                    <Check className="h-4 w-4 shrink-0 text-[#2354bf]" />
+                  )}
+                  <span className="truncate">{opt.label}</span>
+                </button>
+              ))
             )}
-          </>
-        )}
-      </SelectContent>
-    </Select>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
