@@ -806,6 +806,38 @@
       "GREAT_WALL_GREASE": "Великая стена смазка",
       "MOBIL_TEMP_SHC_32": "Mobil Temp SHC 32"
     }
+  },
+  "InspectionsPage": {
+    "title": "Технический осмотр",
+    "description": "Просмотр и управление записями технического осмотра локомотивов",
+    "tab_in_progress": "В процессе",
+    "tab_archive": "Архив",
+    "tab_cancelled": "Отменённые",
+    "filter_all": "Все",
+    "filter_organization": "Организация",
+    "search_placeholder": "Поиск",
+    "add_from_other_org": "Из другой организации",
+    "columns": {
+      "no": "№",
+      "locomotive": "Локомотив",
+      "xkp": "ХКП",
+      "inspection_type": "Вид технического осмотра",
+      "section": "Раздел",
+      "comment": "Комментарий",
+      "author": "Автор",
+      "created_time": "Время создания",
+      "interval": "Пробег/интервал до ремонта",
+      "status": "Статус",
+      "actions": "Действия"
+    },
+    "status_in_progress": "В процессе",
+    "status_archive": "Архив",
+    "status_cancelled": "Отменён",
+    "empty_title": "Данные не найдены",
+    "empty_description": "Записи технического осмотра не найдены",
+    "loading": "Загрузка...",
+    "action_view": "Просмотр",
+    "action_edit": "Редактировать"
   }
 }
 

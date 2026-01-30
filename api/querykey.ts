@@ -110,4 +110,7 @@ export const queryKeys = {
     update: "locomotive-replacement-oils-update",
     delete: "locomotive-replacement-oils-delete",
   },
+  inspections: {
+    list: "inspections-list",
+  },
 } as const;

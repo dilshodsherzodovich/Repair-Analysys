@@ -806,6 +806,38 @@
       "GREAT_WALL_GREASE": "Great Wall smazka",
       "MOBIL_TEMP_SHC_32": "Mobil Temp SHC 32"
     }
+  },
+  "InspectionsPage": {
+    "title": "Texnik ko'rik",
+    "description": "Lokomotiv texnik ko'rik yozuvlarini ko'rish va boshqarish",
+    "tab_in_progress": "Jarayondagi",
+    "tab_archive": "Arxiv",
+    "tab_cancelled": "Bekor qilingan",
+    "filter_all": "Barchasi",
+    "filter_organization": "Tashkilot",
+    "search_placeholder": "Qidiruv",
+    "add_from_other_org": "Boshqa tashkilotdan",
+    "columns": {
+      "no": "No",
+      "locomotive": "Lokomotiv",
+      "xkp": "XKP",
+      "inspection_type": "Texnik ko'rik turi",
+      "section": "Bo'lim",
+      "comment": "Izoh",
+      "author": "Avtor",
+      "created_time": "Yaratilgan vaqt",
+      "interval": "Ta'mirgacha yurgan masofasi/Interval",
+      "status": "Holat",
+      "actions": "Amallar"
+    },
+    "status_in_progress": "Jarayondagi",
+    "status_archive": "Arxiv",
+    "status_cancelled": "Bekor qilingan",
+    "empty_title": "Ma'lumot topilmadi",
+    "empty_description": "Texnik ko'rik yozuvlari topilmadi",
+    "loading": "Yuklanmoqda...",
+    "action_view": "Ko'rish",
+    "action_edit": "Tahrirlash"
   }
 }
 
