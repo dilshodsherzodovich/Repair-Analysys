@@ -376,5 +376,4 @@ export interface DelayReportParams {
   end_date: string; // Required, format: "YYYY-MM-DD"
   organizations?: string; // Optional, comma-separated IDs like "1,2"
   train_types?: string; // Optional, comma-separated train types like "passenger,electric,high_speed"
-  train_type?: string; // Optional, single train type like "freight" for detailed reports
 }

@@ -83,7 +83,7 @@ export default function DelayReportsPage() {
     const params: any = {
       start_date: format(startDate, "yyyy-MM-dd"),
       end_date: format(endDate, "yyyy-MM-dd"),
-      train_type: "freight",
+      train_types: "freight",
     };
     if (selectedOrganizations.length > 0) {
       params.organizations = selectedOrganizations.join(",");
@@ -111,7 +111,7 @@ export default function DelayReportsPage() {
     const params: any = {
       start_date: format(startDate, "yyyy-MM-dd"),
       end_date: format(endDate, "yyyy-MM-dd"),
-      train_type: activeServiceType,
+      train_types: activeServiceType,
     };
     if (selectedOrganizations.length > 0) {
       params.organizations = selectedOrganizations.join(",");

@@ -143,7 +143,7 @@ export const delaysService = {
           start_date: params.start_date,
           end_date: params.end_date,
           organizations: params.organizations,
-          train_type: params.train_type,
+          train_types: params.train_types,
         },
       }
     );
@@ -160,7 +160,7 @@ export const delaysService = {
           start_date: params.start_date,
           end_date: params.end_date,
           organizations: params.organizations,
-          train_type: params.train_type,
+          train_types: params.train_types,
         },
       }
     );

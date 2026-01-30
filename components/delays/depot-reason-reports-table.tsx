@@ -15,7 +15,7 @@ export function DepotReasonReportsTable() {
     service_type: serviceTypeParam,
   } = getAllQueryValues();
 
-  const activeServiceType = serviceTypeParam || "passenger";
+  const activeServiceType = serviceTypeParam === "passenger" ? "passenger,electric,high_speed" : "freight";
 
   const params = useMemo(() => {
     if (!start_date || !end_date) return undefined;
@@ -24,7 +24,7 @@ export function DepotReasonReportsTable() {
       start_date,
       end_date,
       organizations: organizationsParam,
-      train_type: activeServiceType,
+      train_types: activeServiceType,
     };
   }, [start_date, end_date, organizationsParam, activeServiceType]);
 
