@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LayoutGrid } from "lucide-react";
@@ -16,6 +16,10 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { format } from "date-fns";
+import UnauthorizedPage from "../unauthorized/page";
+import { canAccessSection } from "@/lib/permissions";
+import { FiltersQuery } from "@/ui/filters";
+import { UserData } from "@/api/types/auth";
 
 type TabValue = "in_progress" | "archive" | "cancelled";
 
@@ -56,6 +60,16 @@ function getIntervalDisplay(inspection: Inspection): string {
 }
 
 export default function InspectionsPage() {
+
+  const currentUser: UserData | null =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
+
+  if (!currentUser || !canAccessSection(currentUser, "inspections")) {
+    return <UnauthorizedPage />;
+  }
+
   const t = useTranslations("InspectionsPage");
   const searchParams = useSearchParams();
   const { updateQuery, getQueryValue } = useFilterParams();
@@ -69,7 +83,6 @@ export default function InspectionsPage() {
   const endDateParam = getQueryValue("end_date");
   const page = searchParams.get("page");
   const pageSize = searchParams.get("pageSize");
-
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
@@ -77,6 +90,16 @@ export default function InspectionsPage() {
     useOrganizations();
   const { data: inspectionTypesData, isLoading: isLoadingInspectionTypes } =
     useGetInspectionTypes(true);
+
+  // When user is not admin, set organization filter to their organization
+  useEffect(() => {
+    if (!currentUser || currentUser.role === "admin") return;
+    const userOrgId = currentUser.branch?.organization?.id;
+    if (userOrgId == null) return;
+    if (organizationParam !== String(userOrgId)) {
+      updateQuery({ organization: String(userOrgId) });
+    }
+  }, [currentUser, organizationParam, updateQuery]);
 
   const locomotiveTypeOptions = useMemo(
     () => [
@@ -92,10 +115,10 @@ export default function InspectionsPage() {
   const inspectionTypesList = Array.isArray(inspectionTypesData)
     ? inspectionTypesData
     : (inspectionTypesData as unknown as { results?: { id: number; name: string }[] } | undefined)
-        ?.results ?? [];
+      ?.results ?? [];
 
   const pageFilters = useMemo(
-    () => [
+    (): FiltersQuery[] => [
       {
         name: "inspection_type",
         label: t("filter_inspection_type"),
@@ -136,6 +159,7 @@ export default function InspectionsPage() {
         searchable: true,
         clearable: true,
         loading: isLoadingOrganizations,
+        permission: "choose_inspection_organization"
       },
     ],
     [
@@ -326,19 +350,19 @@ export default function InspectionsPage() {
     <div className="min-h-screen">
       <PageHeader
         title={t("title")}
-     
+
       />
 
       <div className="px-6 space-y-4">
         <div className="mb-6 bg-white border border-[#CAD5E2] rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
-        <PageFilters
-          filters={pageFilters}
-          hasSearch={isArchive}
-          hasDateRangePicker={isArchive}
-          searchPlaceholder={t("search_placeholder")}
-          dateRangePickerLabel={t("filter_date_range")}
-          className="mb-0 flex-1 min-w-0"
-        />
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={isArchive}
+            hasDateRangePicker={isArchive}
+            searchPlaceholder={t("search_placeholder")}
+            dateRangePickerLabel={t("filter_date_range")}
+            className="mb-0 flex-1 min-w-0"
+          />
           <Tabs value={tab} onValueChange={handleTabChange}>
             <TabsList className="bg-white border border-gray-200 p-1 gap-2 rounded-md inline-flex">
               <TabsTrigger
@@ -362,10 +386,10 @@ export default function InspectionsPage() {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-         
+
         </div>
 
-       
+
 
         {isInProgress && (
           <InspectionsGroupedTable

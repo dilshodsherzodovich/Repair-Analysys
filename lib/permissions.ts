@@ -41,7 +41,11 @@ export type Permission =
   | "view_locomotive_replacement_oil"
   | "create_locomotive_replacement_oil"
   | "edit_locomotive_replacement_oil"
-  | "delete_locomotive_replacement_oil";
+  | "delete_locomotive_replacement_oil"
+
+  // dpx permissions
+  | "view_inspections"
+  | "choose_inspection_organization"
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -74,6 +78,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_locomotive_passport",
     "view_locomotive_passport_inspections",
     "view_locomotive_replacement_oil",
+    "view_inspections",
+    "choose_inspection_organization",
   ],
   moderator: [
     "view_dashboard",
@@ -97,7 +103,13 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "delete_pantograf",
     "choose_organization",
     "filter_delay_station",
-    "view_depo", "view_duty_uzel", "view_pantograf", "view_locomotive_passport", "view_locomotive_passport_inspections", "view_locomotive_replacement_oil"
+    "view_depo", 
+    "view_duty_uzel", 
+    "view_pantograf", 
+    "view_locomotive_passport", 
+    "view_locomotive_passport_inspections", 
+    "view_locomotive_replacement_oil",
+    "view_inspections",
   ],
   passport_staff: ["view_depo", "view_locomotive_passport", "edit_locomotive_passport", "view_duty_uzel"],
   repair_staff: [
@@ -216,6 +228,9 @@ export function canAccessSection(
     }
     case "replacement_schedule": {
       return hasPermission(user, "view_locomotive_replacement_oil");
+    }
+    case "inspections": {
+      return hasPermission(user, "view_inspections");
     }
     default:
       return false;

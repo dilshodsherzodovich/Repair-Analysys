@@ -19,7 +19,7 @@ interface Option {
   disabled?: boolean;
 }
 
-interface FiltersQuery {
+export interface FiltersQuery {
   name: string;
   label: string;
   isSelect: boolean;

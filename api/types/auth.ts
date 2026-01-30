@@ -1,3 +1,5 @@
+import { Organization } from "./organizations";
+
 // Login request interface
 export interface LoginCredentials {
   username: string;
@@ -13,7 +15,11 @@ export interface UserData {
   phone_number: string;
   tabel: number;
   email: string;
-  branch: number | null;
+  branch: {
+    id: number;
+    name: string;
+    organization: Organization;
+  };
 }
 
 export interface LoginResponse extends UserData {
