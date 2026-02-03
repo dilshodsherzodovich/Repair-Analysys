@@ -106,8 +106,8 @@ export default function OrdersPage() {
 
   const locomotiveOptions = useMemo(() => {
     const options = [{ value: "", label: t("options.all_locomotives") }];
-    if (locomotivesData && Array.isArray(locomotivesData)) {
-      locomotivesData.forEach(
+    if (locomotivesData && Array.isArray(locomotivesData?.results)) {
+      locomotivesData?.results?.forEach(
         (locomotive: { id: number; name?: string; model_name?: string }) => {
           options.push({
             value: locomotive.id.toString(),

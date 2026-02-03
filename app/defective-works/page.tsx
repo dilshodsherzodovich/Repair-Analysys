@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
-import { canAccessSection } from "@/lib/permissions";
+import { canAccessSection, hasPermission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { NosozliklarTab } from "@/components/defective-works/nosozliklar-tab";
 import { TU152Tab } from "@/components/defective-works/tu152-tab";
@@ -49,13 +49,13 @@ export default function DefectiveWorksPage() {
         <Tabs value={currentMainTab} onValueChange={handleMainTabChange}>
           <TabsList className="bg-[#F1F5F9] p-1 gap-0 border-0 rounded-lg inline-flex">
             <TabsTrigger value="nosozliklar">{t("tab_nosozliklar")}</TabsTrigger>
-            <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
+           {currentUser?.role === "repair_engineer" && <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>}
           </TabsList>
         </Tabs>
       </div>
 
       {currentMainTab === "nosozliklar" && <NosozliklarTab />}
-      {currentMainTab === "tu152" && <TU152Tab />}
+      {currentMainTab === "tu152" && currentUser?.role === "repair_engineer" && <TU152Tab />}
     </div>
   );
 }

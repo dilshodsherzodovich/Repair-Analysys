@@ -65,7 +65,7 @@ function LocomotiveSelectField({
   name,
   defaultValue,
   locomotives,
-  isLoading,
+  isLoading,  
   label,
   placeholder,
   loadingText,
@@ -264,7 +264,7 @@ export function DefectiveWorkModal({
             <LocomotiveSelectField
               name="locomotive"
               defaultValue={formDefaults.locomotive}
-              locomotives={locomotivesData || []}
+              locomotives={locomotivesData?.results || []}
               isLoading={isLoadingLocomotives}
               label={t("locomotive")}
               placeholder={t("locomotive_placeholder")}

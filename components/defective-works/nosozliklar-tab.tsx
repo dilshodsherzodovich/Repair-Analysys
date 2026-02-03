@@ -253,8 +253,8 @@ export function NosozliklarTab() {
 
   const locomotiveOptions = useMemo(() => {
     const options = [{ value: "", label: t("options.all_locomotives") }];
-    if (locomotivesData && Array.isArray(locomotivesData)) {
-      locomotivesData.forEach((loc) =>
+    if (locomotivesData && Array.isArray(locomotivesData?.results)) {
+      locomotivesData?.results?.forEach((loc) =>
         options.push({
           value: loc.id.toString(),
           label: loc.name || loc.model_name || `Lokomotiv ${loc.id}`,

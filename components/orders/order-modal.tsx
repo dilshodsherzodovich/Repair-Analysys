@@ -147,7 +147,7 @@ export function OrderModal({
 
   const locomotiveOptions = useMemo<LocomotiveOption[]>(() => {
     if (!locomotivesData) return [];
-    return locomotivesData.results.map((locomotive) => ({
+    return locomotivesData?.results.map((locomotive) => ({
       id: locomotive.id,
       label: `${locomotive.name} (${locomotive.model_name})`,
       value: locomotive.id.toString(),

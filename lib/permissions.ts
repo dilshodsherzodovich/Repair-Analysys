@@ -46,6 +46,7 @@ export type Permission =
   // dpx permissions
   | "view_inspections"
   | "choose_inspection_organization"
+  | "edit_inspection_location_section"
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -137,12 +138,14 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_depo",
     "view_locomotive_passport",
     "view_duty_uzel",
+    "view_inspections",
     "view_locomotive_passport_inspections",
     "create_locomotive_passport_inspection",
     "edit_locomotive_passport_inspection",
     "view_locomotive_replacement_oil",
     "create_locomotive_replacement_oil",
     "edit_locomotive_replacement_oil",
+    "edit_inspection_location_section",
   ],
   sriv_admin: [
     "view_dashboard",
