@@ -25,7 +25,8 @@ import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
 import { Button } from "@/ui/button";
 import {
-  authService } from "@/api/services/auth.service";
+  authService
+} from "@/api/services/auth.service";
 import { useTranslations } from "next-intl";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import type { UserData } from "@/api/types/auth";
@@ -91,22 +92,52 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
   const navigationItems: NavigationItem[] = useMemo(() => {
     const items: NavigationItem[] = [];
 
+    if (user && canAccessSection(user, "pantograf")) {
+      items.push({
+        key: "pantograph",
+        name: t("nav.pantograph"),
+        icon: Zap,
+        section: "pantograf",
+        href: "/",
+      });
+    }
+
+    if (user && canAccessSection(user, "orders")) {
+      items.push({
+        key: "orders",
+        name: t("nav.orders"),
+        icon: FileText,
+        section: "orders",
+        href: "/orders",
+      });
+    }
+
+    if (user && canAccessSection(user, "defective-works")) {
+      items.push({
+        key: "defective_works",
+        name: t("nav.defective_works"),
+        icon: AlertCircle,
+        section: "defective-works",
+        href: "/defective-works",
+      });
+    }
+
     if (user && canAccessSection(user, "depo")) {
       const depoChildren: NavChild[] =
         user.role === "admin"
           ? (organizations
-              ?.map((org) => ({
-                name: formatOrgDisplayName(org),
-                href: `/depo/${org.id}`,
-              }))
-              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
+            ?.map((org) => ({
+              name: formatOrgDisplayName(org),
+              href: `/depo/${org.id}`,
+            }))
+            .filter((child): child is NavChild => Boolean(child.name)) ?? [])
           : userBranchOrg
             ? [
-                {
-                  name: userBranchOrg.name,
-                  href: `/depo/${userBranchOrg.id}`,
-                },
-              ]
+              {
+                name: userBranchOrg.name,
+                href: `/depo/${userBranchOrg.id}`,
+              },
+            ]
             : [];
       items.push({
         key: "depot",
@@ -121,24 +152,24 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       const dutyChildren: NavChild[] =
         user.role === "admin"
           ? (organizations
-              ?.map((org) => {
-                const firstWord = (org.name ?? "").split(" ")[0] ?? "";
-                const name =
-                  (org.name ?? "").includes("lokomotiv") ||
+            ?.map((org) => {
+              const firstWord = (org.name ?? "").split(" ")[0] ?? "";
+              const name =
+                (org.name ?? "").includes("lokomotiv") ||
                   (org.name ?? "").includes("depo") ||
                   (org.name ?? "").includes("deposi")
-                    ? firstWord.replaceAll(/[^a-zA-Z0-9]/g, "") + " depo"
-                    : org.name ?? "";
-                return { name, href: `/duty-uzel/${org.id}` };
-              })
-              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
+                  ? firstWord.replaceAll(/[^a-zA-Z0-9]/g, "") + " depo"
+                  : org.name ?? "";
+              return { name, href: `/duty-uzel/${org.id}` };
+            })
+            .filter((child): child is NavChild => Boolean(child.name)) ?? [])
           : userBranchOrg
             ? [
-                {
-                  name: userBranchOrg.name,
-                  href: `/duty-uzel/${userBranchOrg.id}`,
-                },
-              ]
+              {
+                name: userBranchOrg.name,
+                href: `/duty-uzel/${userBranchOrg.id}`,
+              },
+            ]
             : [];
       items.push({
         key: "duty_uzel",
@@ -153,18 +184,18 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       const revisionChildren: NavChild[] =
         user.role === "admin"
           ? (organizations
-              ?.map((org) => ({
-                name: formatOrgDisplayName(org),
-                href: `/revision-journal/${org.id}`,
-              }))
-              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
+            ?.map((org) => ({
+              name: formatOrgDisplayName(org),
+              href: `/revision-journal/${org.id}`,
+            }))
+            .filter((child): child is NavChild => Boolean(child.name)) ?? [])
           : userBranchOrg
             ? [
-                {
-                  name: userBranchOrg.name,
-                  href: `/revision-journal/${userBranchOrg.id}`,
-                },
-              ]
+              {
+                name: userBranchOrg.name,
+                href: `/revision-journal/${userBranchOrg.id}`,
+              },
+            ]
             : [];
       items.push({
         key: "revision_journal",
@@ -205,33 +236,8 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       });
     }
 
-    if (user && canAccessSection(user, "pantograf")) {
-      items.push({
-        key: "pantograph",
-        name: t("nav.pantograph"),
-        icon: Zap,
-        section: "pantograf",
-        href: "/",
-      });
-    }
-    if (user && canAccessSection(user, "orders")) {
-      items.push({
-        key: "orders",
-        name: t("nav.orders"),
-        icon: FileText,
-        section: "orders",
-        href: "/orders",
-      });
-    }
-    if (user && canAccessSection(user, "defective-works")) {
-      items.push({
-        key: "defective_works",
-        name: t("nav.defective_works"),
-        icon: AlertCircle,
-        section: "defective-works",
-        href: "/defective-works",
-      });
-    }
+
+
     if (user && canAccessSection(user, "delays")) {
       items.push({
         key: "delays",
@@ -241,6 +247,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         href: "/delays",
       });
     }
+
     if (user && canAccessSection(user, "delays-reports")) {
       items.push({
         key: "delay_reports",
