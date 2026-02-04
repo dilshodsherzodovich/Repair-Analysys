@@ -104,6 +104,7 @@
       "locomotive_passport_inspections": "Профилактический график",
       "replacement_schedule": "Записи замены",
       "inspections": "Технические осмотры",
+      "locomotive_mileage_report": "ТО-13",
       "pantograph": "Пантограф",
       "orders": "Приказ МПР",
       "defective_works": "Неисправности",
@@ -855,6 +856,25 @@
     "section_Cabin1": "Кабина 1",
     "section_Cabin2": "Кабина 2",
     "section_updating": "Обновление..."
+  },
+  "LocomotiveMileageReportPage": {
+    "title": "Отчёт по пробегу локомотивов",
+    "description": "Даты и пробеги технических осмотров по локомотивам",
+    "tab_km": "км",
+    "tab_kun": "День",
+    "loc_number_placeholder": "Номер локомотива",
+    "search": "Поиск",
+    "choose_organization": "Выберите организацию",
+    "empty_title": "Данные не найдены",
+    "export_excel": "Excel",
+    "export_filename": "Отчёт по пробегу локомотивов",
+    "export_error": "Ошибка при загрузке Excel",
+    "columns": {
+      "locomotive": "Локомотив",
+      "sana": "Дата",
+      "masofa": "Пробег",
+      "den": "Ден"
+    }
   }
 }
 

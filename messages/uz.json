@@ -104,6 +104,7 @@
       "locomotive_passport_inspections": "Profilaktik grafik",
       "replacement_schedule": "Almashtirish yozuvlari",
       "inspections": "Texnik ko'riklar",
+      "locomotive_mileage_report": "TXK-13",
       "pantograph": "Pantograf",
       "orders": "Buyruq MPR",
       "defective_works": "Nosozliklar",
@@ -855,6 +856,25 @@
     "section_Cabin1": "Kabin 1",
     "section_Cabin2": "Kabin 2",
     "section_updating": "Yangilanmoqda..."
+  },
+  "LocomotiveMileageReportPage": {
+    "title": "Lokomotiv masofa hisoboti",
+    "description": "Lokomotivlar boʻyicha texnik koʻrik sanalari va masofalari",
+    "tab_km": "km",
+    "tab_kun": "Kun",
+    "loc_number_placeholder": "Lokomotiv raqami",
+    "search": "Qidirish",
+    "choose_organization": "Tashkilotni tanlang",
+    "empty_title": "Ma'lumot topilmadi",
+    "export_excel": "Excel",
+    "export_filename": "Lokomotiv masofa hisoboti",
+    "export_error": "Excel yuklab olishda xatolik",
+    "columns": {
+      "locomotive": "Lokomotiv",
+      "sana": "Sana",
+      "masofa": "Masofa",
+      "den": "Kun"
+    }
   }
 }
 

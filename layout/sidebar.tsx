@@ -19,6 +19,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Calendar,
+  Gauge,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -236,7 +237,15 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       });
     }
 
-
+    if (user && canAccessSection(user, "inspections")) {
+      items.push({
+        key: "locomotive_mileage_report",
+        name: t("nav.locomotive_mileage_report"),
+        icon: Gauge,
+        section: "inspections",
+        href: "/locomotive-mileage-report",
+      });
+    }
 
     if (user && canAccessSection(user, "delays")) {
       items.push({

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { DatePicker } from "@/ui/date-picker";
-import { Trash2, Plus, Search, FileSpreadsheet, ChevronsUpDown, Check } from "lucide-react";
+import { Trash2, Plus, Search, FileSpreadsheet, ChevronsUpDown, Check, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Permission } from "@/lib/permissions";
@@ -47,6 +47,7 @@ interface PageFiltersProps {
   onExport?: () => void;
   exportButtonText?: string;
   exportButtonIcon?: React.ReactNode;
+  exportLoading?: boolean;
   selectedCount?: number;
   onBulkDelete?: () => void;
   bulkDeleteText?: string;
@@ -68,6 +69,7 @@ export default function PageFilters({
   onExport,
   exportButtonText,
   exportButtonIcon,
+  exportLoading = false,
   selectedCount = 0,
   onBulkDelete,
   bulkDeleteText,
@@ -318,11 +320,16 @@ export default function PageFilters({
           {onExport && (
             <Button
               onClick={onExport}
-              className="h-10 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap cursor-pointer"
+              disabled={exportLoading}
+              className="h-10 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap cursor-pointer disabled:opacity-70 disabled:pointer-events-none"
             >
               <span className="flex items-center">
-                {exportButtonIcon || (
-                  <FileSpreadsheet className="w-4 h-4 mr-2" />
+                {exportLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  exportButtonIcon || (
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                  )
                 )}
                 {effectiveExportButtonText}
               </span>
