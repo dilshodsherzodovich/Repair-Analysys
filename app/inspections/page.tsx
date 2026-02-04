@@ -325,10 +325,27 @@ export default function InspectionsPage() {
             : row.author?.username ?? "—",
       },
       {
-        key: "created_time",
-        header: t("columns.created_time"),
+        key: "opened_time",
+        header: t("columns.opened_time"),
         accessor: (row) => formatCreatedTime(row.created_time),
       },
+      ...(tab === "archive"
+        ? [
+            {
+              key: "closed_time",
+              header: t("columns.closed_time"),
+              accessor: (row: InspectionWithIndex) =>
+                formatCreatedTime(row.is_closed_time),
+            },
+          ]
+        : [
+            {
+              key: "cancelled_time",
+              header: t("columns.cancelled_time"),
+              accessor: (row: InspectionWithIndex) =>
+                formatCreatedTime(row.is_cancelled_time),
+            },
+          ]),
       {
         key: "interval",
         header: t("columns.interval"),
@@ -353,7 +370,7 @@ export default function InspectionsPage() {
         className: "w-[140px]",
       },
     ],
-    [t, currentPage, itemsPerPage]
+    [t, tab, currentPage, itemsPerPage]
   );
 
   return (

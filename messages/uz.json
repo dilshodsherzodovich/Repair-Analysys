@@ -833,7 +833,10 @@
       "section": "Bo'lim",
       "comment": "Izoh",
       "author": "Avtor",
-      "created_time": "Yaratilgan vaqt",
+      "opened_time": "Tekshiruv ochilgan vaqt",
+      "closed_time": "Yakunlangan vaqti",
+      "cancelled_time": "Bekor qilingan vaqti",
+      "created_time": "Tekshiruv ochilgan vaqt",
       "interval": "Ta'mirgacha yurgan masofasi/Interval",
       "status": "Holat",
       "actions": "Amallar"

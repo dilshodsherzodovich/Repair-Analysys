@@ -243,7 +243,7 @@ export function InspectionsGroupedTable({
                   {t("columns.author")}
                 </TableHead>
                 <TableHead className="min-w-[130px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
-                  {t("columns.created_time")}
+                  {t("columns.opened_time")}
                 </TableHead>
                 <TableHead className="min-w-[100px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
                   {t("columns.interval")}
