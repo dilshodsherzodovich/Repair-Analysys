@@ -117,6 +117,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   repair_staff: [
     "view_duty_uzel",
     "create_duty_uzel_report",
+    
   ],
   repair_engineer: [
     "view_dashboard",
