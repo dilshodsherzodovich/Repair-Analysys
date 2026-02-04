@@ -21,6 +21,14 @@ function getDefaultRouteForRole(user: UserData | null): string {
     return "/delays";
   }
 
+  if (role === "repair_staff") {
+    return `/duty-uzel/${user?.branch?.organization?.id}`;
+  }
+
+  if (role === "passport_staff") {
+    return `/depo/${user?.branch?.organization?.id}`;
+  }
+
   return "/";
 }
 
