@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, memo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Card } from "@/ui/card";
 import { Label } from "@/ui/label";
@@ -45,91 +45,6 @@ type LocomotiveOption = {
   value: string;
 };
 
-type FormData = {
-  title: string;
-  locomotive: string;
-  department: string;
-  section: string;
-  date: string;
-  damage: string;
-  description: string;
-};
-
-const INITIAL_FORM_DATA: FormData = {
-  title: "",
-  locomotive: "",
-  department: "",
-  section: "",
-  date: "",
-  damage: "",
-  description: "",
-};
-
-// Memoized form field components to prevent unnecessary re-renders
-const FormField = memo(
-  ({
-    id,
-    label,
-    value,
-    onChange,
-    placeholder,
-    required,
-    type = "text",
-    step,
-    rows,
-  }: {
-    id: string;
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    required?: boolean;
-    type?: string;
-    step?: string;
-    rows?: number;
-  }) => {
-    const handleChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        onChange(e.target.value);
-      },
-      [onChange]
-    );
-
-    if (type === "textarea") {
-      return (
-        <div>
-          <Label htmlFor={id}>{label}</Label>
-          <Textarea
-            id={id}
-            value={value}
-            onChange={handleChange}
-            placeholder={placeholder}
-            rows={rows}
-            required={required}
-          />
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <Label htmlFor={id}>{label}</Label>
-        <Input
-          id={id}
-          type={type}
-          step={step}
-          value={value}
-          onChange={handleChange}
-          placeholder={placeholder}
-          required={required}
-        />
-      </div>
-    );
-  }
-);
-FormField.displayName = "FormField";
-
-// Memoized locomotive select component (receives t from parent to avoid hook in memo)
 function LocomotiveSelectInner({
   value,
   onChange,
@@ -178,7 +93,7 @@ function LocomotiveSelectInner({
   );
 }
 
-export const PantographModal = memo(function PantographModal({
+export function PantographModal({
   isOpen,
   onClose,
   onSave,
@@ -187,13 +102,13 @@ export const PantographModal = memo(function PantographModal({
   isPending,
 }: PantographModalProps) {
   const t = useTranslations("PantographModal");
-  const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
+  const formRef = useRef<HTMLFormElement>(null);
+  // Only locomotive is controlled (Select); all other fields are uncontrolled to avoid re-renders on every keystroke
+  const [locomotive, setLocomotive] = useState("");
 
-  // Only fetch locomotives when modal is open
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
     useGetLocomotives(isOpen);
 
-  // Memoize locomotive options transformation
   const locomotiveOptions = useMemo<LocomotiveOption[]>(() => {
     if (!locomotivesData) return [];
     return locomotivesData.results.map((locomotive) => ({
@@ -203,157 +118,106 @@ export const PantographModal = memo(function PantographModal({
     }));
   }, [locomotivesData]);
 
+  // Sync locomotive when opening for edit vs create
   useEffect(() => {
+    if (!isOpen) return;
     if (entry && mode === "edit") {
-      setFormData({
-        title: entry.title ?? "",
-        locomotive: entry.locomotive ? String(entry.locomotive) : "",
-        department: entry.department ?? "",
-        section: entry.section ?? "",
-        date: entry.date ? entry.date.slice(0, 10) : "",
-        damage: entry.damage ?? "",
-        description: entry.description ?? "",
-      });
+      setLocomotive(entry.locomotive ? String(entry.locomotive) : "");
     } else {
-      setFormData(INITIAL_FORM_DATA);
+      setLocomotive("");
     }
-  }, [entry, mode, isOpen]);
+  }, [isOpen, entry, mode]);
 
-  // Stable field update handlers - created once and never change
-  const handleTitleChange = useCallback((value: string) => {
-    setFormData((prev) => {
-      if (prev.title === value) return prev;
-      return { ...prev, title: value };
-    });
-  }, []);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = formRef.current;
+    if (!form) return;
+    const get = (name: string) =>
+      (form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement)
+        ?.value?.trim() ?? "";
+    const payload = {
+      title: get("title"),
+      locomotive: Number(locomotive),
+      department: get("department"),
+      section: get("section"),
+      date: get("date"),
+      damage: get("damage"),
+      description: get("description"),
+    };
+    if (mode === "create") {
+      onSave(payload as CreatePantographJournalPayload);
+    } else {
+      onSave(payload as UpdatePantographJournalPayload);
+    }
+  };
 
-  const handleDateChange = useCallback((value: string) => {
-    setFormData((prev) => {
-      if (prev.date === value) return prev;
-      return { ...prev, date: value };
-    });
-  }, []);
+  const handleDialogOpenChange = (open: boolean) => {
+    if (!open) onClose();
+  };
 
-  const handleDepartmentChange = useCallback((value: string) => {
-    setFormData((prev) => {
-      if (prev.department === value) return prev;
-      return { ...prev, department: value };
-    });
-  }, []);
+  const handleCancel = () => onClose();
 
-  const handleSectionChange = useCallback((value: string) => {
-    setFormData((prev) => {
-      if (prev.section === value) return prev;
-      return { ...prev, section: value };
-    });
-  }, []);
+  const modalTitle = mode === "create" ? t("title_create") : t("title_edit");
+  const submitLabel = mode === "create" ? t("submit_create") : t("submit_edit");
+  const pendingLabel =
+    mode === "create" ? t("pending_create") : t("pending_edit");
 
-  const handleDamageChange = useCallback((value: string) => {
-    setFormData((prev) => {
-      if (prev.damage === value) return prev;
-      return { ...prev, damage: value };
-    });
-  }, []);
-
-  const handleDescriptionChange = useCallback((value: string) => {
-    setFormData((prev) => {
-      if (prev.description === value) return prev;
-      return { ...prev, description: value };
-    });
-  }, []);
-
-  const handleLocomotiveChange = useCallback((value: string) => {
-    setFormData((prev) => {
-      if (prev.locomotive === value) return prev;
-      return { ...prev, locomotive: value };
-    });
-  }, []);
-
-  // Memoized static text values
-  const modalTexts = useMemo(
-    () => ({
-      title: mode === "create" ? t("title_create") : t("title_edit"),
-      submit: mode === "create" ? t("submit_create") : t("submit_edit"),
-      pending: mode === "create" ? t("pending_create") : t("pending_edit"),
-    }),
-    [mode, t]
-  );
-
-  // Form submission handler
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-
-      const payload = {
-        title: formData.title.trim(),
-        locomotive: Number(formData.locomotive),
-        department: formData.department.trim(),
-        section: formData.section.trim(),
-        date: formData.date,
-        damage: formData.damage.trim(),
-        description: formData.description.trim(),
-      };
-
-      if (mode === "create") {
-        onSave(payload as CreatePantographJournalPayload);
-      } else {
-        onSave(payload as UpdatePantographJournalPayload);
-      }
-    },
-    [formData, mode, onSave]
-  );
-
-  // Dialog close handler - reset form only when actually closing
-  const handleDialogOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        // Reset form immediately when closing to prepare for next open
-        setFormData(INITIAL_FORM_DATA);
-        onClose();
-      }
-    },
-    [onClose]
-  );
-
-  // Cancel handler
-  const handleCancel = useCallback(() => {
-    setFormData(INITIAL_FORM_DATA);
-    onClose();
-  }, [onClose]);
+  // Initial values for uncontrolled inputs; form remounts when key changes so these apply on open
+  const initialTitle = entry && mode === "edit" ? entry.title ?? "" : "";
+  const initialDate =
+    entry && mode === "edit" && entry.date
+      ? entry.date.slice(0, 10)
+      : "";
+  const initialDepartment =
+    entry && mode === "edit" ? entry.department ?? "" : "";
+  const initialSection = entry && mode === "edit" ? entry.section ?? "" : "";
+  const initialDamage = entry && mode === "edit" ? entry.damage ?? "" : "";
+  const initialDescription =
+    entry && mode === "edit" ? entry.description ?? "" : "";
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="sm:max-w-3xl" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>{modalTexts.title}</DialogTitle>
+          <DialogTitle>{modalTitle}</DialogTitle>
           <DialogDescription className="sr-only">
-            {modalTexts.title} {t("form_description")}
+            {modalTitle} {t("form_description")}
           </DialogDescription>
         </DialogHeader>
         <Card className="border-none p-0 mt-2">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form
+            ref={formRef}
+            key={isOpen ? (entry?.id ?? "new") : "closed"}
+            onSubmit={handleSubmit}
+            className="space-y-5"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                id="title"
-                label={t("fields.title")}
-                value={formData.title}
-                onChange={handleTitleChange}
-                placeholder={t("fields.title_placeholder")}
-                required
-              />
+              <div>
+                <Label htmlFor="title">{t("fields.title")}</Label>
+                <Input
+                  id="title"
+                  name="title"
+                  type="text"
+                  defaultValue={initialTitle}
+                  placeholder={t("fields.title_placeholder")}
+                  required
+                />
+              </div>
 
-              <FormField
-                id="date"
-                label={t("fields.date")}
-                type="date"
-                value={formData.date}
-                onChange={handleDateChange}
-                required
-              />
+              <div>
+                <Label htmlFor="date">{t("fields.date")}</Label>
+                <Input
+                  id="date"
+                  name="date"
+                  type="date"
+                  defaultValue={initialDate}
+                  required
+                />
+              </div>
 
               <LocomotiveSelectInner
-                value={formData.locomotive}
-                onChange={handleLocomotiveChange}
+                value={locomotive}
+                onChange={setLocomotive}
                 options={locomotiveOptions}
                 isLoading={isLoadingLocomotives}
                 label={t("fields.locomotive")}
@@ -362,46 +226,55 @@ export const PantographModal = memo(function PantographModal({
                 emptyText={t("fields.locomotive_empty")}
               />
 
-              <FormField
-                id="department"
-                label={t("fields.department")}
-                value={formData.department}
-                onChange={handleDepartmentChange}
-                placeholder={t("fields.department_placeholder")}
-                required
-              />
+              <div>
+                <Label htmlFor="department">{t("fields.department")}</Label>
+                <Input
+                  id="department"
+                  name="department"
+                  type="text"
+                  defaultValue={initialDepartment}
+                  placeholder={t("fields.department_placeholder")}
+                  required
+                />
+              </div>
 
-              <FormField
-                id="section"
-                label={t("fields.section")}
-                value={formData.section}
-                onChange={handleSectionChange}
-                placeholder={t("fields.section_placeholder")}
-                required
-              />
+              <div>
+                <Label htmlFor="section">{t("fields.section")}</Label>
+                <Input
+                  id="section"
+                  name="section"
+                  type="text"
+                  defaultValue={initialSection}
+                  placeholder={t("fields.section_placeholder")}
+                  required
+                />
+              </div>
 
-              <FormField
-                id="damage"
-                label={t("fields.damage")}
-                type="number"
-                step="0.01"
-                value={formData.damage}
-                onChange={handleDamageChange}
-                placeholder={t("fields.damage_placeholder")}
+              <div>
+                <Label htmlFor="damage">{t("fields.damage")}</Label>
+                <Input
+                  id="damage"
+                  name="damage"
+                  type="number"
+                  step="0.01"
+                  defaultValue={initialDamage}
+                  placeholder={t("fields.damage_placeholder")}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="description">{t("fields.description")}</Label>
+              <Textarea
+                id="description"
+                name="description"
+                defaultValue={initialDescription}
+                placeholder={t("fields.description_placeholder")}
+                rows={4}
                 required
               />
             </div>
-
-            <FormField
-              id="description"
-              label={t("fields.description")}
-              type="textarea"
-              rows={4}
-              value={formData.description}
-              onChange={handleDescriptionChange}
-              placeholder={t("fields.description_placeholder")}
-              required
-            />
 
             <div className="flex justify-end gap-3 pt-4">
               <Button
@@ -413,7 +286,7 @@ export const PantographModal = memo(function PantographModal({
                 {t("cancel")}
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? modalTexts.pending : modalTexts.submit}
+                {isPending ? pendingLabel : submitLabel}
               </Button>
             </div>
           </form>
@@ -421,4 +294,4 @@ export const PantographModal = memo(function PantographModal({
       </DialogContent>
     </Dialog>
   );
-});
+}

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState,  useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
-import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import PageFilters from "@/ui/filters";
 import { FileSpreadsheet } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
@@ -76,13 +75,6 @@ export default function PantografPage() {
         )
     : null;
 
-  const handleTabChange = useCallback(
-    (value: string) => {
-      setCurrentTab(value);
-      updateQuery({ tab: value, page: "1" });
-    },
-    [updateQuery]
-  );
 
   const handleEdit = (row: PantographJournalEntry) => {
     setSelectedEntry(row);
@@ -115,7 +107,7 @@ export default function PantografPage() {
     console.log("Export to Excel");
   };
 
-  const handleSave = useCallback(
+  const handleSave = (
     (
       payload: CreatePantographJournalPayload | UpdatePantographJournalPayload
     ) => {
@@ -158,22 +150,13 @@ export default function PantografPage() {
           }
         );
       }
-    },
-    [
-      modalMode,
-      selectedEntry,
-      createEntryMutation,
-      updateEntryMutation,
-      showSuccess,
-      showError,
-      t,
-    ]
+    }
   );
 
-  const handleModalClose = useCallback(() => {
+  const handleModalClose = (() => {
     setIsModalOpen(false);
     setSelectedEntry(null);
-  }, []);
+  });
 
   const isModalPending = useMemo(
     () => createEntryMutation.isPending || updateEntryMutation.isPending,
