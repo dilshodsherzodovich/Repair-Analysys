@@ -2,6 +2,8 @@ import api from "../axios";
 import { PaginatedData } from "../types/general";
 import { Inspection, InspectionsGetParams } from "../types/inspections";
 
+export type UpdateInspectionSectionPayload = { section: string };
+
 export const inspectionsService = {
   /**
    * List inspections. When no_page is true the API returns an array;
@@ -32,6 +34,22 @@ export const inspectionsService = {
       return response.data;
     } catch (error) {
       console.error("Error fetching inspections:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Update inspection (e.g. section). PATCH /inspections/{id}/
+   */
+  async updateInspection(
+    id: number,
+    payload: UpdateInspectionSectionPayload
+  ): Promise<Inspection> {
+    try {
+      const response = await api.patch<Inspection>(`/inspections/${id}/`, payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating inspection:", error);
       throw error;
     }
   },

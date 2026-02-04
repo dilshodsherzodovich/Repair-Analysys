@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Table,
@@ -19,10 +19,28 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import { MoreVertical } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
+import { MoreVertical, Pencil } from "lucide-react";
 import { Inspection } from "@/api/types/inspections";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { hasPermission } from "@/lib/permissions";
+import { useUpdateInspectionSection } from "@/api/hooks/use-inspections";
+import type { UserData } from "@/api/types/auth";
+
+const INSPECTION_SECTION_OPTIONS = [
+  { value: "A", label: "Section A" },
+  { value: "B", label: "Section B" },
+  { value: "V", label: "Section V" },
+  { value: "Cabin1", label: "Cabin 1" },
+  { value: "Cabin2", label: "Cabin 2" },
+] as const;
 
 function formatCreatedTime(dateString: string | null | undefined): string {
   if (!dateString) return "—";
@@ -86,6 +104,44 @@ export function InspectionsGroupedTable({
   emptyDescription,
 }: InspectionsGroupedTableProps) {
   const t = useTranslations("InspectionsPage");
+  const [editingSectionForId, setEditingSectionForId] = useState<number | null>(
+    null
+  );
+
+  const currentUser: UserData | null =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
+  const canEditSection = hasPermission(
+    currentUser,
+    "edit_inspection_location_section"
+  );
+
+  const updateSectionMutation = useUpdateInspectionSection();
+
+  const getSectionSelectValue = (section: string | undefined) => {
+    if (!section) return "";
+    const byValue = INSPECTION_SECTION_OPTIONS.find(
+      (opt) => opt.value === section
+    );
+    if (byValue) return byValue.value;
+    const byLabel = INSPECTION_SECTION_OPTIONS.find(
+      (opt) => opt.label === section
+    );
+    return byLabel ? byLabel.value : INSPECTION_SECTION_OPTIONS[0].value;
+  };
+
+  const getSectionDisplayLabel = (section: string | undefined) => {
+    if (!section) return "—";
+    const byValue = INSPECTION_SECTION_OPTIONS.find(
+      (opt) => opt.value === section
+    );
+    if (byValue) return byValue.label;
+    const byLabel = INSPECTION_SECTION_OPTIONS.find(
+      (opt) => opt.label === section
+    );
+    return byLabel ? byLabel.label : section;
+  };
 
   const groupedByType = useMemo(() => {
     const map = new Map<number, { name: string; items: Inspection[] }>();
@@ -221,7 +277,53 @@ export function InspectionsGroupedTable({
                       {inspection?.inspection_type?.name ?? "—"}
                     </TableCell>
                     <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
-                      {inspection?.section || "—"}
+                      {canEditSection &&
+                      inspection.locomotive &&
+                      editingSectionForId === inspection.id ? (
+                        <Select
+                          value={getSectionSelectValue(inspection.section)}
+                          onValueChange={(value) => {
+                            updateSectionMutation.mutate(
+                              {
+                                id: inspection.id,
+                                payload: { section: value },
+                              },
+                              {
+                                onSettled: () =>
+                                  setEditingSectionForId(null),
+                              }
+                            );
+                          }}
+                          disabled={updateSectionMutation.isPending}
+                        >
+                          <SelectTrigger className="h-8 min-w-[120px] border-[#E2E8F0]">
+                            <SelectValue placeholder={t("columns.section")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {INSPECTION_SECTION_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5">
+                          {getSectionDisplayLabel(inspection?.section)}
+                          {canEditSection && inspection.locomotive && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEditingSectionForId(inspection.id)
+                              }
+                              className="p-1 rounded hover:bg-[#E2E8F0] text-[#64748B] hover:text-[#0F172B]"
+                              aria-label={t("action_edit")}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
                       {inspection?.comment || "—"}

@@ -112,5 +112,6 @@ export const queryKeys = {
   },
   inspections: {
     list: "inspections-list",
+    update: (id: number) => `inspections-update-${id}`,
   },
 } as const;
