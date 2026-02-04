@@ -335,7 +335,7 @@ export function NosozliklarTab() {
               isSelect: true,
               options: locomotiveOptions,
               placeholder: t("filters.locomotive_placeholder"),
-              searchable: false,
+              searchable: true,
               loading: isLoadingLocomotives,
             },
           ]}

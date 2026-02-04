@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { FormField } from "@/ui/form-field";
 import { DatePicker } from "@/ui/date-picker";
 import {
@@ -65,11 +67,13 @@ function LocomotiveSelectField({
   name,
   defaultValue,
   locomotives,
-  isLoading,  
+  isLoading,
   label,
   placeholder,
   loadingText,
   emptyText,
+  searchPlaceholder = "Qidirish...",
+  noResultsText = "Natija topilmadi",
 }: {
   name: string;
   defaultValue?: string;
@@ -79,32 +83,172 @@ function LocomotiveSelectField({
   placeholder: string;
   loadingText: string;
   emptyText: string;
+  searchPlaceholder?: string;
+  noResultsText?: string;
 }) {
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState(defaultValue ?? "");
+  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
+    "bottom"
+  );
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Sync selectedValue when defaultValue changes (e.g. form reset / edit mode)
+  useEffect(() => {
+    setSelectedValue(defaultValue ?? "");
+  }, [defaultValue]);
+
+  const filteredLocomotives = useMemo(() => {
+    if (!searchValue.trim()) return locomotives;
+    const q = searchValue.toLowerCase();
+    return locomotives.filter(
+      (loc) =>
+        loc.name?.toLowerCase().includes(q) ||
+        loc.model_name?.toLowerCase().includes(q) ||
+        loc.id.toString().includes(q)
+    );
+  }, [locomotives, searchValue]);
+
+  const selectedLocomotive = locomotives.find(
+    (l) => l.id.toString() === selectedValue
+  );
+  const selectedLabel = selectedLocomotive
+    ? `${selectedLocomotive.name} (${selectedLocomotive.model_name})`
+    : null;
+
+  useEffect(() => {
+    if (open && triggerRef.current) {
+      const triggerRect = triggerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = 300;
+      const spaceBelow = viewportHeight - triggerRect.bottom;
+      const spaceAbove = triggerRect.top;
+      if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+        setDropdownPosition("top");
+      } else {
+        setDropdownPosition("bottom");
+      }
+    }
+  }, [open]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+        setSearchValue("");
+      }
+    };
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const handleSelect = (optionId: string) => {
+    setSelectedValue(optionId);
+    setOpen(false);
+    setSearchValue("");
+  };
+
   return (
-    <div>
+    <div className="relative w-full mb-4">
       <Label htmlFor="locomotive">{label}</Label>
-      <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
-        <SelectTrigger id="locomotive">
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {isLoading ? (
-            <SelectItem value="loading" disabled>
-              {loadingText}
-            </SelectItem>
-          ) : locomotives.length ? (
-            locomotives.map((option) => (
-              <SelectItem key={option.id} value={option.id.toString()}>
-                {`${option.name} (${option.model_name})`}
-              </SelectItem>
-            ))
-          ) : (
-            <SelectItem value="empty" disabled>
-              {emptyText}
-            </SelectItem>
+      <input type="hidden" name={name} value={selectedValue} readOnly />
+      <div
+        ref={triggerRef}
+        id="locomotive"
+        role="combobox"
+        aria-expanded={open}
+        className={cn(
+          "flex h-10 w-full items-center justify-between gap-2 cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
+          "transition-colors outline-none focus:border-blue-500 hover:border-gray-400",
+          "md:text-sm",
+          isLoading &&
+            "pointer-events-none opacity-50 cursor-not-allowed bg-gray-50"
+        )}
+        onClick={() => !isLoading && setOpen(!open)}
+      >
+        <span
+          className={cn(
+            "min-w-0 flex-1 truncate text-left",
+            selectedLabel ? "text-[#0F172B]" : "text-muted-foreground"
           )}
-        </SelectContent>
-      </Select>
+        >
+          {selectedLabel ?? placeholder}
+        </span>
+        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+      </div>
+
+      {open && (
+        <div
+          ref={dropdownRef}
+          className={cn(
+            "absolute left-0 right-0 bg-white border border-gray-300 rounded-md z-[999999] max-h-[300px] overflow-hidden",
+            "animate-in fade-in-0 zoom-in-95",
+            dropdownPosition === "top"
+              ? "bottom-full mb-1 slide-in-from-bottom-2"
+              : "top-full mt-1 slide-in-from-top-2"
+          )}
+          style={{ zIndex: 999999 }}
+        >
+          {isLoading ? (
+            <div className="py-3 px-3 text-sm text-muted-foreground">
+              {loadingText}
+            </div>
+          ) : locomotives.length === 0 ? (
+            <div className="py-3 px-3 text-sm text-muted-foreground">
+              {emptyText}
+            </div>
+          ) : (
+            <>
+              <div className="p-2 border-b border-gray-200">
+                <input
+                  type="text"
+                  placeholder={searchPlaceholder}
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div className="max-h-[200px] overflow-y-auto">
+                {filteredLocomotives.length === 0 ? (
+                  <div className="py-3 text-center text-sm text-muted-foreground">
+                    {noResultsText}
+                  </div>
+                ) : (
+                  <div className="py-0.5">
+                    {filteredLocomotives.map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => handleSelect(option.id.toString())}
+                        className={cn(
+                          "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-gray-100 cursor-pointer transition-colors bg-white rounded-sm",
+                          option.id.toString() === selectedValue &&
+                            "bg-blue-50 text-blue-700"
+                        )}
+                      >
+                        <span className="truncate">
+                          {option.name} ({option.model_name})
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   useCallback,
   useMemo,
   memo,
+  useRef,
   type FormEvent,
 } from "react";
 import { Modal } from "@/ui/modal";
@@ -17,7 +18,9 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
+import { ChevronDown } from "lucide-react";
 import { Label } from "@/ui/label";
+import { cn } from "@/lib/utils";
 import { Card } from "@/ui/card";
 import type {
   OrderData,
@@ -91,31 +94,154 @@ const LocomotiveSelect = memo(
     options: LocomotiveOption[];
     isLoading: boolean;
   }) => {
+    const [open, setOpen] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
+    const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
+      "bottom"
+    );
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const filteredOptions = useMemo(() => {
+      if (!searchValue.trim()) return options;
+      const q = searchValue.toLowerCase();
+      return options.filter(
+        (opt) =>
+          opt.label.toLowerCase().includes(q) ||
+          opt.value.toLowerCase().includes(q)
+      );
+    }, [options, searchValue]);
+
+    const selectedLabel = options.find((o) => o.value === value)?.label ?? null;
+
+    // Calculate dropdown position when opening (from multi-select)
+    useEffect(() => {
+      if (open && triggerRef.current) {
+        const triggerRect = triggerRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const dropdownHeight = 300;
+        const spaceBelow = viewportHeight - triggerRect.bottom;
+        const spaceAbove = triggerRect.top;
+        if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+          setDropdownPosition("top");
+        } else {
+          setDropdownPosition("bottom");
+        }
+      }
+    }, [open]);
+
+    // Close dropdown when clicking outside (from multi-select)
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          dropdownRef.current &&
+          !dropdownRef.current.contains(event.target as Node) &&
+          triggerRef.current &&
+          !triggerRef.current.contains(event.target as Node)
+        ) {
+          setOpen(false);
+          setSearchValue("");
+        }
+      };
+      if (open) {
+        document.addEventListener("mousedown", handleClickOutside);
+      }
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [open]);
+
+    const handleSelect = (optionValue: string) => {
+      onChange(optionValue);
+      setOpen(false);
+      setSearchValue("");
+    };
+
     return (
-      <div>
+      <div className="relative w-full mb-4">
         <Label htmlFor="locomotive">Lokomotiv</Label>
-        <Select value={value} onValueChange={onChange} disabled={isLoading}>
-          <SelectTrigger id="locomotive">
-            <SelectValue placeholder="Lokomotivni tanlang" />
-          </SelectTrigger>
-          <SelectContent>
-            {isLoading ? (
-              <SelectItem value="loading" disabled>
-                Yuklanmoqda...
-              </SelectItem>
-            ) : options.length ? (
-              options.map((option) => (
-                <SelectItem key={option.id} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="empty" disabled>
-                Lokomotiv topilmadi
-              </SelectItem>
+        <div
+          ref={triggerRef}
+          id="locomotive"
+          role="combobox"
+          aria-expanded={open}
+          className={cn(
+            "flex h-10 w-full items-center justify-between gap-2 cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
+            "transition-colors outline-none focus:border-blue-500 hover:border-gray-400",
+            "md:text-sm",
+            isLoading && "pointer-events-none opacity-50 cursor-not-allowed bg-gray-50"
+          )}
+          onClick={() => !isLoading && setOpen(!open)}
+        >
+          <span
+            className={cn(
+              "min-w-0 flex-1 truncate text-left",
+              selectedLabel ? "text-[#0F172B]" : "text-muted-foreground"
             )}
-          </SelectContent>
-        </Select>
+          >
+            {selectedLabel ?? "Lokomotivni tanlang"}
+          </span>
+          <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+        </div>
+
+        {open && (
+          <div
+            ref={dropdownRef}
+            className={cn(
+              "absolute left-0 right-0 bg-white border border-gray-300 rounded-md z-[999999] max-h-[300px] overflow-hidden",
+              "animate-in fade-in-0 zoom-in-95",
+              dropdownPosition === "top"
+                ? "bottom-full mb-1 slide-in-from-bottom-2"
+                : "top-full mt-1 slide-in-from-top-2"
+            )}
+            style={{ zIndex: 999999 }}
+          >
+            {isLoading ? (
+              <div className="py-3 px-3 text-sm text-muted-foreground">
+                Yuklanmoqda...
+              </div>
+            ) : options.length === 0 ? (
+              <div className="py-3 px-3 text-sm text-muted-foreground">
+                Lokomotiv topilmadi
+              </div>
+            ) : (
+              <>
+                <div className="p-2 border-b border-gray-200">
+                  <input
+                    type="text"
+                    placeholder="Qidirish..."
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div className="max-h-[200px] overflow-y-auto">
+                  {filteredOptions.length === 0 ? (
+                    <div className="py-3 text-center text-sm text-muted-foreground">
+                      Natija topilmadi
+                    </div>
+                  ) : (
+                    <div className="py-0.5">
+                      {filteredOptions.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => handleSelect(option.value)}
+                          className={cn(
+                            "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-gray-100 cursor-pointer transition-colors bg-white rounded-sm",
+                            option.value === value && "bg-blue-50 text-blue-700"
+                          )}
+                        >
+                          <span className="truncate">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     );
   }

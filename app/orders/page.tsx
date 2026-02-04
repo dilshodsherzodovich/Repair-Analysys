@@ -412,7 +412,7 @@ export default function OrdersPage() {
               isSelect: true,
               options: locomotiveOptions,
               placeholder: t("filters.locomotive_placeholder"),
-              searchable: false,
+              searchable: true,
               loading: isLoadingLocomotives,
             },
             ...(canChooseOrganization
