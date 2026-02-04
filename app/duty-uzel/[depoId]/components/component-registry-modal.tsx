@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Card } from "@/ui/card";
 import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
 import {
@@ -36,81 +35,24 @@ interface ComponentRegistryModalProps {
   isPending: boolean;
 }
 
-type FormData = {
+type SelectState = {
   locomotive_id: string;
   section_id: string;
   component_id: string;
   inspection_id: string;
-  reason: string;
-  defect_date: string;
-  removed_manufacture_year: string;
-  installed_manufacture_year: string;
-  installed_manufacture_factory: string;
-  removed_manufacture_factory: string;
 };
 
-const INITIAL_FORM_DATA: FormData = {
+const INITIAL_SELECT_STATE: SelectState = {
   locomotive_id: "",
   section_id: "",
   component_id: "",
   inspection_id: "",
-  reason: "",
-  defect_date: "",
-  removed_manufacture_year: "",
-  installed_manufacture_year: "",
-  installed_manufacture_factory: "",
-  removed_manufacture_factory: "",
 };
 
-// Memoized form field component
-const FormField = memo(
-  ({
-    id,
-    label,
-    value,
-    onChange,
-    placeholder,
-    required,
-    type = "text",
-    disabled,
-  }: {
-    id: string;
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    required?: boolean;
-    type?: string;
-    disabled?: boolean;
-  }) => {
-    const handleChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange(e.target.value);
-      },
-      [onChange]
-    );
-
-    return (
-      <div>
-        <Label htmlFor={id}>
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </Label>
-        <Input
-          id={id}
-          type={type}
-          value={value}
-          onChange={handleChange}
-          placeholder={placeholder}
-          required={required}
-          className="w-full"
-          disabled={disabled}
-        />
-      </div>
-    );
-  }
-);
-FormField.displayName = "FormField";
+function getFormString(form: HTMLFormElement | null, name: string): string {
+  const el = form?.elements.namedItem(name) as HTMLInputElement | null;
+  return el?.value?.trim() ?? "";
+}
 
 export function ComponentRegistryModal({
   isOpen,
@@ -120,22 +62,19 @@ export function ComponentRegistryModal({
   isPending,
 }: ComponentRegistryModalProps) {
   const t = useTranslations("ComponentRegistryModal");
-  const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [selects, setSelects] = useState<SelectState>(INITIAL_SELECT_STATE);
 
   const { data: locomotivesData, isPending: loadingLocomotives } =
-    useGetLocomotives(
-      true,
-      undefined,
-      {
-        no_page: true,
-        organization: organizationId,
-      }
-    );
+    useGetLocomotives(true, undefined, {
+      no_page: true,
+      organization: organizationId,
+    });
 
   const { data: locomotiveDetail, isPending: loadingLocomotiveDetail } =
     useGetLocomotiveDetail(
-      formData.locomotive_id ? Number(formData.locomotive_id) : undefined,
-      isOpen && !!formData.locomotive_id
+      selects.locomotive_id ? Number(selects.locomotive_id) : undefined,
+      isOpen && !!selects.locomotive_id
     );
 
   const { data: inspectionTypesData, isPending: loadingInspectionTypes } =
@@ -143,13 +82,11 @@ export function ComponentRegistryModal({
 
   const { data: componentsData, isPending: loadingComponents } = useComponents(
     {
-      locomotive: formData.locomotive_id
-        ? Number(formData.locomotive_id)
-        : undefined,
-      section: formData.section_id ? Number(formData.section_id) : undefined,
+      locomotive: selects.locomotive_id ? Number(selects.locomotive_id) : undefined,
+      section: selects.section_id ? Number(selects.section_id) : undefined,
       no_page: true,
     },
-    isOpen && !!formData.locomotive_id && !!formData.section_id
+    isOpen && !!selects.locomotive_id && !!selects.section_id
   );
 
   const componentOptions =
@@ -170,85 +107,74 @@ export function ComponentRegistryModal({
       label: `${loc.name} - ${loc.model_name || ""}`,
     })) || [];
 
-  // Reset form when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setFormData(INITIAL_FORM_DATA);
+      setSelects(INITIAL_SELECT_STATE);
     }
   }, [isOpen]);
 
-  const handleFieldChange = useCallback(
-    (field: keyof FormData, value: string) => {
-      setFormData((prev) => {
-        // Reset section_id and component_id when locomotive changes
-        if (field === "locomotive_id") {
-          return { ...prev, [field]: value, section_id: "", component_id: "" };
-        }
-        // Reset component_id when section changes
-        if (field === "section_id") {
-          return { ...prev, [field]: value, component_id: "" };
-        }
-        return { ...prev, [field]: value };
-      });
-    },
-    []
-  );
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-
-      // Validation
-      if (
-        !formData.locomotive_id ||
-        !formData.section_id ||
-        !formData.component_id ||
-        !formData.inspection_id
-      ) {
-        alert(t("validation_required"));
-        return;
+  const handleSelectChange = (field: keyof SelectState, value: string) => {
+    setSelects((prev) => {
+      if (field === "locomotive_id") {
+        return { ...prev, locomotive_id: value, section_id: "", component_id: "" };
       }
+      if (field === "section_id") {
+        return { ...prev, section_id: value, component_id: "" };
+      }
+      return { ...prev, [field]: value };
+    });
+  };
 
-      const payload: CreateComponentRegistryPayload = {
-        organization_id: organizationId,
-        locomotive_id: Number(formData.locomotive_id),
-        section_id: Number(formData.section_id),
-        component_id: Number(formData.component_id),
-        inspection_id: Number(formData.inspection_id),
-        reason: formData.reason,
-        defect_date: formData.defect_date,
-        removed_manufacture_year: formData.removed_manufacture_year,
-        installed_manufacture_year: formData.installed_manufacture_year,
-        installed_manufacture_factory: formData.installed_manufacture_factory,
-        removed_manufacture_factory: formData.removed_manufacture_factory,
-      };
-
-      onSave(payload);
-    },
-    [formData, organizationId, onSave, t]
-  );
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (
+      !selects.locomotive_id ||
+      !selects.section_id ||
+      !selects.component_id ||
+      !selects.inspection_id
+    ) {
+      alert(t("validation_required"));
+      return;
+    }
+    const form = formRef.current;
+    const payload: CreateComponentRegistryPayload = {
+      organization_id: organizationId,
+      locomotive_id: Number(selects.locomotive_id),
+      section_id: Number(selects.section_id),
+      component_id: Number(selects.component_id),
+      inspection_id: Number(selects.inspection_id),
+      reason: getFormString(form, "reason"),
+      defect_date: getFormString(form, "defect_date"),
+      removed_manufacture_year: getFormString(form, "removed_manufacture_year"),
+      installed_manufacture_year: getFormString(form, "installed_manufacture_year"),
+      installed_manufacture_factory: getFormString(form, "installed_manufacture_factory"),
+      removed_manufacture_factory: getFormString(form, "removed_manufacture_factory"),
+    };
+    onSave(payload);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[calc(100%-2rem)] sm:!max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>
-            {t("description")}
-          </DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          ref={formRef}
+          key={isOpen ? "open" : "closed"}
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="locomotive_id">
                 {t("locomotive")} <span className="text-red-500 ml-1">*</span>
               </Label>
               <Select
-                value={formData.locomotive_id}
-                onValueChange={(value) =>
-                  handleFieldChange("locomotive_id", value)
-                }
+                value={selects.locomotive_id}
+                onValueChange={(value) => handleSelectChange("locomotive_id", value)}
                 disabled={loadingLocomotives || isPending}
               >
                 <SelectTrigger className="w-full">
@@ -275,12 +201,10 @@ export function ComponentRegistryModal({
                 {t("section")} <span className="text-red-500 ml-1">*</span>
               </Label>
               <Select
-                value={formData.section_id}
-                onValueChange={(value) =>
-                  handleFieldChange("section_id", value)
-                }
+                value={selects.section_id}
+                onValueChange={(value) => handleSelectChange("section_id", value)}
                 disabled={
-                  !formData.locomotive_id ||
+                  !selects.locomotive_id ||
                   loadingLocomotiveDetail ||
                   isPending
                 }
@@ -288,31 +212,33 @@ export function ComponentRegistryModal({
                 <SelectTrigger className="w-full">
                   <SelectValue
                     placeholder={
-                      !formData.locomotive_id
+                      !selects.locomotive_id
                         ? t("placeholder_locomotive_first")
                         : loadingLocomotiveDetail
-                        ? t("placeholder_loading")
-                        : t("placeholder_section")
+                          ? t("placeholder_loading")
+                          : t("placeholder_section")
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
                   {locomotiveDetail?.sections &&
-                  locomotiveDetail.sections.length > 0
-                    ? locomotiveDetail.sections.map((section) => (
-                        <SelectItem
-                          key={section.id}
-                          value={section.id.toString()}
-                        >
-                          {section.name}
-                        </SelectItem>
-                      ))
-                    : formData.locomotive_id &&
-                      !loadingLocomotiveDetail && (
-                        <SelectItem value="no-sections" disabled>
-                          {t("no_sections")}
-                        </SelectItem>
-                      )}
+                  locomotiveDetail.sections.length > 0 ? (
+                    locomotiveDetail.sections.map((section) => (
+                      <SelectItem
+                        key={section.id}
+                        value={section.id.toString()}
+                      >
+                        {section.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    selects.locomotive_id &&
+                    !loadingLocomotiveDetail && (
+                      <SelectItem value="no-sections" disabled>
+                        {t("no_sections")}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -322,13 +248,11 @@ export function ComponentRegistryModal({
                 {t("uzel")} <span className="text-red-500 ml-1">*</span>
               </Label>
               <Select
-                value={formData.component_id}
-                onValueChange={(value) =>
-                  handleFieldChange("component_id", value)
-                }
+                value={selects.component_id}
+                onValueChange={(value) => handleSelectChange("component_id", value)}
                 disabled={
-                  !formData.locomotive_id ||
-                  !formData.section_id ||
+                  !selects.locomotive_id ||
+                  !selects.section_id ||
                   loadingComponents ||
                   isPending
                 }
@@ -336,20 +260,20 @@ export function ComponentRegistryModal({
                 <SelectTrigger className="w-full">
                   <SelectValue
                     placeholder={
-                      !formData.locomotive_id
+                      !selects.locomotive_id
                         ? t("placeholder_locomotive_first")
-                        : !formData.section_id
-                        ? t("placeholder_section_first")
-                        : loadingComponents
-                        ? t("placeholder_loading")
-                        : t("placeholder_uzel")
+                        : !selects.section_id
+                          ? t("placeholder_section_first")
+                          : loadingComponents
+                            ? t("placeholder_loading")
+                            : t("placeholder_uzel")
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
                   {componentOptions.length === 0 &&
-                  formData.locomotive_id &&
-                  formData.section_id &&
+                  selects.locomotive_id &&
+                  selects.section_id &&
                   !loadingComponents ? (
                     <SelectItem value="no-components" disabled>
                       {t("no_components")}
@@ -370,10 +294,8 @@ export function ComponentRegistryModal({
                 {t("inspection_type")} <span className="text-red-500 ml-1">*</span>
               </Label>
               <Select
-                value={formData.inspection_id}
-                onValueChange={(value) =>
-                  handleFieldChange("inspection_id", value)
-                }
+                value={selects.inspection_id}
+                onValueChange={(value) => handleSelectChange("inspection_id", value)}
                 disabled={loadingInspectionTypes || isPending}
               >
                 <SelectTrigger className="w-full">
@@ -395,64 +317,87 @@ export function ComponentRegistryModal({
               </Select>
             </div>
 
-            <FormField
-              id="reason"
-              label={t("reason")}
-              value={formData.reason}
-              onChange={(value) => handleFieldChange("reason", value)}
-              placeholder={t("placeholder_reason")}
-            />
+            <div>
+              <Label htmlFor="reason">{t("reason")}</Label>
+              <Input
+                id="reason"
+                name="reason"
+                type="text"
+                defaultValue=""
+                placeholder={t("placeholder_reason")}
+                className="w-full"
+              />
+            </div>
 
-            <FormField
-              id="defect_date"
-              label={t("defect_date")}
-              value={formData.defect_date}
-              onChange={(value) => handleFieldChange("defect_date", value)}
-              placeholder="YYYY-MM-DD"
-              type="date"
-            />
+            <div>
+              <Label htmlFor="defect_date">{t("defect_date")}</Label>
+              <Input
+                id="defect_date"
+                name="defect_date"
+                type="date"
+                defaultValue=""
+                placeholder="YYYY-MM-DD"
+                className="w-full"
+              />
+            </div>
 
-            <FormField
-              id="removed_manufacture_year"
-              label={t("removed_manufacture_year")}
-              value={formData.removed_manufacture_year}
-              onChange={(value) =>
-                handleFieldChange("removed_manufacture_year", value)
-              }
-              placeholder={t("placeholder_date_example")}
-            />
+            <div>
+              <Label htmlFor="removed_manufacture_year">
+                {t("removed_manufacture_year")}
+              </Label>
+              <Input
+                id="removed_manufacture_year"
+                name="removed_manufacture_year"
+                type="text"
+                defaultValue=""
+                placeholder={t("placeholder_date_example")}
+                className="w-full"
+              />
+            </div>
 
-            <FormField
-              id="installed_manufacture_year"
-              label={t("installed_manufacture_year")}
-              value={formData.installed_manufacture_year}
-              onChange={(value) =>
-                handleFieldChange("installed_manufacture_year", value)
-              }
-              placeholder={t("placeholder_date_example")}
-            />
+            <div>
+              <Label htmlFor="installed_manufacture_year">
+                {t("installed_manufacture_year")}
+              </Label>
+              <Input
+                id="installed_manufacture_year"
+                name="installed_manufacture_year"
+                type="text"
+                defaultValue=""
+                placeholder={t("placeholder_date_example")}
+                className="w-full"
+              />
+            </div>
 
-            <FormField
-              id="installed_manufacture_factory"
-              label={t("installed_manufacture_factory")}
-              value={formData.installed_manufacture_factory}
-              onChange={(value) =>
-                handleFieldChange("installed_manufacture_factory", value)
-              }
-              placeholder={t("placeholder_factory")}
-              disabled={!formData.component_id}
-            />
+            <div>
+              <Label htmlFor="installed_manufacture_factory">
+                {t("installed_manufacture_factory")}
+              </Label>
+              <Input
+                id="installed_manufacture_factory"
+                name="installed_manufacture_factory"
+                type="text"
+                defaultValue=""
+                placeholder={t("placeholder_factory")}
+                disabled={!selects.component_id}
+                className="w-full"
+              />
+            </div>
 
-            <FormField
-              id="removed_manufacture_factory"
-              label={t("removed_manufacture_factory")}
-              value={formData.removed_manufacture_factory}
-              onChange={(value) =>
-                handleFieldChange("removed_manufacture_factory", value)
-              }
-              placeholder={t("placeholder_factory")}
-              disabled={!formData.component_id}
-            />
+            <div>
+              <Label htmlFor="removed_manufacture_factory">
+                {t("removed_manufacture_factory")}
+              </Label>
+              <Input
+                id="removed_manufacture_factory"
+                name="removed_manufacture_factory"
+                type="text"
+                defaultValue=""
+                placeholder={t("placeholder_factory")}
+                disabled={!selects.component_id}
+                className="w-full"
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

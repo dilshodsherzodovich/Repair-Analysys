@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
@@ -44,25 +44,6 @@ interface ReplacementModalProps {
   mode?: "create" | "edit";
 }
 
-type FormData = {
-  locomotive_id: string;
-  section_id: string;
-  lubricant_type: string;
-  maintenance_type: string;
-  service_date: string;
-  consumption: string;
-};
-
-const INITIAL_FORM_DATA: FormData = {
-  locomotive_id: "",
-  section_id: "",
-  lubricant_type: "",
-  maintenance_type: "",
-  service_date: "",
-  consumption: "",
-};
-
-// Helper to format date for input (YYYY-MM-DD)
 const formatDateForInput = (dateString: string | null | undefined): string => {
   if (!dateString) return "";
   try {
@@ -74,6 +55,11 @@ const formatDateForInput = (dateString: string | null | undefined): string => {
   }
 };
 
+function getFormString(form: HTMLFormElement | null, name: string): string {
+  const el = form?.elements.namedItem(name) as HTMLInputElement | null;
+  return el?.value?.trim() ?? "";
+}
+
 export function ReplacementModal({
   isOpen,
   onClose,
@@ -83,26 +69,17 @@ export function ReplacementModal({
   mode = "create",
 }: ReplacementModalProps) {
   const t = useTranslations("ReplacementModal");
-  // Use refs for form data to avoid re-renders on every change
-  const formDataRef = useRef<FormData>(INITIAL_FORM_DATA);
-  const formKeyRef = useRef(0); // Key to force re-render of uncontrolled inputs
+  const formRef = useRef<HTMLFormElement>(null);
 
-  // Only use state for fields that need to trigger UI updates
-  const [locomotiveId, setLocomotiveId] = useState<string>("");
-  const [sectionId, setSectionId] = useState<string>("");
+  const [locomotiveId, setLocomotiveId] = useState("");
+  const [sectionId, setSectionId] = useState("");
   const [locomotiveSearchTerm, setLocomotiveSearchTerm] = useState("");
-  const [maintenanceType, setMaintenanceType] = useState<string>("");
-  const [lubricantType, setLubricantType] = useState<string>("");
+  const [maintenanceType, setMaintenanceType] = useState("");
+  const [lubricantType, setLubricantType] = useState("");
 
   const { data: locomotivesData, isPending: loadingLocomotives } =
-    useGetLocomotives(
-      true, 
-      undefined,
-      {
-        no_page: true,
-      }
-    );
-  // Simple locomotive options
+    useGetLocomotives(true, undefined, { no_page: true });
+
   const locomotiveOptions =
     locomotivesData?.results?.map((loc) => ({
       value: String(loc.id),
@@ -110,27 +87,12 @@ export function ReplacementModal({
       sections: loc.sections || [],
     })) || [];
 
-  // Simple filter - only when searching, but always include selected locomotive
-  let filteredLocomotiveOptions = locomotiveSearchTerm.trim()
+  const filteredLocomotiveOptions = locomotiveSearchTerm.trim()
     ? locomotiveOptions.filter((loc) =>
         loc.label.toLowerCase().includes(locomotiveSearchTerm.toLowerCase())
       )
     : locomotiveOptions;
 
-  // Always include selected locomotive if it exists and isn't in filtered list
-  if (locomotiveId) {
-    const selectedLoc = locomotiveOptions.find(
-      (loc) => loc.value === locomotiveId
-    );
-    if (
-      selectedLoc &&
-      !filteredLocomotiveOptions.some((loc) => loc.value === selectedLoc.value)
-    ) {
-      filteredLocomotiveOptions = [selectedLoc, ...filteredLocomotiveOptions];
-    }
-  }
-
-  // Get sections from selected locomotive
   const selectedLocomotive = locomotiveOptions.find(
     (loc) => loc.value === locomotiveId
   );
@@ -140,7 +102,6 @@ export function ReplacementModal({
       label: section.name,
     })) || [];
 
-  // In edit mode, ensure current section is in options
   if (mode === "edit" && replacement && sectionId) {
     const hasSection = sectionOptions.some((s) => s.value === sectionId);
     if (!hasSection && replacement.section_name) {
@@ -151,115 +112,96 @@ export function ReplacementModal({
     }
   }
 
-  // Initialize form data
+  const maintenanceTypeOptions = Object.keys(MAINTENANCE_TYPE_LABELS).map(
+    (value) => ({
+      value,
+      label: t(`maintenance_types.${value}`),
+    })
+  );
+
+  const lubricantTypeOptions = Object.keys(LUBRICANT_TYPE_LABELS).map(
+    (value) => ({
+      value,
+      label: t(`lubricant_types.${value}`),
+    })
+  );
+
   useEffect(() => {
     if (!isOpen) {
       setLocomotiveSearchTerm("");
-      formDataRef.current = INITIAL_FORM_DATA;
-      setLocomotiveId("");
-      setSectionId("");
-      formKeyRef.current += 1;
-      return;
-    }
-
-    if (mode === "edit" && replacement) {
-      const initialData: FormData = {
-        locomotive_id:
-          replacement.locomotive_id != null
-            ? String(replacement.locomotive_id)
-            : "",
-        section_id:
-          replacement.section_id != null ? String(replacement.section_id) : "",
-        lubricant_type: replacement.lubricant_type || "",
-        maintenance_type: replacement.maintenance_type || "",
-        service_date: formatDateForInput(replacement.service_date),
-        consumption: String(replacement.consumption || ""),
-      };
-      formDataRef.current = initialData;
-      setLocomotiveId(initialData.locomotive_id);
-      setSectionId(initialData.section_id);
-      setMaintenanceType(initialData.maintenance_type);
-      setLubricantType(initialData.lubricant_type);
-      formKeyRef.current += 1;
-    } else {
-      formDataRef.current = INITIAL_FORM_DATA;
       setLocomotiveId("");
       setSectionId("");
       setMaintenanceType("");
       setLubricantType("");
-      formKeyRef.current += 1;
+      return;
+    }
+    if (mode === "edit" && replacement) {
+      setLocomotiveId(
+        replacement.locomotive_id != null
+          ? String(replacement.locomotive_id)
+          : ""
+      );
+      setSectionId(
+        replacement.section_id != null ? String(replacement.section_id) : ""
+      );
+      setMaintenanceType(replacement.maintenance_type || "");
+      setLubricantType(replacement.lubricant_type || "");
+    } else {
+      setLocomotiveId("");
+      setSectionId("");
+      setMaintenanceType("");
+      setLubricantType("");
     }
   }, [isOpen, mode, replacement?.id]);
 
-  // Fast field change handler
-  const handleFieldChange = useCallback((field: keyof FormData, value: string) => {
-    formDataRef.current[field] = value;
+  const handleLocomotiveChange = (value: string) => {
+    setLocomotiveId(value);
+    setSectionId("");
+    setLocomotiveSearchTerm("");
+  };
 
-    if (field === "locomotive_id") {
-      setLocomotiveId(value);
-      formDataRef.current.section_id = "";
-      setSectionId("");
-    } else if (field === "section_id") {
-      setSectionId(value);
-    } else if (field === "maintenance_type") {
-      setMaintenanceType(value);
-    } else if (field === "lubricant_type") {
-      setLubricantType(value);
+  const handleSectionChange = (value: string) => {
+    setSectionId(value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = formRef.current;
+    const serviceDate = getFormString(form, "service_date");
+    const consumption = getFormString(form, "consumption");
+
+    if (
+      !locomotiveId ||
+      !sectionId ||
+      !lubricantType ||
+      !maintenanceType ||
+      !serviceDate ||
+      !consumption
+    ) {
+      return;
     }
-  }, []);
 
-  // Maintenance type options (labels from translations)
-  const maintenanceTypeOptions = useMemo(
-    () =>
-      Object.keys(MAINTENANCE_TYPE_LABELS).map((value) => ({
-        value,
-        label: t(`maintenance_types.${value}`),
-      })),
-    [t]
-  );
+    const payload: CreateLocomotiveReplacementOilPayload = {
+      locomotive_id: Number(locomotiveId),
+      section_id: Number(sectionId),
+      lubricant_type: lubricantType as LubricantType,
+      maintenance_type: maintenanceType as MaintenanceType,
+      service_date: serviceDate,
+      consumption: Number(consumption),
+    };
 
-  // Lubricant type options (labels from translations)
-  const lubricantTypeOptions = useMemo(
-    () =>
-      Object.keys(LUBRICANT_TYPE_LABELS).map((value) => ({
-        value,
-        label: t(`lubricant_types.${value}`),
-      })),
-    [t]
-  );
+    onSave(payload);
+  };
 
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-
-      const currentData = formDataRef.current;
-
-      // Validation
-      if (
-        !currentData.locomotive_id ||
-        !currentData.section_id ||
-        !currentData.lubricant_type ||
-        !currentData.maintenance_type ||
-        !currentData.service_date ||
-        !currentData.consumption
-      ) {
-        return;
-      }
-
-      // Build payload
-      const payload: CreateLocomotiveReplacementOilPayload = {
-        locomotive_id: Number(currentData.locomotive_id),
-        section_id: Number(currentData.section_id),
-        lubricant_type: currentData.lubricant_type as LubricantType,
-        maintenance_type: currentData.maintenance_type as MaintenanceType,
-        service_date: currentData.service_date,
-        consumption: Number(currentData.consumption),
-      };
-
-      onSave(payload);
-    },
-    [onSave]
-  );
+  const formKey = isOpen ? (mode === "edit" ? `edit-${replacement?.id}` : "create") : "closed";
+  const initialServiceDate =
+    mode === "edit" && replacement
+      ? formatDateForInput(replacement.service_date)
+      : "";
+  const initialConsumption =
+    mode === "edit" && replacement
+      ? String(replacement.consumption ?? "")
+      : "";
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -270,7 +212,12 @@ export function ReplacementModal({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6" key={formKeyRef.current}>
+        <form
+          ref={formRef}
+          key={formKey}
+          onSubmit={handleSubmit}
+          className="space-y-6"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="locomotive_id">
@@ -278,10 +225,7 @@ export function ReplacementModal({
               </Label>
               <Select
                 value={locomotiveId || undefined}
-                onValueChange={(value) => {
-                  handleFieldChange("locomotive_id", value);
-                  setLocomotiveSearchTerm("");
-                }}
+                onValueChange={handleLocomotiveChange}
                 disabled={isPending || loadingLocomotives || mode === "edit"}
               >
                 <SelectTrigger>
@@ -295,7 +239,9 @@ export function ReplacementModal({
                         type="text"
                         placeholder={t("placeholder_search")}
                         value={locomotiveSearchTerm}
-                        onChange={(e) => setLocomotiveSearchTerm(e.target.value)}
+                        onChange={(e) =>
+                          setLocomotiveSearchTerm(e.target.value)
+                        }
                         onKeyDown={(e) => e.stopPropagation()}
                         onKeyUp={(e) => e.stopPropagation()}
                         className="w-full pl-8 pr-2 py-1.5 text-sm border border-[#d1d5db] rounded-md focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20"
@@ -339,10 +285,8 @@ export function ReplacementModal({
               </Label>
               <Select
                 value={sectionId || undefined}
-                onValueChange={(value) => handleFieldChange("section_id", value)}
-                disabled={
-                  isPending || !locomotiveId || mode === "edit"
-                }
+                onValueChange={handleSectionChange}
+                disabled={isPending || !locomotiveId || mode === "edit"}
               >
                 <SelectTrigger>
                   <SelectValue placeholder={t("placeholder_section")} />
@@ -369,9 +313,7 @@ export function ReplacementModal({
               </Label>
               <Select
                 value={maintenanceType || undefined}
-                onValueChange={(value) =>
-                  handleFieldChange("maintenance_type", value)
-                }
+                onValueChange={setMaintenanceType}
                 disabled={isPending}
               >
                 <SelectTrigger>
@@ -393,9 +335,7 @@ export function ReplacementModal({
               </Label>
               <Select
                 value={lubricantType || undefined}
-                onValueChange={(value) =>
-                  handleFieldChange("lubricant_type", value)
-                }
+                onValueChange={setLubricantType}
                 disabled={isPending}
               >
                 <SelectTrigger>
@@ -417,9 +357,9 @@ export function ReplacementModal({
               </Label>
               <Input
                 id="service_date"
+                name="service_date"
                 type="date"
-                defaultValue={formDataRef.current.service_date}
-                onChange={(e) => handleFieldChange("service_date", e.target.value)}
+                defaultValue={initialServiceDate}
                 required
                 disabled={isPending}
               />
@@ -431,9 +371,9 @@ export function ReplacementModal({
               </Label>
               <Input
                 id="consumption"
+                name="consumption"
                 type="number"
-                defaultValue={formDataRef.current.consumption}
-                onChange={(e) => handleFieldChange("consumption", e.target.value)}
+                defaultValue={initialConsumption}
                 placeholder={t("placeholder_consumption")}
                 required
                 disabled={isPending}
@@ -464,4 +404,3 @@ export function ReplacementModal({
     </Dialog>
   );
 }
-
