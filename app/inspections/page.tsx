@@ -346,11 +346,15 @@ export default function InspectionsPage() {
                 formatCreatedTime(row.is_cancelled_time),
             },
           ]),
-      {
-        key: "interval",
-        header: t("columns.interval"),
-        accessor: (row) => getIntervalDisplay(row),
-      },
+      ...(tab !== "cancelled"
+        ? [
+            {
+              key: "interval",
+              header: t("columns.interval"),
+              accessor: (row: InspectionWithIndex) => getIntervalDisplay(row),
+            },
+          ]
+        : []),
       {
         key: "status",
         header: t("columns.status"),
