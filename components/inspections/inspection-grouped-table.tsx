@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/select";
-import { MoreVertical, Pencil } from "lucide-react";
+import { MoreVertical, Pencil, Loader2 } from "lucide-react";
 import { Inspection } from "@/api/types/inspections";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -35,11 +35,11 @@ import { useUpdateInspectionSection } from "@/api/hooks/use-inspections";
 import type { UserData } from "@/api/types/auth";
 
 const INSPECTION_SECTION_OPTIONS = [
-  { value: "A", label: "Section A" },
-  { value: "B", label: "Section B" },
-  { value: "V", label: "Section V" },
-  { value: "Cabin1", label: "Cabin 1" },
-  { value: "Cabin2", label: "Cabin 2" },
+  { value: "A", labelKey: "section_A" },
+  { value: "B", labelKey: "section_B" },
+  { value: "V", labelKey: "section_V" },
+  { value: "Cabin1", labelKey: "section_Cabin1" },
+  { value: "Cabin2", labelKey: "section_Cabin2" },
 ] as const;
 
 function formatCreatedTime(dateString: string | null | undefined): string {
@@ -125,23 +125,25 @@ export function InspectionsGroupedTable({
       (opt) => opt.value === section
     );
     if (byValue) return byValue.value;
-    const byLabel = INSPECTION_SECTION_OPTIONS.find(
-      (opt) => opt.label === section
+    const byLabelKey = INSPECTION_SECTION_OPTIONS.find(
+      (opt) => t(opt.labelKey) === section
     );
-    return byLabel ? byLabel.value : INSPECTION_SECTION_OPTIONS[0].value;
+    return byLabelKey ? byLabelKey.value : INSPECTION_SECTION_OPTIONS[0].value;
   };
 
   const getSectionDisplayLabel = (section: string | undefined) => {
     if (!section) return "—";
-    const byValue = INSPECTION_SECTION_OPTIONS.find(
-      (opt) => opt.value === section
+    const opt = INSPECTION_SECTION_OPTIONS.find((o) => o.value === section);
+    if (opt) return t(opt.labelKey);
+    const byTranslated = INSPECTION_SECTION_OPTIONS.find(
+      (o) => t(o.labelKey) === section
     );
-    if (byValue) return byValue.label;
-    const byLabel = INSPECTION_SECTION_OPTIONS.find(
-      (opt) => opt.label === section
-    );
-    return byLabel ? byLabel.label : section;
+    return byTranslated ? t(byTranslated.labelKey) : section;
   };
+
+  const updatingSectionId = updateSectionMutation.variables?.id ?? null;
+  const isSectionCellUpdating = (inspectionId: number) =>
+    updateSectionMutation.isPending && updatingSectionId === inspectionId;
 
   const groupedByType = useMemo(() => {
     const map = new Map<number, { name: string; items: Inspection[] }>();
@@ -277,9 +279,16 @@ export function InspectionsGroupedTable({
                       {inspection?.inspection_type?.name ?? "—"}
                     </TableCell>
                     <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
-                      {canEditSection &&
-                      inspection.locomotive &&
-                      editingSectionForId === inspection.id ? (
+                      {isSectionCellUpdating(inspection.id) ? (
+                        <span className="inline-flex items-center gap-2 text-[#64748B]">
+                          <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                          <span className="text-sm">
+                            {t("section_updating")}
+                          </span>
+                        </span>
+                      ) : canEditSection &&
+                        inspection.locomotive &&
+                        editingSectionForId === inspection.id ? (
                         <Select
                           value={getSectionSelectValue(inspection.section)}
                           onValueChange={(value) => {
@@ -302,7 +311,7 @@ export function InspectionsGroupedTable({
                           <SelectContent>
                             {INSPECTION_SECTION_OPTIONS.map((opt) => (
                               <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
+                                {t(opt.labelKey)}
                               </SelectItem>
                             ))}
                           </SelectContent>

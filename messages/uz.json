@@ -845,7 +845,13 @@
     "empty_description": "Texnik ko'rik yozuvlari topilmadi",
     "loading": "Yuklanmoqda...",
     "action_view": "Ko'rish",
-    "action_edit": "Tahrirlash"
+    "action_edit": "Tahrirlash",
+    "section_A": "Bo'lim A",
+    "section_B": "Bo'lim B",
+    "section_V": "Bo'lim V",
+    "section_Cabin1": "Kabin 1",
+    "section_Cabin2": "Kabin 2",
+    "section_updating": "Yangilanmoqda..."
   }
 }
 

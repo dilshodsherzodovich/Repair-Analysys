@@ -180,6 +180,7 @@ export default function InspectionsPage() {
   const inProgressParams = useMemo(
     () => ({
       is_closed: false,
+      is_cancelled: false,
       no_page: true,
       organization: organizationParam ? Number(organizationParam) : undefined,
       inspection_type: inspectionTypeParam

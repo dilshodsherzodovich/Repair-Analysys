@@ -845,7 +845,13 @@
     "empty_description": "Записи технического осмотра не найдены",
     "loading": "Загрузка...",
     "action_view": "Просмотр",
-    "action_edit": "Редактировать"
+    "action_edit": "Редактировать",
+    "section_A": "Секция А",
+    "section_B": "Секция Б",
+    "section_V": "Секция В",
+    "section_Cabin1": "Кабина 1",
+    "section_Cabin2": "Кабина 2",
+    "section_updating": "Обновление..."
   }
 }
 
