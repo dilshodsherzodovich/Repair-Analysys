@@ -52,8 +52,8 @@ export default function PublicDefectiveWorkCreatePage() {
       setAuthError(null);
 
       const credentials: LoginCredentials = {
-        username: "repair_employee",
-        password: "123",
+        username: "admin20",
+        password: "QO123456",
       };
 
       try {
