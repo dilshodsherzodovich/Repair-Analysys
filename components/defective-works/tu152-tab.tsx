@@ -323,7 +323,7 @@ export function TU152Tab() {
     <>
       <div className="px-6 py-4">
         <div className="bg-white border p-4 mb-4">
-          <div className="flex flex-wrap md:flex-nowrap items-end gap-4 overflow-x-auto">
+          <div className="flex flex-wrap md:flex-nowrap items-end gap-4">
             <div className="min-w-[200px] flex-1">
               <DatePicker
                 label=""
