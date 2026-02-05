@@ -442,7 +442,6 @@ export function DefectiveWorkModal({
               label={t("table_number")}
               defaultValue={formDefaults.table_number}
               placeholder={t("table_number_placeholder")}
-              required
             />
 
             <FormField

@@ -110,7 +110,7 @@ export default function OrdersPage() {
       locomotivesData?.results?.forEach(
         (locomotive: { id: number; name?: string; model_name?: string }) => {
           options.push({
-            value: locomotive.id.toString(),
+            value: locomotive.name || "",
             label:
               locomotive.name ||
               locomotive.model_name ||
@@ -142,11 +142,10 @@ export default function OrdersPage() {
   } = useOrders({
     page: currentPage,
     page_size: itemsPerPage,
-    search: q || responsible_department,
-    type_of_journal: type_of_journal || undefined,
-    locomotive: locomotive || undefined,
+    search: q || responsible_department ||  locomotive || organization,
+    type_of_journal : type_of_journal || undefined,
     date: date || undefined,
-    organization: organization || undefined,
+    // organization: organization || undefined,
   });
 
   const paginatedData = apiResponse?.results || [];

@@ -117,6 +117,15 @@
     "footer_company": "Smart Depo",
     "footer_description": "Raqamli tahliliy tizim"
   },
+  "Roles": {
+    "admin": "Admin",
+    "moderator": "Moderator",
+    "repair_engineer": "Texnolog",
+    "repair_staff": "Tamir xodimi",
+    "passport_staff": "Passportchi",
+    "sriv_admin": "Sriv admin",
+    "sriv_moderator": "srivchi"
+  },
   "PaginatedTable": {
     "actions_label": "Amallar",
     "empty_title": "Ma'lumot topilmadi",
@@ -434,8 +443,8 @@
     "inspection_type_empty": "Texnik ko'rik turlari topilmadi",
     "train_driver": "Mashinist",
     "train_driver_placeholder": "Mashinist ism familiyasi",
-    "table_number": "Jadval raqami",
-    "table_number_placeholder": "Jadval raqamini kiriting",
+    "table_number": "Tabel raqami",
+    "table_number_placeholder": "Tabel raqamini kiriting",
     "code": "Kod",
     "code_placeholder": "Kod kiriting",
     "date": "Sana",

@@ -1,3 +1,5 @@
+"use client";
+
 import { User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/ui/button";
 import {
@@ -10,6 +12,7 @@ import {
 } from "@/ui/dropdown-menu";
 import Link from "next/link";
 import { UserData } from "@/api/types/auth";
+import { useTranslations } from "next-intl";
 
 interface AccountPopoverProps {
   user: UserData;
@@ -24,6 +27,7 @@ export function AccountPopover({
   onSettings,
   onLogout,
 }: AccountPopoverProps) {
+  const tRoles = useTranslations("Roles");
   const handleLogout = () => {
     if (onLogout) {
       onLogout();
@@ -48,7 +52,7 @@ export function AccountPopover({
               ? `${user.first_name} ${user.last_name}`
               : user.first_name || user.last_name || user.username}
             <div className="text-xs text-[var(--muted-foreground)]">
-              {user.role || "User"}
+              {user.role ? tRoles(user.role as keyof IntlMessages["Roles"]) : "User"}
             </div>
           </span>
         </Button>
