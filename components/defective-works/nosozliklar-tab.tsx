@@ -68,11 +68,10 @@ export function NosozliklarTab() {
   } = useDefectiveWorks({
     page: currentPage,
     page_size: itemsPerPage,
-    search: q,
+    search: q || locomotive,
     tab: tab && tab !== "all" ? tab : undefined,
     organization_id: organization_id || undefined,
     inspection_type: inspection_type || undefined,
-    locomotive: locomotive || undefined,
   });
 
   const paginatedData = apiResponse?.results ?? [];
@@ -256,7 +255,7 @@ export function NosozliklarTab() {
     if (locomotivesData && Array.isArray(locomotivesData?.results)) {
       locomotivesData?.results?.forEach((loc) =>
         options.push({
-          value: loc.id.toString(),
+          value: loc.name || "",
           label: loc.name || loc.model_name || `Lokomotiv ${loc.id}`,
         })
       );
