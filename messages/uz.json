@@ -146,8 +146,13 @@
     "showing": "Ko'rsatilmoqda {from} dan {to} gacha, jami {total} ta natija"
   },
   "DatePicker": {
-    "placeholder": "DD.MM.YYYY",
-    "clear_aria": "Sanani tozalash"
+    "placeholder": "DD.MM.YYYY HH:mm",
+    "clear_aria": "Sanani tozalash",
+    "time_label": "Vaqt",
+    "hours_24": "Soat (0–23)",
+    "minutes_24": "Daqiqa (0–59)",
+    "time_pick_hour": "Soatni tanlash",
+    "time_pick_minute": "Daqiqani tanlash"
   },
   "FileUpload": {
     "cta_main": "Fayl tanlash uchun bosing",

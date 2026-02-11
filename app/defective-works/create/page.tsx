@@ -22,7 +22,7 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { defectiveWorksService } from "@/api/services/defective-works.service";
 import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
 import { XIcon, ChevronsUpDown, Search } from "lucide-react";
-import { DatePicker } from "@/ui/date-picker";
+import { DateTimePicker } from "@/ui/datetime-picker";
 import { cn } from "@/lib/utils";
 
 interface IssueWithDate {
@@ -530,11 +530,11 @@ export default function PublicDefectiveWorkCreatePage() {
               />
 
               <div>
-                <DatePicker
+                <DateTimePicker
                   label={t("issue_date")}
                   value={currentIssueDate}
                   onValueChange={setCurrentIssueDate}
-                  placeholder="DD/MM/YYYY"
+                  placeholder="DD/MM/YYYY HH:mm"
                 />
               </div>
             </div>
@@ -583,12 +583,12 @@ export default function PublicDefectiveWorkCreatePage() {
                           {index + 1}. {issue.text}
                         </span>
 
-                        <DatePicker  
+                        <DateTimePicker
                           value={issue.date}
                           onValueChange={(date) =>
                             handleUpdateIssueDate(index, date)
                           }
-                          placeholder="DD/MM/YYYY"
+                          placeholder="DD/MM/YYYY HH:mm"
                           size="sm"
                         />
                        </div>

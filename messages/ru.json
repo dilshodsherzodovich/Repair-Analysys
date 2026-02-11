@@ -146,8 +146,13 @@
     "showing": "Показаны записи с {from} по {to} из {total}"
   },
   "DatePicker": {
-    "placeholder": "ДД.ММ.ГГГГ",
-    "clear_aria": "Очистить дату"
+    "placeholder": "ДД.ММ.ГГГГ ЧЧ:мм",
+    "clear_aria": "Очистить дату",
+    "time_label": "Время",
+    "hours_24": "Часы (0–23)",
+    "minutes_24": "Минуты (0–59)",
+    "time_pick_hour": "Выбрать час",
+    "time_pick_minute": "Выбрать минуту"
   },
   "FileUpload": {
     "cta_main": "Нажмите, чтобы выбрать файл",

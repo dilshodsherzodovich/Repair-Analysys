@@ -16,7 +16,7 @@ import { Button } from "@/ui/button";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormField } from "@/ui/form-field";
-import { DatePicker } from "@/ui/date-picker";
+import { DateTimePicker } from "@/ui/datetime-picker";
 import {
   DefectiveWorkEntry,
   DefectiveWorkCreatePayload,
@@ -453,11 +453,11 @@ export function DefectiveWorkModal({
               required
             />
 
-            <DatePicker
+            <DateTimePicker
               label={t("date")}
               value={selectedDate}
               onValueChange={setSelectedDate}
-              placeholder="DD/MM/YYYY"
+              placeholder="DD/MM/YYYY HH:mm"
             />
           </div>
 
