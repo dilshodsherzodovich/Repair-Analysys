@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
@@ -20,16 +21,165 @@ import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { defectiveWorksService } from "@/api/services/defective-works.service";
 import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
-import { XIcon } from "lucide-react";
+import { XIcon, ChevronsUpDown, Search } from "lucide-react";
 import { DatePicker } from "@/ui/date-picker";
+import { cn } from "@/lib/utils";
 
 interface IssueWithDate {
   text: string;
   date: Date | undefined;
 }
 
+/** Single-select with search, same pattern as multi-select */
+function SearchableLocomotiveSelect({
+  options,
+  value,
+  onValueChange,
+  placeholder,
+  disabled,
+  loading,
+  emptyMessage,
+}: {
+  options: { value: string; label: string }[];
+  value: string;
+  onValueChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  emptyMessage?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">("bottom");
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const selectedOption = options.find((o) => o.value === value);
+
+  const filteredOptions = options.filter((opt) =>
+    opt.label.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+  useEffect(() => {
+    if (open && triggerRef.current) {
+      const triggerRect = triggerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = 300;
+      const spaceBelow = viewportHeight - triggerRect.bottom;
+      const spaceAbove = triggerRect.top;
+      if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+        setDropdownPosition("top");
+      } else {
+        setDropdownPosition("bottom");
+      }
+    }
+  }, [open]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+        setSearchValue("");
+      }
+    };
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  const handleSelect = (optionValue: string) => {
+    onValueChange(optionValue);
+    setOpen(false);
+    setSearchValue("");
+  };
+
+  return (
+    <div className="relative w-full">
+      <div
+        ref={triggerRef}
+        className={cn(
+          "flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-base cursor-pointer",
+          "hover:border-gray-400 focus-within:ring-2 focus-within:ring-[#2354bf]/20 focus-within:border-[#2354bf]",
+          "disabled:pointer-events-none disabled:opacity-50",
+          "[&>span]:line-clamp-1",
+          disabled && "opacity-50 cursor-not-allowed"
+        )}
+        onClick={() => !disabled && !loading && setOpen(!open)}
+      >
+        <span
+          className={cn(
+            "truncate flex-1 min-w-0 text-left text-sm",
+            !selectedOption ? "text-[#90A1B9]" : "text-[#0F172B]"
+          )}
+        >
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-[#64748B]" />
+      </div>
+
+      {open && (
+        <div
+          ref={dropdownRef}
+          className={cn(
+            "absolute left-0 right-0 z-[999999] max-h-[300px] overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg",
+            "animate-in fade-in-0 zoom-in-95 duration-100",
+            dropdownPosition === "top"
+              ? "bottom-full mb-1 slide-in-from-bottom-2"
+              : "top-full mt-1 slide-in-from-top-2"
+          )}
+          style={{ zIndex: 999999 }}
+        >
+          <div className="p-2 border-b border-[#E2E8F0]">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
+              <input
+                type="text"
+                placeholder={placeholder}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+                className="w-full border border-[#E2E8F0] rounded-md py-2 pl-8 pr-3 text-sm focus:border-[#2354bf] focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20"
+              />
+            </div>
+          </div>
+          <div className="max-h-[240px] overflow-y-auto py-0.5">
+            {loading ? (
+              <div className="p-4 text-center text-sm text-[#64748B]">Loading...</div>
+            ) : filteredOptions.length === 0 ? (
+              <div className="py-3 text-center text-sm text-[#64748B]">
+                {emptyMessage ?? "No items found."}
+              </div>
+            ) : (
+              filteredOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => handleSelect(opt.value)}
+                  className={cn(
+                    "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-[#F1F5F9]",
+                    opt.value === value && "bg-[#EFF6FF] font-medium text-[#1d4ed8]"
+                  )}
+                >
+                  <span className="truncate">{opt.label}</span>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PublicDefectiveWorkCreatePage() {
   const t = useTranslations("DefectiveWorksCreatePage");
+  const searchParams = useSearchParams();
+  const organizationFromUrl = searchParams.get("organization") ?? null;
+
   const [formResetKey, setFormResetKey] = useState(0);
   const [issues, setIssues] = useState<IssueWithDate[]>([]);
   const [currentIssueDate, setCurrentIssueDate] = useState<Date | undefined>(
@@ -41,6 +191,8 @@ export default function PublicDefectiveWorkCreatePage() {
   const [temporaryToken, setTemporaryToken] = useState<string | undefined>(
     undefined
   );
+  const [selectedLocomotive, setSelectedLocomotive] = useState("");
+  const [selectedOrganization, setSelectedOrganization] = useState("");
   const formRef = useRef<HTMLFormElement | null>(null);
   const locomotiveInputRef = useRef<HTMLInputElement | null>(null);
   const { showSuccess, showError } = useSnackbar();
@@ -103,7 +255,8 @@ export default function PublicDefectiveWorkCreatePage() {
     if (locomotiveInputRef.current) {
       locomotiveInputRef.current.value = "";
     }
-
+    setSelectedLocomotive("");
+    if (!organizationFromUrl) setSelectedOrganization("");
     setIssues([]);
     setCurrentIssueDate(undefined);
     if (formRef.current) {
@@ -155,7 +308,10 @@ export default function PublicDefectiveWorkCreatePage() {
     const formData = new FormData(formElement);
 
     const locomotive = (formData.get("locomotive") as string | null) ?? "";
-    const organization = (formData.get("organization") as string | null) ?? "";
+    const organization =
+      organizationFromUrl ??
+      (formData.get("organization") as string | null) ??
+      "";
     const trainDriver = (formData.get("train_driver") as string | null) ?? "";
     const currentIssueFromForm =
       (formData.get("currentIssue") as string | null) ?? "";
@@ -289,60 +445,81 @@ export default function PublicDefectiveWorkCreatePage() {
             onSubmit={handleSubmit}
             className="space-y-6"
           >
+            {/* Hidden inputs for form submission */}
+            <input type="hidden" name="locomotive" value={selectedLocomotive} />
+            <input
+              type="hidden"
+              name="organization"
+              value={organizationFromUrl ?? selectedOrganization}
+            />
+
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
                   {t("locomotive")}
                 </Label>
-                <Select name="locomotive" disabled={isLoadingLocomotives}>
-                  <SelectTrigger className="bg-white">
-                    <SelectValue placeholder={t("locomotive_placeholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locomotives.length ? (
-                      locomotives.map((locomotive) => (
-                        <SelectItem
-                          key={locomotive.id}
-                          value={locomotive.id.toString()}
-                        >
-                          {`${locomotive.name} (${locomotive.model_name})`}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="empty" disabled>
-                        {t("locomotive_empty")}
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
+                <SearchableLocomotiveSelect
+                  options={
+                    locomotives.length
+                      ? locomotives.map((loc) => ({
+                          value: loc.id.toString(),
+                          label: `${loc.name} (${loc.model_name})`,
+                        }))
+                      : []
+                  }
+                  value={selectedLocomotive}
+                  onValueChange={setSelectedLocomotive}
+                  placeholder={t("locomotive_placeholder")}
+                  disabled={isLoadingLocomotives}
+                  loading={isLoadingLocomotives}
+                  emptyMessage={t("locomotive_empty")}
+                />
               </div>
 
-              <div>
-                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                  {t("organization")}
-                </Label>
-                <Select name="organization" disabled={isLoadingOrganizations}>
-                  <SelectTrigger className="bg-white">
-                    <SelectValue placeholder={t("organization_placeholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {organizations.length ? (
-                      organizations.map((organization) => (
-                        <SelectItem
-                          key={organization.id}
-                          value={organization.id.toString()}
-                        >
-                          {organization.name}
+              {organizationFromUrl ? (
+                <div>
+                  <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                    {t("organization")}
+                  </Label>
+                  <div className="flex h-10 w-full items-center rounded-md border border-gray-200 bg-[#F8FAFC] px-4 py-2 text-sm text-[#475569]">
+                    {organizations.find(
+                      (o) => o.id.toString() === organizationFromUrl
+                    )?.name ?? organizationFromUrl}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                    {t("organization")}
+                  </Label>
+                  <Select
+                    name="organization"
+                    value={selectedOrganization}
+                    onValueChange={setSelectedOrganization}
+                    disabled={isLoadingOrganizations}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder={t("organization_placeholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {organizations.length ? (
+                        organizations.map((organization) => (
+                          <SelectItem
+                            key={organization.id}
+                            value={organization.id.toString()}
+                          >
+                            {organization.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="empty" disabled>
+                          {t("organization_empty")}
                         </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="empty" disabled>
-                        {t("organization_empty")}
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <FormField
                 id="train_driver"
