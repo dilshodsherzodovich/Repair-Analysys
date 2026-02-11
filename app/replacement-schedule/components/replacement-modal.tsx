@@ -173,10 +173,8 @@ export function ReplacementModal({
     if (
       !locomotiveId ||
       !sectionId ||
-      !lubricantType ||
       !maintenanceType ||
-      !serviceDate ||
-      !consumption
+      !serviceDate 
     ) {
       return;
     }
@@ -331,7 +329,7 @@ export function ReplacementModal({
 
             <div className="space-y-2">
               <Label htmlFor="lubricant_type">
-                {t("lubricant_type")} <span className="text-red-500">*</span>
+                {t("lubricant_type")}
               </Label>
               <Select
                 value={lubricantType || undefined}
@@ -367,7 +365,7 @@ export function ReplacementModal({
 
             <div className="space-y-2">
               <Label htmlFor="consumption">
-                {t("consumption")} <span className="text-red-500">*</span>
+                {t("consumption")}
               </Label>
               <Input
                 id="consumption"
@@ -375,7 +373,6 @@ export function ReplacementModal({
                 type="number"
                 defaultValue={initialConsumption}
                 placeholder={t("placeholder_consumption")}
-                required
                 disabled={isPending}
                 onWheel={(e) => e.currentTarget.blur()}
               />
