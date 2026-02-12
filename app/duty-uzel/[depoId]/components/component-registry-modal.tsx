@@ -10,6 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SearchableSelect,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
 import {
@@ -172,28 +173,21 @@ export function ComponentRegistryModal({
               <Label htmlFor="locomotive_id">
                 {t("locomotive")} <span className="text-red-500 ml-1">*</span>
               </Label>
-              <Select
+              <SearchableSelect
                 value={selects.locomotive_id}
-                onValueChange={(value) => handleSelectChange("locomotive_id", value)}
+                onValueChange={(value: string) => handleSelectChange("locomotive_id", value)}
+                options={locomotiveOptions ?? []}
+                placeholder={
+                  loadingLocomotives
+                    ? t("placeholder_loading")
+                    : t("placeholder_locomotive")
+                }
+                searchable
+                searchPlaceholder={t("search_locomotive")}
+                emptyMessage={t("no_results")}
                 disabled={loadingLocomotives || isPending}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={
-                      loadingLocomotives
-                        ? t("placeholder_loading")
-                        : t("placeholder_locomotive")
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {locomotiveOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                triggerClassName="w-full mb-0"
+              />
             </div>
 
             <div>

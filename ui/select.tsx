@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -161,6 +161,230 @@ const SelectSeparator = React.forwardRef<
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
+// --- SearchableSelect: optional search (searchable defaults to false), same design as multi-select ---
+
+export interface SearchableSelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+export interface SearchableSelectProps {
+  value?: string;
+  onValueChange?: (value: string) => void;
+  options: SearchableSelectOption[];
+  placeholder?: string;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  emptyMessage?: string;
+  disabled?: boolean;
+  name?: string;
+  size?: "sm" | "default";
+  className?: string;
+  triggerClassName?: string;
+}
+
+function SearchableSelect({
+  value = "",
+  onValueChange,
+  options,
+  placeholder = "Select...",
+  searchable = false,
+  searchPlaceholder = "Search...",
+  emptyMessage = "No results found.",
+  disabled = false,
+  name,
+  size = "default",
+  className,
+  triggerClassName,
+}: SearchableSelectProps) {
+  const [open, setOpen] = React.useState(false);
+  const [searchValue, setSearchValue] = React.useState("");
+  const [dropdownPosition, setDropdownPosition] = React.useState<"bottom" | "top">("bottom");
+  const triggerRef = React.useRef<HTMLDivElement>(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  const selectedOption = options.find((o) => o.value === value);
+  const filteredOptions = React.useMemo(() => {
+    if (!searchable || !searchValue.trim()) return options;
+    const q = searchValue.toLowerCase();
+    return options.filter((o) => o.label.toLowerCase().includes(q));
+  }, [options, searchValue, searchable]);
+
+  React.useEffect(() => {
+    if (open && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = 300;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setDropdownPosition(
+        spaceBelow < dropdownHeight && spaceAbove > dropdownHeight ? "top" : "bottom"
+      );
+    }
+  }, [open]);
+
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+        setSearchValue("");
+      }
+    };
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  const handleSelect = (optionValue: string) => {
+    onValueChange?.(optionValue);
+    setOpen(false);
+    setSearchValue("");
+  };
+
+  if (!searchable) {
+    return (
+      <div className={cn("relative w-full", className)}>
+        {name && <input type="hidden" name={name} value={value} readOnly />}
+        <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
+          <SelectPrimitive.Trigger
+            className={cn(
+              "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
+              "transition-colors outline-none focus:border-blue-500 focus:ring-0 hover:border-gray-400",
+              "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
+              "md:text-sm [&>span]:line-clamp-1",
+              "[&>span]:text-[#0F172B] [&>span]:data-[placeholder]:text-muted-foreground",
+              "mb-4",
+              size === "sm" && "h-8 text-xs",
+              triggerClassName
+            )}
+          >
+            <SelectPrimitive.Value placeholder={placeholder} />
+            <SelectPrimitive.Icon asChild>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </SelectPrimitive.Icon>
+          </SelectPrimitive.Trigger>
+          <SelectPrimitive.Portal>
+            <SelectPrimitive.Content
+              className={cn(
+                "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-gray-300 bg-white text-[#0F172B] shadow-lg",
+                "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+                "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+                "data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
+              )}
+              position="popper"
+            >
+              <SelectPrimitive.Viewport className="p-1">
+                {options.length === 0 ? (
+                  <div className="py-3 text-center text-sm text-muted-foreground">
+                    {emptyMessage}
+                  </div>
+                ) : (
+                  options.map((opt) => (
+                    <SelectPrimitive.Item
+                      key={opt.value}
+                      value={opt.value}
+                      disabled={opt.disabled}
+                      className="relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 px-3 text-sm outline-none focus:bg-gray-100 focus:text-[#0F172B] data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    >
+                      <SelectPrimitive.ItemText>{opt.label}</SelectPrimitive.ItemText>
+                    </SelectPrimitive.Item>
+                  ))
+                )}
+              </SelectPrimitive.Viewport>
+            </SelectPrimitive.Content>
+          </SelectPrimitive.Portal>
+        </SelectPrimitive.Root>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("relative w-full", className)}>
+      {name && <input type="hidden" name={name} value={value} readOnly />}
+      <div
+        ref={triggerRef}
+        role="combobox"
+        aria-expanded={open}
+        className={cn(
+          "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
+          "transition-colors outline-none focus:border-blue-500 focus:ring-0 hover:border-gray-400",
+          "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
+          "md:text-sm [&>span]:line-clamp-1 mb-4",
+          size === "sm" && "h-8 text-xs",
+          triggerClassName
+        )}
+        onClick={() => !disabled && setOpen(!open)}
+      >
+        <span
+          className={cn(
+            "min-w-0 flex-1 truncate text-left",
+            selectedOption ? "text-[#0F172B]" : "text-muted-foreground"
+          )}
+        >
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+      </div>
+
+      {open && (
+        <div
+          ref={dropdownRef}
+          className={cn(
+            "absolute left-0 right-0 z-[999999] max-h-[300px] overflow-hidden rounded-md border border-gray-300 bg-white text-[#0F172B] shadow-lg",
+            "animate-in fade-in-0 zoom-in-95",
+            dropdownPosition === "top"
+              ? "bottom-full mb-1 slide-in-from-bottom-2"
+              : "top-full mt-1 slide-in-from-top-2"
+          )}
+          style={{ zIndex: 999999 }}
+        >
+          <div className="p-2 border-b border-gray-200">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
+              <input
+                type="text"
+                placeholder={searchPlaceholder}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+                className="w-full rounded-md border border-gray-300 bg-white py-2 pl-8 pr-3 text-sm text-[#0F172B] focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+          </div>
+          <div className="max-h-[200px] overflow-y-auto p-1">
+            {filteredOptions.length === 0 ? (
+              <div className="py-3 text-center text-sm text-muted-foreground">
+                {emptyMessage}
+              </div>
+            ) : (
+              filteredOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  disabled={opt.disabled}
+                  onClick={() => !opt.disabled && handleSelect(opt.value)}
+                  className={cn(
+                    "flex w-full cursor-pointer items-center rounded-sm px-3 py-2 text-left text-sm transition-colors hover:bg-gray-100",
+                    opt.value === value && "bg-blue-50 text-blue-700 font-medium",
+                    opt.disabled && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  <span className="truncate">{opt.label}</span>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export {
   Select,
   SelectGroup,
@@ -172,4 +396,5 @@ export {
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
+  SearchableSelect,
 };

@@ -703,6 +703,8 @@
     "placeholder_factory": "Введите заводской номер",
     "no_sections": "Секции не найдены",
     "no_components": "Узлы не найдены",
+    "search_locomotive": "Поиск локомотива",
+    "no_results": "Ничего не найдено",
     "cancel": "Отмена",
     "save": "Сохранить",
     "saving": "Сохранение..."

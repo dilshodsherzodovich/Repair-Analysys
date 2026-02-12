@@ -703,6 +703,8 @@
     "placeholder_factory": "Zavod raqamini kiriting",
     "no_sections": "Seksiyalar topilmadi",
     "no_components": "Uzellar topilmadi",
+    "search_locomotive": "Lokomotivni qidirish",
+    "no_results": "Natijalar topilmadi",
     "cancel": "Bekor qilish",
     "save": "Saqlash",
     "saving": "Saqlanmoqda..."
