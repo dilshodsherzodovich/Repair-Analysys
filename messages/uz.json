@@ -105,6 +105,7 @@
       "replacement_schedule": "Almashtirish yozuvlari",
       "inspections": "Texnik ko'riklar",
       "locomotive_mileage_report": "TXK-13",
+      "rezerv": "Rezerv",
       "pantograph": "Pantograf",
       "orders": "Buyruq MPR",
       "defective_works": "Nosozliklar",
@@ -872,6 +873,25 @@
     "section_Cabin1": "Kabin 1",
     "section_Cabin2": "Kabin 2",
     "section_updating": "Yangilanmoqda..."
+  },
+  "RezervPage": {
+    "title": "Rezerv",
+    "description": "Lokomotivlar rezervi bo'yicha jarayondagi va arxiv yozuvlar",
+    "tab_current": "Jarayondagi",
+    "tab_archive": "Arxiv",
+    "empty_title": "Ma'lumot topilmadi",
+    "pagination_summary": "Jami {total} ta, {from}-{to} ko'rsatilmoqda",
+    "columns": {
+      "no": "№",
+      "locomotive": "Lokomotiv",
+      "registered_organization": "Ro'yxatdan o'tgan tashkilot",
+      "operating_organization": "Ekspluatatsiya qiluvchi tashkilot",
+      "location": "Joylashuv",
+      "start_date": "Boshlanish sanasi",
+      "end_date": "Tugash sanasi",
+      "status": "Holat",
+      "command_number": "Buyruq raqami"
+    }
   },
   "LocomotiveMileageReportPage": {
     "title": "Lokomotiv masofa hisoboti",

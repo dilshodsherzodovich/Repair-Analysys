@@ -105,6 +105,7 @@
       "replacement_schedule": "Записи замены",
       "inspections": "Технические осмотры",
       "locomotive_mileage_report": "ТО-13",
+      "rezerv": "Резерв",
       "pantograph": "Пантограф",
       "orders": "Приказ МПР",
       "defective_works": "Неисправности",
@@ -872,6 +873,25 @@
     "section_Cabin1": "Кабина 1",
     "section_Cabin2": "Кабина 2",
     "section_updating": "Обновление..."
+  },
+  "RezervPage": {
+    "title": "Резерв",
+    "description": "Текущие и архивные записи резерва локомотивов",
+    "tab_current": "В процессе",
+    "tab_archive": "Архив",
+    "empty_title": "Данные не найдены",
+    "pagination_summary": "Всего {total}, показано {from}-{to}",
+    "columns": {
+      "no": "№",
+      "locomotive": "Локомотив",
+      "registered_organization": "Зарегистрированная организация",
+      "operating_organization": "Эксплуатирующая организация",
+      "location": "Место",
+      "start_date": "Дата начала",
+      "end_date": "Дата окончания",
+      "status": "Статус",
+      "command_number": "Номер приказа"
+    }
   },
   "LocomotiveMileageReportPage": {
     "title": "Отчёт по пробегу локомотивов",

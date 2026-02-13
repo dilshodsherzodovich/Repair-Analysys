@@ -247,6 +247,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       });
     }
 
+    if (user && canAccessSection(user, "inspections")) {
+      items.push({
+        key: "rezerv",
+        name: t("nav.rezerv"),
+        icon: ClipboardList,
+        section: "inspections",
+        href: "/rezerv",
+      });
+    }
+
     if (user && canAccessSection(user, "delays")) {
       items.push({
         key: "delays",
