@@ -201,34 +201,33 @@ export function PaginatedTable<T extends Record<string, any>>({
     switch (size) {
       case "xs":
         return {
-          rowCell: "py-0 px-2",
-          checkboxCell: "py-0.5 px-2",
+          rowCell: "py-2 px-4",
+          checkboxCell: "py-2 px-4",
           textSize: "text-sm leading-tight",
         };
       case "sm":
         return {
-          rowCell: "py-1 px-3 h-10 min-h-10",
-          checkboxCell: "py-1 px-3",
+          rowCell: "py-2.5 px-4",
+          checkboxCell: "py-2.5 px-4",
           textSize: "text-sm",
         };
-        case "md": 
+      case "md":
         return {
-          rowCell: "py-1.5 px-3 h-[48px] min-h-[48px]",
-          checkboxCell: "py-1.5 px-3",
+          rowCell: "py-3 px-4",
+          checkboxCell: "py-3 px-4",
           textSize: "text-sm",
         };
       case "lg":
         return {
-          rowCell: "py-3 px-5 h-[64px] min-h-[64px]",
-          checkboxCell: "py-3 px-5",
-          textSize: "text-lg",
+          rowCell: "py-3 px-4",
+          checkboxCell: "py-3 px-4",
+          textSize: "text-base",
         };
-     
       default:
         return {
-          rowCell: "py-2 px-4 h-[56px] min-h-[56px]",
-          checkboxCell: "py-2 px-4",
-          textSize: "text-base",
+          rowCell: "py-3 px-4",
+          checkboxCell: "py-3 px-4",
+          textSize: "text-sm",
         };
     }
   }, [size]);
@@ -241,9 +240,9 @@ export function PaginatedTable<T extends Record<string, any>>({
           key: "actions",
           header: resolvedActionsLabel,
           className:
-            "w-[100px] text-center sticky right-0 bg-white z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+            "w-[100px] text-center sticky right-0 bg-white z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)] border-r border-[#E2E8F0] last:border-r-0",
           headerClassName:
-            "text-center sticky right-0 bg-[#EFF6FF] z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+            "text-center sticky right-0 bg-[#F8FAFC] z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
         } as TableColumn<T>,
       ];
     }
@@ -255,12 +254,12 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Loading state
   if (isLoading) {
     return (
-      <div className={cn("w-full bg-white", className)}>
-        <Table>
+      <div className={cn("w-full rounded-lg border border-[#CAD5E2] overflow-hidden bg-white", className)}>
+        <Table className="w-full min-w-[900px]">
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
               {showCheckbox && (
-                <TableHead className="w-[50px] bg-[#EFF6FF] px-4 py-[14px]">
+                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] bg-[#F8FAFC]">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -274,29 +273,21 @@ export function PaginatedTable<T extends Record<string, any>>({
                   <TableHead
                     key={column.key}
                     className={cn(
-                      "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
+                      "py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0",
                       column.headerClassName
                     )}
-                    style={{
-                      width: column.width,
-                      letterSpacing: "-0.005em",
-                      lineHeight: "16px",
-                      boxSizing: "border-box",
-                    }}
+                    style={{ width: column.width }}
                   >
-                    <div className="flex flex-row items-center gap-3">
-                      {column.header}
-                    </div>
+                    {column.header}
                   </TableHead>
                 </PermissionGuard>
-
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableSkeleton
               rows={skeletonRows}
-              cellClassName="py-2 px-0"
+              cellClassName="py-3 px-4"
               columns={totalColumnCount}
             />
           </TableBody>
@@ -308,7 +299,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Error state
   if (error) {
     return (
-      <div className={cn("w-full", className)}>
+      <div className={cn("w-full rounded-lg border border-[#CAD5E2] overflow-hidden bg-white", className)}>
         <ErrorCard
           title={resolvedErrorTitle}
           message={resolvedErrorMessage || error.message}
@@ -323,36 +314,33 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Empty state
   if (!isLoading && !error && data.length === 0) {
     return (
-      <div className={cn("w-full", className)}>
-        <Table>
+      <div className={cn("w-full rounded-lg border border-[#CAD5E2] overflow-hidden bg-white", className)}>
+        <Table className="w-full min-w-[900px]">
           <TableHeader>
-            <TableRow className="bg-[#EFF6FF] hover:bg-[#EFF6FF]">
+            <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
               {showCheckbox && (
-                <TableHead className="w-[50px] bg-[#EFF6FF] px-4 py-[14px]"></TableHead>
+                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 bg-[#F8FAFC] border-r border-[#E2E8F0]" />
               )}
               {displayColumns.map((column) => (
                 <TableHead
                   key={column.key}
                   className={cn(
-                    "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
+                    "py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0",
                     column.headerClassName
                   )}
-                  style={{
-                    letterSpacing: "-0.005em",
-                    lineHeight: "16px",
-                    boxSizing: "border-box",
-                  }}
+                  style={{ width: column.width }}
                 >
-                  <div className="flex flex-row items-center gap-3">
-                    {column.header}
-                  </div>
+                  {column.header}
                 </TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell colSpan={totalColumnCount} className="">
+            <TableRow className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
+              <TableCell
+                colSpan={totalColumnCount}
+                className="py-8 px-4 text-center border-r border-[#E2E8F0]"
+              >
                 <EmptyState
                   icon={<AlertCircle className="h-12 w-12" />}
                   title={resolvedEmptyTitle}
@@ -367,13 +355,13 @@ export function PaginatedTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className={cn("w-full space-y-4 bg-white pb-2", className)}>
-      <div className="bg-transparent rounded-lg overflow-hidden">
-        <Table className="">
+    <div className={cn("w-full space-y-4 pb-2", className)}>
+      <div className="rounded-lg border border-[#CAD5E2] overflow-hidden bg-white">
+        <Table className="w-full min-w-[900px]">
           <TableHeader>
-            <TableRow className="bg-[#EFF6FF] hover:bg-muted [&>th:first-child]:rounded-tl-[1rem] [&>th:last-child]:rounded-tr-[1rem]">
+            <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
               {showCheckbox && (
-                <TableHead className=" bg-[#EFF6FF] px-4 py-[14px]">
+                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] bg-[#F8FAFC]">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -386,48 +374,35 @@ export function PaginatedTable<T extends Record<string, any>>({
                   />
                 </TableHead>
               )}
-              {displayColumns.map((column) => (
-                column.permission ?
+              {displayColumns.map((column) =>
+                column.permission ? (
                   <PermissionGuard key={column.key} permission={column.permission}>
                     <TableHead
                       key={column.key}
                       className={cn(
-                        "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
+                        "py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0",
                         column.headerClassName,
                         headerClassName
                       )}
-                      style={{
-                        width: column.width,
-                        letterSpacing: "-0.005em",
-                        lineHeight: "16px",
-                        boxSizing: "border-box",
-                      }}
+                      style={{ width: column.width }}
                     >
-                      <div className="flex flex-row items-center gap-3">
-                        {column.header}
-                      </div>
+                      {column.header}
                     </TableHead>
                   </PermissionGuard>
-                  :
+                ) : (
                   <TableHead
                     key={column.key}
                     className={cn(
-                      "h-12 px-4 py-[14px] text-xs font-semibold text-[#475569] bg-[#EFF6FF]",
+                      "py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0",
                       column.headerClassName,
                       headerClassName
                     )}
-                    style={{
-                      width: column.width,
-                      letterSpacing: "-0.005em",
-                      lineHeight: "16px",
-                      boxSizing: "border-box",
-                    }}
+                    style={{ width: column.width }}
                   >
-                    <div className="flex flex-row items-center gap-3">
-                      {column.header}
-                    </div>
+                    {column.header}
                   </TableHead>
-              ))}
+                )
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -438,27 +413,22 @@ export function PaginatedTable<T extends Record<string, any>>({
                 typeof rowClassName === "function"
                   ? rowClassName(row)
                   : rowClassName;
-              const isLastRow = index === data.length - 1;
 
               return (
                 <TableRow
                   key={rowId}
                   className={cn(
-                    "group border-b border-border transition-colors",
-                    isSelected
-                      ? "bg-blue-50 hover:bg-blue-100 [&>td]:bg-blue-50 [&>td]:hover:bg-blue-100"
-                      : "",
-                    isLastRow &&
-                    "[&>td:first-child]:rounded-bl-lg [&>td:last-child]:rounded-br-lg",
+                    "hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0 transition-colors",
+                    isSelected && "bg-blue-50 hover:bg-blue-50/80 [&>td]:bg-blue-50 [&>td]:hover:bg-blue-50/80",
                     rowClass
                   )}
                 >
                   {showCheckbox && (
                     <TableCell
                       className={cn(
-                        "transition-colors",
+                        "py-3 px-4 text-[#64748B] border-r border-[#E2E8F0]",
                         sizeClasses.checkboxCell,
-                        sizeClasses.rowCell
+                        isSelected && "bg-blue-50"
                       )}
                     >
                       <input
@@ -480,21 +450,20 @@ export function PaginatedTable<T extends Record<string, any>>({
                       <TableCell
                         key={column.key}
                         className={cn(
-                          "transition-colors",
+                          "py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0",
                           sizeClasses.rowCell,
-                          column.className
+                          column.className,
+                          isSelected && "bg-blue-50"
                         )}
-                        style={{
-                          boxSizing: "border-box",
-                        }}
+                        style={{ boxSizing: "border-box" }}
                       >
                         <span
                           className={cn(
-                            "font-medium text-[#475569] peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+                            "peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
                             sizeClasses.textSize
                           )}
                         >
-                          {cellContent ?? "-"}
+                          {cellContent ?? "—"}
                         </span>
                       </TableCell>
                     );
@@ -502,10 +471,8 @@ export function PaginatedTable<T extends Record<string, any>>({
                   {hasActions && (
                     <TableCell
                       className={cn(
-                        "text-center py-2 px-4 h-14 transition-colors sticky right-0 z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
-                        isSelected
-                          ? "bg-blue-50"
-                          : "bg-white"
+                        "py-3 px-4 text-center border-r border-[#E2E8F0] last:border-r-0 transition-colors sticky right-0 z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+                        isSelected ? "bg-blue-50" : "bg-white"
                       )}
                     >
                       <ActionsDropdown
@@ -1115,14 +1082,13 @@ function ActionsDropdown<T>({
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 hover:bg-gray-100"
+        <button
+          type="button"
+          className="p-1.5 rounded hover:bg-[#E2E8F0] inline-flex items-center justify-center transition-colors"
+          aria-label="Amallar"
         >
-          <MoreVertical className="h-4 w-4" />
-          <span className="sr-only">Amallar</span>
-        </Button>
+          <MoreVertical className="h-4 w-4 text-[#64748B]" />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">
         {canEdit && (
