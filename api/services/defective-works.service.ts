@@ -18,7 +18,7 @@ export const defectiveWorksService = {
           page: params?.page,
           page_size: params?.page_size,
           search: params?.search,
-          tab: params?.tab,
+          is_completed: params?.tab,
           no_page: params?.no_page,
           organization: params?.organization_id,
           inspection_type: params?.inspection_type,

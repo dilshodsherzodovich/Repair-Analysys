@@ -27,7 +27,6 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 export function NosozliklarTab() {
   const t = useTranslations("NosozliklarTab");
   const { getAllQueryValues } = useFilterParams();
-  const { updateQuery } = useFilterParams();
   const {
     q,
     page,
@@ -292,8 +291,8 @@ export function NosozliklarTab() {
   const statusOptions = useMemo(() => {
     return [
       { value: "", label: t("options.all_records") },
-      { value: "done", label: t("status_done") },
-      { value: "not_done", label: t("status_not_done") },
+      { value: "true", label: t("status_done") },
+      { value: "false", label: t("status_not_done") },
     ];
   }, [t]);
 

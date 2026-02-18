@@ -192,6 +192,11 @@ export default function DutyUzelPage() {
         accessor: (row) => row.removed_manufacture_year,
       },
       {
+        key: "removed_manufacture_factory",
+        header: t("columns.removed_manufacture_factory"),
+        accessor: (row) => row.removed_manufacture_factory,
+      },
+      {
         key: "installed_manufacture_year",
         header: t("columns.installed_manufacture_year"),
         accessor: (row) => row.installed_manufacture_year,
@@ -200,11 +205,6 @@ export default function DutyUzelPage() {
         key: "installed_manufacture_factory",
         header: t("columns.installed_manufacture_factory"),
         accessor: (row) => row.installed_manufacture_factory,
-      },
-      {
-        key: "removed_manufacture_factory",
-        header: t("columns.removed_manufacture_factory"),
-        accessor: (row) => row.removed_manufacture_factory,
       },
     ],
     [t]
