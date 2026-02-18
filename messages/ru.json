@@ -301,6 +301,10 @@
       "damage": "Сумма ущерба"
     },
     "search_placeholder": "Поиск",
+    "filter_all": "Все",
+    "filter_locomotive": "Локомотив",
+    "filter_organization": "Организация",
+    "filter_department": "Ответственная организация",
     "add_button": "Добавить",
     "empty_title": "Данные не найдены",
     "empty_description": "Данные пантографа не найдены",

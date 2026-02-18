@@ -314,11 +314,6 @@ export default function OrdersPage() {
       accessor: (row) => row.responsible_department,
     },
     {
-      key: "responsible_person",
-      header: t("columns.responsible_person"),
-      accessor: (row) => row.responsible_person,
-    },
-    {
       key: "case_description",
       header: t("columns.case_description"),
       accessor: (row) => (

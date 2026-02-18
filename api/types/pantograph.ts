@@ -1,6 +1,5 @@
 export interface PantographJournalEntry {
   id: number;
-  title: string;
   locomotive: number;
   department: string;
   section: string;
@@ -26,10 +25,12 @@ export interface PantographJournalParams {
   search?: string;
   tab?: string;
   no_page?: boolean;
+  locomotive?: number;
+  organization?: number;
+  department?: string;
 }
 
 export interface CreatePantographJournalPayload {
-  title: string;
   locomotive: number;
   department: string;
   section: string;
@@ -39,7 +40,6 @@ export interface CreatePantographJournalPayload {
 }
 
 export interface UpdatePantographJournalPayload {
-  title?: string;
   locomotive?: number;
   department?: string;
   section?: string;

@@ -301,6 +301,10 @@
       "damage": "Zarar summasi"
     },
     "search_placeholder": "Qidiruv",
+    "filter_all": "Barchasi",
+    "filter_locomotive": "Lokomotiv",
+    "filter_organization": "Tashkilot",
+    "filter_department": "Mas'ul tashkilot",
     "add_button": "Yangi qo'shish",
     "empty_title": "Ma'lumot topilmadi",
     "empty_description": "Pantograf ma'lumotlari topilmadi",

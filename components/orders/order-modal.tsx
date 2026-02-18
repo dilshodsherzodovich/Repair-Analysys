@@ -53,7 +53,6 @@ type LocomotiveOption = {
 type OrderFormState = {
   train_number: string;
   responsible_department: string;
-  responsible_person: string;
   damage_amount: string;
   locomotive: string;
   case_description: string;
@@ -66,7 +65,6 @@ type OrderFormState = {
 const INITIAL_FORM_STATE: OrderFormState = {
   train_number: "",
   responsible_department: "",
-  responsible_person: "",
   damage_amount: "",
   locomotive: "",
   case_description: "",
@@ -295,7 +293,6 @@ export function OrderModal({
       setFormData({
         train_number: order.train_number ?? "",
         responsible_department: order.responsible_department ?? "",
-        responsible_person: order.responsible_person ?? "",
         damage_amount: order.damage_amount ?? "",
         locomotive: order.locomotive ? String(order.locomotive) : "",
         case_description: order.case_description ?? "",
@@ -333,13 +330,6 @@ export function OrderModal({
     setFormData((prev) => {
       if (prev.responsible_department === value) return prev;
       return { ...prev, responsible_department: value };
-    });
-  }, []);
-
-  const handlePersonChange = useCallback((value: string) => {
-    setFormData((prev) => {
-      if (prev.responsible_person === value) return prev;
-      return { ...prev, responsible_person: value };
     });
   }, []);
 
@@ -388,7 +378,6 @@ export function OrderModal({
       const payload = {
         train_number: formData.train_number.trim(),
         responsible_department: formData.responsible_department.trim(),
-        responsible_person: formData.responsible_person.trim(),
         damage_amount: formData.damage_amount.trim(),
         locomotive: Number(formData.locomotive),
         case_description: formData.case_description.trim(),
@@ -514,15 +503,6 @@ export function OrderModal({
                 </SelectContent>
               </Select>
             </div>
-
-            <FormField
-              id="responsible_person"
-              label="Mas'ul shaxs"
-              value={formData.responsible_person}
-              onChange={handlePersonChange}
-              placeholder="Mas'ul shaxsni kiriting"
-              required
-            />
 
             <FormField
               id="damage_amount"

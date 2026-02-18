@@ -20,6 +20,8 @@ import {
   CreatePantographJournalPayload,
   UpdatePantographJournalPayload,
 } from "@/api/types/pantograph";
+import { STATION_OPTIONS } from "@/api/types/delays";
+import { responsibleOrganizations } from "@/data";
 import {
   Dialog,
   DialogContent,
@@ -103,8 +105,9 @@ export function PantographModal({
 }: PantographModalProps) {
   const t = useTranslations("PantographModal");
   const formRef = useRef<HTMLFormElement>(null);
-  // Only locomotive is controlled (Select); all other fields are uncontrolled to avoid re-renders on every keystroke
   const [locomotive, setLocomotive] = useState("");
+  const [department, setDepartment] = useState("");
+  const [section, setSection] = useState("");
 
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
     useGetLocomotives(isOpen);
@@ -118,13 +121,17 @@ export function PantographModal({
     }));
   }, [locomotivesData]);
 
-  // Sync locomotive when opening for edit vs create
+  // Sync form when opening for edit vs create
   useEffect(() => {
     if (!isOpen) return;
     if (entry && mode === "edit") {
       setLocomotive(entry.locomotive ? String(entry.locomotive) : "");
+      setDepartment(entry.department ?? "");
+      setSection(entry.section ?? "");
     } else {
       setLocomotive("");
+      setDepartment("");
+      setSection("");
     }
   }, [isOpen, entry, mode]);
 
@@ -132,14 +139,14 @@ export function PantographModal({
     e.preventDefault();
     const form = formRef.current;
     if (!form) return;
+    if (!department || !section) return;
     const get = (name: string) =>
       (form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement)
         ?.value?.trim() ?? "";
     const payload = {
-      title: get("title"),
       locomotive: Number(locomotive),
-      department: get("department"),
-      section: get("section"),
+      department,
+      section,
       date: get("date"),
       damage: get("damage"),
       description: get("description"),
@@ -163,14 +170,10 @@ export function PantographModal({
     mode === "create" ? t("pending_create") : t("pending_edit");
 
   // Initial values for uncontrolled inputs; form remounts when key changes so these apply on open
-  const initialTitle = entry && mode === "edit" ? entry.title ?? "" : "";
   const initialDate =
     entry && mode === "edit" && entry.date
       ? entry.date.slice(0, 10)
       : "";
-  const initialDepartment =
-    entry && mode === "edit" ? entry.department ?? "" : "";
-  const initialSection = entry && mode === "edit" ? entry.section ?? "" : "";
   const initialDamage = entry && mode === "edit" ? entry.damage ?? "" : "";
   const initialDescription =
     entry && mode === "edit" ? entry.description ?? "" : "";
@@ -192,18 +195,6 @@ export function PantographModal({
             className="space-y-5"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="title">{t("fields.title")}</Label>
-                <Input
-                  id="title"
-                  name="title"
-                  type="text"
-                  defaultValue={initialTitle}
-                  placeholder={t("fields.title_placeholder")}
-                  required
-                />
-              </div>
-
               <div>
                 <Label htmlFor="date">{t("fields.date")}</Label>
                 <Input
@@ -228,26 +219,38 @@ export function PantographModal({
 
               <div>
                 <Label htmlFor="department">{t("fields.department")}</Label>
-                <Input
-                  id="department"
-                  name="department"
-                  type="text"
-                  defaultValue={initialDepartment}
-                  placeholder={t("fields.department_placeholder")}
+                <Select
+                  value={department}
+                  onValueChange={setDepartment}
                   required
-                />
+                >
+                  <SelectTrigger id="department">
+                    <SelectValue placeholder={t("fields.department_placeholder")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {responsibleOrganizations.map((org) => (
+                      <SelectItem key={org} value={org}>
+                        {org}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
                 <Label htmlFor="section">{t("fields.section")}</Label>
-                <Input
-                  id="section"
-                  name="section"
-                  type="text"
-                  defaultValue={initialSection}
-                  placeholder={t("fields.section_placeholder")}
-                  required
-                />
+                <Select value={section} onValueChange={setSection} required>
+                  <SelectTrigger id="section">
+                    <SelectValue placeholder={t("fields.section_placeholder")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATION_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>

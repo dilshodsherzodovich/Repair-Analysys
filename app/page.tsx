@@ -1,39 +1,42 @@
 "use client";
 
-import { useState,  useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
-import { cn } from "@/lib/utils";
 import {
   usePantographJournal,
   useCreatePantographEntry,
   useUpdatePantographEntry,
   useDeletePantographEntry,
 } from "@/api/hooks/use-pantograph";
+import { useGetLocomotives } from "@/api/hooks/use-locomotives";
+import { useOrganizations } from "@/api/hooks/use-organizations";
 import {
   PantographJournalEntry,
   CreatePantographJournalPayload,
   UpdatePantographJournalPayload,
 } from "@/api/types/pantograph";
+import { responsibleOrganizations } from "@/data";
 import { PantographModal } from "@/components/pantograph/pantograph-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "./unauthorized/page";
+import type { FiltersQuery } from "@/ui/filters";
 
 export default function PantografPage() {
   const t = useTranslations("PantographPage");
-  const { updateQuery, getAllQueryValues } = useFilterParams();
+  const { updateQuery, getAllQueryValues, getQueryValue } = useFilterParams();
 
   const currentUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
   if (!currentUser || !canAccessSection(currentUser, "pantograf")) {
     return <UnauthorizedPage />;
   }
 
-  const { q, page, pageSize, tab } = getAllQueryValues();
+  const { q, page, pageSize, tab, locomotive, organization, department } = getAllQueryValues();
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
@@ -45,6 +48,71 @@ export default function PantografPage() {
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
+  const { data: locomotivesData, isPending: loadingLocomotives } =
+    useGetLocomotives(true, undefined, { no_page: true });
+  const { data: organizationsData, isLoading: loadingOrganizations } =
+    useOrganizations();
+
+  const locomotiveOptions = useMemo(() => {
+    if (!locomotivesData?.results) return [];
+    return locomotivesData.results.map((loc) => ({
+      label: `${loc.name} (${loc.model_name ?? ""})`,
+      value: loc.name ?? "",
+    }));
+  }, [locomotivesData]);
+
+  const organizations = useMemo(() => {
+    if (!organizationsData) return [];
+    if (Array.isArray(organizationsData)) return organizationsData;
+    const res = (organizationsData as unknown as { results?: { id: number; name: string }[] })?.results;
+    return res ?? [];
+  }, [organizationsData]);
+
+  const pageFilters = useMemo((): FiltersQuery[] => [
+    {
+      name: "locomotive",
+      label: t("filter_locomotive"),
+      isSelect: true,
+      options: [
+        { label: t("filter_all"), value: "" },
+        ...locomotiveOptions,
+      ],
+      placeholder: t("filter_all"),
+      searchable: true,
+      clearable: true,
+      loading: loadingLocomotives,
+    },
+    {
+      name: "organization",
+      label: t("filter_organization"),
+      isSelect: true,
+      options: [
+        { label: t("filter_all"), value: "" },
+        ...organizations.map((org: { id: number; name: string }) => ({
+          label: org.name,
+          value: String(org.id),
+        })),
+      ],
+      placeholder: t("filter_all"),
+      searchable: true,
+      clearable: true,
+      loading: loadingOrganizations,
+      permission: "choose_organization",
+    },
+    {
+      name: "department",
+      label: t("filter_department"),
+      isSelect: true,
+      options: [
+        { label: t("filter_all"), value: "" },
+        ...responsibleOrganizations.map((d) => ({ label: d, value: d })),
+      ],
+      placeholder: t("filter_all"),
+      searchable: true,
+      clearable: true,
+    },
+  ], [locomotiveOptions, organizations, loadingLocomotives, loadingOrganizations, t]);
+
   const {
     data: apiResponse,
     isLoading,
@@ -52,7 +120,7 @@ export default function PantografPage() {
   } = usePantographJournal({
     page: currentPage,
     page_size: itemsPerPage,
-    search: q,
+    search: q || locomotive || organization || department,
     tab: currentTab === "all" ? undefined : currentTab,
   });
 
@@ -77,7 +145,7 @@ export default function PantografPage() {
 
   const handleEdit = (row: PantographJournalEntry) => {
     setSelectedEntry(row);
-    setModalMode("edit");
+    setModalMode("edit"); 
     setIsModalOpen(true);
   };
 
@@ -100,10 +168,6 @@ export default function PantografPage() {
     setSelectedEntry(null);
     setModalMode("create");
     setIsModalOpen(true);
-  };
-
-  const handleExport = () => {
-    console.log("Export to Excel");
   };
 
   const handleSave = (
@@ -191,11 +255,6 @@ export default function PantografPage() {
       accessor: (row) => formatDate(row.date),
     },
     {
-      key: "title",
-      header: t("columns.title"),
-      accessor: (row) => row.title,
-    },
-    {
       key: "locomotive_info",
       header: t("columns.locomotive"),
       accessor: (row) =>
@@ -251,34 +310,14 @@ export default function PantografPage() {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* <div className="px-6">
-        <Tabs
-          className="w-fit"
-          value={currentTab}
-          onValueChange={handleTabChange}
-        >
-          <TabsList className="bg-[#F1F5F9] p-2 gap-0 border-0 rounded-lg inline-flex ">
-            <TabsTrigger value="all" className={cn()}>
-              Barcha lokomotivlar
-            </TabsTrigger>
-            <TabsTrigger value="chinese">Xitoy Elektrovoz</TabsTrigger>
-            <TabsTrigger value="3p9e">3P9E - VL80c - VL60k</TabsTrigger>
-            <TabsTrigger value="statistics">Statistika</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div> */}
-
       <div className="px-6 py-4">
         <PageFilters
-          filters={[]}
+          filters={pageFilters}
           hasSearch={true}
           searchPlaceholder={t("search_placeholder")}
           onAdd={handleCreate}
           addButtonText={t("add_button")}
           addButtonPermittion="create_pantograf"
-          // onExport={handleExport}
-          // exportButtonText="Export EXCEL"
-          // exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
           className="!mb-0"
         />
       </div>

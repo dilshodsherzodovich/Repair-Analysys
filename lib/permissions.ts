@@ -102,7 +102,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "create_pantograf",
     "edit_pantograf",
     "delete_pantograf",
-    "choose_organization",
     "filter_delay_station",
     "view_depo", 
     "view_duty_uzel", 

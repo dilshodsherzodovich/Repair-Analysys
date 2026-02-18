@@ -21,6 +21,9 @@ export const pantographService = {
             search: params?.search,
             tab: params?.tab,
             no_page: params?.no_page,
+            locomotive: params?.locomotive,
+            organization: params?.organization,
+            department: params?.department,
           },
         }
       );

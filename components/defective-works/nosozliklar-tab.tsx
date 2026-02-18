@@ -303,12 +303,13 @@ export function NosozliklarTab() {
         <PageFilters
           filters={[
             {
-              name: "tab",
-              label: t("filters.status"),
+              name: "locomotive",
+              label: t("filters.locomotive"),
               isSelect: true,
-              options: statusOptions,
-              placeholder: t("filters.status_placeholder"),
-              searchable: false,
+              options: locomotiveOptions,
+              placeholder: t("filters.locomotive_placeholder"),
+              searchable: true,
+              loading: isLoadingLocomotives,
             },
             {
               name: "organization_id",
@@ -318,6 +319,7 @@ export function NosozliklarTab() {
               placeholder: t("filters.organization_placeholder"),
               searchable: false,
               loading: isLoadingOrganizations,
+              permission: "choose_organization", 
             },
             {
               name: "inspection_type",
@@ -329,14 +331,14 @@ export function NosozliklarTab() {
               loading: isLoadingInspectionTypes,
             },
             {
-              name: "locomotive",
-              label: t("filters.locomotive"),
+              name: "tab",
+              label: t("filters.status"),
               isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotive_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
+              options: statusOptions,
+              placeholder: t("filters.status_placeholder"),
+              searchable: false,
             },
+            
           ]}
           hasSearch
           searchPlaceholder={t("search_placeholder")}
