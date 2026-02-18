@@ -350,6 +350,21 @@ export function ComponentRegistryModal({
             </div>
 
             <div>
+              <Label htmlFor="removed_manufacture_factory">
+                {t("removed_manufacture_factory")}
+              </Label>
+              <Input
+                id="removed_manufacture_factory"
+                name="removed_manufacture_factory"
+                type="text"
+                defaultValue=""
+                placeholder={t("placeholder_factory")}
+                disabled={!selects.component_id}
+                className="w-full"
+              />
+            </div>
+
+            <div>
               <Label htmlFor="installed_manufacture_year">
                 {t("installed_manufacture_year")}
               </Label>
@@ -378,20 +393,7 @@ export function ComponentRegistryModal({
               />
             </div>
 
-            <div>
-              <Label htmlFor="removed_manufacture_factory">
-                {t("removed_manufacture_factory")}
-              </Label>
-              <Input
-                id="removed_manufacture_factory"
-                name="removed_manufacture_factory"
-                type="text"
-                defaultValue=""
-                placeholder={t("placeholder_factory")}
-                disabled={!selects.component_id}
-                className="w-full"
-              />
-            </div>
+           
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

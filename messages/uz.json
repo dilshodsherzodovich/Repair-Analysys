@@ -676,10 +676,10 @@
       "section": "Bo'lim",
       "reason": "Sabab",
       "defect_date": "Nuqson sanasi",
-      "removed_manufacture_year": "Olib tashlangan yili",
-      "installed_manufacture_year": "O'rnatilgan yili",
-      "installed_manufacture_factory": "O'rnatilgan zavod",
-      "removed_manufacture_factory": "Olib tashlangan zavod"
+      "removed_manufacture_year": "Olib tashlangan uzel i.ch yili",
+      "installed_manufacture_year": "O'rnatilgan uzel i.ch yili",
+      "installed_manufacture_factory": "O'rnatilgan uzel zavod raqami",
+      "removed_manufacture_factory": "Olib tashlangan uzel zavod raqami"
     }
   },
   "ComponentRegistryModal": {
@@ -704,7 +704,7 @@
     "placeholder_uzel": "Uzelni tanlang",
     "placeholder_inspection": "Texnik ko'rik turini tanlang",
     "placeholder_reason": "Sababni kiriting",
-    "placeholder_date_example": "Masalan: 25.10.2025",
+    "placeholder_date_example": "Masalan: 2025",
     "placeholder_factory": "Zavod raqamini kiriting",
     "no_sections": "Seksiyalar topilmadi",
     "no_components": "Uzellar topilmadi",

@@ -704,7 +704,7 @@
     "placeholder_uzel": "Выберите узел",
     "placeholder_inspection": "Выберите вид технического осмотра",
     "placeholder_reason": "Введите причину",
-    "placeholder_date_example": "Например: 25.10.2025",
+    "placeholder_date_example": "Например: 2025",
     "placeholder_factory": "Введите заводской номер",
     "no_sections": "Секции не найдены",
     "no_components": "Узлы не найдены",
