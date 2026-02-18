@@ -439,6 +439,7 @@
   "DefectiveWorkModal": {
     "title_create": "Добавить неисправность",
     "title_edit": "Редактировать неисправность",
+    "time": "Время",
     "submit_create": "Добавить",
     "submit_edit": "Сохранить",
     "pending_create": "Добавление...",
