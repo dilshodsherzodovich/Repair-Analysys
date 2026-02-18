@@ -677,10 +677,10 @@
       "section": "Раздел",
       "reason": "Причина",
       "defect_date": "Дата неисправности",
-      "removed_manufacture_year": "Год снятия",
-      "installed_manufacture_year": "Год установки",
-      "installed_manufacture_factory": "Завод установки",
-      "removed_manufacture_factory": "Завод снятия"
+      "removed_manufacture_year": "Год производства снятого",
+      "installed_manufacture_year": "Год производства установленного",
+      "installed_manufacture_factory": "Заводской номер установленного",
+      "removed_manufacture_factory": "Заводской номер производства снятого"
     }
   },
   "ComponentRegistryModal": {
@@ -693,10 +693,10 @@
     "inspection_type": "Вид технического осмотра",
     "reason": "Причина",
     "defect_date": "Дата неисправности",
-    "removed_manufacture_year": "Год снятия",
-    "installed_manufacture_year": "Год установки",
+    "removed_manufacture_year": "Год производства снятого",
+    "installed_manufacture_year": "Год производства установленного",
     "installed_manufacture_factory": "Заводской номер установленного",
-    "removed_manufacture_factory": "Заводской номер снятого",
+    "removed_manufacture_factory": "Заводской номер производства снятого",
     "placeholder_loading": "Загрузка...",
     "placeholder_locomotive": "Выберите локомотив",
     "placeholder_locomotive_first": "Сначала выберите локомотив",
