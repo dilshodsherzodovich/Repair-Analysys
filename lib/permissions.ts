@@ -46,7 +46,7 @@ export type Permission =
   // dpx permissions
   | "view_inspections"
   | "choose_inspection_organization"
-  | "edit_inspection_location_section"
+  | "edit_inspection_location_section";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -103,16 +103,21 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_pantograf",
     "delete_pantograf",
     "filter_delay_station",
-    "view_depo", 
-    "view_duty_uzel", 
-    "view_pantograf", 
-    "view_locomotive_passport", 
-    "view_locomotive_passport_inspections", 
+    "view_depo",
+    "view_duty_uzel",
+    "view_pantograf",
+    "view_locomotive_passport",
+    "view_locomotive_passport_inspections",
     "view_locomotive_replacement_oil",
     "view_inspections",
-    "edit_inspection_location_section"
+    "edit_inspection_location_section",
   ],
-  passport_staff: ["view_depo", "view_locomotive_passport", "edit_locomotive_passport", "view_duty_uzel"],
+  passport_staff: [
+    "view_depo",
+    "view_locomotive_passport",
+    "edit_locomotive_passport",
+    "view_duty_uzel",
+  ],
   repair_staff: [
     "view_duty_uzel",
     "create_duty_uzel_report",
@@ -144,6 +149,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_duty_uzel",
     "view_inspections",
     "view_locomotive_passport_inspections",
+    "create_duty_uzel_report",
     "create_locomotive_passport_inspection",
     "edit_locomotive_passport_inspection",
     "view_locomotive_replacement_oil",
@@ -159,14 +165,13 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_delay",
     "delete_delay",
     "filter_delay_station",
-
   ],
   sriv_moderator: ["view_delays", "edit_delay", "upload_delay_report"],
 };
 
 export function hasPermission(
   user: UserData | null,
-  permission: Permission
+  permission: Permission,
 ): boolean {
   if (!user) return false;
   const role = user?.role as UserRole;
@@ -176,7 +181,7 @@ export function hasPermission(
 
 export function hasAnyPermission(
   user: UserData | null,
-  permissions: Permission[]
+  permissions: Permission[],
 ): boolean {
   if (!user) return false;
   return permissions.some((permission) => hasPermission(user, permission));
@@ -184,7 +189,7 @@ export function hasAnyPermission(
 
 export function hasAllPermissions(
   user: UserData | null,
-  permissions: Permission[]
+  permissions: Permission[],
 ): boolean {
   if (!user) return false;
   return permissions.every((permission) => hasPermission(user, permission));
@@ -192,7 +197,7 @@ export function hasAllPermissions(
 
 export function canAccessSection(
   user: UserData | null,
-  section: string
+  section: string,
 ): boolean {
   switch (section) {
     case "dashboard":
