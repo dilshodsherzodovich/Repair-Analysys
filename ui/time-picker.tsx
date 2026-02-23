@@ -20,7 +20,10 @@ function dateToTimeString(d: Date): string {
 
 /** Parse "HH:mm" or "HH:mm:ss" and set on a date. */
 function applyTimeToDate(base: Date, timeStr: string): Date {
-  const parts = timeStr.trim().split(":").map((s) => parseInt(s, 10) || 0);
+  const parts = timeStr
+    .trim()
+    .split(":")
+    .map((s) => parseInt(s, 10) || 0);
   const h = Math.min(23, Math.max(0, parts[0] ?? 0));
   const m = Math.min(59, Math.max(0, parts[1] ?? 0));
   const next = new Date(base);
@@ -38,7 +41,7 @@ const TimePicker = React.forwardRef<HTMLDivElement, TimePickerProps>(
       className,
       placeholder = "00:00",
     },
-    ref
+    ref,
   ) => {
     const t = useTranslations("DatePicker");
     const timeValue = value ? dateToTimeString(value) : "";
@@ -70,12 +73,11 @@ const TimePicker = React.forwardRef<HTMLDivElement, TimePickerProps>(
             "transition-colors outline-none focus:border-blue-500 focus:ring-0 hover:border-gray-400",
             "disabled:pointer-events-none disabled:opacity-50 disabled:bg-gray-50",
             "md:text-sm text-[#0F172B]",
-            "[&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
           )}
         />
       </div>
     );
-  }
+  },
 );
 TimePicker.displayName = "TimePicker";
 

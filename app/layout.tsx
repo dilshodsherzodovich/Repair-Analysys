@@ -33,8 +33,12 @@ export default async function RootLayout({
   const messages = (await import(`../messages/${locale}.json`)).default;
 
   return (
-    <html lang="uz" className={`${inter.variable} ${inter.className}`}>
-      <body className="font-sans antialiased">
+    <html
+      lang="uz"
+      className={`${inter.variable} ${inter.className}`}
+      suppressHydrationWarning
+    >
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <Suspense fallback={<div className="p-6">Yuklanmoqda...</div>}>
           <NextIntlClientProvider messages={messages} locale={locale}>
             <ClientLayout>{children}</ClientLayout>
