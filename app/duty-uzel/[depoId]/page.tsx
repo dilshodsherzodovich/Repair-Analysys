@@ -138,9 +138,9 @@ export default function DutyUzelPage() {
   const columns: TableColumn<ComponentRegistryEntry>[] = useMemo(
     () => [
       {
-        key: "created_time",
-        header: t("columns.created_time"),
-        accessor: (row) => formatDate(row.created_time),
+        key: "defect_date",
+        header: t("columns.defect_date"),
+        accessor: (row) => formatDate(row.defect_date),
       },
       {
         key: "organization",
@@ -155,12 +155,7 @@ export default function DutyUzelPage() {
       {
         key: "locomotive",
         header: t("columns.locomotive"),
-        accessor: (row) => row.locomotive,
-      },
-      {
-        key: "loc_model_name",
-        header: t("columns.loc_model_name"),
-        accessor: (row) => row.loc_model_name,
+        accessor: (row) => <span>{row.locomotive}-{row.loc_model_name || ""}</span>,
       },
       {
         key: "component",
@@ -180,11 +175,6 @@ export default function DutyUzelPage() {
             <div className="whitespace-normal break-words">{row.reason}</div>
           </div>
         ),
-      },
-      {
-        key: "defect_date",
-        header: t("columns.defect_date"),
-        accessor: (row) => formatDate(row.defect_date),
       },
       {
         key: "removed_manufacture_year",
