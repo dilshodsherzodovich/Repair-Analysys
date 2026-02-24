@@ -297,19 +297,19 @@ export function PaginatedTable<T extends Record<string, any>>({
   }
 
   // Error state
-  if (error) {
-    return (
-      <div className={cn("w-full rounded-lg border border-[#CAD5E2] overflow-hidden bg-white", className)}>
-        <ErrorCard
-          title={resolvedErrorTitle}
-          message={resolvedErrorMessage || error.message}
-          onRetry={onRetry}
-          showBack={false}
-          className=""
-        />
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className={cn("w-full rounded-lg border border-[#CAD5E2] overflow-hidden bg-white", className)}>
+  //       <ErrorCard
+  //         title={resolvedErrorTitle}
+  //         message={resolvedErrorMessage || error.message}
+  //         onRetry={onRetry}
+  //         showBack={false}
+  //         className=""
+  //       />
+  //     </div>
+  //   );
+  // }
 
   // Empty state
   if (!isLoading && !error && data.length === 0) {
