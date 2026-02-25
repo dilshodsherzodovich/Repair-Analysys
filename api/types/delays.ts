@@ -179,7 +179,12 @@ export interface ResponsibleOrgDetail {
   organization: Organization;
 }
 
-export type TrainType = "passenger" | "freight" | "electric" | "shunt" | "high_speed";
+export type TrainType =
+  | "passenger"
+  | "freight"
+  | "electric"
+  | "shunt"
+  | "high_speed";
 
 export type GroupReason =
   | "repair"
@@ -201,17 +206,20 @@ export const TRAIN_TYPE_OPTIONS: Array<{ value: TrainType; label: string }> = [
   { value: "high_speed", label: "Yuqori tezlikda harakatlanuvchi" },
 ];
 
-export const GROUP_REASON_OPTIONS: Array<{ value: GroupReason; label: string }> = [
-  { value: "repair", label: "Lokomotiv ta'mirlash" },
-  { value: "speed_violation", label: "Tezlik buzilishi" },
-  { value: "crew_waiting", label: "Ekipaj kutish" },
-  { value: "autoblock_center", label: "Avtoblok markazi" },
-  { value: "driver_dispute", label: "Mashinist bahs-munozarasi" },
-  { value: "fuel_finished", label: "Yoqilg'i tugashi" },
-  { value: "late_loco_exit", label: "Lokomotiv kech chiqishi" },
-  { value: "no_electric_loco", label: "Elektrovoz yoq" },
-  { value: "no_diesel_loco", label: "Teplovoz yoq" },
-  { value: "other", label: "Boshqa" },
+export const GROUP_REASON_OPTIONS: Array<{
+  value: GroupReason;
+  label: string;
+}> = [
+  { value: "repair", label: "Ремонт локомотива" },
+  { value: "speed_violation", label: "Невыдержка хода" },
+  { value: "crew_waiting", label: "Ожидание бригады" },
+  { value: "autoblock_center", label: "Неподход центров автоскадок" },
+  { value: "driver_dispute", label: "Сутяга машиниста" },
+  { value: "fuel_finished", label: "Кончилось топливо" },
+  { value: "late_loco_exit", label: "Поздний выход локомотива" },
+  { value: "no_electric_loco", label: "Нет электровоза" },
+  { value: "no_diesel_loco", label: "Нет тепловоза" },
+  { value: "other", label: "Прочие случаи" },
 ];
 
 export interface DelayEntry {

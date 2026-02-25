@@ -44,7 +44,7 @@ export default function DelaysPage() {
     page,
     pageSize,
     delay_type,
-    start_date, // Date range picker uses "start_date" and "end_date" as query params
+    start_date,
     end_date,
     responsible_org,
     station,
@@ -63,7 +63,7 @@ export default function DelaysPage() {
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit" | "moderate">(
-    "create"
+    "create",
   );
   const [selectedEntry, setSelectedEntry] = useState<DelayEntry | null>(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
@@ -94,7 +94,8 @@ export default function DelaysPage() {
 
   const getGroupReasonLabel = (value?: string | null) => {
     if (!value) return "-";
-    return t(`group_reasons.${value}` as any);
+    const option = GROUP_REASON_OPTIONS.find((opt) => opt.value === value);
+    return option ? option.label : value;
   };
 
   const getDelayTypeLabel = (value?: string | null) => {
@@ -137,7 +138,6 @@ export default function DelaysPage() {
 
   const handleEdit = useCallback(
     (row: DelayEntry) => {
-
       if (row.archive) {
         return;
       }
@@ -146,7 +146,7 @@ export default function DelaysPage() {
       setModalMode(isModerator ? "moderate" : "edit");
       setIsModalOpen(true);
     },
-    [currentUser]
+    [currentUser],
   );
 
   const handleCloseDelay = useCallback((row: DelayEntry) => {
@@ -168,26 +168,29 @@ export default function DelaysPage() {
 
   const handleApproveConfirm = useCallback(async () => {
     if (!approveEntry) return;
-     updateMutation.mutate({
-      id: approveEntry.id,
-      payload: {
-        archive: true,
+    updateMutation.mutate(
+      {
+        id: approveEntry.id,
+        payload: {
+          archive: true,
+        },
       },
-    }, {
-      onSuccess: () => {
-        showSuccess(t("messages.approve_success"));
-        setIsApproveModalOpen(false);
-        setApproveEntry(null);
+      {
+        onSuccess: () => {
+          showSuccess(t("messages.approve_success"));
+          setIsApproveModalOpen(false);
+          setApproveEntry(null);
+        },
+        onError: (error: any) => {
+          showError(
+            t("messages.approve_error_title"),
+            error?.response?.data?.message ||
+              error?.message ||
+              t("messages.approve_error_message"),
+          );
+        },
       },
-      onError: (error: any) => {
-        showError(
-          t("messages.approve_error_title"),
-          error?.response?.data?.message ||
-          error?.message ||
-          t("messages.approve_error_message")
-        );
-      },
-    });
+    );
   }, [approveEntry, updateMutation, showError, showSuccess]);
 
   const handleDelete = useCallback(
@@ -202,13 +205,13 @@ export default function DelaysPage() {
         showError(
           t("messages.delete_error_title"),
           error?.response?.data?.message ||
-          error?.message ||
-          t("messages.delete_error_message")
+            error?.message ||
+            t("messages.delete_error_message"),
         );
         throw error;
       }
     },
-    [deleteMutation, showError, showSuccess]
+    [deleteMutation, showError, showSuccess],
   );
 
   const handleCreate = useCallback(() => {
@@ -230,8 +233,8 @@ export default function DelaysPage() {
             showError(
               t("messages.create_error_title"),
               error?.response?.data?.message ||
-              error?.message ||
-              t("messages.create_error_message")
+                error?.message ||
+                t("messages.create_error_message"),
             );
           },
         });
@@ -251,11 +254,11 @@ export default function DelaysPage() {
               showError(
                 t("messages.update_error_title"),
                 error?.response?.data?.message ||
-                error?.message ||
-                t("messages.update_error_message")
+                  error?.message ||
+                  t("messages.update_error_message"),
               );
             },
-          }
+          },
         );
       }
     },
@@ -266,7 +269,7 @@ export default function DelaysPage() {
       updateMutation,
       showSuccess,
       showError,
-    ]
+    ],
   );
 
   const formatDate = useCallback(
@@ -286,7 +289,7 @@ export default function DelaysPage() {
         return dateString;
       }
     },
-    []
+    [],
   );
 
   const formatTime = useCallback((timeString: string) => {
@@ -324,7 +327,7 @@ export default function DelaysPage() {
 
       return nameWithoutExt.substring(0, availableLength) + "..." + extension;
     },
-    []
+    [],
   );
 
   const columns: TableColumn<DelayEntry>[] = [
@@ -356,7 +359,7 @@ export default function DelaysPage() {
       header: t("columns.delay_type"),
       accessor: (row) =>
         row?.delay_type ? getDelayTypeLabel(row.delay_type) : "-",
-      width: "150px"
+      width: "150px",
     },
     {
       key: "group_reason",
@@ -372,7 +375,7 @@ export default function DelaysPage() {
       key: "station",
       header: t("columns.station"),
       accessor: (row) => row?.station || "-",
-      width: "100px"
+      width: "100px",
     },
     {
       key: "delay_time",
@@ -394,10 +397,10 @@ export default function DelaysPage() {
       accessor: (row) =>
         row?.damage_amount
           ? new Intl.NumberFormat("uz-UZ", {
-            style: "currency",
-            currency: "UZS",
-            minimumFractionDigits: 0,
-          }).format(row.damage_amount)
+              style: "currency",
+              currency: "UZS",
+              minimumFractionDigits: 0,
+            }).format(row.damage_amount)
           : "0",
     },
     {
@@ -411,14 +414,16 @@ export default function DelaysPage() {
       header: t("columns.status"),
       accessor: (row) => {
         return (
-          <Badge variant={row?.status ? "destructive_outline" : "success_outline"}>
+          <Badge
+            variant={row?.status ? "destructive_outline" : "success_outline"}
+          >
             {row?.status
               ? t("status.label_disruption")
               : t("status.label_no_disruption")}
           </Badge>
         );
       },
-      width: "100px"
+      width: "100px",
     },
     {
       key: "archive",
@@ -427,9 +432,7 @@ export default function DelaysPage() {
         const isArchived = row?.archive;
         return (
           <Badge variant={isArchived ? "default" : "outline"}>
-            {isArchived
-              ? t("archive.archived")
-              : t("archive.not_archived")}
+            {isArchived ? t("archive.archived") : t("archive.not_archived")}
           </Badge>
         );
       },
@@ -471,7 +474,7 @@ export default function DelaysPage() {
       options.push({
         value: type.value,
         label: getDelayTypeLabel(type.value),
-      })
+      }),
     );
     return options;
   }, [t]);
@@ -482,7 +485,7 @@ export default function DelaysPage() {
       options.push({
         value: station.value,
         label: station.label,
-      })
+      }),
     );
     return options;
   }, []);
@@ -496,7 +499,7 @@ export default function DelaysPage() {
         options.push({
           value: String(org.id),
           label: org.name,
-        })
+        }),
       );
     }
     return options;
@@ -514,7 +517,7 @@ export default function DelaysPage() {
       options.push({
         value: type.value,
         label: getTrainTypeLabel(type.value),
-      })
+      }),
     );
     return options;
   }, [t]);
@@ -527,7 +530,7 @@ export default function DelaysPage() {
       options.push({
         value: reason.value,
         label: getGroupReasonLabel(reason.value),
-      })
+      }),
     );
     return options;
   }, [t]);
@@ -624,71 +627,71 @@ export default function DelaysPage() {
           actionsDisplayMode="row"
           extraActions={[
             ...(hasPermission(currentUser, "edit_delay") &&
-              !hasPermission(currentUser, "upload_delay_report")
+            !hasPermission(currentUser, "upload_delay_report")
               ? [
-                {
-                  label: "",
-                  icon: <Edit className="h-4 w-4" />,
-                  onClick: handleEdit,
-                  permission: "edit_delay" as Permission,
-                  variant: "outline" as const,
-                  shouldShow: (row: DelayEntry) => !row.archive,
-                },
-              ]
+                  {
+                    label: "",
+                    icon: <Edit className="h-4 w-4" />,
+                    onClick: handleEdit,
+                    permission: "edit_delay" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) => !row.archive,
+                  },
+                ]
               : []),
 
             // Delete action (for sriv_admin only)
             ...(hasPermission(currentUser, "delete_delay")
               ? [
-                {
-                  label: "",
-                  icon: <Trash2 className="h-4 w-4" />,
-                  onClick: handleDelete,
-                  permission: "delete_delay" as Permission,
-                  variant: "outline" as const,
-                  shouldShow: (row: DelayEntry) => !row.archive,
-                  className:
-                    "border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10",
-                },
-              ]
+                  {
+                    label: "",
+                    icon: <Trash2 className="h-4 w-4" />,
+                    onClick: handleDelete,
+                    permission: "delete_delay" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) => !row.archive,
+                    className:
+                      "border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10",
+                  },
+                ]
               : []),
 
             ...(hasPermission(currentUser, "upload_delay_report")
               ? [
-                {
-                  label: "",
-                  icon: (row: DelayEntry) =>
-                    row?.report || row?.report_filename ? (
-                      <FileEdit className="h-4 w-4" />
-                    ) : (
-                      <FileUp className="h-4 w-4" />
-                    ),
-                  onClick: handleCloseDelay,
-                  permission: "upload_delay_report" as Permission,
-                  variant: "outline" as const,
-                  shouldShow: (row: DelayEntry) => !row.archive,
-                },
-              ]
+                  {
+                    label: "",
+                    icon: (row: DelayEntry) =>
+                      row?.report || row?.report_filename ? (
+                        <FileEdit className="h-4 w-4" />
+                      ) : (
+                        <FileUp className="h-4 w-4" />
+                      ),
+                    onClick: handleCloseDelay,
+                    permission: "upload_delay_report" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) => !row.archive,
+                  },
+                ]
               : []),
 
             // Approve action (for sriv_admin only, when report is uploaded)
             ...(hasPermission(currentUser, "edit_delay") &&
-              !hasPermission(currentUser, "upload_delay_report")
+            !hasPermission(currentUser, "upload_delay_report")
               ? [
-                {
-                  label: "",
-                  icon: <CheckCircle className="h-4 w-4" />,
-                  onClick: handleApproveClick,
-                  permission: "edit_delay" as Permission,
-                  variant: "outline" as const,
-                  shouldShow: (row: DelayEntry) => {
-                    const hasReport = !!(row?.report_filename || row?.report);
-                    return hasReport && !row.archive;
+                  {
+                    label: "",
+                    icon: <CheckCircle className="h-4 w-4" />,
+                    onClick: handleApproveClick,
+                    permission: "edit_delay" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) => {
+                      const hasReport = !!(row?.report_filename || row?.report);
+                      return hasReport && !row.archive;
+                    },
+                    className:
+                      "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
                   },
-                  className:
-                    "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
-                },
-              ]
+                ]
               : []),
           ]}
           isDeleting={deleteMutation.isPending}
