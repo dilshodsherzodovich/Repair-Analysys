@@ -579,7 +579,7 @@ export default function DelaysPage() {
               isSelect: true,
               options: stationOptions,
               placeholder: t("filters.station_placeholder"),
-              searchable: false,
+              searchable: true,
               loading: false,
               permission: "filter_delay_station",
             },

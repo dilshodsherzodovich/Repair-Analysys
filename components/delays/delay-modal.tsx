@@ -10,6 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SearchableSelect,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
@@ -107,7 +108,7 @@ function OrganizationSelectField({
   disabled?: boolean;
 }) {
   const t = useTranslations("DelayModal");
-  
+
   return (
     <div>
       <Label htmlFor="responsible_org">{t("fields.responsible_org")}</Label>
@@ -164,6 +165,7 @@ export function DelayModal({
     hasPermission(user ?? null, "edit_delay") &&
     !hasPermission(user ?? null, "upload_delay_report");
   const [formDefaults, setFormDefaults] = useState<FormData>(INITIAL_FORM_DATA);
+  const [stationValue, setStationValue] = useState<string>("");
   const [formKey, setFormKey] = useState(0);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -197,12 +199,14 @@ export function DelayModal({
       };
       setFormDefaults(defaults);
       setSelectedDate(
-        entry.incident_date ? new Date(entry.incident_date) : undefined
+        entry.incident_date ? new Date(entry.incident_date) : undefined,
       );
+      setStationValue(entry.station || "");
       setReportFile(null); // Don't pre-fill file on edit
     } else {
       setFormDefaults(INITIAL_FORM_DATA);
       setSelectedDate(undefined);
+      setStationValue("");
       setReportFile(null);
     }
     // Reset archive to false when opening modal
@@ -249,7 +253,11 @@ export function DelayModal({
       return;
     }
 
-    if (!delayTimeMinutes || isNaN(Number(delayTimeMinutes)) || Number(delayTimeMinutes) < 0) {
+    if (
+      !delayTimeMinutes ||
+      isNaN(Number(delayTimeMinutes)) ||
+      Number(delayTimeMinutes) < 0
+    ) {
       showError(t("errors.delay_time"));
       return;
     }
@@ -285,13 +293,13 @@ export function DelayModal({
       // Add new fields
       ...(mode === "create"
         ? {
-          group_reason: groupReason as GroupReason,
-          train_type: trainType as TrainType,
-        }
+            group_reason: groupReason as GroupReason,
+            train_type: trainType as TrainType,
+          }
         : {
-          ...(groupReason && { group_reason: groupReason as GroupReason }),
-          ...(trainType && { train_type: trainType as TrainType }),
-        }),
+            ...(groupReason && { group_reason: groupReason as GroupReason }),
+            ...(trainType && { train_type: trainType as TrainType }),
+          }),
     };
 
     onSave(payload);
@@ -300,6 +308,7 @@ export function DelayModal({
   const handleClose = () => {
     setFormDefaults(INITIAL_FORM_DATA);
     setSelectedDate(undefined);
+    setStationValue("");
     setReportFile(null);
     setFormKey((prev) => prev + 1);
     formRef.current?.reset();
@@ -317,7 +326,7 @@ export function DelayModal({
       submit: mode === "create" ? t("submit_create") : t("submit_edit"),
       pending: mode === "create" ? t("pending_create") : t("pending_edit"),
     }),
-    [mode, t]
+    [mode, t],
   );
 
   return (
@@ -356,7 +365,9 @@ export function DelayModal({
                     disabled={!canEditFields && mode === "edit"}
                   >
                     <SelectTrigger id="train_type">
-                      <SelectValue placeholder={t("fields.train_type_placeholder")} />
+                      <SelectValue
+                        placeholder={t("fields.train_type_placeholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {TRAIN_TYPE_OPTIONS.map((option) => (
@@ -377,7 +388,9 @@ export function DelayModal({
                     disabled={!canEditFields && mode === "edit"}
                   >
                     <SelectTrigger id="delay_type">
-                      <SelectValue placeholder={t("fields.delay_type_placeholder")} />
+                      <SelectValue
+                        placeholder={t("fields.delay_type_placeholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {DELAY_TYPE_OPTIONS.map((option) => (
@@ -391,23 +404,15 @@ export function DelayModal({
 
                 <div>
                   <Label htmlFor="station">{t("fields.station")}</Label>
-                  <Select
+                  <SearchableSelect
                     name="station"
-                    defaultValue={formDefaults.station}
-                    required
+                    value={stationValue}
+                    onValueChange={setStationValue}
                     disabled={!canEditFields && mode === "edit"}
-                  >
-                    <SelectTrigger id="station">
-                      <SelectValue placeholder={t("fields.station_placeholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STATION_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder={t("fields.station_placeholder")}
+                    searchable={true}
+                    options={STATION_OPTIONS}
+                  />
                 </div>
 
                 <FormField
@@ -422,10 +427,10 @@ export function DelayModal({
                   step="1"
                 />
 
-
-
                 <div>
-                  <Label htmlFor="group_reason">{t("fields.group_reason")}</Label>
+                  <Label htmlFor="group_reason">
+                    {t("fields.group_reason")}
+                  </Label>
                   <Select
                     name="group_reason"
                     defaultValue={formDefaults.group_reason}
@@ -433,7 +438,9 @@ export function DelayModal({
                     disabled={!canEditFields && mode === "edit"}
                   >
                     <SelectTrigger id="group_reason">
-                      <SelectValue placeholder={t("fields.group_reason_placeholder")} />
+                      <SelectValue
+                        placeholder={t("fields.group_reason_placeholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {GROUP_REASON_OPTIONS.map((option) => (
@@ -477,11 +484,17 @@ export function DelayModal({
                     <Label htmlFor="status">{t("fields.status")}</Label>
                     <Select name="status" defaultValue={formDefaults.status}>
                       <SelectTrigger className="mb-0 w-full" id="status">
-                        <SelectValue placeholder={t("fields.status_placeholder")} />
+                        <SelectValue
+                          placeholder={t("fields.status_placeholder")}
+                        />
                       </SelectTrigger>
                       <SelectContent className="mb-0">
-                        <SelectItem value="true">{t("fields.status_disruption")}</SelectItem>
-                        <SelectItem value="false">{t("fields.status_no_disruption")}</SelectItem>
+                        <SelectItem value="true">
+                          {t("fields.status_disruption")}
+                        </SelectItem>
+                        <SelectItem value="false">
+                          {t("fields.status_no_disruption")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -489,8 +502,6 @@ export function DelayModal({
               </>
             )}
           </div>
-
-
 
           {!isModerateMode && (
             <FormField
@@ -512,11 +523,17 @@ export function DelayModal({
                   <Label htmlFor="status">{t("fields.status")}</Label>
                   <Select name="status" defaultValue={formDefaults.status}>
                     <SelectTrigger className="mb-0 w-full" id="status">
-                      <SelectValue placeholder={t("fields.status_placeholder")} />
+                      <SelectValue
+                        placeholder={t("fields.status_placeholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent className="mb-0">
-                      <SelectItem value="true">{t("fields.status_disruption")}</SelectItem>
-                      <SelectItem value="false">{t("fields.status_no_disruption")}</SelectItem>
+                      <SelectItem value="true">
+                        {t("fields.status_disruption")}
+                      </SelectItem>
+                      <SelectItem value="false">
+                        {t("fields.status_no_disruption")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -532,7 +549,9 @@ export function DelayModal({
                 />
                 {!reportFile && entry?.report && (
                   <div className="mt-2">
-                    <p className="text-sm text-gray-600 mb-1">{t("fields.current_report")}</p>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {t("fields.current_report")}
+                    </p>
                     <a
                       href={entry.report}
                       target="_blank"

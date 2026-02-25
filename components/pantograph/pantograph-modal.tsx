@@ -13,6 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SearchableSelect,
 } from "@/ui/select";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import {
@@ -34,7 +35,7 @@ interface PantographModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (
-    payload: CreatePantographJournalPayload | UpdatePantographJournalPayload
+    payload: CreatePantographJournalPayload | UpdatePantographJournalPayload,
   ) => void;
   entry?: PantographJournalEntry | null;
   mode: "create" | "edit";
@@ -69,28 +70,16 @@ function LocomotiveSelectInner({
   return (
     <div>
       <Label htmlFor="locomotive">{label}</Label>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger>
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {isLoading ? (
-            <SelectItem value="loading" disabled>
-              {loadingText}
-            </SelectItem>
-          ) : options.length > 0 ? (
-            options.map((option) => (
-              <SelectItem key={option.id} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))
-          ) : (
-            <SelectItem value="empty" disabled>
-              {emptyText}
-            </SelectItem>
-          )}
-        </SelectContent>
-      </Select>
+      <SearchableSelect
+        name="locomotive"
+        value={value}
+        onValueChange={onChange}
+        options={options}
+        placeholder={isLoading ? loadingText : placeholder}
+        searchable={true}
+        emptyMessage={emptyText}
+        disabled={isLoading || options.length === 0}
+      />
     </div>
   );
 }
@@ -141,8 +130,9 @@ export function PantographModal({
     if (!form) return;
     if (!department || !section) return;
     const get = (name: string) =>
-      (form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement)
-        ?.value?.trim() ?? "";
+      (
+        form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement
+      )?.value?.trim() ?? "";
     const payload = {
       locomotive: Number(locomotive),
       department,
@@ -171,12 +161,10 @@ export function PantographModal({
 
   // Initial values for uncontrolled inputs; form remounts when key changes so these apply on open
   const initialDate =
-    entry && mode === "edit" && entry.date
-      ? entry.date.slice(0, 10)
-      : "";
-  const initialDamage = entry && mode === "edit" ? entry.damage ?? "" : "";
+    entry && mode === "edit" && entry.date ? entry.date.slice(0, 10) : "";
+  const initialDamage = entry && mode === "edit" ? (entry.damage ?? "") : "";
   const initialDescription =
-    entry && mode === "edit" ? entry.description ?? "" : "";
+    entry && mode === "edit" ? (entry.description ?? "") : "";
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
@@ -225,7 +213,9 @@ export function PantographModal({
                   required
                 >
                   <SelectTrigger id="department">
-                    <SelectValue placeholder={t("fields.department_placeholder")} />
+                    <SelectValue
+                      placeholder={t("fields.department_placeholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {responsibleOrganizations.map((org) => (
@@ -241,7 +231,9 @@ export function PantographModal({
                 <Label htmlFor="section">{t("fields.section")}</Label>
                 <Select value={section} onValueChange={setSection} required>
                   <SelectTrigger id="section">
-                    <SelectValue placeholder={t("fields.section_placeholder")} />
+                    <SelectValue
+                      placeholder={t("fields.section_placeholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {STATION_OPTIONS.map((opt) => (
