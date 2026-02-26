@@ -46,7 +46,13 @@ export type Permission =
   // dpx permissions
   | "view_inspections"
   | "choose_inspection_organization"
-  | "edit_inspection_location_section";
+  | "edit_inspection_location_section"
+
+  // maneuver journal
+  | "view_maneuver_journal"
+  | "create_maneuver_journal"
+  | "edit_maneuver_journal"
+  | "delete_maneuver_journal";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -81,6 +87,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_locomotive_replacement_oil",
     "view_inspections",
     "choose_inspection_organization",
+    "view_maneuver_journal",
   ],
   moderator: [
     "view_dashboard",
@@ -156,6 +163,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "create_locomotive_replacement_oil",
     "edit_locomotive_replacement_oil",
     "edit_inspection_location_section",
+    "view_maneuver_journal",
+    "create_maneuver_journal",
+    "edit_maneuver_journal",
   ],
   sriv_admin: [
     "view_dashboard",
@@ -243,6 +253,9 @@ export function canAccessSection(
     }
     case "inspections": {
       return hasPermission(user, "view_inspections");
+    }
+    case "razvarot": {
+      return hasPermission(user, "view_maneuver_journal");
     }
     default:
       return false;

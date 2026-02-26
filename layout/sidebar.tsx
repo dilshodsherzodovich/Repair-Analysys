@@ -21,13 +21,12 @@ import {
   Calendar,
   Gauge,
   type LucideIcon,
+  RotateCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
 import { Button } from "@/ui/button";
-import {
-  authService
-} from "@/api/services/auth.service";
+import { authService } from "@/api/services/auth.service";
 import { useTranslations } from "next-intl";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import type { UserData } from "@/api/types/auth";
@@ -70,14 +69,21 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
 
   const user = authService.getUser();
-  const { data: organizationsData } = useOrganizations(user ? { no_page: true } : undefined);
+  const { data: organizationsData } = useOrganizations(
+    user ? { no_page: true } : undefined,
+  );
   const organizations: Organization[] = Array.isArray(organizationsData)
     ? organizationsData
-    : (organizationsData as { results?: Organization[] } | undefined)?.results ?? [];
+    : ((organizationsData as { results?: Organization[] } | undefined)
+        ?.results ?? []);
 
-  const userBranchOrg = useMemo((): { id: number; name: string } | undefined => {
+  const userBranchOrg = useMemo(():
+    | { id: number; name: string }
+    | undefined => {
     if (!user) return undefined;
-    const u = user as UserData & { branch?: number | { organization?: { id: number; name: string } } };
+    const u = user as UserData & {
+      branch?: number | { organization?: { id: number; name: string } };
+    };
     const branch = u.branch;
     if (branch != null && typeof branch === "object") {
       const b = branch as { organization?: { id: number; name: string } };
@@ -127,18 +133,18 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       const depoChildren: NavChild[] =
         user.role === "admin"
           ? (organizations
-            ?.map((org) => ({
-              name: formatOrgDisplayName(org),
-              href: `/depo/${org.id}`,
-            }))
-            .filter((child): child is NavChild => Boolean(child.name)) ?? [])
+              ?.map((org) => ({
+                name: formatOrgDisplayName(org),
+                href: `/depo/${org.id}`,
+              }))
+              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
           : userBranchOrg
             ? [
-              {
-                name: userBranchOrg.name,
-                href: `/depo/${userBranchOrg.id}`,
-              },
-            ]
+                {
+                  name: userBranchOrg.name,
+                  href: `/depo/${userBranchOrg.id}`,
+                },
+              ]
             : [];
       items.push({
         key: "depot",
@@ -153,24 +159,24 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       const dutyChildren: NavChild[] =
         user.role === "admin"
           ? (organizations
-            ?.map((org) => {
-              const firstWord = (org.name ?? "").split(" ")[0] ?? "";
-              const name =
-                (org.name ?? "").includes("lokomotiv") ||
+              ?.map((org) => {
+                const firstWord = (org.name ?? "").split(" ")[0] ?? "";
+                const name =
+                  (org.name ?? "").includes("lokomotiv") ||
                   (org.name ?? "").includes("depo") ||
                   (org.name ?? "").includes("deposi")
-                  ? firstWord.replaceAll(/[^a-zA-Z0-9]/g, "") + " depo"
-                  : org.name ?? "";
-              return { name, href: `/duty-uzel/${org.id}` };
-            })
-            .filter((child): child is NavChild => Boolean(child.name)) ?? [])
+                    ? firstWord.replaceAll(/[^a-zA-Z0-9]/g, "") + " depo"
+                    : (org.name ?? "");
+                return { name, href: `/duty-uzel/${org.id}` };
+              })
+              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
           : userBranchOrg
             ? [
-              {
-                name: userBranchOrg.name,
-                href: `/duty-uzel/${userBranchOrg.id}`,
-              },
-            ]
+                {
+                  name: userBranchOrg.name,
+                  href: `/duty-uzel/${userBranchOrg.id}`,
+                },
+              ]
             : [];
       items.push({
         key: "duty_uzel",
@@ -185,18 +191,18 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       const revisionChildren: NavChild[] =
         user.role === "admin"
           ? (organizations
-            ?.map((org) => ({
-              name: formatOrgDisplayName(org),
-              href: `/revision-journal/${org.id}`,
-            }))
-            .filter((child): child is NavChild => Boolean(child.name)) ?? [])
+              ?.map((org) => ({
+                name: formatOrgDisplayName(org),
+                href: `/revision-journal/${org.id}`,
+              }))
+              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
           : userBranchOrg
             ? [
-              {
-                name: userBranchOrg.name,
-                href: `/revision-journal/${userBranchOrg.id}`,
-              },
-            ]
+                {
+                  name: userBranchOrg.name,
+                  href: `/revision-journal/${userBranchOrg.id}`,
+                },
+              ]
             : [];
       items.push({
         key: "revision_journal",
@@ -277,6 +283,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       });
     }
 
+    if (user && canAccessSection(user, "razvarot")) {
+      items.push({
+        key: "razvarot",
+        name: t("nav.razvarot"),
+        icon: RotateCw,
+        section: "razvarot",
+        href: "/razvarot",
+      });
+    }
+
     return items;
   }, [user, organizations, userBranchOrg, t]);
 
@@ -298,7 +314,12 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       <div className="h-full flex flex-col min-h-0 flex-1 p-3 md:p-4">
         {/* Logo/Brand Section */}
         <div className="mb-4 flex-shrink-0">
-          <div className={cn("flex items-center", isCollapsed ? "justify-center" : "space-x-3")}>
+          <div
+            className={cn(
+              "flex items-center",
+              isCollapsed ? "justify-center" : "space-x-3",
+            )}
+          >
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
               <Shield className="h-6 w-6 text-primary" />
             </div>
@@ -332,21 +353,23 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                       "flex items-center justify-between w-full rounded-t-lg text-sm font-medium cursor-pointer transition-all px-3 py-2.5",
                       isActive
                         ? "bg-brand text-primary"
-                        : "text-muted-foreground"
-                      , isExpanded && "bg-brand"
+                        : "text-muted-foreground",
+                      isExpanded && "bg-brand",
                     )}
                   >
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
                       <Icon
                         className={cn(
                           "h-5 w-5 flex-shrink-0",
-                          isActive ? "text-primary" : "text-muted-foreground"
+                          isActive ? "text-primary" : "text-muted-foreground",
                         )}
                       />
                       <span
                         className={cn(
                           "truncate text-left",
-                          isActive ? "text-primary font-semibold" : "text-muted-foreground"
+                          isActive
+                            ? "text-primary font-semibold"
+                            : "text-muted-foreground",
                         )}
                       >
                         {item.name}
@@ -379,13 +402,15 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                                   "flex w-full items-center rounded-lg text-sm transition-all px-3 py-2 cursor-pointer",
                                   isChildActive
                                     ? "text-primary font-semibold"
-                                    : "text-muted-foreground hover:text-primary"
+                                    : "text-muted-foreground hover:text-primary",
                                 )}
                               >
                                 <span
                                   className={cn(
                                     "mr-2 text-sm leading-none",
-                                    isChildActive ? "text-primary" : "text-muted-foreground"
+                                    isChildActive
+                                      ? "text-primary"
+                                      : "text-muted-foreground",
                                   )}
                                 >
                                   •
@@ -393,7 +418,9 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                                 <span
                                   className={cn(
                                     "truncate",
-                                    isChildActive ? "text-primary" : "text-muted-foreground"
+                                    isChildActive
+                                      ? "text-primary"
+                                      : "text-muted-foreground",
                                   )}
                                 >
                                   {child.name}
@@ -411,14 +438,17 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
 
             if (hasChildren && isCollapsed) {
               const firstChild = item.children![0];
-              const currentChild = item.children!.find((c) => c.href === pathname) ?? firstChild;
+              const currentChild =
+                item.children!.find((c) => c.href === pathname) ?? firstChild;
               return (
                 <Link
                   key={item.key}
                   href={currentChild.href}
                   className={cn(
                     "flex items-center justify-center rounded-lg text-sm font-medium cursor-pointer transition-all px-3 py-2.5",
-                    isActive ? "bg-brand text-primary" : "text-muted-foreground hover:bg-muted"
+                    isActive
+                      ? "bg-brand text-primary"
+                      : "text-muted-foreground hover:bg-muted",
                   )}
                   title={item.name}
                 >
@@ -437,27 +467,29 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                     isCollapsed ? "justify-center" : "justify-between",
                     isActive
                       ? "bg-brand text-primary"
-                      : "text-muted-foreground hover:bg-muted"
+                      : "text-muted-foreground hover:bg-muted",
                   )}
                   title={isCollapsed ? item.name : undefined}
                 >
                   <div
                     className={cn(
                       "flex items-center flex-1 min-w-0",
-                      isCollapsed && "justify-center"
+                      isCollapsed && "justify-center",
                     )}
                   >
                     <Icon
                       className={cn(
                         "h-5 w-5 flex-shrink-0",
-                        isActive ? "text-primary" : "text-muted-foreground"
+                        isActive ? "text-primary" : "text-muted-foreground",
                       )}
                     />
                     {!isCollapsed && (
                       <span
                         className={cn(
                           "truncate ml-3",
-                          isActive ? "text-primary font-semibold" : "text-muted-foreground"
+                          isActive
+                            ? "text-primary font-semibold"
+                            : "text-muted-foreground",
                         )}
                       >
                         {item.name}
@@ -468,7 +500,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                     <ChevronRight
                       className={cn(
                         "h-4 w-4 flex-shrink-0 transition-colors",
-                        isActive ? "text-primary" : "text-muted-foreground"
+                        isActive ? "text-primary" : "text-muted-foreground",
                       )}
                     />
                   )}
@@ -484,7 +516,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
           <Button
             className={cn(
               "w-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center",
-              isCollapsed ? "p-2" : "space-x-2 py-2"
+              isCollapsed ? "p-2" : "space-x-2 py-2",
             )}
             title={isCollapsed ? t("support_button") : undefined}
           >

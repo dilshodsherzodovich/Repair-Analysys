@@ -94,6 +94,71 @@
       "generic_error": "Xatolik yuz berdi"
     }
   },
+  "ManeuverJournalPage": {
+    "title": "Razvarot",
+    "description": "Manyovr jurnali ma'lumotlari",
+    "breadcrumbs": {
+      "home": "Asosiy",
+      "current": "Razvarot"
+    },
+    "columns": {
+      "date": "Sana",
+      "station": "Stansiya",
+      "from_section": "Qaysi bo'limdan",
+      "to_section": "Qaysi bo'limga",
+      "locomotive": "Lokomotiv",
+      "author": "Muallif",
+      "organization": "Tashkilot",
+      "section": "Razvarot",
+      "actions": "Amallar"
+    },
+    "options": {
+      "all_locomotives": "Barcha lokomotivlar",
+      "all_organizations": "Barcha tashkilotlar"
+    },
+    "filters": {
+      "locomotive": "Lokomotiv",
+      "locomotive_placeholder": "Lokomotivni tanlang",
+      "organization": "Tashkilot",
+      "organization_placeholder": "Tashkilotni tanlang",
+      "date_range": "Sana oralig'i"
+    },
+    "search_placeholder": "Qidiruv...",
+    "add_button": "Qo'shish",
+    "edit_action": "Tahrirlash",
+    "empty_title": "Ma'lumot topilmadi",
+    "empty_description": "Jadvalda ko'rsatish uchun ma'lumot yo'q",
+    "errors": {
+      "generic": "Xatolik yuz berdi",
+      "create": "Qo'shishda xatolik yuz berdi",
+      "update": "Yangilashda xatolik yuz berdi"
+    },
+    "messages": {
+      "create_success": "Muvaffaqiyatli qo'shildi",
+      "update_success": "Muvaffaqiyatli yangilandi"
+    }
+  },
+  "ManeuverJournalModal": {
+    "title_create": "Razvarot qo'shish",
+    "title_edit": "Razvarotni tahrirlash",
+    "submit_create": "Qo'shish",
+    "submit_edit": "Saqlash",
+    "pending": "Bajarilmoqda...",
+    "cancel": "Bekor qilish",
+    "fields": {
+      "date": "Sana",
+      "locomotive": "Lokomotiv",
+      "locomotive_placeholder": "Lokomotivni tanlang",
+      "locomotive_loading": "Kutilmoqda...",
+      "locomotive_empty": "Lokomotiv topilmadi",
+      "station": "Stansiya",
+      "station_placeholder": "Stansiya nomini kiriting",
+      "from_section": "Qaysi bo'limdan",
+      "from_section_placeholder": "Bo'limni tanlang",
+      "to_section": "Qaysi bo'limga",
+      "to_section_placeholder": "Bo'limni tanlang"
+    }
+  },
   "Sidebar": {
     "brand_title": "Ta'mir Tahlili Tizimi",
     "brand_subtitle": "Raqamli tahlil",
@@ -110,7 +175,8 @@
       "orders": "Buyruq MPR",
       "defective_works": "Nosozliklar",
       "delays": "Sriv",
-      "delay_reports": "Sriv hisobotlar"
+      "delay_reports": "Sriv hisobotlar",
+      "razvarot": "Razvarot"
     },
     "support_button": "Texnik yordam markazi",
     "sidebar_collapse": "Yon panelni yopish",
@@ -433,8 +499,17 @@
     "search_placeholder": "Qidiruv",
     "empty_title": "Ma'lumot topilmadi",
     "empty_description": "Nosoz ishlar mavjud emas",
-    "errors": { "generic": "Xatolik yuz berdi", "delete": "Nosoz ishni o'chirishda xatolik", "create": "Nosoz ishni qo'shishda xatolik", "update": "Nosoz ishni yangilashda xatolik" },
-    "messages": { "delete_success": "Nosoz ish muvaffaqiyatli o'chirildi", "create_success": "Nosoz ish muvaffaqiyatli qo'shildi", "update_success": "Nosoz ish muvaffaqiyatli yangilandi" }
+    "errors": {
+      "generic": "Xatolik yuz berdi",
+      "delete": "Nosoz ishni o'chirishda xatolik",
+      "create": "Nosoz ishni qo'shishda xatolik",
+      "update": "Nosoz ishni yangilashda xatolik"
+    },
+    "messages": {
+      "delete_success": "Nosoz ish muvaffaqiyatli o'chirildi",
+      "create_success": "Nosoz ish muvaffaqiyatli qo'shildi",
+      "update_success": "Nosoz ish muvaffaqiyatli yangilandi"
+    }
   },
   "DefectiveWorkModal": {
     "title_create": "Nosoz ishni qo'shish",
@@ -464,9 +539,28 @@
     "error_loco_inspection": "Lokomotiv yoki texnik ko'rik turi tanlanmagan"
   },
   "TU152Tab": {
-    "columns": { "locomotive": "Lokomotiv", "group": "Guruh", "mashinist": "Mashinist", "comments": "Izoh", "answer": "Javob", "status": "Holati", "change_date": "O'zgartirilgan sana" },
-    "filters": { "locomotive": "Lokomotiv", "locomotive_placeholder": "Lokomotivni tanlang", "seriya": "Lokomotiv seriyasi", "seriya_placeholder": "Seriyani tanlang", "status": "Holat", "status_placeholder": "Holatni tanlang" },
-    "options": { "all_locomotives": "Barcha lokomotivlar", "all_seriyas": "Barcha seriyalar", "all_statuses": "Barcha holatlar" },
+    "columns": {
+      "locomotive": "Lokomotiv",
+      "group": "Guruh",
+      "mashinist": "Mashinist",
+      "comments": "Izoh",
+      "answer": "Javob",
+      "status": "Holati",
+      "change_date": "O'zgartirilgan sana"
+    },
+    "filters": {
+      "locomotive": "Lokomotiv",
+      "locomotive_placeholder": "Lokomotivni tanlang",
+      "seriya": "Lokomotiv seriyasi",
+      "seriya_placeholder": "Seriyani tanlang",
+      "status": "Holat",
+      "status_placeholder": "Holatni tanlang"
+    },
+    "options": {
+      "all_locomotives": "Barcha lokomotivlar",
+      "all_seriyas": "Barcha seriyalar",
+      "all_statuses": "Barcha holatlar"
+    },
     "date_from": "Boshlanish sanasi",
     "date_to": "Tugash sanasi",
     "edit_action": "Tahrirlash",
@@ -475,7 +569,10 @@
     "pagination_prev": "Orqaga",
     "pagination_next": "Oldinga",
     "pagination_showing": "Ko'rsatilmoqda {from} dan {to} gacha, jami {total} ta",
-    "errors": { "generic": "Xatolik yuz berdi", "update": "TU152 nosozlikni yangilashda xatolik" },
+    "errors": {
+      "generic": "Xatolik yuz berdi",
+      "update": "TU152 nosozlikni yangilashda xatolik"
+    },
     "messages": { "update_success": "TU152 nosozlik muvaffaqiyatli yangilandi" }
   },
   "TU152Modal": {
@@ -506,7 +603,11 @@
       "file": "Biriktirilgan fayl",
       "status": "Holati"
     },
-    "journal_types": { "mpr": "Buyruq MPR", "invalid": "Yaroqsiz", "defect": "Defekt" },
+    "journal_types": {
+      "mpr": "Buyruq MPR",
+      "invalid": "Yaroqsiz",
+      "defect": "Defekt"
+    },
     "status_confirmed": "Tasdiqlangan",
     "status_not_confirmed": "Tasdiqlanmagan",
     "filters": {
@@ -529,8 +630,20 @@
     "date_label": "Sana",
     "empty_title": "Ma'lumot topilmadi",
     "empty_description": "Buyruq MPR ma'lumotlari topilmadi",
-    "errors": { "generic": "Xatolik yuz berdi", "load": "An error occurred", "delete": "Buyruq MPR o'chirishda xatolik", "create": "Buyruq MPR yaratishda xatolik", "update": "Buyruq MPR yangilashda xatolik", "confirm": "Buyruq MPR ni tasdiqlashda xatolik" },
-    "messages": { "delete_success": "Buyruq MPR muvaffaqiyatli o'chirildi", "create_success": "Buyruq MPR muvaffaqiyatli yaratildi!", "update_success": "Buyruq MPR muvaffaqiyatli yangilandi!", "confirm_success": "Buyruq MPR muvaffaqiyatli tasdiqlandi" },
+    "errors": {
+      "generic": "Xatolik yuz berdi",
+      "load": "An error occurred",
+      "delete": "Buyruq MPR o'chirishda xatolik",
+      "create": "Buyruq MPR yaratishda xatolik",
+      "update": "Buyruq MPR yangilashda xatolik",
+      "confirm": "Buyruq MPR ni tasdiqlashda xatolik"
+    },
+    "messages": {
+      "delete_success": "Buyruq MPR muvaffaqiyatli o'chirildi",
+      "create_success": "Buyruq MPR muvaffaqiyatli yaratildi!",
+      "update_success": "Buyruq MPR muvaffaqiyatli yangilandi!",
+      "confirm_success": "Buyruq MPR muvaffaqiyatli tasdiqlandi"
+    },
     "confirm_dialog": {
       "title": "Buyruq MPR ni tasdiqlash",
       "message_with_train": "\"{trainNumber}\" poyezd raqamli buyruqni tasdiqlashni xohlaysizmi?",
@@ -550,7 +663,11 @@
     "cancel": "Bekor qilish",
     "journal_type": "Jurnal turi",
     "journal_type_placeholder": "Jurnal turini tanlang",
-    "journal_options": { "mpr": "MPR", "invalid": "Yaroqsiz", "defect": "Defekt" },
+    "journal_options": {
+      "mpr": "MPR",
+      "invalid": "Yaroqsiz",
+      "defect": "Defekt"
+    },
     "train_number": "Poyezd raqami",
     "train_number_placeholder": "Poyezd raqamini kiriting",
     "date": "Sana",
@@ -918,4 +1035,3 @@
     }
   }
 }
-

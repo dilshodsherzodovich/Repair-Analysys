@@ -120,4 +120,7 @@ export const queryKeys = {
   reserve: {
     list: "reserve-list",
   },
+  maneuverJournal: {
+    list: (params?: any) => ["maneuver-journal-list", params],
+  },
 } as const;

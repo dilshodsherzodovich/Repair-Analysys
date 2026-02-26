@@ -34,7 +34,7 @@ import { hasPermission } from "@/lib/permissions";
 import { useUpdateInspectionSection } from "@/api/hooks/use-inspections";
 import type { UserData } from "@/api/types/auth";
 
-const INSPECTION_SECTION_OPTIONS = [
+export const INSPECTION_SECTION_OPTIONS = [
   { value: "A", labelKey: "section_A" },
   { value: "B", labelKey: "section_B" },
   { value: "V", labelKey: "section_V" },
@@ -76,7 +76,11 @@ function getIntervalBadge(inspection: Inspection): {
   if (hourInterval && hourInterval > 0) {
     const text = `${remaining}/${hourInterval}`;
     const variant =
-      remaining <= 0 ? "warning" : remaining < hourInterval ? "success" : "default";
+      remaining <= 0
+        ? "warning"
+        : remaining < hourInterval
+          ? "success"
+          : "default";
     return { text, variant };
   }
   if (mileageInterval && mileageInterval > 0) {
@@ -105,7 +109,7 @@ export function InspectionsGroupedTable({
 }: InspectionsGroupedTableProps) {
   const t = useTranslations("InspectionsPage");
   const [editingSectionForId, setEditingSectionForId] = useState<number | null>(
-    null
+    null,
   );
 
   const currentUser: UserData | null =
@@ -114,7 +118,7 @@ export function InspectionsGroupedTable({
       : null;
   const canEditSection = hasPermission(
     currentUser,
-    "edit_inspection_location_section"
+    "edit_inspection_location_section",
   );
 
   const updateSectionMutation = useUpdateInspectionSection();
@@ -122,11 +126,11 @@ export function InspectionsGroupedTable({
   const getSectionSelectValue = (section: string | undefined) => {
     if (!section) return "";
     const byValue = INSPECTION_SECTION_OPTIONS.find(
-      (opt) => opt.value === section
+      (opt) => opt.value === section,
     );
     if (byValue) return byValue.value;
     const byLabelKey = INSPECTION_SECTION_OPTIONS.find(
-      (opt) => t(opt.labelKey) === section
+      (opt) => t(opt.labelKey) === section,
     );
     return byLabelKey ? byLabelKey.value : INSPECTION_SECTION_OPTIONS[0].value;
   };
@@ -136,7 +140,7 @@ export function InspectionsGroupedTable({
     const opt = INSPECTION_SECTION_OPTIONS.find((o) => o.value === section);
     if (opt) return t(opt.labelKey);
     const byTranslated = INSPECTION_SECTION_OPTIONS.find(
-      (o) => t(o.labelKey) === section
+      (o) => t(o.labelKey) === section,
     );
     return byTranslated ? t(byTranslated.labelKey) : section;
   };
@@ -203,7 +207,9 @@ export function InspectionsGroupedTable({
   if (!inspections.length) {
     return (
       <div className="rounded-lg border border-[#CAD5E2] bg-white p-8 text-center">
-        <p className="font-medium text-[#0F172B]">{emptyTitle ?? t("empty_title")}</p>
+        <p className="font-medium text-[#0F172B]">
+          {emptyTitle ?? t("empty_title")}
+        </p>
         <p className="text-sm text-[#64748B] mt-1">
           {emptyDescription ?? t("empty_description")}
         </p>
@@ -214,9 +220,14 @@ export function InspectionsGroupedTable({
   return (
     <div className="space-y-6">
       {groupedByType?.map((group) => (
-        <div key={group.id} className="rounded-lg border border-[#CAD5E2] overflow-hidden">
+        <div
+          key={group.id}
+          className="rounded-lg border border-[#CAD5E2] overflow-hidden"
+        >
           <div className="bg-[#EFF6FF] px-4 py-2 border-b border-[#CAD5E2]">
-            <h3 className="text-xl font-semibold text-[#0F172B]">{group?.name}</h3>
+            <h3 className="text-xl font-semibold text-[#0F172B]">
+              {group?.name}
+            </h3>
           </div>
           <Table className="w-full min-w-[900px]">
             <TableHeader>
@@ -298,9 +309,8 @@ export function InspectionsGroupedTable({
                                 payload: { section: value },
                               },
                               {
-                                onSettled: () =>
-                                  setEditingSectionForId(null),
-                              }
+                                onSettled: () => setEditingSectionForId(null),
+                              },
                             );
                           }}
                           disabled={updateSectionMutation.isPending}
@@ -340,7 +350,7 @@ export function InspectionsGroupedTable({
                     <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
                       {inspection?.author?.first_name
                         ? `${inspection?.author?.first_name} ${inspection?.author?.last_name || ""}`.trim()
-                        : inspection?.author?.username ?? "—"}
+                        : (inspection?.author?.username ?? "—")}
                     </TableCell>
                     <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
                       {formatCreatedTime(inspection?.created_time)}
@@ -355,15 +365,20 @@ export function InspectionsGroupedTable({
                               : "secondary"
                         }
                         className={cn(
-                          interval?.variant === "success" && "bg-emerald-500 text-white",
-                          interval?.variant === "warning" && "bg-amber-500 text-white"
+                          interval?.variant === "success" &&
+                            "bg-emerald-500 text-white",
+                          interval?.variant === "warning" &&
+                            "bg-amber-500 text-white",
                         )}
                       >
                         {interval.text}
                       </Badge>
                     </TableCell>
                     <TableCell className="py-3 px-4 border-r border-[#E2E8F0] last:border-r-0">
-                      <Badge variant="warning" className="bg-amber-500 text-white">
+                      <Badge
+                        variant="warning"
+                        className="bg-amber-500 text-white"
+                      >
                         {t("status_in_progress")}
                       </Badge>
                     </TableCell>

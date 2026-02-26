@@ -94,6 +94,71 @@
       "generic_error": "Произошла ошибка"
     }
   },
+  "ManeuverJournalPage": {
+    "title": "Разворот",
+    "description": "Данные маневрового журнала",
+    "breadcrumbs": {
+      "home": "Главная",
+      "current": "Разворот"
+    },
+    "columns": {
+      "date": "Дата",
+      "station": "Станция",
+      "from_section": "Откуда",
+      "to_section": "Куда",
+      "locomotive": "Локомотив",
+      "author": "Автор",
+      "organization": "Организация",
+      "section": "Разворот",
+      "actions": "Действия"
+    },
+    "options": {
+      "all_locomotives": "Все локомотивы",
+      "all_organizations": "Все организации"
+    },
+    "filters": {
+      "locomotive": "Локомотив",
+      "locomotive_placeholder": "Выберите локомотив",
+      "organization": "Организация",
+      "organization_placeholder": "Выберите организацию",
+      "date_range": "Период"
+    },
+    "search_placeholder": "Поиск...",
+    "add_button": "Добавить",
+    "edit_action": "Редактировать",
+    "empty_title": "Данные не найдены",
+    "empty_description": "Нет данных для отображения",
+    "errors": {
+      "generic": "Произошла ошибка",
+      "create": "Ошибка при добавлении",
+      "update": "Ошибка при обновлении"
+    },
+    "messages": {
+      "create_success": "Успешно добавлено",
+      "update_success": "Успешно обновлено"
+    }
+  },
+  "ManeuverJournalModal": {
+    "title_create": "Добавить разворот",
+    "title_edit": "Редактировать разворот",
+    "submit_create": "Добавить",
+    "submit_edit": "Сохранить",
+    "pending": "Выполнение...",
+    "cancel": "Отмена",
+    "fields": {
+      "date": "Дата",
+      "locomotive": "Локомотив",
+      "locomotive_placeholder": "Выберите локомотив",
+      "locomotive_loading": "Загрузка...",
+      "locomotive_empty": "Локомотивы не найдены",
+      "station": "Станция",
+      "station_placeholder": "Введите станцию",
+      "from_section": "Откуда",
+      "from_section_placeholder": "Выберите секцию",
+      "to_section": "Куда",
+      "to_section_placeholder": "Выберите секцию"
+    }
+  },
   "Sidebar": {
     "brand_title": "Система анализа ремонта",
     "brand_subtitle": "Цифровая аналитика",
@@ -110,7 +175,8 @@
       "orders": "Приказ МПР",
       "defective_works": "Неисправности",
       "delays": "Срывы",
-      "delay_reports": "Отчёты по срывам"
+      "delay_reports": "Отчёты по срывам",
+      "razvarot": "Разворот"
     },
     "support_button": "Техническая поддержка",
     "sidebar_collapse": "Свернуть боковую панель",
@@ -433,8 +499,17 @@
     "search_placeholder": "Поиск",
     "empty_title": "Данные не найдены",
     "empty_description": "Нет записей о неисправностях",
-    "errors": { "generic": "Произошла ошибка", "delete": "Ошибка при удалении неисправности", "create": "Ошибка при добавлении неисправности", "update": "Ошибка при обновлении неисправности" },
-    "messages": { "delete_success": "Неисправность успешно удалена", "create_success": "Неисправность успешно добавлена", "update_success": "Неисправность успешно обновлена" }
+    "errors": {
+      "generic": "Произошла ошибка",
+      "delete": "Ошибка при удалении неисправности",
+      "create": "Ошибка при добавлении неисправности",
+      "update": "Ошибка при обновлении неисправности"
+    },
+    "messages": {
+      "delete_success": "Неисправность успешно удалена",
+      "create_success": "Неисправность успешно добавлена",
+      "update_success": "Неисправность успешно обновлена"
+    }
   },
   "DefectiveWorkModal": {
     "title_create": "Добавить неисправность",
@@ -464,9 +539,28 @@
     "error_loco_inspection": "Не выбраны локомотив или вид осмотра"
   },
   "TU152Tab": {
-    "columns": { "locomotive": "Локомотив", "group": "Группа", "mashinist": "Машинист", "comments": "Комментарий", "answer": "Ответ", "status": "Статус", "change_date": "Дата изменения" },
-    "filters": { "locomotive": "Локомотив", "locomotive_placeholder": "Выберите локомотив", "seriya": "Серия локомотива", "seriya_placeholder": "Выберите серию", "status": "Статус", "status_placeholder": "Выберите статус" },
-    "options": { "all_locomotives": "Все локомотивы", "all_seriyas": "Все серии", "all_statuses": "Все статусы" },
+    "columns": {
+      "locomotive": "Локомотив",
+      "group": "Группа",
+      "mashinist": "Машинист",
+      "comments": "Комментарий",
+      "answer": "Ответ",
+      "status": "Статус",
+      "change_date": "Дата изменения"
+    },
+    "filters": {
+      "locomotive": "Локомотив",
+      "locomotive_placeholder": "Выберите локомотив",
+      "seriya": "Серия локомотива",
+      "seriya_placeholder": "Выберите серию",
+      "status": "Статус",
+      "status_placeholder": "Выберите статус"
+    },
+    "options": {
+      "all_locomotives": "Все локомотивы",
+      "all_seriyas": "Все серии",
+      "all_statuses": "Все статусы"
+    },
     "date_from": "Дата начала",
     "date_to": "Дата окончания",
     "edit_action": "Редактировать",
@@ -475,7 +569,10 @@
     "pagination_prev": "Назад",
     "pagination_next": "Вперёд",
     "pagination_showing": "Показаны {from}–{to} из {total}",
-    "errors": { "generic": "Произошла ошибка", "update": "Ошибка при обновлении TU152" },
+    "errors": {
+      "generic": "Произошла ошибка",
+      "update": "Ошибка при обновлении TU152"
+    },
     "messages": { "update_success": "Запись TU152 успешно обновлена" }
   },
   "TU152Modal": {
@@ -506,7 +603,11 @@
       "file": "Прикреплённый файл",
       "status": "Статус"
     },
-    "journal_types": { "mpr": "Приказ МПР", "invalid": "Брак", "defect": "Дефект" },
+    "journal_types": {
+      "mpr": "Приказ МПР",
+      "invalid": "Брак",
+      "defect": "Дефект"
+    },
     "status_confirmed": "Подтверждено",
     "status_not_confirmed": "Не подтверждено",
     "filters": {
@@ -529,8 +630,20 @@
     "date_label": "Дата",
     "empty_title": "Данные не найдены",
     "empty_description": "Нет данных по приказам МПР",
-    "errors": { "generic": "Произошла ошибка", "load": "Произошла ошибка", "delete": "Ошибка при удалении приказа МПР", "create": "Ошибка при создании приказа МПР", "update": "Ошибка при обновлении приказа МПР", "confirm": "Ошибка при подтверждении приказа МПР" },
-    "messages": { "delete_success": "Приказ МПР успешно удалён", "create_success": "Приказ МПР успешно создан!", "update_success": "Приказ МПР успешно обновлён!", "confirm_success": "Приказ МПР успешно подтверждён" },
+    "errors": {
+      "generic": "Произошла ошибка",
+      "load": "Произошла ошибка",
+      "delete": "Ошибка при удалении приказа МПР",
+      "create": "Ошибка при создании приказа МПР",
+      "update": "Ошибка при обновлении приказа МПР",
+      "confirm": "Ошибка при подтверждении приказа МПР"
+    },
+    "messages": {
+      "delete_success": "Приказ МПР успешно удалён",
+      "create_success": "Приказ МПР успешно создан!",
+      "update_success": "Приказ МПР успешно обновлён!",
+      "confirm_success": "Приказ МПР успешно подтверждён"
+    },
     "confirm_dialog": {
       "title": "Подтверждение приказа МПР",
       "message_with_train": "Подтвердить приказ по поезду «{trainNumber}»?",
@@ -918,4 +1031,3 @@
     }
   }
 }
-
