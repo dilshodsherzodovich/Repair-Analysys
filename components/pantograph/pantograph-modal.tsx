@@ -229,20 +229,14 @@ export function PantographModal({
 
               <div>
                 <Label htmlFor="section">{t("fields.section")}</Label>
-                <Select value={section} onValueChange={setSection} required>
-                  <SelectTrigger id="section">
-                    <SelectValue
-                      placeholder={t("fields.section_placeholder")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATION_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  name="section"
+                  value={section}
+                  onValueChange={setSection}
+                  placeholder={t("fields.section_placeholder")}
+                  searchable={true}
+                  options={STATION_OPTIONS}
+                />
               </div>
 
               <div>
