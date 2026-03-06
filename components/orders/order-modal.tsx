@@ -33,7 +33,6 @@ import { FileUpload } from "@/ui/file-upload";
 import { DatePicker } from "@/ui/date-picker";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { hasPermission } from "@/lib/permissions";
-import { responsibleOrganizations } from "@/data";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -76,7 +75,7 @@ const INITIAL_FORM_STATE: OrderFormState = {
 
 const journalTypeOptions = [
   { value: "mpr", label: "MPR" },
-  { value: "invalid", label: "Yaroqsiz" },
+  { value: "invalid", label: "Brak" },
   { value: "defect", label: "Defekt" },
 ];
 
@@ -95,7 +94,7 @@ const LocomotiveSelect = memo(
     const [open, setOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
-      "bottom"
+      "bottom",
     );
     const triggerRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -106,7 +105,7 @@ const LocomotiveSelect = memo(
       return options.filter(
         (opt) =>
           opt.label.toLowerCase().includes(q) ||
-          opt.value.toLowerCase().includes(q)
+          opt.value.toLowerCase().includes(q),
       );
     }, [options, searchValue]);
 
@@ -167,14 +166,15 @@ const LocomotiveSelect = memo(
             "flex h-10 w-full items-center justify-between gap-2 cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
             "transition-colors outline-none focus:border-blue-500 hover:border-gray-400",
             "md:text-sm",
-            isLoading && "pointer-events-none opacity-50 cursor-not-allowed bg-gray-50"
+            isLoading &&
+              "pointer-events-none opacity-50 cursor-not-allowed bg-gray-50",
           )}
           onClick={() => !isLoading && setOpen(!open)}
         >
           <span
             className={cn(
               "min-w-0 flex-1 truncate text-left",
-              selectedLabel ? "text-[#0F172B]" : "text-muted-foreground"
+              selectedLabel ? "text-[#0F172B]" : "text-muted-foreground",
             )}
           >
             {selectedLabel ?? "Lokomotivni tanlang"}
@@ -190,7 +190,7 @@ const LocomotiveSelect = memo(
               "animate-in fade-in-0 zoom-in-95",
               dropdownPosition === "top"
                 ? "bottom-full mb-1 slide-in-from-bottom-2"
-                : "top-full mt-1 slide-in-from-top-2"
+                : "top-full mt-1 slide-in-from-top-2",
             )}
             style={{ zIndex: 999999 }}
           >
@@ -227,7 +227,8 @@ const LocomotiveSelect = memo(
                           onClick={() => handleSelect(option.value)}
                           className={cn(
                             "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-gray-100 cursor-pointer transition-colors bg-white rounded-sm",
-                            option.value === value && "bg-blue-50 text-blue-700"
+                            option.value === value &&
+                              "bg-blue-50 text-blue-700",
                           )}
                         >
                           <span className="truncate">{option.label}</span>
@@ -242,7 +243,7 @@ const LocomotiveSelect = memo(
         )}
       </div>
     );
-  }
+  },
 );
 LocomotiveSelect.displayName = "LocomotiveSelect";
 
@@ -392,7 +393,7 @@ export function OrderModal({
 
       onSave(payload);
     },
-    [formData, onSave]
+    [formData, onSave],
   );
 
   const handleClose = useCallback(() => {
@@ -400,8 +401,7 @@ export function OrderModal({
     onClose();
   }, [onClose]);
 
-  const title =
-    mode === "create" ? "Buyruq MPR yaratish" : "Buyruq MPR ni tahrirlash";
+  const title = mode === "create" ? "MPR yaratish" : "MPR ni tahrirlash";
   const submitText = mode === "create" ? "Yaratish" : "O'zgarishlarni saqlash";
   const actionText =
     mode === "create" ? "Yaratilmoqda..." : "O'zgartirilmoqda...";
@@ -485,24 +485,14 @@ export function OrderModal({
               isLoading={isLoadingLocomotives}
             />
 
-            <div>
-              <Label htmlFor="type_of_journal">Mas'ul tashkilot</Label>
-              <Select
-                value={formData.responsible_department}
-                onValueChange={handleDepartmentChange}
-              >
-                <SelectTrigger id="responsible_organization">
-                  <SelectValue placeholder="Mas'ul tashkilotni tanlang" />
-                </SelectTrigger>
-                <SelectContent>
-                  {responsibleOrganizations.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <FormField
+              id="responsible_department"
+              label="Mas'ul tashkilot"
+              value={formData.responsible_department}
+              onChange={handleDepartmentChange}
+              placeholder="Mas'ul tashkilotni kiriting"
+              required
+            />
 
             <FormField
               id="damage_amount"

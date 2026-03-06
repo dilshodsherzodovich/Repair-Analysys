@@ -7,22 +7,14 @@ import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
 import { Textarea } from "@/ui/textarea";
 import { Button } from "@/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SearchableSelect,
-} from "@/ui/select";
+import { SearchableSelect } from "@/ui/select";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import {
   PantographJournalEntry,
   CreatePantographJournalPayload,
   UpdatePantographJournalPayload,
 } from "@/api/types/pantograph";
-import { STATION_OPTIONS } from "@/api/types/delays";
-import { responsibleOrganizations } from "@/data";
+
 import {
   Dialog,
   DialogContent,
@@ -95,8 +87,6 @@ export function PantographModal({
   const t = useTranslations("PantographModal");
   const formRef = useRef<HTMLFormElement>(null);
   const [locomotive, setLocomotive] = useState("");
-  const [department, setDepartment] = useState("");
-  const [section, setSection] = useState("");
 
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
     useGetLocomotives(isOpen);
@@ -115,12 +105,8 @@ export function PantographModal({
     if (!isOpen) return;
     if (entry && mode === "edit") {
       setLocomotive(entry.locomotive ? String(entry.locomotive) : "");
-      setDepartment(entry.department ?? "");
-      setSection(entry.section ?? "");
     } else {
       setLocomotive("");
-      setDepartment("");
-      setSection("");
     }
   }, [isOpen, entry, mode]);
 
@@ -128,15 +114,14 @@ export function PantographModal({
     e.preventDefault();
     const form = formRef.current;
     if (!form) return;
-    if (!department || !section) return;
     const get = (name: string) =>
       (
         form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement
       )?.value?.trim() ?? "";
     const payload = {
       locomotive: Number(locomotive),
-      department,
-      section,
+      department: get("department"),
+      section: get("section"),
       date: get("date"),
       damage: get("damage"),
       description: get("description"),
@@ -165,6 +150,9 @@ export function PantographModal({
   const initialDamage = entry && mode === "edit" ? (entry.damage ?? "") : "";
   const initialDescription =
     entry && mode === "edit" ? (entry.description ?? "") : "";
+  const initialDepartment =
+    entry && mode === "edit" ? (entry.department ?? "") : "";
+  const initialSection = entry && mode === "edit" ? (entry.section ?? "") : "";
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
@@ -207,35 +195,25 @@ export function PantographModal({
 
               <div>
                 <Label htmlFor="department">{t("fields.department")}</Label>
-                <Select
-                  value={department}
-                  onValueChange={setDepartment}
+                <Input
+                  id="department"
+                  name="department"
+                  type="text"
+                  defaultValue={initialDepartment}
+                  placeholder={t("fields.department_placeholder")}
                   required
-                >
-                  <SelectTrigger id="department">
-                    <SelectValue
-                      placeholder={t("fields.department_placeholder")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {responsibleOrganizations.map((org) => (
-                      <SelectItem key={org} value={org}>
-                        {org}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               </div>
 
               <div>
                 <Label htmlFor="section">{t("fields.section")}</Label>
-                <SearchableSelect
+                <Input
+                  id="section"
                   name="section"
-                  value={section}
-                  onValueChange={setSection}
+                  type="text"
+                  defaultValue={initialSection}
                   placeholder={t("fields.section_placeholder")}
-                  searchable={true}
-                  options={STATION_OPTIONS}
+                  required
                 />
               </div>
 

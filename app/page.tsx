@@ -31,12 +31,16 @@ export default function PantografPage() {
   const t = useTranslations("PantographPage");
   const { updateQuery, getAllQueryValues, getQueryValue } = useFilterParams();
 
-  const currentUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
   if (!currentUser || !canAccessSection(currentUser, "pantograf")) {
     return <UnauthorizedPage />;
   }
 
-  const { q, page, pageSize, tab, locomotive, organization, department } = getAllQueryValues();
+  const { q, page, pageSize, tab, locomotive, organization, department } =
+    getAllQueryValues();
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
@@ -64,54 +68,52 @@ export default function PantografPage() {
   const organizations = useMemo(() => {
     if (!organizationsData) return [];
     if (Array.isArray(organizationsData)) return organizationsData;
-    const res = (organizationsData as unknown as { results?: { id: number; name: string }[] })?.results;
+    const res = (
+      organizationsData as unknown as {
+        results?: { id: number; name: string }[];
+      }
+    )?.results;
     return res ?? [];
   }, [organizationsData]);
 
-  const pageFilters = useMemo((): FiltersQuery[] => [
-    {
-      name: "locomotive",
-      label: t("filter_locomotive"),
-      isSelect: true,
-      options: [
-        { label: t("filter_all"), value: "" },
-        ...locomotiveOptions,
-      ],
-      placeholder: t("filter_all"),
-      searchable: true,
-      clearable: true,
-      loading: loadingLocomotives,
-    },
-    {
-      name: "organization",
-      label: t("filter_organization"),
-      isSelect: true,
-      options: [
-        { label: t("filter_all"), value: "" },
-        ...organizations.map((org: { id: number; name: string }) => ({
-          label: org.name,
-          value: String(org.id),
-        })),
-      ],
-      placeholder: t("filter_all"),
-      searchable: true,
-      clearable: true,
-      loading: loadingOrganizations,
-      permission: "choose_organization",
-    },
-    {
-      name: "department",
-      label: t("filter_department"),
-      isSelect: true,
-      options: [
-        { label: t("filter_all"), value: "" },
-        ...responsibleOrganizations.map((d) => ({ label: d, value: d })),
-      ],
-      placeholder: t("filter_all"),
-      searchable: true,
-      clearable: true,
-    },
-  ], [locomotiveOptions, organizations, loadingLocomotives, loadingOrganizations, t]);
+  const pageFilters = useMemo(
+    (): FiltersQuery[] => [
+      {
+        name: "locomotive",
+        label: t("filter_locomotive"),
+        isSelect: true,
+        options: [{ label: t("filter_all"), value: "" }, ...locomotiveOptions],
+        placeholder: t("filter_all"),
+        searchable: true,
+        clearable: true,
+        loading: loadingLocomotives,
+      },
+      {
+        name: "organization",
+        label: t("filter_organization"),
+        isSelect: true,
+        options: [
+          { label: t("filter_all"), value: "" },
+          ...organizations.map((org: { id: number; name: string }) => ({
+            label: org.name,
+            value: String(org.id),
+          })),
+        ],
+        placeholder: t("filter_all"),
+        searchable: true,
+        clearable: true,
+        loading: loadingOrganizations,
+        permission: "choose_organization",
+      },
+    ],
+    [
+      locomotiveOptions,
+      organizations,
+      loadingLocomotives,
+      loadingOrganizations,
+      t,
+    ],
+  );
 
   const {
     data: apiResponse,
@@ -120,7 +122,7 @@ export default function PantografPage() {
   } = usePantographJournal({
     page: currentPage,
     page_size: itemsPerPage,
-    search: q || locomotive || organization || department,
+    search: q || locomotive || organization,
     tab: currentTab === "all" ? undefined : currentTab,
   });
 
@@ -136,16 +138,12 @@ export default function PantografPage() {
   const error = apiError
     ? apiError instanceof Error
       ? apiError
-      : new Error(
-          (apiError as any)?.message ||
-            t("errors.load")
-        )
+      : new Error((apiError as any)?.message || t("errors.load"))
     : null;
-
 
   const handleEdit = (row: PantographJournalEntry) => {
     setSelectedEntry(row);
-    setModalMode("edit"); 
+    setModalMode("edit");
     setIsModalOpen(true);
   };
 
@@ -156,9 +154,7 @@ export default function PantografPage() {
     } catch (error: any) {
       showError(
         t("errors.generic"),
-        error?.response?.data?.message ||
-          error?.message ||
-          t("errors.delete")
+        error?.response?.data?.message || error?.message || t("errors.delete"),
       );
       throw error;
     }
@@ -171,13 +167,33 @@ export default function PantografPage() {
   };
 
   const handleSave = (
-    (
-      payload: CreatePantographJournalPayload | UpdatePantographJournalPayload
-    ) => {
-      if (modalMode === "create") {
-        createEntryMutation.mutate(payload as CreatePantographJournalPayload, {
+    payload: CreatePantographJournalPayload | UpdatePantographJournalPayload,
+  ) => {
+    if (modalMode === "create") {
+      createEntryMutation.mutate(payload as CreatePantographJournalPayload, {
+        onSuccess: () => {
+          showSuccess(t("messages.create_success"));
+          setIsModalOpen(false);
+          setSelectedEntry(null);
+        },
+        onError: (error: any) => {
+          showError(
+            t("errors.generic"),
+            error?.response?.data?.message ||
+              error?.message ||
+              t("errors.create"),
+          );
+        },
+      });
+    } else if (selectedEntry) {
+      updateEntryMutation.mutate(
+        {
+          id: selectedEntry.id,
+          payload: payload as UpdatePantographJournalPayload,
+        },
+        {
           onSuccess: () => {
-            showSuccess(t("messages.create_success"));
+            showSuccess(t("messages.update_success"));
             setIsModalOpen(false);
             setSelectedEntry(null);
           },
@@ -186,44 +202,22 @@ export default function PantografPage() {
               t("errors.generic"),
               error?.response?.data?.message ||
                 error?.message ||
-                t("errors.create")
+                t("errors.update"),
             );
           },
-        });
-      } else if (selectedEntry) {
-        updateEntryMutation.mutate(
-          {
-            id: selectedEntry.id,
-            payload: payload as UpdatePantographJournalPayload,
-          },
-          {
-            onSuccess: () => {
-              showSuccess(t("messages.update_success"));
-              setIsModalOpen(false);
-              setSelectedEntry(null);
-            },
-            onError: (error: any) => {
-              showError(
-                t("errors.generic"),
-                error?.response?.data?.message ||
-                  error?.message ||
-                  t("errors.update")
-              );
-            },
-          }
-        );
-      }
+        },
+      );
     }
-  );
+  };
 
-  const handleModalClose = (() => {
+  const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedEntry(null);
-  });
+  };
 
   const isModalPending = useMemo(
     () => createEntryMutation.isPending || updateEntryMutation.isPending,
-    [createEntryMutation.isPending, updateEntryMutation.isPending]
+    [createEntryMutation.isPending, updateEntryMutation.isPending],
   );
 
   const formatDate = (dateString: string): string => {

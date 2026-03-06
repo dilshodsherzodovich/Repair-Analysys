@@ -172,7 +172,7 @@
       "locomotive_mileage_report": "ТО-13",
       "rezerv": "Резерв",
       "pantograph": "Пантограф",
-      "orders": "Приказ МПР",
+      "orders": "МПР",
       "defective_works": "Неисправности",
       "delays": "Срывы",
       "delay_reports": "Отчёты по срывам",
@@ -587,9 +587,9 @@
     "error_status": "Пожалуйста, выберите статус."
   },
   "OrdersPage": {
-    "title": "Приказ МПР",
+    "title": "МПР",
     "description": "Межпоездной ремонт электровозов",
-    "breadcrumbs": { "home": "Главная", "current": "Приказ МПР" },
+    "breadcrumbs": { "home": "Главная", "current": "МПР" },
     "columns": {
       "type_of_journal": "Вид журнала",
       "date": "Дата",
@@ -604,7 +604,7 @@
       "status": "Статус"
     },
     "journal_types": {
-      "mpr": "Приказ МПР",
+      "mpr": "МПР",
       "invalid": "Брак",
       "defect": "Дефект"
     },
@@ -639,10 +639,10 @@
       "confirm": "Ошибка при подтверждении приказа МПР"
     },
     "messages": {
-      "delete_success": "Приказ МПР успешно удалён",
-      "create_success": "Приказ МПР успешно создан!",
-      "update_success": "Приказ МПР успешно обновлён!",
-      "confirm_success": "Приказ МПР успешно подтверждён"
+      "delete_success": "МПР успешно удалён",
+      "create_success": "МПР успешно создан!",
+      "update_success": "МПР успешно обновлён!",
+      "confirm_success": "МПР успешно подтверждён"
     },
     "confirm_dialog": {
       "title": "Подтверждение приказа МПР",
@@ -654,8 +654,8 @@
     }
   },
   "OrderModal": {
-    "title_create": "Создать приказ МПР",
-    "title_edit": "Редактировать приказ МПР",
+    "title_create": "Создать МПР",
+    "title_edit": "Редактировать МПР",
     "submit_create": "Создать",
     "submit_edit": "Сохранить изменения",
     "pending_create": "Создание...",

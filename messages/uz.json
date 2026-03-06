@@ -172,7 +172,7 @@
       "locomotive_mileage_report": "TXK-13",
       "rezerv": "Rezerv",
       "pantograph": "Pantograf",
-      "orders": "Buyruq MPR",
+      "orders": "MPR",
       "defective_works": "Nosozliklar",
       "delays": "Sriv",
       "delay_reports": "Sriv hisobotlar",
@@ -587,9 +587,9 @@
     "error_status": "Iltimos, holatni tanlang."
   },
   "OrdersPage": {
-    "title": "Buyruq MPR",
+    "title": "MPR",
     "description": "Elektrovozlarni poezdlararo ta'mirlash",
-    "breadcrumbs": { "home": "Asosiy", "current": "Buyruq MPR" },
+    "breadcrumbs": { "home": "Asosiy", "current": "MPR" },
     "columns": {
       "type_of_journal": "Jurnal turi",
       "date": "Sana",
@@ -604,8 +604,8 @@
       "status": "Holati"
     },
     "journal_types": {
-      "mpr": "Buyruq MPR",
-      "invalid": "Yaroqsiz",
+      "mpr": "MPR",
+      "invalid": "Brak",
       "defect": "Defekt"
     },
     "status_confirmed": "Tasdiqlangan",
@@ -629,23 +629,23 @@
     "search_placeholder": "Qidiruv",
     "date_label": "Sana",
     "empty_title": "Ma'lumot topilmadi",
-    "empty_description": "Buyruq MPR ma'lumotlari topilmadi",
+    "empty_description": "MPR ma'lumotlari topilmadi",
     "errors": {
       "generic": "Xatolik yuz berdi",
       "load": "An error occurred",
-      "delete": "Buyruq MPR o'chirishda xatolik",
-      "create": "Buyruq MPR yaratishda xatolik",
-      "update": "Buyruq MPR yangilashda xatolik",
-      "confirm": "Buyruq MPR ni tasdiqlashda xatolik"
+      "delete": "MPR o'chirishda xatolik",
+      "create": "MPR yaratishda xatolik",
+      "update": "MPR yangilashda xatolik",
+      "confirm": "MPR ni tasdiqlashda xatolik"
     },
     "messages": {
-      "delete_success": "Buyruq MPR muvaffaqiyatli o'chirildi",
-      "create_success": "Buyruq MPR muvaffaqiyatli yaratildi!",
-      "update_success": "Buyruq MPR muvaffaqiyatli yangilandi!",
-      "confirm_success": "Buyruq MPR muvaffaqiyatli tasdiqlandi"
+      "delete_success": "MPR muvaffaqiyatli o'chirildi",
+      "create_success": "MPR muvaffaqiyatli yaratildi!",
+      "update_success": "MPR muvaffaqiyatli yangilandi!",
+      "confirm_success": "MPR muvaffaqiyatli tasdiqlandi"
     },
     "confirm_dialog": {
-      "title": "Buyruq MPR ni tasdiqlash",
+      "title": "MPR ni tasdiqlash",
       "message_with_train": "\"{trainNumber}\" poyezd raqamli buyruqni tasdiqlashni xohlaysizmi?",
       "message_generic": "Buyruqni tasdiqlashni xohlaysizmi?",
       "confirm": "Tasdiqlash",
@@ -654,8 +654,8 @@
     }
   },
   "OrderModal": {
-    "title_create": "Buyruq MPR yaratish",
-    "title_edit": "Buyruq MPR ni tahrirlash",
+    "title_create": "MPR yaratish",
+    "title_edit": "MPR ni tahrirlash",
     "submit_create": "Yaratish",
     "submit_edit": "O'zgarishlarni saqlash",
     "pending_create": "Yaratilmoqda...",
@@ -665,7 +665,7 @@
     "journal_type_placeholder": "Jurnal turini tanlang",
     "journal_options": {
       "mpr": "MPR",
-      "invalid": "Yaroqsiz",
+      "invalid": "Brak",
       "defect": "Defekt"
     },
     "train_number": "Poyezd raqami",

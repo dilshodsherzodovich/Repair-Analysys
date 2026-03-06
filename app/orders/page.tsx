@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
-import { FileSpreadsheet, CheckCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
 import {
@@ -42,7 +42,7 @@ export default function OrdersPage() {
       invalid: t("journal_types.invalid"),
       defect: t("journal_types.defect"),
     }),
-    [t]
+    [t],
   );
 
   const journalTypeOptions = useMemo(
@@ -52,7 +52,7 @@ export default function OrdersPage() {
       { value: "invalid", label: t("journal_types.invalid") },
       { value: "defect", label: t("journal_types.defect") },
     ],
-    [t]
+    [t],
   );
 
   const {
@@ -82,14 +82,17 @@ export default function OrdersPage() {
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =
     useGetLocomotives();
 
-  const currentUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
   if (!currentUser || !canAccessSection(currentUser, "orders")) {
     return <UnauthorizedPage />;
   }
 
   const canChooseOrganization = hasPermission(
     currentUser,
-    "choose_organization"
+    "choose_organization",
   );
 
   // Check if user is admin (admin doesn't have create/edit/delete permissions)
@@ -116,7 +119,7 @@ export default function OrdersPage() {
               locomotive.model_name ||
               `Lokomotiv ${locomotive.id}`,
           });
-        }
+        },
       );
     }
     return options;
@@ -142,8 +145,8 @@ export default function OrdersPage() {
   } = useOrders({
     page: currentPage,
     page_size: itemsPerPage,
-    search: q || responsible_department ||  locomotive || organization,
-    type_of_journal : type_of_journal || undefined,
+    search: q || responsible_department || locomotive || organization,
+    type_of_journal: type_of_journal || undefined,
     date: date || undefined,
     // organization: organization || undefined,
   });
@@ -172,14 +175,12 @@ export default function OrdersPage() {
       } catch (error: any) {
         showError(
           t("errors.generic"),
-          error?.response?.data?.message ||
-            error.message ||
-            t("errors.delete")
+          error?.response?.data?.message || error.message || t("errors.delete"),
         );
         throw error;
       }
     },
-    [deleteOrderMutation, showError, showSuccess, t]
+    [deleteOrderMutation, showError, showSuccess, t],
   );
 
   const handleConfirmClick = useCallback((row: OrderData) => {
@@ -197,9 +198,7 @@ export default function OrdersPage() {
     } catch (error: any) {
       showError(
         t("errors.generic"),
-        error?.response?.data?.message ||
-          error.message ||
-          t("errors.confirm")
+        error?.response?.data?.message || error.message || t("errors.confirm"),
       );
       throw error;
     }
@@ -224,7 +223,7 @@ export default function OrdersPage() {
             t("errors.generic"),
             error?.response?.data?.message ||
               error.message ||
-              t("errors.create")
+              t("errors.create"),
           );
         },
       });
@@ -246,10 +245,10 @@ export default function OrdersPage() {
                 t("errors.generic"),
                 error?.response?.data?.message ||
                   error.message ||
-                  t("errors.update")
+                  t("errors.update"),
               );
             },
-          }
+          },
         );
       }
     }
@@ -362,17 +361,6 @@ export default function OrdersPage() {
     { label: t("breadcrumbs.current"), current: true },
   ];
 
-  const responsibleOrganizationOptions = useMemo(() => {
-    const options = [{ value: "", label: t("options.all_responsible") }];
-    responsibleOrganizations.forEach((org) =>
-      options.push({
-        value: org,
-        label: org,
-      })
-    );
-    return options;
-  }, [t]);
-
   return (
     <div className="min-h-screen ">
       <PageHeader
@@ -390,14 +378,6 @@ export default function OrdersPage() {
               isSelect: true,
               options: journalTypeOptions,
               placeholder: t("filters.journal_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "responsible_department",
-              label: t("filters.responsible_department"),
-              isSelect: true,
-              options: responsibleOrganizationOptions,
-              placeholder: t("filters.responsible_department_placeholder"),
               searchable: false,
             },
             {
@@ -501,7 +481,9 @@ export default function OrdersPage() {
         title={t("confirm_dialog.title")}
         message={
           orderToConfirm
-            ? t("confirm_dialog.message_with_train", { trainNumber: orderToConfirm.train_number })
+            ? t("confirm_dialog.message_with_train", {
+                trainNumber: orderToConfirm.train_number,
+              })
             : t("confirm_dialog.message_generic")
         }
         confirmText={t("confirm_dialog.confirm")}
