@@ -17,10 +17,10 @@ export type SpecialComponent = {
 } & Record<string, string | number | null>;
 
 export interface SortedLocomotiveData {
-  name: string;
   id: number;
+  name: string;
   model_name: string;
-  model_image: string;
+  model_id: string;
   sections: { id: number; name: string }[];
   special_components: SpecialComponent[];
 }
@@ -37,6 +37,7 @@ export interface LocomotiveModelData {
   id: number;
   code: number;
   locomotive_type: string;
+  image: string;
   name: string;
 }
 

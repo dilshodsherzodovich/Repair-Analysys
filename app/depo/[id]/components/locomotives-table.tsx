@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { MapPin, Pencil, FileText } from "lucide-react";
-import { useGetLocomotives } from "@/api/hooks/use-locomotives";
+import {
+  useGetLocomotives,
+  useGetLocomotiveModels,
+} from "@/api/hooks/use-locomotives";
 import { cn } from "@/lib/utils";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
@@ -37,7 +40,7 @@ export default function LocomotivesTable() {
       locomotive_model: +locModel || undefined,
       search: q,
       registered_organization: +depotId || undefined,
-    }
+    },
   );
   const [user, setUser] = useState<UserData | null>(null);
   const [selectedLocomotive, setSelectedLocomotive] = useState<{
@@ -50,6 +53,18 @@ export default function LocomotivesTable() {
 
   const locomotives = data?.results ?? [];
   const showEmpty = !isPending && locomotives.length === 0;
+
+  const { data: locomotiveModelsData } = useGetLocomotiveModels({
+    no_page: true,
+  });
+
+  const modelImageMap = useMemo(() => {
+    const map = new Map<string, string>();
+    locomotiveModelsData?.results?.forEach((model) => {
+      map.set(String(model.id), model.image);
+    });
+    return map;
+  }, [locomotiveModelsData]);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -77,7 +92,9 @@ export default function LocomotivesTable() {
     }
   };
 
-  const handleSpecialComponentsClick = (locomotive: typeof locomotives[0]) => {
+  const handleSpecialComponentsClick = (
+    locomotive: (typeof locomotives)[0],
+  ) => {
     setSelectedLocomotive({
       id: locomotive.id,
       name: locomotive.name,
@@ -122,9 +139,9 @@ export default function LocomotivesTable() {
               className="grid grid-cols-[140px_1fr] gap-2 rounded-lg border border-[#E5ECF8] bg-[#F8FBFF] p-2 shadow-[0px_8px_30px_rgba(16,24,40,0.05)]"
             >
               <div className="relative h-full w-full overflow-hidden rounded-md bg-white border">
-                {locomotive.model_image ? (
+                {modelImageMap.get(String(locomotive.model_id)) ? (
                   <Image
-                    src={locomotive.model_image}
+                    src={modelImageMap.get(String(locomotive.model_id))!}
                     alt={locomotive.name}
                     fill
                     className="object-contain p-1"
@@ -159,12 +176,12 @@ export default function LocomotivesTable() {
                       // TODO: Implement Manzil functionality
                       console.log(
                         "Manzil clicked for locomotive:",
-                        locomotive.id
+                        locomotive.id,
                       );
                     }}
                     className={cn(
                       "flex h-8 w-[49%] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
-                      actionButtons[0].className
+                      actionButtons[0].className,
                     )}
                     aria-label={actionButtons[0].label}
                   >
@@ -176,27 +193,30 @@ export default function LocomotivesTable() {
                       onClick={() => handleEditClick(locomotive.id)}
                       className={cn(
                         "flex h-8 w-[49%] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
-                        actionButtons[1].className
+                        actionButtons[1].className,
                       )}
                       aria-label={actionButtons[1].label}
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
                   )}
-                  {locomotive.special_components && locomotive.special_components.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => handleSpecialComponentsClick(locomotive)}
-                    className={cn(
-                      "flex h-8 w-full mt-[5px] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
-                      "bg-[#E8F4FD] text-[#2354BF] border border-[#2354BF]"
+                  {locomotive.special_components &&
+                    locomotive.special_components.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleSpecialComponentsClick(locomotive)}
+                        className={cn(
+                          "flex h-8 w-full mt-[5px] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
+                          "bg-[#E8F4FD] text-[#2354BF] border border-[#2354BF]",
+                        )}
+                        aria-label={t("special_components")}
+                        title={t("special_components")}
+                      >
+                        <p className="text-sm font-semibold text-[#2354BF]">
+                          {t("special_components_label")}
+                        </p>
+                      </button>
                     )}
-                    aria-label={t("special_components")}
-                    title={t("special_components")}
-                  >
-                    <p className="text-sm font-semibold text-[#2354BF]">{t("special_components_label")}</p>
-                  </button>
-                  )}
                 </div>
               </div>
             </article>
