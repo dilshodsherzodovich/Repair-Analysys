@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { format } from "date-fns";
 import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
+import { DatePicker } from "@/ui/date-picker";
 import {
   Select,
   SelectContent,
@@ -19,7 +21,10 @@ import {
 } from "@/api/hooks/use-locomotives";
 import { useInspectionTypes } from "@/api/hooks/use-inspection";
 import { useComponents } from "@/api/hooks/use-component";
-import { CreateComponentRegistryPayload } from "@/api/types/component-registry";
+import {
+  ComponentRegistryEntry,
+  CreateComponentRegistryPayload,
+} from "@/api/types/component-registry";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +39,7 @@ interface ComponentRegistryModalProps {
   onSave: (payload: CreateComponentRegistryPayload) => void;
   organizationId: number;
   isPending: boolean;
+  editData?: ComponentRegistryEntry;
 }
 
 type SelectState = {
@@ -50,6 +56,12 @@ const INITIAL_SELECT_STATE: SelectState = {
   inspection_id: "",
 };
 
+function parseApiDate(dateStr: string | undefined): Date | undefined {
+  if (!dateStr) return undefined;
+  const d = new Date(dateStr + "T00:00:00");
+  return isNaN(d.getTime()) ? undefined : d;
+}
+
 function getFormString(form: HTMLFormElement | null, name: string): string {
   const el = form?.elements.namedItem(name) as HTMLInputElement | null;
   return el?.value?.trim() ?? "";
@@ -61,10 +73,16 @@ export function ComponentRegistryModal({
   onSave,
   organizationId,
   isPending,
+  editData,
 }: ComponentRegistryModalProps) {
   const t = useTranslations("ComponentRegistryModal");
   const formRef = useRef<HTMLFormElement>(null);
   const [selects, setSelects] = useState<SelectState>(INITIAL_SELECT_STATE);
+  const [defectDate, setDefectDate] = useState<Date | undefined>(undefined);
+  const [removedYear, setRemovedYear] = useState<Date | undefined>(undefined);
+  const [installedYear, setInstalledYear] = useState<Date | undefined>(
+    undefined
+  );
 
   const { data: locomotivesData, isPending: loadingLocomotives } =
     useGetLocomotives(true, undefined, {
@@ -108,11 +126,44 @@ export function ComponentRegistryModal({
       label: `${loc.name} - ${loc.model_name || ""}`,
     })) || [];
 
+  // On open: set locomotive + inspection immediately; section/component cascade after their data loads
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+    if (editData) {
+      setSelects({
+        locomotive_id: editData.locomotive_id ? String(editData.locomotive_id) : "",
+        section_id: "",
+        component_id: "",
+        inspection_id: editData.inspection_id ? String(editData.inspection_id) : "",
+      });
+      setDefectDate(parseApiDate(editData.defect_date));
+      setRemovedYear(parseApiDate(editData.removed_manufacture_year));
+      setInstalledYear(parseApiDate(editData.installed_manufacture_year));
+    } else {
       setSelects(INITIAL_SELECT_STATE);
+      setDefectDate(undefined);
+      setRemovedYear(undefined);
+      setInstalledYear(undefined);
     }
-  }, [isOpen]);
+  }, [isOpen, editData]);
+
+  // Once locomotiveDetail loads, set section_id (edit mode only)
+  useEffect(() => {
+    if (!isOpen || !editData?.section_id || !locomotiveDetail) return;
+    setSelects((prev) => {
+      if (prev.section_id) return prev; // user already changed it
+      return { ...prev, section_id: String(editData.section_id!) };
+    });
+  }, [isOpen, editData?.section_id, locomotiveDetail]);
+
+  // Once componentsData loads, set component_id (edit mode only)
+  useEffect(() => {
+    if (!isOpen || !editData?.component_id || !componentsData) return;
+    setSelects((prev) => {
+      if (prev.component_id) return prev; // user already changed it
+      return { ...prev, component_id: String(editData.component_id!) };
+    });
+  }, [isOpen, editData?.component_id, componentsData]);
 
   const handleSelectChange = (field: keyof SelectState, value: string) => {
     setSelects((prev) => {
@@ -145,26 +196,38 @@ export function ComponentRegistryModal({
       component_id: Number(selects.component_id),
       inspection_id: Number(selects.inspection_id),
       reason: getFormString(form, "reason"),
-      defect_date: getFormString(form, "defect_date"),
-      removed_manufacture_year: getFormString(form, "removed_manufacture_year"),
-      installed_manufacture_year: getFormString(form, "installed_manufacture_year"),
-      installed_manufacture_factory: getFormString(form, "installed_manufacture_factory"),
-      removed_manufacture_factory: getFormString(form, "removed_manufacture_factory"),
+      defect_date: defectDate ? format(defectDate, "yyyy-MM-dd") : "",
+      removed_manufacture_year: removedYear
+        ? format(removedYear, "yyyy-MM-dd")
+        : "",
+      installed_manufacture_year: installedYear
+        ? format(installedYear, "yyyy-MM-dd")
+        : "",
+      installed_manufacture_factory: getFormString(
+        form,
+        "installed_manufacture_factory"
+      ),
+      removed_manufacture_factory: getFormString(
+        form,
+        "removed_manufacture_factory"
+      ),
     };
     onSave(payload);
   };
+
+  const formKey = editData?.id ? `edit-${editData.id}` : "create";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[calc(100%-2rem)] sm:!max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogTitle>{editData ? t("title_edit") : t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <form
           ref={formRef}
-          key={isOpen ? "open" : "closed"}
+          key={formKey}
           onSubmit={handleSubmit}
           className="space-y-4"
         >
@@ -175,7 +238,9 @@ export function ComponentRegistryModal({
               </Label>
               <SearchableSelect
                 value={selects.locomotive_id}
-                onValueChange={(value: string) => handleSelectChange("locomotive_id", value)}
+                onValueChange={(value: string) =>
+                  handleSelectChange("locomotive_id", value)
+                }
                 options={locomotiveOptions ?? []}
                 placeholder={
                   loadingLocomotives
@@ -196,7 +261,9 @@ export function ComponentRegistryModal({
               </Label>
               <Select
                 value={selects.section_id}
-                onValueChange={(value) => handleSelectChange("section_id", value)}
+                onValueChange={(value) =>
+                  handleSelectChange("section_id", value)
+                }
                 disabled={
                   !selects.locomotive_id ||
                   loadingLocomotiveDetail ||
@@ -209,8 +276,8 @@ export function ComponentRegistryModal({
                       !selects.locomotive_id
                         ? t("placeholder_locomotive_first")
                         : loadingLocomotiveDetail
-                          ? t("placeholder_loading")
-                          : t("placeholder_section")
+                        ? t("placeholder_loading")
+                        : t("placeholder_section")
                     }
                   />
                 </SelectTrigger>
@@ -243,7 +310,9 @@ export function ComponentRegistryModal({
               </Label>
               <Select
                 value={selects.component_id}
-                onValueChange={(value) => handleSelectChange("component_id", value)}
+                onValueChange={(value) =>
+                  handleSelectChange("component_id", value)
+                }
                 disabled={
                   !selects.locomotive_id ||
                   !selects.section_id ||
@@ -257,10 +326,10 @@ export function ComponentRegistryModal({
                       !selects.locomotive_id
                         ? t("placeholder_locomotive_first")
                         : !selects.section_id
-                          ? t("placeholder_section_first")
-                          : loadingComponents
-                            ? t("placeholder_loading")
-                            : t("placeholder_uzel")
+                        ? t("placeholder_section_first")
+                        : loadingComponents
+                        ? t("placeholder_loading")
+                        : t("placeholder_uzel")
                     }
                   />
                 </SelectTrigger>
@@ -289,7 +358,9 @@ export function ComponentRegistryModal({
               </Label>
               <Select
                 value={selects.inspection_id}
-                onValueChange={(value) => handleSelectChange("inspection_id", value)}
+                onValueChange={(value) =>
+                  handleSelectChange("inspection_id", value)
+                }
                 disabled={loadingInspectionTypes || isPending}
               >
                 <SelectTrigger className="w-full">
@@ -317,35 +388,29 @@ export function ComponentRegistryModal({
                 id="reason"
                 name="reason"
                 type="text"
-                defaultValue=""
+                defaultValue={editData?.reason ?? ""}
                 placeholder={t("placeholder_reason")}
                 className="w-full"
               />
             </div>
 
             <div>
-              <Label htmlFor="defect_date">{t("defect_date")}</Label>
-              <Input
-                id="defect_date"
-                name="defect_date"
-                type="date"
-                defaultValue=""
-                placeholder="YYYY-MM-DD"
-                className="w-full"
+              <Label>{t("defect_date")}</Label>
+              <DatePicker
+                value={defectDate}
+                onValueChange={setDefectDate}
+                placeholder={t("placeholder_defect_date")}
+                disabled={isPending}
               />
             </div>
 
             <div>
-              <Label htmlFor="removed_manufacture_year">
-                {t("removed_manufacture_year")}
-              </Label>
-              <Input
-                id="removed_manufacture_year"
-                name="removed_manufacture_year"
-                type="text"
-                defaultValue=""
+              <Label>{t("removed_manufacture_year")}</Label>
+              <DatePicker
+                value={removedYear}
+                onValueChange={setRemovedYear}
                 placeholder={t("placeholder_date_example")}
-                className="w-full"
+                disabled={isPending}
               />
             </div>
 
@@ -357,7 +422,7 @@ export function ComponentRegistryModal({
                 id="removed_manufacture_factory"
                 name="removed_manufacture_factory"
                 type="text"
-                defaultValue=""
+                defaultValue={editData?.removed_manufacture_factory ?? ""}
                 placeholder={t("placeholder_factory")}
                 disabled={!selects.component_id}
                 className="w-full"
@@ -365,16 +430,12 @@ export function ComponentRegistryModal({
             </div>
 
             <div>
-              <Label htmlFor="installed_manufacture_year">
-                {t("installed_manufacture_year")}
-              </Label>
-              <Input
-                id="installed_manufacture_year"
-                name="installed_manufacture_year"
-                type="text"
-                defaultValue=""
+              <Label>{t("installed_manufacture_year")}</Label>
+              <DatePicker
+                value={installedYear}
+                onValueChange={setInstalledYear}
                 placeholder={t("placeholder_date_example")}
-                className="w-full"
+                disabled={isPending}
               />
             </div>
 
@@ -386,14 +447,12 @@ export function ComponentRegistryModal({
                 id="installed_manufacture_factory"
                 name="installed_manufacture_factory"
                 type="text"
-                defaultValue=""
+                defaultValue={editData?.installed_manufacture_factory ?? ""}
                 placeholder={t("placeholder_factory")}
                 disabled={!selects.component_id}
                 className="w-full"
               />
             </div>
-
-           
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
@@ -406,7 +465,7 @@ export function ComponentRegistryModal({
               {t("cancel")}
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? t("saving") : t("save")}
+              {isPending ? t("saving") : editData ? t("update") : t("save")}
             </Button>
           </div>
         </form>

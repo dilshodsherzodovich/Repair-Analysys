@@ -777,6 +777,8 @@
     "error_load": "Navbatchi uzel ma'lumotlarini yuklashda xatolik yuz berdi",
     "success_create": "Navbatchi uzel muvaffaqiyatli qo'shildi!",
     "error_create": "Navbatchi uzelni qo'shishda xatolik",
+    "success_update": "Navbatchi uzel muvaffaqiyatli yangilandi!",
+    "error_update": "Navbatchi uzelni yangilashda xatolik",
     "success_delete": "Navbatchi uzel muvaffaqiyatli o'chirildi!",
     "error_delete": "Navbatchi uzelni o'chirishda xatolik",
     "error_title": "Xatolik yuz berdi",
@@ -830,7 +832,10 @@
     "no_results": "Natijalar topilmadi",
     "cancel": "Bekor qilish",
     "save": "Saqlash",
-    "saving": "Saqlanmoqda..."
+    "update": "Yangilash",
+    "saving": "Saqlanmoqda...",
+    "title_edit": "Navbatchi uzelni tahrirlash",
+    "placeholder_defect_date": "Sanani tanlang"
   },
   "LocomotivePassportInspectionsPage": {
     "title": "Profilaktik tekshiruvlar grafigi",

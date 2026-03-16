@@ -13,6 +13,12 @@ export interface ComponentRegistryEntry {
   installed_manufacture_year: string;
   installed_manufacture_factory: string;
   removed_manufacture_factory: string;
+  // IDs returned by API for pre-populating edit form
+  locomotive_id?: number;
+  section_id?: number;
+  component_id?: number;
+  inspection_id?: number;
+  organization_id?: number;
 }
 
 export interface ComponentRegistryParams {

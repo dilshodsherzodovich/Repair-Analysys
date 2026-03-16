@@ -45,6 +45,22 @@ export const componentRegistryService = {
     }
   },
 
+  async updateEntry(
+    id: number | string,
+    payload: CreateComponentRegistryPayload
+  ): Promise<ComponentRegistryEntry> {
+    try {
+      const response = await api.patch<ComponentRegistryEntry>(
+        `/component-registry/${id}/`,
+        payload
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating component registry entry:", error);
+      throw error;
+    }
+  },
+
   async deleteEntry(id: number | string): Promise<void> {
     try {
       await api.delete(`/component-registry/${id}/`);

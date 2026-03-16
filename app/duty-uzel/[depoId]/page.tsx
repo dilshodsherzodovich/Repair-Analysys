@@ -11,6 +11,7 @@ import { getPageCount } from "@/lib/utils";
 import {
   useComponentRegistry,
   useCreateComponentRegistry,
+  useUpdateComponentRegistry,
   useDeleteComponentRegistry,
 } from "@/api/hooks/use-component-registry";
 import { ComponentRegistryEntry } from "@/api/types/component-registry";
@@ -42,6 +43,7 @@ export default function DutyUzelPage() {
 
   // State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editEntry, setEditEntry] = useState<ComponentRegistryEntry | undefined>(undefined);
 
   // Get current page and items per page from query params
   const currentPage = page ? parseInt(page) : 1;
@@ -59,6 +61,7 @@ export default function DutyUzelPage() {
   });
 
   const createEntryMutation = useCreateComponentRegistry();
+  const updateEntryMutation = useUpdateComponentRegistry();
   const deleteEntryMutation = useDeleteComponentRegistry();
 
   const paginatedData = apiResponse?.results ?? [];
@@ -74,28 +77,56 @@ export default function DutyUzelPage() {
 
   // Handle create
   const handleCreate = useCallback(() => {
+    setEditEntry(undefined);
     setIsModalOpen(true);
   }, []);
 
-  // Handle save
+  // Handle edit
+  const handleEdit = useCallback((row: ComponentRegistryEntry) => {
+    setEditEntry(row);
+    setIsModalOpen(true);
+  }, []);
+
+  // Handle save (create or update)
   const handleSave = useCallback(
     (payload: any) => {
-      createEntryMutation.mutate(payload, {
-        onSuccess: () => {
-          showSuccess(t("success_create"));
-          setIsModalOpen(false);
-        },
-        onError: (error: any) => {
-          showError(
-            t("error_title"),
-            error?.response?.data?.message ||
-              error?.message ||
-              t("error_create")
-          );
-        },
-      });
+      if (editEntry) {
+        updateEntryMutation.mutate(
+          { id: editEntry.id, payload },
+          {
+            onSuccess: () => {
+              showSuccess(t("success_update"));
+              setIsModalOpen(false);
+              setEditEntry(undefined);
+            },
+            onError: (error: any) => {
+              showError(
+                t("error_title"),
+                error?.response?.data?.message ||
+                  error?.message ||
+                  t("error_update")
+              );
+            },
+          }
+        );
+      } else {
+        createEntryMutation.mutate(payload, {
+          onSuccess: () => {
+            showSuccess(t("success_create"));
+            setIsModalOpen(false);
+          },
+          onError: (error: any) => {
+            showError(
+              t("error_title"),
+              error?.response?.data?.message ||
+                error?.message ||
+                t("error_create")
+            );
+          },
+        });
+      }
     },
-    [createEntryMutation, showSuccess, showError, t]
+    [editEntry, createEntryMutation, updateEntryMutation, showSuccess, showError, t]
   );
 
   // Handle delete
@@ -119,6 +150,7 @@ export default function DutyUzelPage() {
   // Handle modal close
   const handleModalClose = useCallback(() => {
     setIsModalOpen(false);
+    setEditEntry(undefined);
   }, []);
 
   // Format date helper
@@ -239,6 +271,7 @@ export default function DutyUzelPage() {
           totalItems={totalItems}
           updateQueryParams={true}
           showActions={true}
+          onEdit={handleEdit}
           onDelete={handleDelete}
           isDeleting={deleteEntryMutation.isPending}
           emptyTitle={t("empty_title")}
@@ -251,7 +284,8 @@ export default function DutyUzelPage() {
         onClose={handleModalClose}
         onSave={handleSave}
         organizationId={organizationId}
-        isPending={createEntryMutation.isPending}
+        isPending={createEntryMutation.isPending || updateEntryMutation.isPending}
+        editData={editEntry}
       />
     </>
   );

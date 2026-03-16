@@ -34,6 +34,25 @@ export function useCreateComponentRegistry() {
   });
 }
 
+export function useUpdateComponentRegistry() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number | string;
+      payload: CreateComponentRegistryPayload;
+    }) => componentRegistryService.updateEntry(id, payload),
+    mutationKey: [queryKeys.componentRegistry.update],
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.componentRegistry.all],
+      });
+    },
+  });
+}
+
 export function useDeleteComponentRegistry() {
   const queryClient = useQueryClient();
   return useMutation({
