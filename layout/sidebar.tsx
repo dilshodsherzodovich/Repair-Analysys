@@ -14,7 +14,6 @@ import {
   Shield,
   OctagonMinus,
   ClipboardMinus,
-  FlaskConical,
   Train,
   ClipboardCheck,
   ClipboardList,
@@ -22,6 +21,7 @@ import {
   Gauge,
   type LucideIcon,
   RotateCw,
+  FormInput,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
@@ -149,7 +149,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "depot",
         name: t("nav.depot"),
-        icon: FlaskConical,
+        icon: FormInput,
         section: "depo",
         children: depoChildren,
       });
