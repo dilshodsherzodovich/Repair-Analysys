@@ -463,7 +463,10 @@
   "DefectiveWorksPage": {
     "title": "Nosoz ishlar jurnali",
     "description": "Tekshirishlar va nosozliklarni kuzatish",
-    "breadcrumbs": { "home": "Asosiy", "current": "Nosoz ishlar jurnali" },
+    "breadcrumbs": {
+      "home": "Asosiy",
+      "current": "Nosoz ishlar jurnali"
+    },
     "tab_nosozliklar": "Nosozliklar",
     "tab_tu152": "TU152 Nosozliklar"
   },
@@ -574,7 +577,9 @@
       "generic": "Xatolik yuz berdi",
       "update": "TU152 nosozlikni yangilashda xatolik"
     },
-    "messages": { "update_success": "TU152 nosozlik muvaffaqiyatli yangilandi" }
+    "messages": {
+      "update_success": "TU152 nosozlik muvaffaqiyatli yangilandi"
+    }
   },
   "TU152Modal": {
     "title": "TU152 nosozlikni tahrirlash",
@@ -590,7 +595,10 @@
   "OrdersPage": {
     "title": "MPR",
     "description": "Elektrovozlarni poezdlararo ta'mirlash",
-    "breadcrumbs": { "home": "Asosiy", "current": "MPR" },
+    "breadcrumbs": {
+      "home": "Asosiy",
+      "current": "MPR"
+    },
     "columns": {
       "type_of_journal": "Jurnal turi",
       "date": "Sana",
@@ -1039,5 +1047,28 @@
       "masofa": "Masofa",
       "den": "Kun"
     }
+  },
+  "Tu137Page": {
+    "title": "TU-137",
+    "total_records": "Barcha yozuvlar",
+    "open_records": "Ochiq",
+    "solved_records": "Hal qilingan",
+    "mashinists_count": "Mashinistlar",
+    "search_placeholder": "Mashinist ismini izlang",
+    "top_mashinists": "Yozuvlar soni bo'yicha TOP mashinistlar",
+    "rank": "Rank",
+    "mashinist": "Mashinist",
+    "records": "Yozuvlar",
+    "solved": "Hal qildi",
+    "open": "Ochiq",
+    "percent_solved": "Hal qilingan (%)",
+    "table_number": "№",
+    "table_lokomotiv": "Lokomotiv / Poezd",
+    "table_station": "Guruh / Stansiya",
+    "table_date": "Sana",
+    "table_comment": "Izoh",
+    "table_status": "Holati",
+    "no_data": "Hech narsa topilmadi",
+    "breadcrumbs_home": "Bosh sahifa"
   }
 }

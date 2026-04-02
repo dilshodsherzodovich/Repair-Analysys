@@ -463,7 +463,10 @@
   "DefectiveWorksPage": {
     "title": "Журнал неисправностей",
     "description": "Наблюдение за проверками и неисправностями",
-    "breadcrumbs": { "home": "Главная", "current": "Журнал неисправностей" },
+    "breadcrumbs": {
+      "home": "Главная",
+      "current": "Журнал неисправностей"
+    },
     "tab_nosozliklar": "Неисправности",
     "tab_tu152": "Неисправности TU152"
   },
@@ -574,7 +577,9 @@
       "generic": "Произошла ошибка",
       "update": "Ошибка при обновлении TU152"
     },
-    "messages": { "update_success": "Запись TU152 успешно обновлена" }
+    "messages": {
+      "update_success": "Запись TU152 успешно обновлена"
+    }
   },
   "TU152Modal": {
     "title": "Редактировать неисправность TU152",
@@ -590,7 +595,10 @@
   "OrdersPage": {
     "title": "МПР",
     "description": "Межпоездной ремонт электровозов",
-    "breadcrumbs": { "home": "Главная", "current": "МПР" },
+    "breadcrumbs": {
+      "home": "Главная",
+      "current": "МПР"
+    },
     "columns": {
       "type_of_journal": "Вид журнала",
       "date": "Дата",
@@ -664,7 +672,11 @@
     "cancel": "Отмена",
     "journal_type": "Вид журнала",
     "journal_type_placeholder": "Выберите вид журнала",
-    "journal_options": { "mpr": "МПР", "invalid": "Брак", "defect": "Дефект" },
+    "journal_options": {
+      "mpr": "МПР",
+      "invalid": "Брак",
+      "defect": "Дефект"
+    },
     "train_number": "Номер поезда",
     "train_number_placeholder": "Введите номер поезда",
     "date": "Дата",
@@ -1035,5 +1047,28 @@
       "masofa": "Пробег",
       "den": "Ден"
     }
+  },
+  "Tu137Page": {
+    "title": "TU-137",
+    "total_records": "Всего записей",
+    "open_records": "Открыто",
+    "solved_records": "Устранено",
+    "mashinists_count": "Машинистов",
+    "search_placeholder": "Поиск по машинисту",
+    "top_mashinists": "ТОП машинистов по числу записей",
+    "rank": "Рейтинг",
+    "mashinist": "Машинист",
+    "records": "Записей",
+    "solved": "Устранено",
+    "open": "Открыто",
+    "percent_solved": "% Устранения",
+    "table_number": "№",
+    "table_lokomotiv": "Локомотив / Поезд",
+    "table_station": "Группа / Станция",
+    "table_date": "Дата",
+    "table_comment": "Комментарий",
+    "table_status": "Статус",
+    "no_data": "Ничего не найдено",
+    "breadcrumbs_home": "Главная"
   }
 }

@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getPageCount(
   totalItems: number,
-  itemsPerPage: number = 10
+  itemsPerPage: number = 10,
 ): number {
   return Math.ceil(totalItems / itemsPerPage);
 }
@@ -25,9 +25,6 @@ export const getRoleName = (roleName: UserRole): string => {
   switch (roleName) {
     case "admin": {
       return "Administrator";
-    }
-    case "tamir tehnik": {
-      return "Ta'mir tehnik";
     }
     default: {
       return "";
