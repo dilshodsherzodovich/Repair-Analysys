@@ -50,7 +50,7 @@ export default function Tu137Page() {
       ? JSON.parse(localStorage.getItem("user") || "null")
       : null;
 
-  const pDepoId = currentUser?.emm_depo_id || 2;
+  const pDepoId = currentUser?.emm_depo_id;
 
   const {
     data: apiResponse,
