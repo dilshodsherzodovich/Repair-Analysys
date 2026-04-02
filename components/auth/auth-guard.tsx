@@ -42,7 +42,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
 
   const safePublicRoutes = useMemo(
     () => publicRoutes || DEFAULT_PUBLIC_ROUTES,
-    [publicRoutes]
+    [publicRoutes],
   );
   const isLoginPage = pathname === "/login";
   const isPublicRoute = safePublicRoutes.includes(pathname);
@@ -61,11 +61,28 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
         const parsedUser = JSON.parse(decodeURIComponent(user));
         const expiryDate = expires || undefined;
 
+        // Map organization_id to depo_id
+        const ORG_TO_DEPO_ID: Record<number, number> = {
+          1: 1,
+          2: 2,
+          3: 7,
+          4: 6,
+          5: 3,
+          6: 4,
+          7: 8,
+          8: 5,
+        };
+        const orgId =
+          parsedUser.organization_id || parsedUser.branch?.organization?.id;
+        if (orgId && ORG_TO_DEPO_ID[orgId]) {
+          parsedUser.emm_depo_id = ORG_TO_DEPO_ID[orgId];
+        }
+
         authService.storeAuth(
           token,
           refresh_token || "",
           parsedUser,
-          expiryDate
+          expiryDate,
         );
 
         const defaultRoute = getDefaultRouteForRole(parsedUser);

@@ -124,4 +124,7 @@ export const queryKeys = {
   maneuverJournal: {
     list: (params?: any) => ["maneuver-journal-list", params],
   },
+  tu137: {
+    all: "tu137-all",
+  },
 } as const;

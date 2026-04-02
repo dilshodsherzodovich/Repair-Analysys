@@ -52,7 +52,10 @@ export type Permission =
   | "view_maneuver_journal"
   | "create_maneuver_journal"
   | "edit_maneuver_journal"
-  | "delete_maneuver_journal";
+  | "delete_maneuver_journal"
+
+  // tu-137 permissions
+  | "view_tu137";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -176,7 +179,12 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "delete_delay",
     "filter_delay_station",
   ],
-  sriv_moderator: ["view_delays", "edit_delay", "upload_delay_report"],
+  sriv_moderator: [
+    "view_delays",
+    "edit_delay",
+    "upload_delay_report",
+    "view_tu137",
+  ],
 };
 
 export function hasPermission(
@@ -256,6 +264,9 @@ export function canAccessSection(
     }
     case "razvarot": {
       return hasPermission(user, "view_maneuver_journal");
+    }
+    case "tu-137": {
+      return hasPermission(user, "view_tu137");
     }
     default:
       return false;

@@ -293,6 +293,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       });
     }
 
+    if (user && canAccessSection(user, "tu-137")) {
+      items.push({
+        key: "tu-137",
+        name: t("nav.tu-137"),
+        icon: ClipboardList,
+        section: "tu-137",
+        href: "/tu-137",
+      });
+    }
+
     return items;
   }, [user, organizations, userBranchOrg, t]);
 
