@@ -18,9 +18,8 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { Badge } from "@/ui/badge";
-import { MoveRight, Plus, Pencil } from "lucide-react";
+import { MoveRight } from "lucide-react";
 import { ManeuverJournalModal } from "@/components/razvarot/maneuver-journal-modal";
-import { Button } from "@/ui/button";
 import { useState } from "react";
 
 export default function RazvarotPage() {
@@ -38,12 +37,6 @@ export default function RazvarotPage() {
   const handleOpenCreateModal = () => {
     setModalMode("create");
     setSelectedEntry(null);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEditModal = (entry: ManeuverJournalEntry) => {
-    setModalMode("edit");
-    setSelectedEntry(entry);
     setIsModalOpen(true);
   };
 
