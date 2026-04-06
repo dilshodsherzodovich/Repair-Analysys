@@ -79,10 +79,8 @@ export function ComponentRegistryModal({
   const formRef = useRef<HTMLFormElement>(null);
   const [selects, setSelects] = useState<SelectState>(INITIAL_SELECT_STATE);
   const [defectDate, setDefectDate] = useState<Date | undefined>(undefined);
-  const [removedYear, setRemovedYear] = useState<Date | undefined>(undefined);
-  const [installedYear, setInstalledYear] = useState<Date | undefined>(
-    undefined
-  );
+  const [removedYear, setRemovedYear] = useState<string>("");
+  const [installedYear, setInstalledYear] = useState<string>("");
 
   const { data: locomotivesData, isPending: loadingLocomotives } =
     useGetLocomotives(true, undefined, {
@@ -93,7 +91,7 @@ export function ComponentRegistryModal({
   const { data: locomotiveDetail, isPending: loadingLocomotiveDetail } =
     useGetLocomotiveDetail(
       selects.locomotive_id ? Number(selects.locomotive_id) : undefined,
-      isOpen && !!selects.locomotive_id
+      isOpen && !!selects.locomotive_id,
     );
 
   const { data: inspectionTypesData, isPending: loadingInspectionTypes } =
@@ -101,11 +99,13 @@ export function ComponentRegistryModal({
 
   const { data: componentsData, isPending: loadingComponents } = useComponents(
     {
-      locomotive: selects.locomotive_id ? Number(selects.locomotive_id) : undefined,
+      locomotive: selects.locomotive_id
+        ? Number(selects.locomotive_id)
+        : undefined,
       section: selects.section_id ? Number(selects.section_id) : undefined,
       no_page: true,
     },
-    isOpen && !!selects.locomotive_id && !!selects.section_id
+    isOpen && !!selects.locomotive_id && !!selects.section_id,
   );
 
   const componentOptions =
@@ -131,19 +131,23 @@ export function ComponentRegistryModal({
     if (!isOpen) return;
     if (editData) {
       setSelects({
-        locomotive_id: editData.locomotive_id ? String(editData.locomotive_id) : "",
+        locomotive_id: editData.locomotive_id
+          ? String(editData.locomotive_id)
+          : "",
         section_id: "",
         component_id: "",
-        inspection_id: editData.inspection_id ? String(editData.inspection_id) : "",
+        inspection_id: editData.inspection_id
+          ? String(editData.inspection_id)
+          : "",
       });
       setDefectDate(parseApiDate(editData.defect_date));
-      setRemovedYear(parseApiDate(editData.removed_manufacture_year));
-      setInstalledYear(parseApiDate(editData.installed_manufacture_year));
+      setRemovedYear(editData.removed_manufacture_year?.slice(0, 4) ?? "");
+      setInstalledYear(editData.installed_manufacture_year?.slice(0, 4) ?? "");
     } else {
       setSelects(INITIAL_SELECT_STATE);
       setDefectDate(undefined);
-      setRemovedYear(undefined);
-      setInstalledYear(undefined);
+      setRemovedYear("");
+      setInstalledYear("");
     }
   }, [isOpen, editData]);
 
@@ -168,7 +172,12 @@ export function ComponentRegistryModal({
   const handleSelectChange = (field: keyof SelectState, value: string) => {
     setSelects((prev) => {
       if (field === "locomotive_id") {
-        return { ...prev, locomotive_id: value, section_id: "", component_id: "" };
+        return {
+          ...prev,
+          locomotive_id: value,
+          section_id: "",
+          component_id: "",
+        };
       }
       if (field === "section_id") {
         return { ...prev, section_id: value, component_id: "" };
@@ -197,19 +206,15 @@ export function ComponentRegistryModal({
       inspection_id: Number(selects.inspection_id),
       reason: getFormString(form, "reason"),
       defect_date: defectDate ? format(defectDate, "yyyy-MM-dd") : "",
-      removed_manufacture_year: removedYear
-        ? format(removedYear, "yyyy-MM-dd")
-        : "",
-      installed_manufacture_year: installedYear
-        ? format(installedYear, "yyyy-MM-dd")
-        : "",
+      removed_manufacture_year: removedYear,
+      installed_manufacture_year: installedYear,
       installed_manufacture_factory: getFormString(
         form,
-        "installed_manufacture_factory"
+        "installed_manufacture_factory",
       ),
       removed_manufacture_factory: getFormString(
         form,
-        "removed_manufacture_factory"
+        "removed_manufacture_factory",
       ),
     };
     onSave(payload);
@@ -265,9 +270,7 @@ export function ComponentRegistryModal({
                   handleSelectChange("section_id", value)
                 }
                 disabled={
-                  !selects.locomotive_id ||
-                  loadingLocomotiveDetail ||
-                  isPending
+                  !selects.locomotive_id || loadingLocomotiveDetail || isPending
                 }
               >
                 <SelectTrigger className="w-full">
@@ -276,30 +279,28 @@ export function ComponentRegistryModal({
                       !selects.locomotive_id
                         ? t("placeholder_locomotive_first")
                         : loadingLocomotiveDetail
-                        ? t("placeholder_loading")
-                        : t("placeholder_section")
+                          ? t("placeholder_loading")
+                          : t("placeholder_section")
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
                   {locomotiveDetail?.sections &&
-                  locomotiveDetail.sections.length > 0 ? (
-                    locomotiveDetail.sections.map((section) => (
-                      <SelectItem
-                        key={section.id}
-                        value={section.id.toString()}
-                      >
-                        {section.name}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    selects.locomotive_id &&
-                    !loadingLocomotiveDetail && (
-                      <SelectItem value="no-sections" disabled>
-                        {t("no_sections")}
-                      </SelectItem>
-                    )
-                  )}
+                  locomotiveDetail.sections.length > 0
+                    ? locomotiveDetail.sections.map((section) => (
+                        <SelectItem
+                          key={section.id}
+                          value={section.id.toString()}
+                        >
+                          {section.name}
+                        </SelectItem>
+                      ))
+                    : selects.locomotive_id &&
+                      !loadingLocomotiveDetail && (
+                        <SelectItem value="no-sections" disabled>
+                          {t("no_sections")}
+                        </SelectItem>
+                      )}
                 </SelectContent>
               </Select>
             </div>
@@ -326,10 +327,10 @@ export function ComponentRegistryModal({
                       !selects.locomotive_id
                         ? t("placeholder_locomotive_first")
                         : !selects.section_id
-                        ? t("placeholder_section_first")
-                        : loadingComponents
-                        ? t("placeholder_loading")
-                        : t("placeholder_uzel")
+                          ? t("placeholder_section_first")
+                          : loadingComponents
+                            ? t("placeholder_loading")
+                            : t("placeholder_uzel")
                     }
                   />
                 </SelectTrigger>
@@ -354,7 +355,8 @@ export function ComponentRegistryModal({
 
             <div>
               <Label htmlFor="inspection_id">
-                {t("inspection_type")} <span className="text-red-500 ml-1">*</span>
+                {t("inspection_type")}{" "}
+                <span className="text-red-500 ml-1">*</span>
               </Label>
               <Select
                 value={selects.inspection_id}
@@ -401,16 +403,23 @@ export function ComponentRegistryModal({
                 onValueChange={setDefectDate}
                 placeholder={t("placeholder_defect_date")}
                 disabled={isPending}
+                captionLayout="dropdown"
+                fromYear={1990}
+                toYear={new Date().getFullYear() + 1}
               />
             </div>
 
             <div>
               <Label>{t("removed_manufacture_year")}</Label>
-              <DatePicker
+              <Input
+                type="number"
+                min={1900}
+                max={new Date().getFullYear() + 1}
                 value={removedYear}
-                onValueChange={setRemovedYear}
+                onChange={(e) => setRemovedYear(e.target.value)}
                 placeholder={t("placeholder_date_example")}
                 disabled={isPending}
+                className="w-full"
               />
             </div>
 
@@ -431,11 +440,15 @@ export function ComponentRegistryModal({
 
             <div>
               <Label>{t("installed_manufacture_year")}</Label>
-              <DatePicker
+              <Input
+                type="number"
+                min={1900}
+                max={new Date().getFullYear() + 1}
                 value={installedYear}
-                onValueChange={setInstalledYear}
+                onChange={(e) => setInstalledYear(e.target.value)}
                 placeholder={t("placeholder_date_example")}
                 disabled={isPending}
+                className="w-full"
               />
             </div>
 

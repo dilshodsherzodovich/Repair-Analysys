@@ -23,6 +23,9 @@ export interface DatePickerProps {
   minDate?: Date;
   maxDate?: Date;
   size?: "sm" | "md" | "lg";
+  captionLayout?: "label" | "dropdown" | "dropdown-months" | "dropdown-years";
+  fromYear?: number;
+  toYear?: number;
 }
 
 const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
@@ -40,6 +43,9 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
       minDate,
       maxDate,
       size = "md",
+      captionLayout = "label",
+      fromYear,
+      toYear,
       ...props
     },
     ref
@@ -126,6 +132,9 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
                 if (maxDate && date > maxDate) return true;
                 return false;
               }}
+              captionLayout={captionLayout}
+              fromYear={fromYear}
+              toYear={toYear}
               initialFocus
             />
           </PopoverContent>
