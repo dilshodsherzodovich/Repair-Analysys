@@ -1069,6 +1069,11 @@
     "table_comment": "Izoh",
     "table_status": "Holati",
     "no_data": "Hech narsa topilmadi",
-    "breadcrumbs_home": "Bosh sahifa"
+    "breadcrumbs_home": "Bosh sahifa",
+    "date_from": "Sana dan",
+    "date_to": "Sana gacha",
+    "export_docx": "Eksport (Docx)",
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik yuz berdi:"
   }
 }

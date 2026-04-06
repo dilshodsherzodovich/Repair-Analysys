@@ -8,6 +8,8 @@ import { PageHeader } from "@/ui/page-header";
 import { useTu137Records } from "@/api/hooks/use-tu137";
 import { exportTu137ToDocx } from "@/lib/export-tu137-docx";
 import { Button } from "@/ui/button";
+import { DatePicker } from "@/ui/date-picker";
+import { format } from "date-fns";
 
 import {
   Users,
@@ -47,6 +49,8 @@ export default function Tu137Page() {
   const t = useTranslations("Tu137Page");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
 
   const currentUser =
     typeof window !== "undefined"
@@ -61,6 +65,8 @@ export default function Tu137Page() {
     error,
   } = useTu137Records({
     p_depo_id: pDepoId,
+    ...(dateFrom && { p_create_date_from: format(dateFrom, "yyyy-MM-dd") }),
+    ...(dateTo && { p_create_date_to: format(dateTo, "yyyy-MM-dd") }),
   });
 
   if (!currentUser || !canAccessSection(currentUser, "tu-137")) {
@@ -156,14 +162,28 @@ export default function Tu137Page() {
       <div className="px-6 py-6 space-y-6">
         {/* Actions / Search Bar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm">
-          <div className="w-full max-w-md">
-            <Input
-              type="text"
-              placeholder={t("search_placeholder")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border-slate-200 text-slate-800"
-            />
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+            <div className="w-full max-w-md">
+              <Input
+                type="text"
+                placeholder={t("search_placeholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-50 border-slate-200 text-slate-800 mb-0"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <DatePicker
+                value={dateFrom}
+                onValueChange={setDateFrom}
+                placeholder={t("date_from")}
+              />
+              <DatePicker
+                value={dateTo}
+                onValueChange={setDateTo}
+                placeholder={t("date_to")}
+              />
+            </div>
           </div>
           <Button
             onClick={() =>
@@ -173,16 +193,16 @@ export default function Tu137Page() {
             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Eksport (Docx)</span>
+            <span className="hidden sm:inline">{t("export_docx")}</span>
           </Button>
         </div>
 
         {/* Global Stats Cards */}
         {isLoading ? (
-          <div className="text-sm text-slate-500">Yuklanmoqda...</div>
+          <div className="text-sm text-slate-500">{t("loading")}</div>
         ) : error ? (
           <div className="text-sm text-red-500">
-            Xatolik yuz berdi: {(error as Error).message}
+            {t("error")} {(error as Error).message}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

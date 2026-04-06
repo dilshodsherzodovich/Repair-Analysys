@@ -1069,6 +1069,11 @@
     "table_comment": "Комментарий",
     "table_status": "Статус",
     "no_data": "Ничего не найдено",
-    "breadcrumbs_home": "Главная"
+    "breadcrumbs_home": "Главная",
+    "date_from": "Дата от",
+    "date_to": "Дата до",
+    "export_docx": "Экспорт (Docx)",
+    "loading": "Загрузка...",
+    "error": "Произошла ошибка:"
   }
 }

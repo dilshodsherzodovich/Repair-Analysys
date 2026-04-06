@@ -35,6 +35,8 @@ export interface Tu137Record {
 
 export interface Tu137Params {
   p_depo_id?: number | string;
+  p_create_date_from?: string;
+  p_create_date_to?: string;
 }
 
 export interface Tu137ApiResponse {
