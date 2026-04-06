@@ -6,6 +6,8 @@ import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { PageHeader } from "@/ui/page-header";
 import { useTu137Records } from "@/api/hooks/use-tu137";
+import { exportTu137ToDocx } from "@/lib/export-tu137-docx";
+import { Button } from "@/ui/button";
 
 import {
   Users,
@@ -14,6 +16,7 @@ import {
   CheckCircle,
   ChevronDown,
   ChevronRight,
+  Download,
 } from "lucide-react";
 import { Input } from "@/ui/input";
 import { formatDate } from "@/lib/utils";
@@ -152,7 +155,7 @@ export default function Tu137Page() {
 
       <div className="px-6 py-6 space-y-6">
         {/* Actions / Search Bar */}
-        <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm">
           <div className="w-full max-w-md">
             <Input
               type="text"
@@ -162,6 +165,16 @@ export default function Tu137Page() {
               className="w-full bg-slate-50 border-slate-200 text-slate-800"
             />
           </div>
+          <Button
+            onClick={() =>
+              apiResponse?.data ? exportTu137ToDocx(apiResponse.data) : null
+            }
+            disabled={isLoading || !apiResponse?.data?.length}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+          >
+            <Download className="w-4 h-4" />
+            <span className="hidden sm:inline">Eksport (Docx)</span>
+          </Button>
         </div>
 
         {/* Global Stats Cards */}
