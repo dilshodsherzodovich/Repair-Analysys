@@ -6,10 +6,25 @@ import { PaginatedTable, type TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { Badge } from "@/ui/badge";
-import { useTU152List, useTU152Locomotives, useTU152LocomotiveModels, useUpdateTU152Entry } from "@/api/hooks/use-tu152";
-import { TU152Entry, TU152_STATUSES, TU152UpdatePayload } from "@/api/types/tu152";
+import {
+  useTU152List,
+  useTU152Locomotives,
+  useTU152LocomotiveModels,
+  useUpdateTU152Entry,
+} from "@/api/hooks/use-tu152";
+import {
+  TU152Entry,
+  TU152_STATUSES,
+  TU152UpdatePayload,
+} from "@/api/types/tu152";
 import { DatePicker } from "@/ui/date-picker";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
 import { PaginationEllipsis, PaginationLink } from "@/ui/pagination";
 import { ChevronLeft, ChevronRight, Edit } from "lucide-react";
 import { TU152Modal } from "@/components/defective-works/tu152-modal";
@@ -33,7 +48,7 @@ export function TU152Tab() {
   const { showSuccess, showError } = useSnackbar();
 
   const updateMutation = useUpdateTU152Entry();
-  
+
   const getDateFromQuery = (dateStr: string | undefined): Date | undefined => {
     if (!dateStr) return undefined;
     try {
@@ -45,10 +60,10 @@ export function TU152Tab() {
   };
 
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
-    getDateFromQuery(p_create_date_from)
+    getDateFromQuery(p_create_date_from),
   );
   const [dateTo, setDateTo] = useState<Date | undefined>(
-    getDateFromQuery(p_create_date_to)
+    getDateFromQuery(p_create_date_to),
   );
 
   // Sync dates with query params when they change
@@ -60,7 +75,11 @@ export function TU152Tab() {
     setDateTo(getDateFromQuery(p_create_date_to));
   }, [p_create_date_to]);
 
-  const { data: tu152Data, isLoading, error: apiError } = useTU152List({
+  const {
+    data: tu152Data,
+    isLoading,
+    error: apiError,
+  } = useTU152List({
     p_create_date_from: dateFrom?.toISOString().split("T")[0],
     p_create_date_to: dateTo?.toISOString().split("T")[0],
     p_lokomotiv_id: p_lokomotiv_id || undefined,
@@ -87,8 +106,8 @@ export function TU152Tab() {
     apiError instanceof Error
       ? apiError
       : apiError
-      ? new Error(apiError?.message || t("errors.generic"))
-      : null;
+        ? new Error(apiError?.message || t("errors.generic"))
+        : null;
 
   const formatDate = useCallback(
     (dateString: string, isTime: boolean = true) => {
@@ -106,37 +125,52 @@ export function TU152Tab() {
         return dateString;
       }
     },
-    []
+    [],
   );
 
   const getStatusBadge = useCallback((statusId: number) => {
     const status = TU152_STATUSES.find((s) => s.id === statusId);
     if (!status) return null;
 
-    let variant: "outline" | "success_outline" | "destructive_outline" | "warning_outline" = "outline";
+    let variant:
+      | "default"
+      | "success_outline"
+      | "destructive_outline"
+      | "warning_outline"
+      | "info_outline" = "default";
     if (statusId === 24) variant = "success_outline";
     else if (statusId === 22) variant = "warning_outline";
     else if (statusId === 23) variant = "destructive_outline";
+    else if (statusId === 21) variant = "info_outline";
 
     return <Badge variant={variant}>{status.name}</Badge>;
   }, []);
 
   const columns: TableColumn<TU152Entry>[] = [
-    // {
-    //   key: "create_date",
-    //   header: "Yaratilgan sana",
-    //   accessor: (row) => (row?.create_date ? formatDate(row.create_date) : ""),
-    //   width: "150px",
-    //   className: "min-w-[150px] whitespace-nowrap",
-    //   headerClassName: "min-w-[150px]",
-    // },
     {
-      key: "lokomotiv_number",
-      header: t("columns.locomotive"),
-      accessor: (row) => `${row.lokomotiv_number} (${row.lokomotiv_seriya_name})`,
+      key: "create_date",
+      header: "Yaratilgan sana",
+      accessor: (row) => (row?.create_date ? formatDate(row.create_date) : ""),
       width: "150px",
       className: "min-w-[150px] whitespace-nowrap",
       headerClassName: "min-w-[150px]",
+    },
+    {
+      key: "lokomotiv_number",
+      header: t("columns.locomotive"),
+      accessor: (row) =>
+        `${row.lokomotiv_number} (${row.lokomotiv_seriya_name})`,
+      width: "150px",
+      className: "min-w-[150px] whitespace-nowrap",
+      headerClassName: "min-w-[150px]",
+    },
+    {
+      key: "depo_name",
+      header: "Depo",
+      accessor: (row) => row?.depo_name || "-",
+      width: "180px",
+      className: "min-w-[180px]",
+      headerClassName: "min-w-[180px]",
     },
     {
       key: "group_name",
@@ -154,14 +188,7 @@ export function TU152Tab() {
       className: "min-w-[200px]",
       headerClassName: "min-w-[200px]",
     },
-    // {
-    //   key: "depo_name",
-    //   header: "Depo",
-    //   accessor: (row) => row?.depo_name || "-",
-    //   width: "180px",
-    //   className: "min-w-[180px]",
-    //   headerClassName: "min-w-[180px]",
-    // },
+
     // {
     //   key: "organization_name",
     //   header: "Tashkilot",
@@ -218,14 +245,14 @@ export function TU152Tab() {
     //   className: "min-w-[200px]",
     //   headerClassName: "min-w-[200px]",
     // },
-    {
-      key: "change_date",
-      header: t("columns.change_date"),
-      accessor: (row) => (row?.change_date ? formatDate(row.change_date) : ""),
-      width: "150px",
-      className: "min-w-[150px] whitespace-nowrap",
-      headerClassName: "min-w-[150px]",
-    },
+    // {
+    //   key: "change_date",
+    //   header: t("columns.change_date"),
+    //   accessor: (row) => (row?.change_date ? formatDate(row.change_date) : ""),
+    //   width: "150px",
+    //   className: "min-w-[150px] whitespace-nowrap",
+    //   headerClassName: "min-w-[150px]",
+    // },
   ];
 
   const locomotiveOptions = useMemo(() => {
@@ -235,7 +262,7 @@ export function TU152Tab() {
         options.push({
           value: loc.value,
           label: loc.text,
-        })
+        }),
       );
     }
     return options;
@@ -243,12 +270,15 @@ export function TU152Tab() {
 
   const locomotiveModelOptions = useMemo(() => {
     const options = [{ value: "", label: t("options.all_seriyas") }];
-    if (locomotiveModelsData?.data && Array.isArray(locomotiveModelsData.data)) {
+    if (
+      locomotiveModelsData?.data &&
+      Array.isArray(locomotiveModelsData.data)
+    ) {
       locomotiveModelsData.data.forEach((model) =>
         options.push({
           value: model.value,
           label: model.text,
-        })
+        }),
       );
     }
     return options;
@@ -260,7 +290,7 @@ export function TU152Tab() {
       options.push({
         value: status.id.toString(),
         label: status.name,
-      })
+      }),
     );
     return options;
   }, [t]);
@@ -272,7 +302,7 @@ export function TU152Tab() {
         p_create_date_from: date ? date.toISOString().split("T")[0] : null,
       });
     },
-    [updateQuery]
+    [updateQuery],
   );
 
   const handleDateToChange = useCallback(
@@ -282,7 +312,7 @@ export function TU152Tab() {
         p_create_date_to: date ? date.toISOString().split("T")[0] : null,
       });
     },
-    [updateQuery]
+    [updateQuery],
   );
 
   const handleEdit = useCallback((row: TU152Entry) => {
@@ -310,13 +340,13 @@ export function TU152Tab() {
               t("errors.generic"),
               error?.response?.data?.message ||
                 error?.message ||
-                t("errors.update")
+                t("errors.update"),
             );
           },
-        }
+        },
       );
     },
-    [selectedEntry, updateMutation, showSuccess, showError, t]
+    [selectedEntry, updateMutation, showSuccess, showError, t],
   );
 
   return (
@@ -376,11 +406,10 @@ export function TU152Tab() {
         </div>
       </div>
 
-      <div className="px-6 pb-6 space-y-4">
-        <div className="bg-white border">
+      <div className="px-6 pb-6">
+        <div className="rounded-lg overflow-hidden ">
           <div className="w-full overflow-x-auto">
-            <div >
-              <PaginatedTable
+            <PaginatedTable
               columns={columns}
               data={paginatedData}
               getRowId={(row) => row.id}
@@ -390,16 +419,14 @@ export function TU152Tab() {
               onItemsPerPageChange={(newItemsPerPage) =>
                 updateQuery({ page: "1", pageSize: newItemsPerPage.toString() })
               }
-              extraActions={
-                [
-                  {
-                    label: t("edit_action"),
-                    icon: <Edit className="h-4 w-4" />,
-                    onClick: handleEdit,
-                    variant: "outline",
-                  },
-                ]
-              }
+              extraActions={[
+                {
+                  label: t("edit_action"),
+                  icon: <Edit className="h-4 w-4" />,
+                  onClick: handleEdit,
+                  variant: "outline",
+                },
+              ]}
               size="sm"
               isLoading={isLoading}
               error={error}
@@ -411,108 +438,102 @@ export function TU152Tab() {
               onSelectionChange={setSelectedIds}
               emptyTitle={t("empty_title")}
               emptyDescription={t("empty_description")}
-              className="!pb-0"
+              className="!rounded-none !border-0 !shadow-none"
               actionsDisplayMode="row"
-              // onEdit={handleEdit}
             />
-            </div>
           </div>
-        </div>
 
-        {totalPages > 0 && (
-          <div className="flex items-center justify-end pt-4 px-0 bg-white border p-4">
-          
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F8FAFC]">
+              {totalItems ? (
+                <span className="text-sm text-gray-500">
+                  {t("pagination_showing", {
+                    from: Math.min(
+                      (currentPage - 1) * itemsPerPage + 1,
+                      totalItems,
+                    ),
+                    to: Math.min(currentPage * itemsPerPage, totalItems),
+                    total: totalItems,
+                  })}
+                </span>
+              ) : (
+                <span />
+              )}
 
-            {totalPages > 1 && (
-              <div className="flex items-center gap-4 ">
-                <ul className="flex flex-row items-center gap-1">
-                  {currentPage > 1 && (
-                    <li>
-                      <button
-                        type="button"
-                        onClick={() => updateQuery({ page: (currentPage - 1).toString() })}
-                        className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                        <span>{t("pagination_prev")}</span>
-                      </button>
-                    </li>
-                  )}
-
-                  {(() => {
-                    const pages: (number | string)[] = [];
-                    const maxVisible = 5;
-                    const halfVisible = Math.floor(maxVisible / 2);
-                    let startPage = Math.max(1, currentPage - halfVisible);
-                    let endPage = Math.min(totalPages, currentPage + halfVisible);
-
-                    if (currentPage <= halfVisible) {
-                      endPage = Math.min(totalPages, maxVisible);
-                    }
-                    if (currentPage > totalPages - halfVisible) {
-                      startPage = Math.max(1, totalPages - maxVisible + 1);
-                    }
-
-                    if (startPage > 1) {
-                      pages.push(1);
-                      if (startPage > 2) {
-                        pages.push("...");
+              <ul className="flex flex-row items-center gap-1">
+                {currentPage > 1 && (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateQuery({ page: (currentPage - 1).toString() })
                       }
-                    }
-
-                    for (let i = startPage; i <= endPage; i++) {
-                      pages.push(i);
-                    }
-
-                    if (endPage < totalPages) {
-                      if (endPage < totalPages - 1) {
-                        pages.push("...");
-                      }
-                      pages.push(totalPages);
-                    }
-
-                    return pages.map((page, index) => (
-                      <li key={index}>
-                        {page === "..." ? (
-                          <PaginationEllipsis />
-                        ) : (
-                          <PaginationLink
-                            isActive={page === currentPage}
-                            onClick={() => updateQuery({ page: (page as number).toString() })}
-                          >
-                            {page}
-                          </PaginationLink>
-                        )}
-                      </li>
-                    ));
-                  })()}
-
-                  {currentPage < totalPages && (
-                    <li>
-                      <button
-                        type="button"
-                        onClick={() => updateQuery({ page: (currentPage + 1).toString() })}
-                        className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
-                      >
-                        <span>{t("pagination_next")}</span>
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
-                    </li>
-                  )}
-                </ul>
-                {totalItems && (
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    {t("pagination_showing", {
-                      from: Math.min((currentPage - 1) * itemsPerPage + 1, totalItems),
-                      to: Math.min(currentPage * itemsPerPage, totalItems),
-                      total: totalItems,
-                    })}
-                  </span>
+                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      <span>{t("pagination_prev")}</span>
+                    </button>
+                  </li>
                 )}
-              </div>
-            )}
-          </div>
-        )}
+
+                {(() => {
+                  const pages: (number | string)[] = [];
+                  const maxVisible = 5;
+                  const halfVisible = Math.floor(maxVisible / 2);
+                  let startPage = Math.max(1, currentPage - halfVisible);
+                  let endPage = Math.min(totalPages, currentPage + halfVisible);
+
+                  if (currentPage <= halfVisible)
+                    endPage = Math.min(totalPages, maxVisible);
+                  if (currentPage > totalPages - halfVisible)
+                    startPage = Math.max(1, totalPages - maxVisible + 1);
+
+                  if (startPage > 1) {
+                    pages.push(1);
+                    if (startPage > 2) pages.push("...");
+                  }
+                  for (let i = startPage; i <= endPage; i++) pages.push(i);
+                  if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) pages.push("...");
+                    pages.push(totalPages);
+                  }
+
+                  return pages.map((page, index) => (
+                    <li key={index}>
+                      {page === "..." ? (
+                        <PaginationEllipsis />
+                      ) : (
+                        <PaginationLink
+                          isActive={page === currentPage}
+                          onClick={() =>
+                            updateQuery({ page: (page as number).toString() })
+                          }
+                        >
+                          {page}
+                        </PaginationLink>
+                      )}
+                    </li>
+                  ));
+                })()}
+
+                {currentPage < totalPages && (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateQuery({ page: (currentPage + 1).toString() })
+                      }
+                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
+                    >
+                      <span>{t("pagination_next")}</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
 
       <TU152Modal
@@ -528,4 +549,3 @@ export function TU152Tab() {
     </>
   );
 }
-

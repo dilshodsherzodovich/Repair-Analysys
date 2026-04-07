@@ -15,13 +15,16 @@ export default function DefectiveWorksPage() {
   const { getAllQueryValues, updateQuery } = useFilterParams();
   const { mainTab } = getAllQueryValues();
 
-  const currentUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
   if (!currentUser || !canAccessSection(currentUser, "defective-works")) {
     return <UnauthorizedPage />;
   }
 
   const [currentMainTab, setCurrentMainTab] = useState<string>(
-    mainTab || "nosozliklar"
+    mainTab || "nosozliklar",
   );
 
   const handleMainTabChange = useCallback(
@@ -29,7 +32,7 @@ export default function DefectiveWorksPage() {
       setCurrentMainTab(value);
       updateQuery({ mainTab: value, page: "1" });
     },
-    [updateQuery]
+    [updateQuery],
   );
 
   const breadcrumbs = [
@@ -48,8 +51,10 @@ export default function DefectiveWorksPage() {
       <div className="px-6">
         <Tabs value={currentMainTab} onValueChange={handleMainTabChange}>
           <TabsList className="bg-[#F1F5F9] p-1 gap-0 border-0 rounded-lg inline-flex">
-            <TabsTrigger value="nosozliklar">{t("tab_nosozliklar")}</TabsTrigger>
-           <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
+            <TabsTrigger value="nosozliklar">
+              {t("tab_nosozliklar")}
+            </TabsTrigger>
+            <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -59,5 +64,3 @@ export default function DefectiveWorksPage() {
     </div>
   );
 }
-
-
