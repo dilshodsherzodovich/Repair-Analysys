@@ -39,6 +39,7 @@ export interface TU152ListParams {
   p_lokomotiv_id?: number | string;
   p_lokomotiv_seriya_id?: number | string;
   p_status_id?: number | string;
+  p_depo_id?: number | string;
 }
 
 export interface TU152LocomotiveOption {
@@ -82,4 +83,3 @@ export interface TU152UpdatePayload {
   status_id: number;
   comment: string;
 }
-

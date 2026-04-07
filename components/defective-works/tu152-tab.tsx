@@ -85,6 +85,7 @@ export function TU152Tab() {
     p_lokomotiv_id: p_lokomotiv_id || undefined,
     p_lokomotiv_seriya_id: p_lokomotiv_seriya_id || undefined,
     p_status_id: p_status_id || undefined,
+    p_depo_id: localStorage.getItem("user_emm_depo_id") || 1,
   });
 
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =

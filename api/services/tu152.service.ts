@@ -4,12 +4,11 @@ import {
   TU152ListParams,
   TU152LocomotiveListResponse,
   TU152LocomotiveModelListResponse,
+  TU152UpdatePayload,
 } from "../types/tu152";
 
 export const tu152Service = {
-  async getTU152List(
-    params?: TU152ListParams
-  ): Promise<TU152ListResponse> {
+  async getTU152List(params?: TU152ListParams): Promise<TU152ListResponse> {
     try {
       const response = await api.post<TU152ListResponse>(
         "/enakl/tu152/list/",
@@ -21,8 +20,9 @@ export const tu152Service = {
             p_lokomotiv_id: params?.p_lokomotiv_id,
             p_lokomotiv_seriya_id: params?.p_lokomotiv_seriya_id,
             p_status_id: params?.p_status_id,
+            p_depo_id: params?.p_depo_id,
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -34,7 +34,7 @@ export const tu152Service = {
   async getLocomotives(): Promise<TU152LocomotiveListResponse> {
     try {
       const response = await api.post<TU152LocomotiveListResponse>(
-        "/enakl/locomotives/list/"
+        "/enakl/locomotives/list/",
       );
       return response.data;
     } catch (error) {
@@ -46,7 +46,7 @@ export const tu152Service = {
   async getLocomotiveModels(): Promise<TU152LocomotiveModelListResponse> {
     try {
       const response = await api.post<TU152LocomotiveModelListResponse>(
-        "/enakl/locomotives/models/list/"
+        "/enakl/locomotives/models/list/",
       );
       return response.data;
     } catch (error) {
@@ -57,15 +57,15 @@ export const tu152Service = {
 
   async updateTU152Entry(
     id: number,
-    payload: { status_id: number; answer: string }
+    payload?: TU152UpdatePayload,
   ): Promise<TU152ListResponse> {
     try {
       const response = await api.post<TU152ListResponse>(
         `/enakl/tu152/patch/`,
         {
-         parent_id: id,
+          parent_id: id,
           ...payload,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -76,4 +76,3 @@ export const tu152Service = {
 };
 
 export default tu152Service;
-

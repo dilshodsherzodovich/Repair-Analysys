@@ -2,6 +2,17 @@ import api from "../axios";
 import { LoginCredentials, LoginResponse, UserData } from "../types/auth";
 import { getSmartDepoUrl } from "@/lib/config";
 
+const ORG_TO_EMM_ID: Record<number, number> = {
+  1: 1,
+  2: 2,
+  3: 7,
+  4: 6,
+  5: 3,
+  6: 4,
+  7: 8,
+  8: 5,
+};
+
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
@@ -20,7 +31,7 @@ export const authService = {
     localStorage.removeItem("auth_expiry");
     if (typeof window !== "undefined") {
       window.location.href = `${getSmartDepoUrl()}/?redirect_uri=${encodeURIComponent(
-        window.location.origin
+        window.location.origin,
       )}&clear_session=true`;
     }
   },
@@ -70,11 +81,15 @@ export const authService = {
     accessToken: string,
     refreshToken: string,
     user: UserData,
-    expiryDate?: string
+    expiryDate?: string,
   ): void => {
     localStorage.setItem("auth_token", accessToken);
     localStorage.setItem("refresh_token", refreshToken);
     localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem(
+      "user_emm_depo_id",
+      ORG_TO_EMM_ID[user?.branch?.organization?.id]?.toString() || "",
+    );
 
     if (expiryDate) {
       localStorage.setItem("auth_expiry", expiryDate);
