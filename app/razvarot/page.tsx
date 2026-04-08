@@ -21,6 +21,7 @@ import { Badge } from "@/ui/badge";
 import { MoveRight } from "lucide-react";
 import { ManeuverJournalModal } from "@/components/razvarot/maneuver-journal-modal";
 import { useState } from "react";
+import { authService } from "@/api/services/auth.service";
 
 export default function RazvarotPage() {
   const t = useTranslations("ManeuverJournalPage");
@@ -67,6 +68,8 @@ export default function RazvarotPage() {
     return <UnauthorizedPage />;
   }
 
+  const user = authService.getUser();
+
   const { q, page, pageSize, locomotive, organization, start_date, end_date } =
     getAllQueryValues();
 
@@ -87,7 +90,10 @@ export default function RazvarotPage() {
     page_size: itemsPerPage,
     search: q || undefined,
     locomotive: locomotive || undefined,
-    organization: organization || undefined,
+    organization:
+      user?.role === "admin"
+        ? organization
+        : user?.branch?.organization?.id || undefined,
     date_after: start_date || undefined,
     date_before: end_date || undefined,
   });

@@ -121,6 +121,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_locomotive_replacement_oil",
     "view_inspections",
     "edit_inspection_location_section",
+    "view_maneuver_journal",
   ],
   passport_staff: [
     "view_depo",
