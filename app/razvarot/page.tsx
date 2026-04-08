@@ -74,7 +74,7 @@ export default function RazvarotPage() {
     getAllQueryValues();
 
   const currentPage = page ? parseInt(page) : 1;
-  const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
+  const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =
     useGetLocomotives();
@@ -222,7 +222,7 @@ export default function RazvarotPage() {
           columns={columns}
           data={paginatedData}
           getRowId={(row) => row.id}
-          itemsPerPage={25}
+          itemsPerPage={10}
           size="md"
           isLoading={isLoading}
           error={error}

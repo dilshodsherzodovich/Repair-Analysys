@@ -6,7 +6,15 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { DatePicker } from "@/ui/date-picker";
-import { Trash2, Plus, Search, FileSpreadsheet, ChevronsUpDown, Check, Loader2 } from "lucide-react";
+import {
+  Trash2,
+  Plus,
+  Search,
+  FileSpreadsheet,
+  ChevronsUpDown,
+  Check,
+  Loader2,
+} from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Permission } from "@/lib/permissions";
@@ -78,9 +86,11 @@ export default function PageFilters({
   const t = useTranslations("Filters");
   const { updateQuery, getQueryValue } = useFilterParams();
 
-  const effectiveSearchPlaceholder = searchPlaceholder ?? t("search_placeholder");
+  const effectiveSearchPlaceholder =
+    searchPlaceholder ?? t("search_placeholder");
   const effectiveDatePickerLabel = datePickerLabel ?? t("date_label");
-  const effectiveDateRangePickerLabel = dateRangePickerLabel ?? t("date_range_label");
+  const effectiveDateRangePickerLabel =
+    dateRangePickerLabel ?? t("date_range_label");
   const effectiveAddButtonText = addButtonText ?? t("add_button");
   const effectiveExportButtonText = exportButtonText ?? t("export_button");
   const effectiveBulkDeleteText = bulkDeleteText ?? t("bulk_delete");
@@ -89,7 +99,7 @@ export default function PageFilters({
   const searchParams = useSearchParams();
   const debounceMs = 400;
   const timersRef = React.useRef<Record<string, ReturnType<typeof setTimeout>>>(
-    {}
+    {},
   );
 
   // Debounced updater per key
@@ -103,7 +113,7 @@ export default function PageFilters({
 
   // Local state for search input (q)
   const [searchLocal, setSearchLocal] = React.useState<string>(() =>
-    getQueryValue("q")
+    getQueryValue("q"),
   );
   React.useEffect(() => {
     setSearchLocal(getQueryValue("q"));
@@ -147,7 +157,7 @@ export default function PageFilters({
   // Handle date range picker changes
   const handleDateRangeChange = (
     startDate: Date | undefined,
-    endDate: Date | undefined
+    endDate: Date | undefined,
   ) => {
     const startString = startDate ? format(startDate, "yyyy-MM-dd") : "";
     const endString = endDate ? format(endDate, "yyyy-MM-dd") : "";
@@ -172,7 +182,7 @@ export default function PageFilters({
     <div
       className={cn(
         "flex flex-wrap items-stretch gap-3 md:gap-4 mb-4",
-        className
+        className,
       )}
     >
       {/* Search Input */}
@@ -201,7 +211,7 @@ export default function PageFilters({
       {/* Dynamic Filters */}
       {filters.map((filter) =>
         filter.permission ? (
-          <PermissionGuard  key={filter.name}  permission={filter.permission}>
+          <PermissionGuard key={filter.name} permission={filter.permission}>
             <div className="min-w-[200px] flex-shrink-0">
               {filter.isSelect ? (
                 <SelectWithSearch
@@ -256,7 +266,7 @@ export default function PageFilters({
               />
             )}
           </div>
-        )
+        ),
       )}
 
       {/* Date Picker */}
@@ -389,7 +399,7 @@ function SelectWithSearch({
 
   const selectedOption = React.useMemo(
     () => options.find((o) => o.value === value),
-    [options, value]
+    [options, value],
   );
 
   const filteredOptions = React.useMemo(() => {
@@ -445,14 +455,14 @@ function SelectWithSearch({
         ref={triggerRef}
         className={cn(
           "flex items-center justify-between border border-[#CAD5E2] rounded-md bg-white hover:border-[#94a3b8] focus-within:ring-2 focus-within:ring-[#2354bf]/20 focus-within:border-[#2354bf] cursor-pointer min-h-10 h-10 px-3 text-sm text-left transition-colors",
-          triggerClassName
+          triggerClassName,
         )}
         onClick={() => !loading && setOpen(!open)}
       >
         <span
           className={cn(
             "truncate flex-1 min-w-0",
-            !selectedOption ? "text-[#90A1B9]" : "text-[#0F172B]"
+            !selectedOption ? "text-[#90A1B9]" : "text-[#0F172B]",
           )}
         >
           {selectedOption ? selectedOption.label : placeholder}
@@ -468,7 +478,7 @@ function SelectWithSearch({
             "animate-in fade-in-0 zoom-in-95 duration-100",
             dropdownPosition === "top"
               ? "bottom-full mb-1 slide-in-from-bottom-2"
-              : "top-full mt-1 slide-in-from-top-2"
+              : "top-full mt-1 slide-in-from-top-2",
           )}
           style={{ zIndex: 999999 }}
         >
@@ -505,8 +515,9 @@ function SelectWithSearch({
                   onClick={() => !opt.disabled && handleSelect(opt.value)}
                   className={cn(
                     "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-[#F1F5F9] cursor-pointer transition-colors",
-                    opt.value === value && "bg-[#EFF6FF] text-[#1d4ed8] font-medium",
-                    opt.disabled && "opacity-50 cursor-not-allowed"
+                    opt.value === value &&
+                      "bg-[#EFF6FF] text-[#1d4ed8] font-medium",
+                    opt.disabled && "opacity-50 cursor-not-allowed",
                   )}
                 >
                   {opt.value === value && (
