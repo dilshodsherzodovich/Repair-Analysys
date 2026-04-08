@@ -120,7 +120,6 @@ export default function RazvarotPage() {
       key: "organization",
       header: t("columns.organization"),
       accessor: (row) => row.organization_info?.name,
-      permission: "choose_organization",
     },
     {
       key: "station",
