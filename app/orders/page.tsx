@@ -145,10 +145,10 @@ export default function OrdersPage() {
   } = useOrders({
     page: currentPage,
     page_size: itemsPerPage,
-    search: q || responsible_department || locomotive || organization,
+    search: q || responsible_department || locomotive,
+    organization: +organization || undefined,
     type_of_journal: type_of_journal || undefined,
     date: date || undefined,
-    // organization: organization || undefined,
   });
 
   const paginatedData = apiResponse?.results || [];

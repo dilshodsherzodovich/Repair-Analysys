@@ -122,7 +122,7 @@ export default function PantografPage() {
   } = usePantographJournal({
     page: currentPage,
     page_size: itemsPerPage,
-    search: q || locomotive || organization,
+    search: q || locomotive,
     organization: +organization || undefined,
     tab: currentTab === "all" ? undefined : currentTab,
   });
