@@ -211,8 +211,20 @@ export default function OrdersPage() {
   };
 
   const handleSave = (orderData: CreateOrderPayload | UpdateOrderPayload) => {
+    const formattedData = { ...orderData };
+    if (formattedData.date) {
+      try {
+        const d = new Date(formattedData.date);
+        if (!isNaN(d.getTime())) {
+          formattedData.date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
     if (modalMode === "create") {
-      createOrderMutation.mutate(orderData as CreateOrderPayload, {
+      createOrderMutation.mutate(formattedData as CreateOrderPayload, {
         onSuccess: () => {
           showSuccess(t("messages.create_success"));
           setIsModalOpen(false);
@@ -232,7 +244,7 @@ export default function OrdersPage() {
         updateOrderMutation.mutate(
           {
             id: selectedOrder.id,
-            orderData: orderData as UpdateOrderPayload,
+            orderData: formattedData as UpdateOrderPayload,
           },
           {
             onSuccess: () => {
