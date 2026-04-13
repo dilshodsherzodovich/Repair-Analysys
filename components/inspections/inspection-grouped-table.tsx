@@ -35,11 +35,11 @@ import { useUpdateInspectionSection } from "@/api/hooks/use-inspections";
 import type { UserData } from "@/api/types/auth";
 
 export const INSPECTION_SECTION_OPTIONS = [
-  { value: "A", labelKey: "section_A" },
-  { value: "B", labelKey: "section_B" },
-  { value: "V", labelKey: "section_V" },
-  { value: "Cabin1", labelKey: "section_Cabin1" },
-  { value: "Cabin2", labelKey: "section_Cabin2" },
+  { value: "A", labelKey: "A" },
+  { value: "B", labelKey: "B" },
+  { value: "V", labelKey: "V" },
+  { value: "Cabin 1", labelKey: "Cabin 1" },
+  { value: "Cabin 2", labelKey: "Cabin 2" },
 ] as const;
 
 function formatCreatedTime(dateString: string | null | undefined): string {
