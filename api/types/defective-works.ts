@@ -49,4 +49,6 @@ export interface DefectiveWorkListParams {
   organization_id?: number | string;
   inspection_type?: number | string;
   locomotive?: number | string;
+  fromDate?: string;
+  toDate?: string;
 }

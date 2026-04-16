@@ -35,6 +35,8 @@ export function NosozliklarTab() {
     organization_id,
     inspection_type,
     locomotive,
+    start_date,
+    end_date,
   } = getAllQueryValues();
   const { showSuccess, showError } = useSnackbar();
 
@@ -42,7 +44,7 @@ export function NosozliklarTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedEntry, setSelectedEntry] = useState<DefectiveWorkEntry | null>(
-    null
+    null,
   );
 
   const createMutation = useCreateDefectiveWork();
@@ -71,6 +73,8 @@ export function NosozliklarTab() {
     tab: tab && tab !== "all" ? tab : undefined,
     organization_id: organization_id || undefined,
     inspection_type: inspection_type || undefined,
+    fromDate: start_date || undefined,
+    toDate: end_date || undefined,
   });
 
   const paginatedData = apiResponse?.results ?? [];
@@ -81,8 +85,8 @@ export function NosozliklarTab() {
     apiError instanceof Error
       ? apiError
       : apiError
-      ? new Error(apiError?.message || t("errors.generic"))
-      : null;
+        ? new Error(apiError?.message || t("errors.generic"))
+        : null;
 
   const handleEdit = useCallback((row: DefectiveWorkEntry) => {
     setSelectedEntry(row);
@@ -100,12 +104,12 @@ export function NosozliklarTab() {
           t("errors.generic"),
           error?.response?.data?.message ||
             error?.message ||
-            t("errors.delete")
+            t("errors.delete"),
         );
         throw error;
       }
     },
-    [deleteMutation, showError, showSuccess, t]
+    [deleteMutation, showError, showSuccess, t],
   );
 
   const handleCreate = useCallback(() => {
@@ -128,7 +132,7 @@ export function NosozliklarTab() {
               t("errors.generic"),
               error?.response?.data?.message ||
                 error?.message ||
-                t("errors.create")
+                t("errors.create"),
             );
           },
         });
@@ -149,10 +153,10 @@ export function NosozliklarTab() {
                 t("errors.generic"),
                 error?.response?.data?.message ||
                   error?.message ||
-                  t("errors.update")
+                  t("errors.update"),
               );
             },
-          }
+          },
         );
       }
     },
@@ -164,7 +168,7 @@ export function NosozliklarTab() {
       showSuccess,
       showError,
       t,
-    ]
+    ],
   );
 
   const formatDate = useCallback(
@@ -183,7 +187,7 @@ export function NosozliklarTab() {
         return dateString;
       }
     },
-    []
+    [],
   );
 
   const columns: TableColumn<DefectiveWorkEntry>[] = [
@@ -256,7 +260,7 @@ export function NosozliklarTab() {
         options.push({
           value: loc.name || "",
           label: loc.name || loc.model_name || `Lokomotiv ${loc.id}`,
-        })
+        }),
       );
     }
     return options;
@@ -269,7 +273,7 @@ export function NosozliklarTab() {
         options.push({
           value: it.id.toString(),
           label: it.name || it.name_uz || it.name_ru || `Tekshiruv ${it.id}`,
-        })
+        }),
       );
     }
     return options;
@@ -282,7 +286,7 @@ export function NosozliklarTab() {
         options.push({
           value: org.id.toString(),
           label: org.name || `Tashkilot ${org.id}`,
-        })
+        }),
       );
     }
     return options;
@@ -318,7 +322,7 @@ export function NosozliklarTab() {
               placeholder: t("filters.organization_placeholder"),
               searchable: false,
               loading: isLoadingOrganizations,
-              permission: "choose_organization", 
+              permission: "choose_organization",
             },
             {
               name: "inspection_type",
@@ -337,10 +341,10 @@ export function NosozliklarTab() {
               placeholder: t("filters.status_placeholder"),
               searchable: false,
             },
-            
           ]}
           hasSearch
           searchPlaceholder={t("search_placeholder")}
+          hasDateRangePicker
           addButtonPermittion="create_defective_work"
           onAdd={handleCreate}
           className="!mb-0"
@@ -359,8 +363,8 @@ export function NosozliklarTab() {
             formatDate(new Date().toISOString(), false)
               ? "bg-emerald-50 hover:bg-emerald-100 [&>td]:bg-emerald-50 [&>td]:group-hover:bg-emerald-100"
               : !row?.table_number
-              ? "bg-red-50 hover:bg-red-100 [&>td]:bg-red-50 [&>td]:group-hover:bg-red-100"
-              : ""
+                ? "bg-red-50 hover:bg-red-100 [&>td]:bg-red-50 [&>td]:group-hover:bg-red-100"
+                : ""
           }
           isLoading={isLoading}
           error={error}
@@ -394,4 +398,3 @@ export function NosozliklarTab() {
     </>
   );
 }
-
