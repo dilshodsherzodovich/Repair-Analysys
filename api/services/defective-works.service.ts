@@ -9,7 +9,7 @@ import {
 
 export const defectiveWorksService = {
   async getDefectiveWorks(
-    params?: DefectiveWorkListParams
+    params?: DefectiveWorkListParams,
   ): Promise<PaginatedData<DefectiveWorkEntry>> {
     const response = await api.get<PaginatedData<DefectiveWorkEntry>>(
       "/revision-journal/",
@@ -23,27 +23,29 @@ export const defectiveWorksService = {
           organization: params?.organization_id,
           inspection_type: params?.inspection_type,
           locomotive: params?.locomotive,
+          fromDate: params?.fromDate,
+          toDate: params?.toDate,
         },
-      }
+      },
     );
     return response.data;
   },
   async createDefectiveWork(
-    payload: DefectiveWorkCreatePayload
+    payload: DefectiveWorkCreatePayload,
   ): Promise<DefectiveWorkEntry> {
     const response = await api.post<DefectiveWorkEntry>(
       "/revision-journal/",
-      payload
+      payload,
     );
     return response.data;
   },
   async updateDefectiveWork(
     id: number | string,
-    payload: DefectiveWorkUpdatePayload
+    payload: DefectiveWorkUpdatePayload,
   ): Promise<DefectiveWorkEntry> {
     const response = await api.patch<DefectiveWorkEntry>(
       `/revision-journal/${id}/`,
-      payload
+      payload,
     );
     return response.data;
   },
@@ -51,10 +53,28 @@ export const defectiveWorksService = {
     await api.delete(`/revision-journal/${id}/`);
   },
 
+  async exportExcel(params: {
+    fromDate?: string;
+    toDate?: string;
+    organization?: string;
+  }): Promise<string> {
+    const response = await api.get<{ url: string }>(
+      "/revision-journal/export-excel/",
+      {
+        params: {
+          fromDate: params.fromDate || undefined,
+          toDate: params.toDate || undefined,
+          organization: params.organization || undefined,
+        },
+      },
+    );
+    return response.data.url;
+  },
+
   // bulk api
   async bulkCreateDefectiveWorks(
     payload: DefectiveWorkCreatePayload[],
-    temporaryToken?: string
+    temporaryToken?: string,
   ): Promise<DefectiveWorkEntry> {
     const config = temporaryToken
       ? {
@@ -66,7 +86,7 @@ export const defectiveWorksService = {
     const response = await api.post(
       "/revision-journal/bulk_create_values/",
       payload,
-      config
+      config,
     );
     return response.data;
   },

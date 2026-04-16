@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import defectiveWorksService from "@/api/services/defective-works.service";
 import { useTranslations } from "next-intl";
 import { PaginatedTable, type TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
@@ -39,6 +40,7 @@ export function NosozliklarTab() {
     end_date,
   } = getAllQueryValues();
   const { showSuccess, showError } = useSnackbar();
+  const [isExporting, setIsExporting] = useState(false);
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -253,6 +255,30 @@ export function NosozliklarTab() {
     },
   ];
 
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const url = await defectiveWorksService.exportExcel({
+        fromDate: start_date || undefined,
+        toDate: end_date || undefined,
+        organization: organization_id || undefined,
+      });
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error: any) {
+      showError(
+        t("errors.generic"),
+        error?.response?.data?.message || error?.message || t("errors.export"),
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  }, [start_date, end_date, organization_id, showError, t]);
+
   const locomotiveOptions = useMemo(() => {
     const options = [{ value: "", label: t("options.all_locomotives") }];
     if (locomotivesData && Array.isArray(locomotivesData?.results)) {
@@ -347,6 +373,8 @@ export function NosozliklarTab() {
           hasDateRangePicker
           addButtonPermittion="create_defective_work"
           onAdd={handleCreate}
+          onExport={handleExport}
+          exportLoading={isExporting}
           className="!mb-0"
         />
       </div>

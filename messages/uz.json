@@ -507,7 +507,8 @@
       "generic": "Xatolik yuz berdi",
       "delete": "Nosoz ishni o'chirishda xatolik",
       "create": "Nosoz ishni qo'shishda xatolik",
-      "update": "Nosoz ishni yangilashda xatolik"
+      "update": "Nosoz ishni yangilashda xatolik",
+      "export": "Excel faylni yuklab olishda xatolik"
     },
     "messages": {
       "delete_success": "Nosoz ish muvaffaqiyatli o'chirildi",
