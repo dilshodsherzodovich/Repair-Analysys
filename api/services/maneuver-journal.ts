@@ -35,3 +35,7 @@ export const updateManeuverJournal = async (
   );
   return data;
 };
+
+export const deleteManeuverJournal = async (id: number | string) => {
+  await api.delete(`/maneuver-journal/${id}/`);
+};

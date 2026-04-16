@@ -131,11 +131,13 @@
     "errors": {
       "generic": "Xatolik yuz berdi",
       "create": "Qo'shishda xatolik yuz berdi",
-      "update": "Yangilashda xatolik yuz berdi"
+      "update": "Yangilashda xatolik yuz berdi",
+      "delete": "O'chirishda xatolik yuz berdi"
     },
     "messages": {
       "create_success": "Muvaffaqiyatli qo'shildi",
-      "update_success": "Muvaffaqiyatli yangilandi"
+      "update_success": "Muvaffaqiyatli yangilandi",
+      "delete_success": "Muvaffaqiyatli o'chirildi"
     }
   },
   "ManeuverJournalModal": {

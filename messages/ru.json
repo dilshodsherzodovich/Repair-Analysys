@@ -131,11 +131,13 @@
     "errors": {
       "generic": "Произошла ошибка",
       "create": "Ошибка при добавлении",
-      "update": "Ошибка при обновлении"
+      "update": "Ошибка при обновлении",
+      "delete": "Ошибка при удалении"
     },
     "messages": {
       "create_success": "Успешно добавлено",
-      "update_success": "Успешно обновлено"
+      "update_success": "Успешно обновлено",
+      "delete_success": "Успешно удалено"
     }
   },
   "ManeuverJournalModal": {

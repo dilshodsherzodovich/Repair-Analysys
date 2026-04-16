@@ -11,6 +11,7 @@ import {
   useManeuverJournals,
   useCreateManeuverJournal,
   useUpdateManeuverJournal,
+  useDeleteManeuverJournal,
 } from "@/api/hooks/use-maneuver-journal";
 import { ManeuverJournalEntry } from "@/api/types/maneuver-journal";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
@@ -20,8 +21,9 @@ import UnauthorizedPage from "../unauthorized/page";
 import { Badge } from "@/ui/badge";
 import { MoveRight } from "lucide-react";
 import { ManeuverJournalModal } from "@/components/razvarot/maneuver-journal-modal";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { authService } from "@/api/services/auth.service";
+import { useSnackbar } from "@/providers/snackbar-provider";
 
 export default function RazvarotPage() {
   const t = useTranslations("ManeuverJournalPage");
@@ -32,8 +34,11 @@ export default function RazvarotPage() {
   const [selectedEntry, setSelectedEntry] =
     useState<ManeuverJournalEntry | null>(null);
 
+  const { showSuccess, showError } = useSnackbar();
+
   const createMutation = useCreateManeuverJournal();
   const updateMutation = useUpdateManeuverJournal();
+  const deleteMutation = useDeleteManeuverJournal();
 
   const handleOpenCreateModal = () => {
     setModalMode("create");
@@ -45,7 +50,14 @@ export default function RazvarotPage() {
     if (modalMode === "create") {
       createMutation.mutate(payload, {
         onSuccess: () => {
+          showSuccess(t("messages.create_success"));
           setIsModalOpen(false);
+        },
+        onError: (error: any) => {
+          showError(
+            t("errors.generic"),
+            error?.response?.data?.message || error?.message || t("errors.create"),
+          );
         },
       });
     } else if (selectedEntry) {
@@ -53,12 +65,41 @@ export default function RazvarotPage() {
         { id: selectedEntry.id, data: payload },
         {
           onSuccess: () => {
+            showSuccess(t("messages.update_success"));
             setIsModalOpen(false);
+          },
+          onError: (error: any) => {
+            showError(
+              t("errors.generic"),
+              error?.response?.data?.message || error?.message || t("errors.update"),
+            );
           },
         },
       );
     }
   };
+
+  const handleEdit = useCallback((row: ManeuverJournalEntry) => {
+    setSelectedEntry(row);
+    setModalMode("edit");
+    setIsModalOpen(true);
+  }, []);
+
+  const handleDelete = useCallback(
+    async (row: ManeuverJournalEntry) => {
+      try {
+        await deleteMutation.mutateAsync(row.id);
+        showSuccess(t("messages.delete_success"));
+      } catch (error: any) {
+        showError(
+          t("errors.generic"),
+          error?.response?.data?.message || error?.message || t("errors.delete"),
+        );
+        throw error;
+      }
+    },
+    [deleteMutation, showError, showSuccess, t],
+  );
 
   const currentUser =
     typeof window !== "undefined"
@@ -228,6 +269,11 @@ export default function RazvarotPage() {
           totalPages={totalPages}
           totalItems={totalItems}
           updateQueryParams
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          isDeleting={deleteMutation.isPending}
+          editPermission="edit_maneuver_journal"
+          deletePermission="delete_maneuver_journal"
           emptyTitle={t("empty_title")}
           emptyDescription={t("empty_description")}
         />

@@ -4,6 +4,7 @@ import {
   getManeuverJournals,
   createManeuverJournal,
   updateManeuverJournal,
+  deleteManeuverJournal,
 } from "../services/maneuver-journal";
 import {
   ManeuverJournalParams,
@@ -43,6 +44,19 @@ export function useUpdateManeuverJournal() {
       id: number | string;
       data: ManeuverJournalUpdateData;
     }) => updateManeuverJournal(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["maneuver-journal-list"],
+      });
+    },
+  });
+}
+
+export function useDeleteManeuverJournal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number | string) => deleteManeuverJournal(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["maneuver-journal-list"],

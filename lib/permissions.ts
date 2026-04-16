@@ -91,6 +91,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_inspections",
     "choose_inspection_organization",
     "view_maneuver_journal",
+    "create_maneuver_journal",
+    "edit_maneuver_journal",
+    "delete_maneuver_journal",
   ],
   moderator: [
     "view_dashboard",
@@ -122,6 +125,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_inspections",
     "edit_inspection_location_section",
     "view_maneuver_journal",
+    "create_maneuver_journal",
+    "edit_maneuver_journal",
+    "delete_maneuver_journal",
   ],
   passport_staff: [
     "view_depo",
@@ -170,6 +176,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_maneuver_journal",
     "create_maneuver_journal",
     "edit_maneuver_journal",
+    "delete_maneuver_journal",
   ],
   sriv_admin: [
     "view_dashboard",
