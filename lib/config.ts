@@ -11,12 +11,10 @@ interface Config {
   api: ApiConfig;
   debug: DebugConfig;
   isDevelopment: boolean;
+  ssoLoginUrl: string;
+  ssoLogoutUrl: string;
 }
 
-// Simple function to get environment variables
-const getEnvVar = (key: string, fallback: string = ""): string => {
-  return process.env[key] || fallback;
-};
 
 export const getSmartDepoUrl = (): string => {
   const isDev = process.env.NODE_ENV === "development";
@@ -51,12 +49,14 @@ const getApiBaseUrl = (): string => {
 export const config: Config = {
   api: {
     baseUrl: getApiBaseUrl(),
-    timeout: parseInt(getEnvVar("NEXT_PUBLIC_API_TIMEOUT", "30000"), 10),
+    timeout: parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || "30000", 10),
   },
   debug: {
-    enabled: getEnvVar("NEXT_PUBLIC_DEBUG_MODE", "true") === "true",
+    enabled: (process.env.NEXT_PUBLIC_DEBUG_MODE || "true") === "true",
   },
   isDevelopment: process.env.NODE_ENV === "development",
+  ssoLoginUrl: process.env.NEXT_PUBLIC_SSO_LOGIN_URL || "",
+  ssoLogoutUrl: process.env.NEXT_PUBLIC_SSO_LOGOUT_URL || "",
 };
 
 // Validation function

@@ -1,6 +1,6 @@
 import api from "../axios";
 import { LoginCredentials, LoginResponse, UserData } from "../types/auth";
-import { getSmartDepoUrl } from "@/lib/config";
+import { config } from "@/lib/config";
 
 const ORG_TO_EMM_ID: Record<number, number> = {
   1: 1,
@@ -24,15 +24,25 @@ export const authService = {
     }
   },
 
-  logout: (): void => {
+  oauthCallback: async (code: string, state?: string): Promise<LoginResponse> => {
+    const response = await api.get("/account/auth/oauth/callback/", {
+      params: { code, ...(state !== undefined && { state }) },
+    });
+    return response.data;
+  },
+
+  clearStorage: (): void => {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
     localStorage.removeItem("auth_expiry");
+  },
+
+  logout: (): void => {
+    authService.clearStorage();
     if (typeof window !== "undefined") {
-      window.location.href = `${getSmartDepoUrl()}/?redirect_uri=${encodeURIComponent(
-        window.location.origin,
-      )}&clear_session=true`;
+      const next = encodeURIComponent(`${window.location.origin}/auth/callback`);
+      window.location.href = `${config.ssoLogoutUrl}?next=${next}`;
     }
   },
 

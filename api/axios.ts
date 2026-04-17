@@ -21,8 +21,10 @@ const api: AxiosInstance = axios.create({
 // Request interceptor to add auth token (but not for login endpoint)
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Don't add token for login endpoint
-    if (config.url?.includes("/user/login/")) {
+    if (
+      config.url?.includes("/user/login/") ||
+      config.url?.includes("/auth/oauth/callback/")
+    ) {
       return config;
     }
 

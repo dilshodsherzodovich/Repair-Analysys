@@ -10,7 +10,7 @@ interface AuthGuardProps {
   publicRoutes?: string[];
 }
 
-const DEFAULT_PUBLIC_ROUTES = ["/login"];
+const DEFAULT_PUBLIC_ROUTES = ["/login", "/auth/callback"];
 
 function getDefaultRouteForRole(user: UserData | null): string {
   if (!user || !user.role) return "/";

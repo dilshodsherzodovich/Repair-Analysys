@@ -13,7 +13,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const publicRoutes = ["/login", "/defective-works/create"];
+  const publicRoutes = ["/login", "/defective-works/create", "/auth/callback"];
   const isPublicRoute = publicRoutes.includes(pathname);
 
   return (

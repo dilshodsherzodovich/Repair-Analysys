@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/ui/button";
 import { getSmartDepoUrl } from "@/lib/config";
 import { ArrowRight, Shield, Zap, Users } from "lucide-react";
+import { config } from "@/lib/config";
 
 export default function LoginPage() {
   const [smartDepoUrl, setSmartDepoUrl] = useState("https://mydepo.uz/");
@@ -14,6 +15,10 @@ export default function LoginPage() {
     const redirectUri = encodeURIComponent(window.location.origin);
     setSmartDepoUrl(`${getSmartDepoUrl()}/?redirect_uri=${redirectUri}`);
   }, []);
+
+  const handleSsoLogin = () => {
+    window.location.href = config.ssoLoginUrl;
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -131,11 +136,12 @@ export default function LoginPage() {
               </div>
             </motion.div>
 
-            {/* Login Button */}
+            {/* Login Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
+              className="flex flex-col gap-3"
             >
               <Button
                 asChild
@@ -148,6 +154,16 @@ export default function LoginPage() {
                   <span>Smart Depo tizimi orqali kirish</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
+              </Button>
+
+              <Button
+                onClick={handleSsoLogin}
+                className="w-full h-14 text-base font-semibold bg-white hover:bg-gray-50 text-[#2354bf] border-2 border-[#2354bf] shadow-lg hover:shadow-xl transition-all duration-300 group"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span>SSO orqali kirish</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
               </Button>
             </motion.div>
 
