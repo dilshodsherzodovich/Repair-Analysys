@@ -22,6 +22,10 @@ import {
 } from "lucide-react";
 import { Input } from "@/ui/input";
 import { formatDate } from "@/lib/utils";
+import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
+import { Tu137Record } from "@/api/types/tu137";
+
+const RECORDS_PAGE_SIZE = 20;
 
 const getProgressBgColor = (percent: number) => {
   if (percent < 50) return "bg-red-500";
@@ -51,6 +55,7 @@ export default function Tu137Page() {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
+  const [recordsPage, setRecordsPage] = useState(1);
 
   const currentUser =
     typeof window !== "undefined"
@@ -145,6 +150,92 @@ export default function Tu137Page() {
       filteredMashinists,
     };
   }, [apiResponse, searchQuery]);
+
+  const allRecords = apiResponse?.data ?? [];
+  const recordsTotalPages = Math.max(1, Math.ceil(allRecords.length / RECORDS_PAGE_SIZE));
+  const paginatedRecords = allRecords.slice(
+    (recordsPage - 1) * RECORDS_PAGE_SIZE,
+    recordsPage * RECORDS_PAGE_SIZE
+  );
+
+  const recordsColumns: TableColumn<Tu137Record>[] = [
+    {
+      key: "id",
+      header: t("table_number"),
+      accessor: (r) => <span className="text-slate-400 font-medium">#{r.id}</span>,
+      width: "80px",
+    },
+    {
+      key: "mashinist",
+      header: t("mashinist"),
+      accessor: (r) => (
+        <div>
+          <div className="font-medium text-slate-800">{r.mashinist_fio || "—"}</div>
+          <div className="text-xs text-slate-400">{r.depo_name}</div>
+        </div>
+      ),
+    },
+    {
+      key: "lokomotiv",
+      header: t("table_lokomotiv"),
+      accessor: (r) => (
+        <div>
+          <div className="font-semibold text-slate-700">{r.lokomotiv_name}</div>
+          {r.poezd_number && (
+            <div className="text-xs text-slate-400">№{r.poezd_number}</div>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "station",
+      header: t("table_station"),
+      accessor: (r) => (
+        <div>
+          <div className="font-medium text-slate-800">{r.group_name}</div>
+          <div className="text-xs text-slate-400">
+            {r.station_name}
+            {r.station2_name ? ` - ${r.station2_name}` : ""}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "create_date",
+      header: t("table_date"),
+      accessor: (r) => (
+        <span className="text-slate-600 whitespace-nowrap">
+          {formatDate(r.create_date)}
+        </span>
+      ),
+      width: "120px",
+    },
+    {
+      key: "comments",
+      header: t("table_comment"),
+      accessor: (r) => (
+        <span className="text-slate-700 whitespace-pre-wrap line-clamp-2">
+          {r.comments || "—"}
+        </span>
+      ),
+    },
+    {
+      key: "status",
+      header: t("table_status"),
+      accessor: (r) => (
+        <span
+          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+            r.status_id === 4
+              ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+              : "bg-amber-50 text-amber-600 border-amber-200"
+          }`}
+        >
+          {r.status_name}
+        </span>
+      ),
+      width: "120px",
+    },
+  ];
 
   const breadcrumbs = [
     { label: t("breadcrumbs_home"), href: "/" },
@@ -335,6 +426,34 @@ export default function Tu137Page() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* All Records Table */}
+        {!isLoading && !error && (
+          <div className="mt-6">
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-sm font-bold text-slate-600 uppercase tracking-widest">
+                {t("all_records")}
+              </h2>
+              <span className="text-xs text-slate-400 font-medium">
+                ({allRecords.length})
+              </span>
+            </div>
+            <PaginatedTable<Tu137Record>
+              columns={recordsColumns}
+              data={paginatedRecords}
+              isLoading={isLoading}
+              getRowId={(r) => r.id}
+              totalPages={recordsTotalPages}
+              totalItems={allRecords.length}
+              itemsPerPage={RECORDS_PAGE_SIZE}
+              currentPage={recordsPage}
+              onPageChange={(p) => setRecordsPage(p)}
+              onItemsPerPageChange={() => {}}
+              updateQueryParams={false}
+              showActions={false}
+            />
           </div>
         )}
 
