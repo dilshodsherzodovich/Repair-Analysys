@@ -179,7 +179,8 @@
       "delays": "Sriv",
       "delay_reports": "Sriv hisobotlar",
       "razvarot": "Razvarot",
-      "tu-137": "TU-137"
+      "tu-137": "TU-137",
+      "tu-137-reports": "TU-137 Hisoboti"
     },
     "support_button": "Texnik yordam markazi",
     "sidebar_collapse": "Yon panelni yopish",
@@ -1078,6 +1079,7 @@
     "export_docx": "Eksport (Docx)",
     "loading": "Yuklanmoqda...",
     "error": "Xatolik yuz berdi:",
-    "all_records": "Barcha muammolar"
+    "all_records": "Barcha muammolar",
+    "reports_title": "TU-137 Hisoboti"
   }
 }

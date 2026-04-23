@@ -299,7 +299,10 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         name: t("nav.tu-137"),
         icon: ClipboardList,
         section: "tu-137",
-        href: "/tu-137",
+        children: [
+          { name: t("nav.tu-137"), href: "/tu-137" },
+          { name: t("nav.tu-137-reports"), href: "/tu-137/reports" },
+        ],
       });
     }
 
@@ -314,7 +317,9 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
     if (item.href) return pathname === item.href;
     if (item.children?.length) {
       const basePath = item.children[0].href.split("/")[1];
-      return pathname.startsWith(`/${basePath}/`);
+      return (
+        pathname === `/${basePath}` || pathname.startsWith(`/${basePath}/`)
+      );
     }
     return false;
   };
