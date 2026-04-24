@@ -1080,6 +1080,10 @@
     "loading": "Yuklanmoqda...",
     "error": "Xatolik yuz berdi:",
     "all_records": "Barcha muammolar",
-    "reports_title": "TU-137 Hisoboti"
+    "reports_title": "TU-137 Hisoboti",
+    "status_finished": "Bajarildi",
+    "status_open": "Ochiq",
+    "tab_in_progress": "Jarayonda",
+    "tab_hal_qilingan": "Hal qilingan"
   }
 }

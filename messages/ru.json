@@ -1080,6 +1080,10 @@
     "loading": "Загрузка...",
     "error": "Произошла ошибка:",
     "all_records": "Все проблемы",
-    "reports_title": "ТУ-137 Отчёты"
+    "reports_title": "ТУ-137 Отчёты",
+    "status_finished": "Выполнено",
+    "status_open": "Открыто",
+    "tab_in_progress": "В процессе",
+    "tab_hal_qilingan": "Выполнено"
   }
 }

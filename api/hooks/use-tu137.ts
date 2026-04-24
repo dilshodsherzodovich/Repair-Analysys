@@ -8,6 +8,6 @@ export function useTu137Records(params?: Tu137Params) {
     queryKey: [queryKeys.tu137.all, params],
     queryFn: () => tu137Service.getRecords(params),
     staleTime: 5 * 60 * 1000,
-    enabled: params?.p_depo_id !== undefined && params?.p_depo_id !== null,
+    enabled: params?.depo_id !== undefined && params?.depo_id !== null,
   });
 }

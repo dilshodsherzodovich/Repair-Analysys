@@ -12,16 +12,14 @@ import {
 } from "docx";
 import { saveAs } from "file-saver";
 import { Tu137Record } from "@/api/types/tu137";
-import { formatDate } from "@/lib/utils"; // Assuming it formats properly
+import { formatDate } from "@/lib/utils";
 
 export async function exportTu137ToDocx(records: Tu137Record[]) {
-  // Sort records if needed
   const sortedRecords = [...records].sort(
     (a, b) =>
-      new Date(a.create_date).getTime() - new Date(b.create_date).getTime(),
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
   );
 
-  // Main table rows
   const tableRows = [
     new TableRow({
       children: [
@@ -73,9 +71,9 @@ export async function exportTu137ToDocx(records: Tu137Record[]) {
       ],
     }),
     ...sortedRecords.map((r, index) => {
-      const isSolved = r.status_id === 4;
+      const isSolved = r.finished;
       const formattedDate =
-        formatDate(r.create_date).split(" ")[0] || r.create_date;
+        formatDate(r.created_at).split(" ")[0] || r.created_at;
 
       const parts = [];
       if (r.lokomotiv_name) parts.push(`Teplovoz ${r.lokomotiv_name}`);
@@ -136,7 +134,7 @@ export async function exportTu137ToDocx(records: Tu137Record[]) {
                 alignment: AlignmentType.RIGHT,
                 children: [
                   new TextRun({
-                    text: `Mashinist ${r.mashinist_fio || ""}`,
+                    text: `Mashinist ID: ${r.mashinist_id}`,
                     bold: true,
                   }),
                 ],
@@ -148,7 +146,7 @@ export async function exportTu137ToDocx(records: Tu137Record[]) {
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: r.organization_name || r.group_name || "",
+                    text: r.resp_organization?.name || r.group_name || "",
                     bold: true,
                   }),
                 ],
@@ -174,21 +172,19 @@ export async function exportTu137ToDocx(records: Tu137Record[]) {
     }),
   ];
 
-  // Month Statistics
   const monthStatsMap = new Map<
     string,
     { total: number; solved: number; open: number }
   >();
   records.forEach((r) => {
-    const d = new Date(r.create_date);
+    const d = new Date(r.created_at);
     const m = d.getMonth();
-    const isSolved = r.status_id === 4;
     const key = `${m}`;
     if (!monthStatsMap.has(key))
       monthStatsMap.set(key, { total: 0, solved: 0, open: 0 });
     const stat = monthStatsMap.get(key)!;
     stat.total++;
-    if (isSolved) stat.solved++;
+    if (r.finished) stat.solved++;
     else stat.open++;
   });
 
@@ -237,11 +233,10 @@ export async function exportTu137ToDocx(records: Tu137Record[]) {
       });
     });
 
-  // Department Table
   const openByDept = new Map<string, number>();
   records.forEach((r) => {
-    if (r.status_id !== 4) {
-      const dept = r.organization_name || r.group_name || "Boshqa";
+    if (!r.finished) {
+      const dept = r.resp_organization?.name || r.group_name || "Boshqa";
       openByDept.set(dept, (openByDept.get(dept) || 0) + 1);
     }
   });
@@ -309,7 +304,7 @@ export async function exportTu137ToDocx(records: Tu137Record[]) {
             rows: tableRows,
             width: { size: 100, type: WidthType.PERCENTAGE },
           }),
-          new Paragraph({ text: "" }), // Space
+          new Paragraph({ text: "" }),
           ...(statRows.length > 0
             ? [
                 new Table({

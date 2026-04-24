@@ -1,48 +1,51 @@
 export interface Tu137Record {
   id: number;
-  comments: string;
-  status_id: number;
-  group_id: number;
-  organization_id: number;
   emm_id: number;
-  depo_id: number;
-  station_code: string;
-  km_picket: string;
   mashinist_id: number;
-  create_user: number;
-  change_user: number;
-  create_date: string;
-  change_date: string;
-  removed: boolean;
-  peregon: boolean;
-  station2_code: string;
-  moment_date: string;
-  lokomotiv_id: number;
-  poezd_number: number;
-  answer: string;
-  depo_name: string;
+  depo_id: number;
+  finished: boolean;
+  finished_at: string | null;
+  group_id: number;
   group_name: string;
+  resp_organization: {
+    id: number;
+    name: string;
+    emm_id: number;
+  };
+  resp_organization_parent: {
+    id: number;
+    name: string;
+    emm_id: number;
+  } | null;
   station_name: string;
-  station2_name: string;
+  station2_name: string | null;
+  station_code: string;
+  station2_code: string | null;
+  km_picket: string;
+  peregon: boolean;
   lokomotiv_name: string;
-  mashinist_fio: string;
+  poezd_number: string;
   create_user_fio: string;
-  change_user_fio: string;
-  status_name: string;
-  organization_name: string;
-  records_filtered: number;
+  comments: string;
+  answer: string;
+  image: string | null;
+  file: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Tu137Params {
-  p_depo_id?: number | string;
-  p_create_date_from?: string;
-  p_create_date_to?: string;
+  depo_id?: number | string;
+  finished?: boolean;
+  mashinist_id?: number;
+  page?: number;
+  page_size?: number;
+  responsible_organization?: number;
 }
 
 export interface Tu137ApiResponse {
-  data: Tu137Record[];
-  code: number;
-  message: string;
-  errors: string[];
-  isValid: boolean;
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Tu137Record[];
 }

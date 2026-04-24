@@ -8,8 +8,7 @@ import { PageHeader } from "@/ui/page-header";
 import { useTu137Records } from "@/api/hooks/use-tu137";
 import { exportTu137ToDocx } from "@/lib/export-tu137-docx";
 import { Button } from "@/ui/button";
-import { DatePicker } from "@/ui/date-picker";
-import { format } from "date-fns";
+import { useFilterParams } from "@/lib/hooks/useFilterParams";
 
 import {
   Users,
@@ -47,10 +46,9 @@ interface MashinistStats {
 
 export default function Tu137ReportsPage() {
   const t = useTranslations("Tu137Page");
-  const [searchQuery, setSearchQuery] = useState("");
+  const { getQueryValue, updateQuery } = useFilterParams();
+  const searchQuery = getQueryValue("search");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-  const [dateFrom, setDateFrom] = useState<Date | undefined>();
-  const [dateTo, setDateTo] = useState<Date | undefined>();
 
   const currentUser =
     typeof window !== "undefined"
@@ -64,9 +62,9 @@ export default function Tu137ReportsPage() {
     isLoading,
     error,
   } = useTu137Records({
-    p_depo_id: pDepoId,
-    ...(dateFrom && { p_create_date_from: format(dateFrom, "yyyy-MM-dd") }),
-    ...(dateTo && { p_create_date_to: format(dateTo, "yyyy-MM-dd") }),
+    depo_id: pDepoId,
+    page: 1,
+    page_size: 500,
   });
 
   if (!currentUser || !canAccessSection(currentUser, "tu-137")) {
@@ -74,28 +72,26 @@ export default function Tu137ReportsPage() {
   }
 
   const { globalStats, filteredMashinists } = useMemo(() => {
-    const rawData = apiResponse?.data ?? [];
+    const rawData = apiResponse?.results ?? [];
 
-    let totalRecords = rawData.length;
     let totalOpen = 0;
     let totalSolved = 0;
 
-    const mashinistMap = new Map<string, MashinistStats>();
+    const mashinistMap = new Map<number, MashinistStats>();
 
     rawData.forEach((record) => {
-      const isSolved = record.status_id === 4;
-      if (isSolved) {
+      if (record.finished) {
         totalSolved++;
       } else {
         totalOpen++;
       }
 
-      const mKey = String(record.mashinist_id || record.mashinist_fio);
-      if (!mashinistMap.has(mKey)) {
-        mashinistMap.set(mKey, {
-          id: record.mashinist_id,
-          fio: record.mashinist_fio || "Noma'lum",
-          depo_name: record.depo_name || "Noma'lum",
+      const mId = record.mashinist_id;
+      if (!mashinistMap.has(mId)) {
+        mashinistMap.set(mId, {
+          id: mId,
+          fio: record.create_user_fio || `#${mId}`,
+          depo_name: record.resp_organization?.name || "—",
           total: 0,
           open: 0,
           solved: 0,
@@ -103,9 +99,9 @@ export default function Tu137ReportsPage() {
         });
       }
 
-      const mData = mashinistMap.get(mKey)!;
+      const mData = mashinistMap.get(mId)!;
       mData.total++;
-      if (isSolved) {
+      if (record.finished) {
         mData.solved++;
       } else {
         mData.open++;
@@ -117,26 +113,28 @@ export default function Tu137ReportsPage() {
       percent: m.total > 0 ? Math.round((m.solved / m.total) * 100) : 0,
     }));
 
-    const sortedMashinists = [...mashinistArray].sort(
-      (a, b) => b.total - a.total,
-    );
+    const sorted = [...mashinistArray].sort((a, b) => b.total - a.total);
 
-    const filteredMashinists = sortedMashinists.filter((m) =>
+    const filtered = sorted.filter((m) =>
       m.fio.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     return {
       globalStats: {
         mashinistsCount: mashinistArray.length,
-        totalRecords,
+        totalRecords: rawData.length,
         totalOpen,
         totalSolved,
         overallPercent:
-          totalRecords > 0 ? Math.round((totalSolved / totalRecords) * 100) : 0,
+          rawData.length > 0
+            ? Math.round((totalSolved / rawData.length) * 100)
+            : 0,
       },
-      filteredMashinists,
+      filteredMashinists: filtered,
     };
   }, [apiResponse, searchQuery]);
+
+  const allRecords = apiResponse?.results ?? [];
 
   const breadcrumbs = [
     { label: t("breadcrumbs_home"), href: "/" },
@@ -161,28 +159,16 @@ export default function Tu137ReportsPage() {
                 type="text"
                 placeholder={t("search_placeholder")}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) =>
+                  updateQuery({ search: e.target.value || null })
+                }
                 className="w-full bg-slate-50 border-slate-200 text-slate-800 mb-0"
-              />
-            </div>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <DatePicker
-                value={dateFrom}
-                onValueChange={setDateFrom}
-                placeholder={t("date_from")}
-              />
-              <DatePicker
-                value={dateTo}
-                onValueChange={setDateTo}
-                placeholder={t("date_to")}
               />
             </div>
           </div>
           <Button
-            onClick={() =>
-              apiResponse?.data ? exportTu137ToDocx(apiResponse.data) : null
-            }
-            disabled={isLoading || !apiResponse?.data?.length}
+            onClick={() => (allRecords.length ? exportTu137ToDocx(allRecords) : null)}
+            disabled={isLoading || !allRecords.length}
             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             <Download className="w-4 h-4" />
@@ -273,7 +259,7 @@ export default function Tu137ReportsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
               {filteredMashinists.slice(0, 8).map((mashinist, idx) => (
                 <div
-                  key={mashinist.id || idx}
+                  key={mashinist.id}
                   className="bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm flex flex-col justify-between h-full hover:border-slate-300 transition-colors"
                 >
                   <div className="flex justify-between items-start gap-3">
@@ -359,7 +345,7 @@ export default function Tu137ReportsPage() {
                     </tr>
                   ) : (
                     filteredMashinists.map((mashinist) => {
-                      const matchKey = String(mashinist.id || mashinist.fio);
+                      const matchKey = String(mashinist.id);
                       const isExpanded = expandedRow === matchKey;
 
                       return (
@@ -449,12 +435,10 @@ export default function Tu137ReportsPage() {
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
-                                      {apiResponse?.data
+                                      {apiResponse?.results
                                         ?.filter(
                                           (r) =>
-                                            String(
-                                              r.mashinist_id || r.mashinist_fio,
-                                            ) === matchKey,
+                                            String(r.mashinist_id) === matchKey,
                                         )
                                         .map((record) => (
                                           <tr
@@ -486,7 +470,7 @@ export default function Tu137ReportsPage() {
                                               </div>
                                             </td>
                                             <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
-                                              {formatDate(record.create_date)}
+                                              {formatDate(record.created_at)}
                                             </td>
                                             <td className="px-4 py-3 text-slate-700 whitespace-pre-wrap max-w-lg">
                                               {record.comments}
@@ -494,12 +478,14 @@ export default function Tu137ReportsPage() {
                                             <td className="px-4 py-3 text-center">
                                               <span
                                                 className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                                                  record.status_id === 4
+                                                  record.finished
                                                     ? "bg-emerald-50 text-emerald-600 border-emerald-200"
                                                     : "bg-amber-50 text-amber-600 border-amber-200"
                                                 }`}
                                               >
-                                                {record.status_name}
+                                                {record.finished
+                                                  ? t("status_finished")
+                                                  : t("status_open")}
                                               </span>
                                             </td>
                                           </tr>
