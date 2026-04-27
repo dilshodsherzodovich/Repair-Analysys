@@ -24,6 +24,8 @@ import { ManeuverJournalModal } from "@/components/razvarot/maneuver-journal-mod
 import { useState, useCallback } from "react";
 import { authService } from "@/api/services/auth.service";
 import { useSnackbar } from "@/providers/snackbar-provider";
+import { exportManeuverJournalExcel } from "@/api/services/maneuver-journal";
+import { format } from "date-fns";
 
 export default function RazvarotPage() {
   const t = useTranslations("ManeuverJournalPage");
@@ -35,6 +37,7 @@ export default function RazvarotPage() {
     useState<ManeuverJournalEntry | null>(null);
 
   const { showSuccess, showError } = useSnackbar();
+  const [isExporting, setIsExporting] = useState(false);
 
   const createMutation = useCreateManeuverJournal();
   const updateMutation = useUpdateManeuverJournal();
@@ -100,6 +103,36 @@ export default function RazvarotPage() {
     },
     [deleteMutation, showError, showSuccess, t],
   );
+
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const { start_date, end_date, locomotive, organization } =
+        getAllQueryValues();
+      const user = authService.getUser();
+      const blob = await exportManeuverJournalExcel({
+        date_after: start_date || undefined,
+        date_before: end_date || undefined,
+        locomotive: locomotive || undefined,
+        organization:
+          user?.role === "admin"
+            ? organization || undefined
+            : user?.branch?.organization?.id || undefined,
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `maneuver-journal-${format(new Date(), "yyyy-MM-dd")}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : t("errors.generic"));
+    } finally {
+      setIsExporting(false);
+    }
+  }, [getAllQueryValues, showError, t]);
 
   const currentUser =
     typeof window !== "undefined"
@@ -254,6 +287,8 @@ export default function RazvarotPage() {
           className="!mb-0"
           onAdd={handleOpenCreateModal}
           addButtonPermittion="create_maneuver_journal"
+          onExport={handleExport}
+          exportLoading={isExporting}
         />
       </div>
 

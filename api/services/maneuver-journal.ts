@@ -39,3 +39,20 @@ export const updateManeuverJournal = async (
 export const deleteManeuverJournal = async (id: number | string) => {
   await api.delete(`/maneuver-journal/${id}/`);
 };
+
+export type ManeuverJournalExportParams = {
+  date_after?: string;
+  date_before?: string;
+  organization?: string | number;
+  locomotive?: string | number;
+};
+
+export const exportManeuverJournalExcel = async (
+  params: ManeuverJournalExportParams,
+): Promise<Blob> => {
+  const response = await api.get("/maneuver-journal/export-excel/", {
+    params,
+    responseType: "blob",
+  });
+  return response.data as Blob;
+};
