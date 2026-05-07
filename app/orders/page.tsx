@@ -25,6 +25,10 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { truncateFilename } from "@/utils/format-filename";
+import { exportOrdersExcel } from "@/api/services/orders.service";
+import { authService } from "@/api/services/auth.service";
+import { format } from "date-fns";
+import { FileSpreadsheet } from "lucide-react";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { hasPermission, type Permission } from "@/lib/permissions";
@@ -68,6 +72,7 @@ export default function OrdersPage() {
   } = getAllQueryValues();
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
@@ -160,6 +165,33 @@ export default function OrdersPage() {
       ? apiError
       : new Error(apiError.message || t("errors.load"))
     : null;
+
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const user = authService.getUser();
+      const blob = await exportOrdersExcel({
+        type_of_journal: type_of_journal || undefined,
+        locomotive: locomotive || undefined,
+        date: date || undefined,
+        organization: canChooseOrganization
+          ? organization || undefined
+          : user?.branch?.organization?.id || undefined,
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `mpr-journal-${format(new Date(), "yyyy-MM-dd")}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : t("errors.generic"));
+    } finally {
+      setIsExporting(false);
+    }
+  }, [type_of_journal, locomotive, date, organization, canChooseOrganization, showError, t]);
 
   const handleEdit = (row: OrderData) => {
     setSelectedOrder(row);
@@ -421,9 +453,9 @@ export default function OrdersPage() {
           datePickerLabel={t("date_label")}
           addButtonPermittion={isAdmin ? undefined : "create_order"}
           onAdd={isAdmin ? undefined : handleCreate}
-          // onExport={handleExport}
-          // exportButtonText="Export EXCEL"
-          // exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
+          onExport={handleExport}
+          exportButtonText="Export EXCEL"
+          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
           className="!mb-0"
         />
       </div>

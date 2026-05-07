@@ -72,4 +72,20 @@ export const pantographService = {
   },
 };
 
+export type PantographExportParams = {
+  locomotive?: string;
+  organization?: string | number;
+  department?: string;
+};
+
+export const exportPantographExcel = async (
+  params: PantographExportParams,
+): Promise<Blob> => {
+  const response = await api.get("/pantograph-journal/export-excel/", {
+    params,
+    responseType: "blob",
+  });
+  return response.data as Blob;
+};
+
 export default pantographService;

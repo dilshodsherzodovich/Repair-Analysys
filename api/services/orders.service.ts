@@ -107,4 +107,21 @@ export const ordersService = {
   },
 };
 
+export type OrdersExportParams = {
+  type_of_journal?: string;
+  locomotive?: string;
+  date?: string;
+  organization?: string | number;
+};
+
+export const exportOrdersExcel = async (
+  params: OrdersExportParams,
+): Promise<Blob> => {
+  const response = await api.get("/mpr-journal/export-excel/", {
+    params,
+    responseType: "blob",
+  });
+  return response.data as Blob;
+};
+
 export default ordersService;

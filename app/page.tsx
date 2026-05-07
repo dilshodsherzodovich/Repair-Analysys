@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -26,6 +26,10 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "./unauthorized/page";
 import type { FiltersQuery } from "@/ui/filters";
+import { exportPantographExcel } from "@/api/services/pantograph.service";
+import { authService } from "@/api/services/auth.service";
+import { format } from "date-fns";
+import { FileSpreadsheet } from "lucide-react";
 
 export default function PantografPage() {
   const t = useTranslations("PantographPage");
@@ -43,6 +47,7 @@ export default function PantografPage() {
     getAllQueryValues();
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
   const [currentTab, setCurrentTab] = useState<string>(tab || "all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -141,6 +146,30 @@ export default function PantografPage() {
       ? apiError
       : new Error((apiError as any)?.message || t("errors.load"))
     : null;
+
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const user = authService.getUser();
+      const blob = await exportPantographExcel({
+        locomotive: locomotive || undefined,
+        organization: organization || user?.branch?.organization?.id || undefined,
+        department: department || undefined,
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `pantograph-journal-${format(new Date(), "yyyy-MM-dd")}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : t("errors.generic"));
+    } finally {
+      setIsExporting(false);
+    }
+  }, [locomotive, organization, department, showError, t]);
 
   const handleEdit = (row: PantographJournalEntry) => {
     setSelectedEntry(row);
@@ -313,6 +342,9 @@ export default function PantografPage() {
           onAdd={handleCreate}
           addButtonText={t("add_button")}
           addButtonPermittion="create_pantograf"
+          onExport={handleExport}
+          exportButtonText="Export EXCEL"
+          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
           className="!mb-0"
         />
       </div>
