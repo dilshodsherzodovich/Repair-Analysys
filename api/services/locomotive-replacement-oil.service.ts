@@ -72,5 +72,28 @@ export const locomotiveReplacementOilService = {
       throw error;
     }
   },
+
+  async getAllReplacementOils(
+    params?: Omit<LocomotiveReplacementOilParams, "page" | "page_size" | "no_page">
+  ): Promise<LocomotiveReplacementOil[]> {
+    try {
+      const response = await api.get<PaginatedData<LocomotiveReplacementOil>>(
+        "/locomotive-replacement-oil/",
+        {
+          params: {
+            search: params?.search,
+            locomotive: params?.locomotive,
+            section: params?.section,
+            organization: params?.organization,
+            no_page: true,
+          },
+        }
+      );
+      return response.data.results as LocomotiveReplacementOil[];
+    } catch (error) {
+      console.error("Error fetching all locomotive replacement oils:", error);
+      throw error;
+    }
+  },
 };
 

@@ -3,6 +3,8 @@
 import { useState, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import * as XLSX from "xlsx";
+import { format } from "date-fns";
 import PageFilters from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -14,6 +16,7 @@ import {
   useDeleteLocomotiveReplacementOil,
 } from "@/api/hooks/use-locomotive-replacement-oil";
 import { LocomotiveReplacementOil } from "@/api/types/locomotive-replacement-oil";
+import { locomotiveReplacementOilService } from "@/api/services/locomotive-replacement-oil.service";
 import { ReplacementModal } from "./components/replacement-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
@@ -40,6 +43,7 @@ export default function ReplacementSchedulePage() {
   const [selectedReplacement, setSelectedReplacement] =
     useState<LocomotiveReplacementOil | null>(null);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [isExporting, setIsExporting] = useState(false);
 
   // Get current page and items per page from query params
   const currentPage = page ? parseInt(page) : 1;
@@ -68,6 +72,56 @@ export default function ReplacementSchedulePage() {
       ? apiError
       : new Error((apiError as any)?.message || t("error_load"))
     : null;
+
+  // Format date helper
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return "—";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    } catch {
+      return dateString;
+    }
+  };
+
+  // Format number helper
+  const formatNumber = (value: number | null | undefined): string => {
+    if (value === null || value === undefined) return "—";
+    return new Intl.NumberFormat("uz-UZ").format(value);
+  };
+
+  // Handle export
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const data = await locomotiveReplacementOilService.getAllReplacementOils({
+        search: q,
+      });
+
+      const rows = data.map((row, index) => ({
+        "#": index + 1,
+        [t("columns.locomotive")]: row.locomotive_name,
+        [t("columns.section")]: row.section_name,
+        [t("columns.maintenance_type")]: row.maintenance_type_name,
+        [t("columns.lubricant_type")]: row.lubricant_type_name,
+        [t("columns.service_date")]: formatDate(row.service_date),
+        [t("columns.consumption")]: row.consumption,
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+      XLSX.writeFile(wb, `replacement-schedule-${format(new Date(), "yyyy-MM-dd")}.xlsx`);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : t("error_load"));
+    } finally {
+      setIsExporting(false);
+    }
+  }, [q, t, showError]);
 
   // Handle create
   const handleCreate = useCallback(() => {
@@ -164,27 +218,6 @@ export default function ReplacementSchedulePage() {
     setSelectedReplacement(null);
   }, []);
 
-  // Format date helper
-  const formatDate = (dateString: string | null | undefined): string => {
-    if (!dateString) return "—";
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return dateString;
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}.${month}.${year}`;
-    } catch {
-      return dateString;
-    }
-  };
-
-  // Format number helper
-  const formatNumber = (value: number | null | undefined): string => {
-    if (value === null || value === undefined) return "—";
-    return new Intl.NumberFormat("uz-UZ").format(value);
-  };
-
   // Table columns
   const columns: TableColumn<LocomotiveReplacementOil>[] = useMemo(
     () => [
@@ -237,6 +270,8 @@ export default function ReplacementSchedulePage() {
           addButtonText={t("add_button")}
           addButtonPermittion="create_locomotive_replacement_oil"
           onAdd={handleCreate}
+          onExport={handleExport}
+          exportLoading={isExporting}
         />
       </div>
 
