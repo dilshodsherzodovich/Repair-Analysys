@@ -1,0 +1,4648 @@
+{
+  "generated_at": "2026-05-13",
+  "totals": {
+    "total": 50775,
+    "fixed": 49222,
+    "unfixed": 1553,
+    "fixed_rate": 0.9694
+  },
+  "by_organization": [
+    {
+      "organization_id": 1,
+      "organization_name": "\"O'zbekiston\" lokomotiv depo",
+      "total": 30948,
+      "fixed": 29814,
+      "unfixed": 1134,
+      "fixed_rate": 0.9634,
+      "by_inspection_type": [
+        {
+          "inspection_type_id": 2,
+          "inspection_type_name": "TXK-2",
+          "total": 22008,
+          "fixed": 22007,
+          "unfixed": 1
+        },
+        {
+          "inspection_type_id": null,
+          "inspection_type_name": "None",
+          "total": 4761,
+          "fixed": 3629,
+          "unfixed": 1132
+        },
+        {
+          "inspection_type_id": 7,
+          "inspection_type_name": "JT-1k",
+          "total": 2149,
+          "fixed": 2149,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 3,
+          "inspection_type_name": "TXK-3",
+          "total": 1850,
+          "fixed": 1850,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 4,
+          "inspection_type_name": "JT-1",
+          "total": 167,
+          "fixed": 167,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 5,
+          "inspection_type_name": "JT-3",
+          "total": 9,
+          "fixed": 8,
+          "unfixed": 1
+        },
+        {
+          "inspection_type_id": 12,
+          "inspection_type_name": "Sovuq turish",
+          "total": 3,
+          "fixed": 3,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 9,
+          "inspection_type_name": "TXK-4",
+          "total": 1,
+          "fixed": 1,
+          "unfixed": 0
+        }
+      ]
+    },
+    {
+      "organization_id": 5,
+      "organization_name": "\"Tinchlik\" lokomotiv deposi",
+      "total": 4664,
+      "fixed": 4661,
+      "unfixed": 3,
+      "fixed_rate": 0.9994,
+      "by_inspection_type": [
+        {
+          "inspection_type_id": 2,
+          "inspection_type_name": "TXK-2",
+          "total": 4357,
+          "fixed": 4357,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": null,
+          "inspection_type_name": "None",
+          "total": 169,
+          "fixed": 166,
+          "unfixed": 3
+        },
+        {
+          "inspection_type_id": 3,
+          "inspection_type_name": "TXK-3",
+          "total": 77,
+          "fixed": 77,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 9,
+          "inspection_type_name": "TXK-4",
+          "total": 59,
+          "fixed": 59,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 12,
+          "inspection_type_name": "Sovuq turish",
+          "total": 2,
+          "fixed": 2,
+          "unfixed": 0
+        }
+      ]
+    },
+    {
+      "organization_id": 3,
+      "organization_name": "\"Termez\" lokomotiv deposi",
+      "total": 4017,
+      "fixed": 3998,
+      "unfixed": 19,
+      "fixed_rate": 0.9953,
+      "by_inspection_type": [
+        {
+          "inspection_type_id": 2,
+          "inspection_type_name": "TXK-2",
+          "total": 3418,
+          "fixed": 3416,
+          "unfixed": 2
+        },
+        {
+          "inspection_type_id": 3,
+          "inspection_type_name": "TXK-3",
+          "total": 297,
+          "fixed": 280,
+          "unfixed": 17
+        },
+        {
+          "inspection_type_id": null,
+          "inspection_type_name": "None",
+          "total": 206,
+          "fixed": 206,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 13,
+          "inspection_type_name": "TXK-5",
+          "total": 74,
+          "fixed": 74,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 7,
+          "inspection_type_name": "JT-1k",
+          "total": 18,
+          "fixed": 18,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 4,
+          "inspection_type_name": "JT-1",
+          "total": 2,
+          "fixed": 2,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 16,
+          "inspection_type_name": "Vaqtincha turish",
+          "total": 1,
+          "fixed": 1,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 5,
+          "inspection_type_name": "JT-3",
+          "total": 1,
+          "fixed": 1,
+          "unfixed": 0
+        }
+      ]
+    },
+    {
+      "organization_id": 7,
+      "organization_name": "\"Urganch\" lokomotiv deposi",
+      "total": 2755,
+      "fixed": 2709,
+      "unfixed": 46,
+      "fixed_rate": 0.9833,
+      "by_inspection_type": [
+        {
+          "inspection_type_id": 2,
+          "inspection_type_name": "TXK-2",
+          "total": 2095,
+          "fixed": 2095,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 3,
+          "inspection_type_name": "TXK-3",
+          "total": 436,
+          "fixed": 436,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": null,
+          "inspection_type_name": "None",
+          "total": 221,
+          "fixed": 175,
+          "unfixed": 46
+        },
+        {
+          "inspection_type_id": 13,
+          "inspection_type_name": "TXK-5",
+          "total": 2,
+          "fixed": 2,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 7,
+          "inspection_type_name": "JT-1k",
+          "total": 1,
+          "fixed": 1,
+          "unfixed": 0
+        }
+      ]
+    },
+    {
+      "organization_id": 2,
+      "organization_name": "\"Qo'qon\" lokomotiv deposi",
+      "total": 2414,
+      "fixed": 2364,
+      "unfixed": 50,
+      "fixed_rate": 0.9793,
+      "by_inspection_type": [
+        {
+          "inspection_type_id": 2,
+          "inspection_type_name": "TXK-2",
+          "total": 1925,
+          "fixed": 1920,
+          "unfixed": 5
+        },
+        {
+          "inspection_type_id": null,
+          "inspection_type_name": "None",
+          "total": 275,
+          "fixed": 230,
+          "unfixed": 45
+        },
+        {
+          "inspection_type_id": 3,
+          "inspection_type_name": "TXK-3",
+          "total": 193,
+          "fixed": 193,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 13,
+          "inspection_type_name": "TXK-5",
+          "total": 14,
+          "fixed": 14,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 9,
+          "inspection_type_name": "TXK-4",
+          "total": 5,
+          "fixed": 5,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 4,
+          "inspection_type_name": "JT-1",
+          "total": 2,
+          "fixed": 2,
+          "unfixed": 0
+        }
+      ]
+    },
+    {
+      "organization_id": 6,
+      "organization_name": "\"Buxoro\" lokomotiv deposi",
+      "total": 2398,
+      "fixed": 2385,
+      "unfixed": 13,
+      "fixed_rate": 0.9946,
+      "by_inspection_type": [
+        {
+          "inspection_type_id": 3,
+          "inspection_type_name": "TXK-3",
+          "total": 1712,
+          "fixed": 1710,
+          "unfixed": 2
+        },
+        {
+          "inspection_type_id": null,
+          "inspection_type_name": "None",
+          "total": 685,
+          "fixed": 674,
+          "unfixed": 11
+        },
+        {
+          "inspection_type_id": 2,
+          "inspection_type_name": "TXK-2",
+          "total": 1,
+          "fixed": 1,
+          "unfixed": 0
+        }
+      ]
+    },
+    {
+      "organization_id": 4,
+      "organization_name": "\"Qarshi\" lokomotiv deposi",
+      "total": 2327,
+      "fixed": 2258,
+      "unfixed": 69,
+      "fixed_rate": 0.9703,
+      "by_inspection_type": [
+        {
+          "inspection_type_id": null,
+          "inspection_type_name": "None",
+          "total": 1498,
+          "fixed": 1429,
+          "unfixed": 69
+        },
+        {
+          "inspection_type_id": 2,
+          "inspection_type_name": "TXK-2",
+          "total": 702,
+          "fixed": 702,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 3,
+          "inspection_type_name": "TXK-3",
+          "total": 99,
+          "fixed": 99,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 5,
+          "inspection_type_name": "JT-3",
+          "total": 11,
+          "fixed": 11,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 4,
+          "inspection_type_name": "JT-1",
+          "total": 8,
+          "fixed": 8,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 7,
+          "inspection_type_name": "JT-1k",
+          "total": 8,
+          "fixed": 8,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 12,
+          "inspection_type_name": "Sovuq turish",
+          "total": 1,
+          "fixed": 1,
+          "unfixed": 0
+        }
+      ]
+    },
+    {
+      "organization_id": 8,
+      "organization_name": "\"Qo'ng'irot\" lokomotiv deposi",
+      "total": 1252,
+      "fixed": 1033,
+      "unfixed": 219,
+      "fixed_rate": 0.8251,
+      "by_inspection_type": [
+        {
+          "inspection_type_id": null,
+          "inspection_type_name": "None",
+          "total": 624,
+          "fixed": 405,
+          "unfixed": 219
+        },
+        {
+          "inspection_type_id": 2,
+          "inspection_type_name": "TXK-2",
+          "total": 473,
+          "fixed": 473,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 3,
+          "inspection_type_name": "TXK-3",
+          "total": 138,
+          "fixed": 138,
+          "unfixed": 0
+        },
+        {
+          "inspection_type_id": 13,
+          "inspection_type_name": "TXK-5",
+          "total": 17,
+          "fixed": 17,
+          "unfixed": 0
+        }
+      ]
+    }
+  ],
+  "by_inspection_type": [
+    {
+      "inspection_type_id": 2,
+      "inspection_type_name": "TXK-2",
+      "total": 34979,
+      "fixed": 34971,
+      "unfixed": 8,
+      "fixed_rate": 0.9998
+    },
+    {
+      "inspection_type_id": null,
+      "inspection_type_name": "None",
+      "total": 8439,
+      "fixed": 6914,
+      "unfixed": 1525,
+      "fixed_rate": 0.8193
+    },
+    {
+      "inspection_type_id": 3,
+      "inspection_type_name": "TXK-3",
+      "total": 4802,
+      "fixed": 4783,
+      "unfixed": 19,
+      "fixed_rate": 0.996
+    },
+    {
+      "inspection_type_id": 7,
+      "inspection_type_name": "JT-1k",
+      "total": 2176,
+      "fixed": 2176,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "inspection_type_id": 4,
+      "inspection_type_name": "JT-1",
+      "total": 179,
+      "fixed": 179,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "inspection_type_id": 13,
+      "inspection_type_name": "TXK-5",
+      "total": 107,
+      "fixed": 107,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "inspection_type_id": 9,
+      "inspection_type_name": "TXK-4",
+      "total": 65,
+      "fixed": 65,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "inspection_type_id": 5,
+      "inspection_type_name": "JT-3",
+      "total": 21,
+      "fixed": 20,
+      "unfixed": 1,
+      "fixed_rate": 0.9524
+    },
+    {
+      "inspection_type_id": 12,
+      "inspection_type_name": "Sovuq turish",
+      "total": 6,
+      "fixed": 6,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "inspection_type_id": 16,
+      "inspection_type_name": "Vaqtincha turish",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    }
+  ],
+  "by_locomotive": [
+    {
+      "locomotive_id": 294,
+      "locomotive_name": "2461",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 1096,
+      "fixed": 1072,
+      "unfixed": 24,
+      "fixed_rate": 0.9781
+    },
+    {
+      "locomotive_id": 295,
+      "locomotive_name": "2673",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 1038,
+      "fixed": 1038,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 290,
+      "locomotive_name": "2690",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 1008,
+      "fixed": 1008,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 516,
+      "locomotive_name": "2711",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 893,
+      "fixed": 888,
+      "unfixed": 5,
+      "fixed_rate": 0.9944
+    },
+    {
+      "locomotive_id": 301,
+      "locomotive_name": "2477",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 885,
+      "fixed": 851,
+      "unfixed": 34,
+      "fixed_rate": 0.9616
+    },
+    {
+      "locomotive_id": 297,
+      "locomotive_name": "2672",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 875,
+      "fixed": 856,
+      "unfixed": 19,
+      "fixed_rate": 0.9783
+    },
+    {
+      "locomotive_id": 282,
+      "locomotive_name": "2420",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 865,
+      "fixed": 865,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 299,
+      "locomotive_name": "2476",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 834,
+      "fixed": 821,
+      "unfixed": 13,
+      "fixed_rate": 0.9844
+    },
+    {
+      "locomotive_id": 276,
+      "locomotive_name": "2417",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 764,
+      "fixed": 764,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 508,
+      "locomotive_name": "2424",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 743,
+      "fixed": 734,
+      "unfixed": 9,
+      "fixed_rate": 0.9879
+    },
+    {
+      "locomotive_id": 288,
+      "locomotive_name": "2425",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 717,
+      "fixed": 717,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 548,
+      "locomotive_name": "2481",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 702,
+      "fixed": 629,
+      "unfixed": 73,
+      "fixed_rate": 0.896
+    },
+    {
+      "locomotive_id": 302,
+      "locomotive_name": "2669",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 609,
+      "fixed": 596,
+      "unfixed": 13,
+      "fixed_rate": 0.9787
+    },
+    {
+      "locomotive_id": 142,
+      "locomotive_name": "0003",
+      "locomotive_model": "O‘ZB",
+      "total": 564,
+      "fixed": 555,
+      "unfixed": 9,
+      "fixed_rate": 0.984
+    },
+    {
+      "locomotive_id": 305,
+      "locomotive_name": "2483",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 558,
+      "fixed": 553,
+      "unfixed": 5,
+      "fixed_rate": 0.991
+    },
+    {
+      "locomotive_id": 272,
+      "locomotive_name": "036",
+      "locomotive_model": "UZTE-16M2",
+      "total": 557,
+      "fixed": 557,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 146,
+      "locomotive_name": "0004",
+      "locomotive_model": "O‘ZB",
+      "total": 544,
+      "fixed": 493,
+      "unfixed": 51,
+      "fixed_rate": 0.9062
+    },
+    {
+      "locomotive_id": 163,
+      "locomotive_name": "0008",
+      "locomotive_model": "O‘ZB",
+      "total": 527,
+      "fixed": 455,
+      "unfixed": 72,
+      "fixed_rate": 0.8634
+    },
+    {
+      "locomotive_id": 31,
+      "locomotive_name": "3265",
+      "locomotive_model": "2ТЭ-10М(П)",
+      "total": 501,
+      "fixed": 501,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 120,
+      "locomotive_name": "1193",
+      "locomotive_model": "2ТЭ-10М(П)",
+      "total": 492,
+      "fixed": 487,
+      "unfixed": 5,
+      "fixed_rate": 0.9898
+    },
+    {
+      "locomotive_id": 266,
+      "locomotive_name": "1629",
+      "locomotive_model": "ВЛ-60К",
+      "total": 477,
+      "fixed": 470,
+      "unfixed": 7,
+      "fixed_rate": 0.9853
+    },
+    {
+      "locomotive_id": 168,
+      "locomotive_name": "0010",
+      "locomotive_model": "O‘ZB",
+      "total": 477,
+      "fixed": 465,
+      "unfixed": 12,
+      "fixed_rate": 0.9748
+    },
+    {
+      "locomotive_id": 19,
+      "locomotive_name": "4818",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 467,
+      "fixed": 465,
+      "unfixed": 2,
+      "fixed_rate": 0.9957
+    },
+    {
+      "locomotive_id": 287,
+      "locomotive_name": "2710",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 459,
+      "fixed": 451,
+      "unfixed": 8,
+      "fixed_rate": 0.9826
+    },
+    {
+      "locomotive_id": 36,
+      "locomotive_name": "2337",
+      "locomotive_model": "2ТЭ-10М(П)",
+      "total": 451,
+      "fixed": 450,
+      "unfixed": 1,
+      "fixed_rate": 0.9978
+    },
+    {
+      "locomotive_id": 292,
+      "locomotive_name": "2458",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 445,
+      "fixed": 442,
+      "unfixed": 3,
+      "fixed_rate": 0.9933
+    },
+    {
+      "locomotive_id": 300,
+      "locomotive_name": "2670",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 441,
+      "fixed": 441,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 476,
+      "locomotive_name": "009",
+      "locomotive_model": "UZTE-16M2",
+      "total": 440,
+      "fixed": 440,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 526,
+      "locomotive_name": "2716",
+      "locomotive_model": "2ТЭ-10М(Ч)",
+      "total": 424,
+      "fixed": 423,
+      "unfixed": 1,
+      "fixed_rate": 0.9976
+    },
+    {
+      "locomotive_id": 575,
+      "locomotive_name": "003",
+      "locomotive_model": "UZTE-16M3",
+      "total": 419,
+      "fixed": 419,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 169,
+      "locomotive_name": "0011",
+      "locomotive_model": "O‘ZB",
+      "total": 412,
+      "fixed": 401,
+      "unfixed": 11,
+      "fixed_rate": 0.9733
+    },
+    {
+      "locomotive_id": 566,
+      "locomotive_name": "1417",
+      "locomotive_model": "ВЛ-60К",
+      "total": 404,
+      "fixed": 388,
+      "unfixed": 16,
+      "fixed_rate": 0.9604
+    },
+    {
+      "locomotive_id": 296,
+      "locomotive_name": "2462",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 404,
+      "fixed": 401,
+      "unfixed": 3,
+      "fixed_rate": 0.9926
+    },
+    {
+      "locomotive_id": 308,
+      "locomotive_name": "2482",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 393,
+      "fixed": 391,
+      "unfixed": 2,
+      "fixed_rate": 0.9949
+    },
+    {
+      "locomotive_id": 303,
+      "locomotive_name": "2478",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 390,
+      "fixed": 374,
+      "unfixed": 16,
+      "fixed_rate": 0.959
+    },
+    {
+      "locomotive_id": 518,
+      "locomotive_name": "1817",
+      "locomotive_model": "ВЛ-60К",
+      "total": 378,
+      "fixed": 378,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 26,
+      "locomotive_name": "3662",
+      "locomotive_model": "2ТЭ-10М(П)",
+      "total": 355,
+      "fixed": 345,
+      "unfixed": 10,
+      "fixed_rate": 0.9718
+    },
+    {
+      "locomotive_id": 261,
+      "locomotive_name": "008",
+      "locomotive_model": "UZTE-16M3",
+      "total": 347,
+      "fixed": 347,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 265,
+      "locomotive_name": "018",
+      "locomotive_model": "UZTE-16M3",
+      "total": 347,
+      "fixed": 347,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 256,
+      "locomotive_name": "405",
+      "locomotive_model": "2ВЛ-60К",
+      "total": 345,
+      "fixed": 334,
+      "unfixed": 11,
+      "fixed_rate": 0.9681
+    },
+    {
+      "locomotive_id": 156,
+      "locomotive_name": "0006",
+      "locomotive_model": "O‘ZB",
+      "total": 343,
+      "fixed": 337,
+      "unfixed": 6,
+      "fixed_rate": 0.9825
+    },
+    {
+      "locomotive_id": 546,
+      "locomotive_name": "0707",
+      "locomotive_model": "3ТЭ-10М(П)",
+      "total": 339,
+      "fixed": 339,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 247,
+      "locomotive_name": "007",
+      "locomotive_model": "UZTE-16M2",
+      "total": 337,
+      "fixed": 337,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 258,
+      "locomotive_name": "2307",
+      "locomotive_model": "ВЛ-60К",
+      "total": 337,
+      "fixed": 327,
+      "unfixed": 10,
+      "fixed_rate": 0.9703
+    },
+    {
+      "locomotive_id": 231,
+      "locomotive_name": "2229",
+      "locomotive_model": "ВЛ-60К",
+      "total": 334,
+      "fixed": 306,
+      "unfixed": 28,
+      "fixed_rate": 0.9162
+    },
+    {
+      "locomotive_id": 150,
+      "locomotive_name": "0005",
+      "locomotive_model": "O‘ZB",
+      "total": 322,
+      "fixed": 313,
+      "unfixed": 9,
+      "fixed_rate": 0.972
+    },
+    {
+      "locomotive_id": 529,
+      "locomotive_name": "0002",
+      "locomotive_model": "O‘ZB",
+      "total": 298,
+      "fixed": 274,
+      "unfixed": 24,
+      "fixed_rate": 0.9195
+    },
+    {
+      "locomotive_id": 98,
+      "locomotive_name": "3005",
+      "locomotive_model": "ТЭМ-2",
+      "total": 278,
+      "fixed": 278,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 242,
+      "locomotive_name": "004",
+      "locomotive_model": "UZTE-16M3",
+      "total": 275,
+      "fixed": 275,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 379,
+      "locomotive_name": "6790",
+      "locomotive_model": "ТЭМ-2",
+      "total": 273,
+      "fixed": 215,
+      "unfixed": 58,
+      "fixed_rate": 0.7875
+    },
+    {
+      "locomotive_id": 528,
+      "locomotive_name": "0007",
+      "locomotive_model": "O‘ZB",
+      "total": 272,
+      "fixed": 262,
+      "unfixed": 10,
+      "fixed_rate": 0.9632
+    },
+    {
+      "locomotive_id": 129,
+      "locomotive_name": "041",
+      "locomotive_model": "UZTE-16M2",
+      "total": 270,
+      "fixed": 270,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 227,
+      "locomotive_name": "001",
+      "locomotive_model": "UZTE-16M3",
+      "total": 267,
+      "fixed": 267,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 577,
+      "locomotive_name": "015",
+      "locomotive_model": "UZTE-16M3",
+      "total": 263,
+      "fixed": 257,
+      "unfixed": 6,
+      "fixed_rate": 0.9772
+    },
+    {
+      "locomotive_id": 88,
+      "locomotive_name": "032",
+      "locomotive_model": "UZTE-16M2",
+      "total": 257,
+      "fixed": 257,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 23,
+      "locomotive_name": "6541",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 255,
+      "fixed": 248,
+      "unfixed": 7,
+      "fixed_rate": 0.9725
+    },
+    {
+      "locomotive_id": 248,
+      "locomotive_name": "2088",
+      "locomotive_model": "ВЛ-60К",
+      "total": 255,
+      "fixed": 251,
+      "unfixed": 4,
+      "fixed_rate": 0.9843
+    },
+    {
+      "locomotive_id": 267,
+      "locomotive_name": "023",
+      "locomotive_model": "UZTE-16M4",
+      "total": 253,
+      "fixed": 253,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 211,
+      "locomotive_name": "0112",
+      "locomotive_model": "O‘Z-Y",
+      "total": 248,
+      "fixed": 210,
+      "unfixed": 38,
+      "fixed_rate": 0.8468
+    },
+    {
+      "locomotive_id": 25,
+      "locomotive_name": "7420",
+      "locomotive_model": "ТЭМ-2",
+      "total": 242,
+      "fixed": 236,
+      "unfixed": 6,
+      "fixed_rate": 0.9752
+    },
+    {
+      "locomotive_id": 79,
+      "locomotive_name": "0305",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 240,
+      "fixed": 240,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 280,
+      "locomotive_name": "046",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 235,
+      "fixed": 235,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 206,
+      "locomotive_name": "0111",
+      "locomotive_model": "O‘Z-Y",
+      "total": 234,
+      "fixed": 231,
+      "unfixed": 3,
+      "fixed_rate": 0.9872
+    },
+    {
+      "locomotive_id": 8,
+      "locomotive_name": "033",
+      "locomotive_model": "UZTE-16M2",
+      "total": 231,
+      "fixed": 231,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 215,
+      "locomotive_name": "0114",
+      "locomotive_model": "O‘Z-Y",
+      "total": 225,
+      "fixed": 225,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 244,
+      "locomotive_name": "1288",
+      "locomotive_model": "ВЛ-60К",
+      "total": 225,
+      "fixed": 197,
+      "unfixed": 28,
+      "fixed_rate": 0.8756
+    },
+    {
+      "locomotive_id": 12,
+      "locomotive_name": "152",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 223,
+      "fixed": 219,
+      "unfixed": 4,
+      "fixed_rate": 0.9821
+    },
+    {
+      "locomotive_id": 275,
+      "locomotive_name": "037",
+      "locomotive_model": "UZTE-16M2",
+      "total": 219,
+      "fixed": 219,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 165,
+      "locomotive_name": "0009",
+      "locomotive_model": "O‘ZB",
+      "total": 216,
+      "fixed": 216,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 203,
+      "locomotive_name": "2471",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 214,
+      "fixed": 214,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 262,
+      "locomotive_name": "012",
+      "locomotive_model": "UZTE-16M3",
+      "total": 208,
+      "fixed": 208,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 469,
+      "locomotive_name": "0101",
+      "locomotive_model": "O‘Z-Y",
+      "total": 204,
+      "fixed": 191,
+      "unfixed": 13,
+      "fixed_rate": 0.9363
+    },
+    {
+      "locomotive_id": 170,
+      "locomotive_name": "404",
+      "locomotive_model": "2ВЛ-60К",
+      "total": 204,
+      "fixed": 204,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 193,
+      "locomotive_name": "0106",
+      "locomotive_model": "O‘Z-Y",
+      "total": 201,
+      "fixed": 188,
+      "unfixed": 13,
+      "fixed_rate": 0.9353
+    },
+    {
+      "locomotive_id": 314,
+      "locomotive_name": "904",
+      "locomotive_model": "3ЭС5К",
+      "total": 198,
+      "fixed": 103,
+      "unfixed": 95,
+      "fixed_rate": 0.5202
+    },
+    {
+      "locomotive_id": 217,
+      "locomotive_name": "1377",
+      "locomotive_model": "ВЛ-60К",
+      "total": 197,
+      "fixed": 181,
+      "unfixed": 16,
+      "fixed_rate": 0.9188
+    },
+    {
+      "locomotive_id": 213,
+      "locomotive_name": "0113",
+      "locomotive_model": "O‘Z-Y",
+      "total": 197,
+      "fixed": 179,
+      "unfixed": 18,
+      "fixed_rate": 0.9086
+    },
+    {
+      "locomotive_id": 202,
+      "locomotive_name": "2242",
+      "locomotive_model": "ВЛ-60К",
+      "total": 189,
+      "fixed": 176,
+      "unfixed": 13,
+      "fixed_rate": 0.9312
+    },
+    {
+      "locomotive_id": 197,
+      "locomotive_name": "0107",
+      "locomotive_model": "O‘Z-Y",
+      "total": 187,
+      "fixed": 182,
+      "unfixed": 5,
+      "fixed_rate": 0.9733
+    },
+    {
+      "locomotive_id": 222,
+      "locomotive_name": "918",
+      "locomotive_model": "ВЛ-60К",
+      "total": 186,
+      "fixed": 165,
+      "unfixed": 21,
+      "fixed_rate": 0.8871
+    },
+    {
+      "locomotive_id": 178,
+      "locomotive_name": "0102",
+      "locomotive_model": "O‘Z-Y",
+      "total": 185,
+      "fixed": 181,
+      "unfixed": 4,
+      "fixed_rate": 0.9784
+    },
+    {
+      "locomotive_id": 274,
+      "locomotive_name": "2195",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 185,
+      "fixed": 185,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 284,
+      "locomotive_name": "040",
+      "locomotive_model": "UZTE-16M2",
+      "total": 184,
+      "fixed": 184,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 547,
+      "locomotive_name": "035",
+      "locomotive_model": "UZTE-16M3",
+      "total": 183,
+      "fixed": 183,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 204,
+      "locomotive_name": "0109",
+      "locomotive_model": "O‘Z-Y",
+      "total": 180,
+      "fixed": 166,
+      "unfixed": 14,
+      "fixed_rate": 0.9222
+    },
+    {
+      "locomotive_id": 32,
+      "locomotive_name": "1152",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 178,
+      "fixed": 178,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 200,
+      "locomotive_name": "1639",
+      "locomotive_model": "ВЛ-60К",
+      "total": 177,
+      "fixed": 177,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 201,
+      "locomotive_name": "0108",
+      "locomotive_model": "O‘Z-Y",
+      "total": 177,
+      "fixed": 177,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 10,
+      "locomotive_name": "4556",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 176,
+      "fixed": 176,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 236,
+      "locomotive_name": "2113",
+      "locomotive_model": "ВЛ-60К",
+      "total": 176,
+      "fixed": 170,
+      "unfixed": 6,
+      "fixed_rate": 0.9659
+    },
+    {
+      "locomotive_id": 180,
+      "locomotive_name": "0103",
+      "locomotive_model": "O‘Z-Y",
+      "total": 176,
+      "fixed": 168,
+      "unfixed": 8,
+      "fixed_rate": 0.9545
+    },
+    {
+      "locomotive_id": 271,
+      "locomotive_name": "027",
+      "locomotive_model": "UZTE-16M4",
+      "total": 175,
+      "fixed": 174,
+      "unfixed": 1,
+      "fixed_rate": 0.9943
+    },
+    {
+      "locomotive_id": 118,
+      "locomotive_name": "2693",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 174,
+      "fixed": 174,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 205,
+      "locomotive_name": "0110",
+      "locomotive_model": "O‘Z-Y",
+      "total": 173,
+      "fixed": 169,
+      "unfixed": 4,
+      "fixed_rate": 0.9769
+    },
+    {
+      "locomotive_id": 470,
+      "locomotive_name": "0115",
+      "locomotive_model": "O‘Z-Y",
+      "total": 170,
+      "fixed": 170,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 228,
+      "locomotive_name": "1791",
+      "locomotive_model": "ВЛ-60К",
+      "total": 162,
+      "fixed": 162,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 104,
+      "locomotive_name": "2454",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 159,
+      "fixed": 159,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 185,
+      "locomotive_name": "0105",
+      "locomotive_model": "O‘Z-Y",
+      "total": 155,
+      "fixed": 155,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 39,
+      "locomotive_name": "2460",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 154,
+      "fixed": 154,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 195,
+      "locomotive_name": "2159",
+      "locomotive_model": "ВЛ-60К",
+      "total": 152,
+      "fixed": 149,
+      "unfixed": 3,
+      "fixed_rate": 0.9803
+    },
+    {
+      "locomotive_id": 28,
+      "locomotive_name": "1061",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 150,
+      "fixed": 150,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 328,
+      "locomotive_name": "1003",
+      "locomotive_model": "3ЭС5К",
+      "total": 148,
+      "fixed": 95,
+      "unfixed": 53,
+      "fixed_rate": 0.6419
+    },
+    {
+      "locomotive_id": 311,
+      "locomotive_name": "903",
+      "locomotive_model": "3ЭС5К",
+      "total": 148,
+      "fixed": 94,
+      "unfixed": 54,
+      "fixed_rate": 0.6351
+    },
+    {
+      "locomotive_id": 11,
+      "locomotive_name": "132",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 148,
+      "fixed": 148,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 34,
+      "locomotive_name": "1141",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 146,
+      "fixed": 146,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 167,
+      "locomotive_name": "2157",
+      "locomotive_model": "ВЛ-60К",
+      "total": 145,
+      "fixed": 145,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 107,
+      "locomotive_name": "6584",
+      "locomotive_model": "ТЭМ-2",
+      "total": 144,
+      "fixed": 142,
+      "unfixed": 2,
+      "fixed_rate": 0.9861
+    },
+    {
+      "locomotive_id": 189,
+      "locomotive_name": "0404",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 143,
+      "fixed": 143,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 29,
+      "locomotive_name": "0708",
+      "locomotive_model": "2ТЭ-10М(Ч)",
+      "total": 142,
+      "fixed": 142,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 530,
+      "locomotive_name": "014",
+      "locomotive_model": "UZTE-16M3",
+      "total": 141,
+      "fixed": 140,
+      "unfixed": 1,
+      "fixed_rate": 0.9929
+    },
+    {
+      "locomotive_id": 221,
+      "locomotive_name": "0506",
+      "locomotive_model": "2O‘Z-UY",
+      "total": 139,
+      "fixed": 139,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 100,
+      "locomotive_name": "3151",
+      "locomotive_model": "ТЭМ-2",
+      "total": 134,
+      "fixed": 134,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 81,
+      "locomotive_name": "2076",
+      "locomotive_model": "ВЛ-60К",
+      "total": 134,
+      "fixed": 134,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 574,
+      "locomotive_name": "017",
+      "locomotive_model": "UZTE-16M3",
+      "total": 129,
+      "fixed": 129,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 210,
+      "locomotive_name": "0204",
+      "locomotive_model": "O‘Z-EL",
+      "total": 127,
+      "fixed": 117,
+      "unfixed": 10,
+      "fixed_rate": 0.9213
+    },
+    {
+      "locomotive_id": 269,
+      "locomotive_name": "024",
+      "locomotive_model": "UZTE-16M4",
+      "total": 127,
+      "fixed": 127,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 127,
+      "locomotive_name": "7091",
+      "locomotive_model": "ТЭМ-2",
+      "total": 126,
+      "fixed": 122,
+      "unfixed": 4,
+      "fixed_rate": 0.9683
+    },
+    {
+      "locomotive_id": 105,
+      "locomotive_name": "5774",
+      "locomotive_model": "ТЭМ-2",
+      "total": 124,
+      "fixed": 122,
+      "unfixed": 2,
+      "fixed_rate": 0.9839
+    },
+    {
+      "locomotive_id": 252,
+      "locomotive_name": "2239",
+      "locomotive_model": "ВЛ-60К",
+      "total": 121,
+      "fixed": 118,
+      "unfixed": 3,
+      "fixed_rate": 0.9752
+    },
+    {
+      "locomotive_id": 331,
+      "locomotive_name": "1004",
+      "locomotive_model": "3ЭС5К",
+      "total": 120,
+      "fixed": 62,
+      "unfixed": 58,
+      "fixed_rate": 0.5167
+    },
+    {
+      "locomotive_id": 113,
+      "locomotive_name": "2188",
+      "locomotive_model": "ВЛ-60К",
+      "total": 119,
+      "fixed": 119,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 339,
+      "locomotive_name": "1005",
+      "locomotive_model": "3ЭС5К",
+      "total": 119,
+      "fixed": 116,
+      "unfixed": 3,
+      "fixed_rate": 0.9748
+    },
+    {
+      "locomotive_id": 218,
+      "locomotive_name": "0504",
+      "locomotive_model": "2O‘Z-UY",
+      "total": 116,
+      "fixed": 116,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 71,
+      "locomotive_name": "2459",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 116,
+      "fixed": 116,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 176,
+      "locomotive_name": "0308",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 115,
+      "fixed": 115,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 174,
+      "locomotive_name": "2468",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 114,
+      "fixed": 114,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 21,
+      "locomotive_name": "5029",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 113,
+      "fixed": 113,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 172,
+      "locomotive_name": "2070",
+      "locomotive_model": "ВЛ-60К",
+      "total": 113,
+      "fixed": 113,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 396,
+      "locomotive_name": "013",
+      "locomotive_model": "UZTE-16M3",
+      "total": 113,
+      "fixed": 57,
+      "unfixed": 56,
+      "fixed_rate": 0.5044
+    },
+    {
+      "locomotive_id": 69,
+      "locomotive_name": "0201",
+      "locomotive_model": "O‘Z-EL",
+      "total": 111,
+      "fixed": 103,
+      "unfixed": 8,
+      "fixed_rate": 0.9279
+    },
+    {
+      "locomotive_id": 20,
+      "locomotive_name": "4834",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 110,
+      "fixed": 110,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 232,
+      "locomotive_name": "002",
+      "locomotive_model": "UZTE-16M2",
+      "total": 108,
+      "fixed": 108,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 136,
+      "locomotive_name": "3198",
+      "locomotive_model": "ТЭМ-2",
+      "total": 106,
+      "fixed": 104,
+      "unfixed": 2,
+      "fixed_rate": 0.9811
+    },
+    {
+      "locomotive_id": 15,
+      "locomotive_name": "016",
+      "locomotive_model": "UZTE-16M3",
+      "total": 105,
+      "fixed": 103,
+      "unfixed": 2,
+      "fixed_rate": 0.981
+    },
+    {
+      "locomotive_id": 224,
+      "locomotive_name": "5224",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 105,
+      "fixed": 105,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 317,
+      "locomotive_name": "1001",
+      "locomotive_model": "3ЭС5К",
+      "total": 104,
+      "fixed": 88,
+      "unfixed": 16,
+      "fixed_rate": 0.8462
+    },
+    {
+      "locomotive_id": 207,
+      "locomotive_name": "0203",
+      "locomotive_model": "O‘Z-EL",
+      "total": 102,
+      "fixed": 95,
+      "unfixed": 7,
+      "fixed_rate": 0.9314
+    },
+    {
+      "locomotive_id": 83,
+      "locomotive_name": "1123",
+      "locomotive_model": "3ТЭ-10М",
+      "total": 102,
+      "fixed": 102,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 251,
+      "locomotive_name": "042",
+      "locomotive_model": "UZTE-16M2",
+      "total": 100,
+      "fixed": 100,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 223,
+      "locomotive_name": "0508",
+      "locomotive_model": "2O‘Z-UY",
+      "total": 99,
+      "fixed": 97,
+      "unfixed": 2,
+      "fixed_rate": 0.9798
+    },
+    {
+      "locomotive_id": 219,
+      "locomotive_name": "4292",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 93,
+      "fixed": 85,
+      "unfixed": 8,
+      "fixed_rate": 0.914
+    },
+    {
+      "locomotive_id": 212,
+      "locomotive_name": "0205",
+      "locomotive_model": "O‘Z-EL",
+      "total": 91,
+      "fixed": 91,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 323,
+      "locomotive_name": "1002",
+      "locomotive_model": "3ЭС5К",
+      "total": 91,
+      "fixed": 65,
+      "unfixed": 26,
+      "fixed_rate": 0.7143
+    },
+    {
+      "locomotive_id": 233,
+      "locomotive_name": "0503",
+      "locomotive_model": "2O‘Z-UY",
+      "total": 89,
+      "fixed": 88,
+      "unfixed": 1,
+      "fixed_rate": 0.9888
+    },
+    {
+      "locomotive_id": 235,
+      "locomotive_name": "0507",
+      "locomotive_model": "2O‘Z-UY",
+      "total": 87,
+      "fixed": 74,
+      "unfixed": 13,
+      "fixed_rate": 0.8506
+    },
+    {
+      "locomotive_id": 243,
+      "locomotive_name": "6102",
+      "locomotive_model": "ТЭМ-2",
+      "total": 86,
+      "fixed": 86,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 390,
+      "locomotive_name": "101",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 85,
+      "fixed": 79,
+      "unfixed": 6,
+      "fixed_rate": 0.9294
+    },
+    {
+      "locomotive_id": 254,
+      "locomotive_name": "034",
+      "locomotive_model": "UZTE-16M3",
+      "total": 84,
+      "fixed": 84,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 229,
+      "locomotive_name": "0410",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 83,
+      "fixed": 82,
+      "unfixed": 1,
+      "fixed_rate": 0.988
+    },
+    {
+      "locomotive_id": 111,
+      "locomotive_name": "2193",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 83,
+      "fixed": 83,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 154,
+      "locomotive_name": "0116",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 83,
+      "fixed": 73,
+      "unfixed": 10,
+      "fixed_rate": 0.8795
+    },
+    {
+      "locomotive_id": 99,
+      "locomotive_name": "2448",
+      "locomotive_model": "2ВЛ-80С",
+      "total": 82,
+      "fixed": 82,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 561,
+      "locomotive_name": "4877",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 82,
+      "fixed": 82,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 173,
+      "locomotive_name": "2182",
+      "locomotive_model": "ВЛ-60К",
+      "total": 80,
+      "fixed": 80,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 82,
+      "locomotive_name": "0307",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 79,
+      "fixed": 79,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 354,
+      "locomotive_name": "6606",
+      "locomotive_model": "ТЭМ-2",
+      "total": 79,
+      "fixed": 77,
+      "unfixed": 2,
+      "fixed_rate": 0.9747
+    },
+    {
+      "locomotive_id": 578,
+      "locomotive_name": "0419",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 78,
+      "fixed": 61,
+      "unfixed": 17,
+      "fixed_rate": 0.7821
+    },
+    {
+      "locomotive_id": 208,
+      "locomotive_name": "4551",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 78,
+      "fixed": 78,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 237,
+      "locomotive_name": "4286",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 77,
+      "fixed": 77,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 527,
+      "locomotive_name": "0306",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 76,
+      "fixed": 75,
+      "unfixed": 1,
+      "fixed_rate": 0.9868
+    },
+    {
+      "locomotive_id": 177,
+      "locomotive_name": "0301",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 76,
+      "fixed": 76,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 17,
+      "locomotive_name": "031",
+      "locomotive_model": "UZTE-16M2",
+      "total": 75,
+      "fixed": 67,
+      "unfixed": 8,
+      "fixed_rate": 0.8933
+    },
+    {
+      "locomotive_id": 188,
+      "locomotive_name": "5434",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 74,
+      "fixed": 74,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 16,
+      "locomotive_name": "0311",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 72,
+      "fixed": 72,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 475,
+      "locomotive_name": "1795",
+      "locomotive_model": "ТЭМ-2",
+      "total": 71,
+      "fixed": 71,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 368,
+      "locomotive_name": "6078",
+      "locomotive_model": "ТЭМ-2",
+      "total": 70,
+      "fixed": 70,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 245,
+      "locomotive_name": "4836",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 69,
+      "fixed": 69,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 389,
+      "locomotive_name": "7077",
+      "locomotive_model": "ТЭМ-2",
+      "total": 69,
+      "fixed": 40,
+      "unfixed": 29,
+      "fixed_rate": 0.5797
+    },
+    {
+      "locomotive_id": 394,
+      "locomotive_name": "022",
+      "locomotive_model": "UZTE-16M2",
+      "total": 68,
+      "fixed": 68,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 119,
+      "locomotive_name": "2463",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 68,
+      "fixed": 68,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 91,
+      "locomotive_name": "2306",
+      "locomotive_model": "ТЭМ-2",
+      "total": 68,
+      "fixed": 55,
+      "unfixed": 13,
+      "fixed_rate": 0.8088
+    },
+    {
+      "locomotive_id": 234,
+      "locomotive_name": "5942",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 68,
+      "fixed": 68,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 179,
+      "locomotive_name": "4443",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 68,
+      "fixed": 68,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 191,
+      "locomotive_name": "0406",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 67,
+      "fixed": 67,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 250,
+      "locomotive_name": "0418",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 67,
+      "fixed": 63,
+      "unfixed": 4,
+      "fixed_rate": 0.9403
+    },
+    {
+      "locomotive_id": 259,
+      "locomotive_name": "0412",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 67,
+      "fixed": 61,
+      "unfixed": 6,
+      "fixed_rate": 0.9104
+    },
+    {
+      "locomotive_id": 93,
+      "locomotive_name": "3003",
+      "locomotive_model": "ТЭМ-2",
+      "total": 67,
+      "fixed": 67,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 184,
+      "locomotive_name": "0104",
+      "locomotive_model": "O‘Z-Y",
+      "total": 66,
+      "fixed": 66,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 59,
+      "locomotive_name": "2543",
+      "locomotive_model": "ВЛ-60К",
+      "total": 66,
+      "fixed": 66,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 560,
+      "locomotive_name": "4159",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 66,
+      "fixed": 66,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 344,
+      "locomotive_name": "1959",
+      "locomotive_model": "ТЭМ-2",
+      "total": 65,
+      "fixed": 65,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 559,
+      "locomotive_name": "4561",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 65,
+      "fixed": 65,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 240,
+      "locomotive_name": "4557",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 65,
+      "fixed": 65,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 220,
+      "locomotive_name": "0402",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 64,
+      "fixed": 64,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 78,
+      "locomotive_name": "0309",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 64,
+      "fixed": 64,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 392,
+      "locomotive_name": "140",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 64,
+      "fixed": 60,
+      "unfixed": 4,
+      "fixed_rate": 0.9375
+    },
+    {
+      "locomotive_id": 554,
+      "locomotive_name": "0415",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 63,
+      "fixed": 63,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 361,
+      "locomotive_name": "3035",
+      "locomotive_model": "ТЭМ-2",
+      "total": 63,
+      "fixed": 63,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 435,
+      "locomotive_name": "1066",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 63,
+      "fixed": 63,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 77,
+      "locomotive_name": "0310",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 62,
+      "fixed": 57,
+      "unfixed": 5,
+      "fixed_rate": 0.9194
+    },
+    {
+      "locomotive_id": 126,
+      "locomotive_name": "020",
+      "locomotive_model": "UZTE-16M3",
+      "total": 62,
+      "fixed": 62,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 273,
+      "locomotive_name": "0416",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 61,
+      "fixed": 56,
+      "unfixed": 5,
+      "fixed_rate": 0.918
+    },
+    {
+      "locomotive_id": 268,
+      "locomotive_name": "0414",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 61,
+      "fixed": 57,
+      "unfixed": 4,
+      "fixed_rate": 0.9344
+    },
+    {
+      "locomotive_id": 9,
+      "locomotive_name": "2308",
+      "locomotive_model": "ТЭМ-2",
+      "total": 61,
+      "fixed": 61,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 257,
+      "locomotive_name": "0411",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 60,
+      "fixed": 52,
+      "unfixed": 8,
+      "fixed_rate": 0.8667
+    },
+    {
+      "locomotive_id": 385,
+      "locomotive_name": "3256",
+      "locomotive_model": "ТЭМ-2",
+      "total": 60,
+      "fixed": 40,
+      "unfixed": 20,
+      "fixed_rate": 0.6667
+    },
+    {
+      "locomotive_id": 332,
+      "locomotive_name": "817",
+      "locomotive_model": "ТЭМ-2",
+      "total": 59,
+      "fixed": 59,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 175,
+      "locomotive_name": "2421",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 57,
+      "fixed": 57,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 525,
+      "locomotive_name": "021",
+      "locomotive_model": "UZTE-16M2(Ч)",
+      "total": 56,
+      "fixed": 56,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 196,
+      "locomotive_name": "4285",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 56,
+      "fixed": 56,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 238,
+      "locomotive_name": "1302",
+      "locomotive_model": "3ТЭ-10М",
+      "total": 56,
+      "fixed": 55,
+      "unfixed": 1,
+      "fixed_rate": 0.9821
+    },
+    {
+      "locomotive_id": 226,
+      "locomotive_name": "3286",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 55,
+      "fixed": 44,
+      "unfixed": 11,
+      "fixed_rate": 0.8
+    },
+    {
+      "locomotive_id": 318,
+      "locomotive_name": "7078",
+      "locomotive_model": "ТЭМ-2",
+      "total": 55,
+      "fixed": 54,
+      "unfixed": 1,
+      "fixed_rate": 0.9818
+    },
+    {
+      "locomotive_id": 567,
+      "locomotive_name": "0304",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 54,
+      "fixed": 38,
+      "unfixed": 16,
+      "fixed_rate": 0.7037
+    },
+    {
+      "locomotive_id": 372,
+      "locomotive_name": "5810",
+      "locomotive_model": "ТЭМ-2",
+      "total": 54,
+      "fixed": 54,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 90,
+      "locomotive_name": "0409",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 51,
+      "fixed": 49,
+      "unfixed": 2,
+      "fixed_rate": 0.9608
+    },
+    {
+      "locomotive_id": 67,
+      "locomotive_name": "2419",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 51,
+      "fixed": 51,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 473,
+      "locomotive_name": "5809",
+      "locomotive_model": "ТЭМ-2",
+      "total": 51,
+      "fixed": 51,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 121,
+      "locomotive_name": "7057",
+      "locomotive_model": "ТЭМ-2",
+      "total": 51,
+      "fixed": 51,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 162,
+      "locomotive_name": "4420",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 51,
+      "fixed": 51,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 563,
+      "locomotive_name": "6776",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 51,
+      "fixed": 51,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 384,
+      "locomotive_name": "2557",
+      "locomotive_model": "ТЭМ-2",
+      "total": 51,
+      "fixed": 41,
+      "unfixed": 10,
+      "fixed_rate": 0.8039
+    },
+    {
+      "locomotive_id": 370,
+      "locomotive_name": "1709",
+      "locomotive_model": "ТЭМ-2",
+      "total": 50,
+      "fixed": 50,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 320,
+      "locomotive_name": "7099",
+      "locomotive_model": "ТЭМ-2",
+      "total": 50,
+      "fixed": 50,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 474,
+      "locomotive_name": "2393",
+      "locomotive_model": "ТЭМ-2",
+      "total": 50,
+      "fixed": 48,
+      "unfixed": 2,
+      "fixed_rate": 0.96
+    },
+    {
+      "locomotive_id": 166,
+      "locomotive_name": "569",
+      "locomotive_model": "ВЛ-60К",
+      "total": 50,
+      "fixed": 50,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 153,
+      "locomotive_name": "0298",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 49,
+      "fixed": 48,
+      "unfixed": 1,
+      "fixed_rate": 0.9796
+    },
+    {
+      "locomotive_id": 513,
+      "locomotive_name": "0408",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 48,
+      "fixed": 48,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 512,
+      "locomotive_name": "2712",
+      "locomotive_model": "ТЭМ-2",
+      "total": 48,
+      "fixed": 45,
+      "unfixed": 3,
+      "fixed_rate": 0.9375
+    },
+    {
+      "locomotive_id": 277,
+      "locomotive_name": "0417",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 48,
+      "fixed": 47,
+      "unfixed": 1,
+      "fixed_rate": 0.9792
+    },
+    {
+      "locomotive_id": 373,
+      "locomotive_name": "7217",
+      "locomotive_model": "ТЭМ-2",
+      "total": 48,
+      "fixed": 48,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 209,
+      "locomotive_name": "4422",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 48,
+      "fixed": 48,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 76,
+      "locomotive_name": "0501",
+      "locomotive_model": "2O‘Z-UY",
+      "total": 47,
+      "fixed": 47,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 4,
+      "locomotive_name": "026",
+      "locomotive_model": "UZTE-16M2",
+      "total": 47,
+      "fixed": 39,
+      "unfixed": 8,
+      "fixed_rate": 0.8298
+    },
+    {
+      "locomotive_id": 524,
+      "locomotive_name": "6101",
+      "locomotive_model": "ТЭМ-2",
+      "total": 47,
+      "fixed": 47,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 377,
+      "locomotive_name": "2774",
+      "locomotive_model": "ТЭМ-2",
+      "total": 46,
+      "fixed": 46,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 515,
+      "locomotive_name": "3091",
+      "locomotive_model": "ТЭМ-2",
+      "total": 45,
+      "fixed": 45,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 333,
+      "locomotive_name": "6082",
+      "locomotive_model": "ТЭМ-2",
+      "total": 45,
+      "fixed": 45,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 42,
+      "locomotive_name": "1427",
+      "locomotive_model": "ВЛ-60К",
+      "total": 44,
+      "fixed": 39,
+      "unfixed": 5,
+      "fixed_rate": 0.8864
+    },
+    {
+      "locomotive_id": 335,
+      "locomotive_name": "6793",
+      "locomotive_model": "ТЭМ-2",
+      "total": 43,
+      "fixed": 43,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 164,
+      "locomotive_name": "1157",
+      "locomotive_model": "3ТЭ-10М",
+      "total": 43,
+      "fixed": 42,
+      "unfixed": 1,
+      "fixed_rate": 0.9767
+    },
+    {
+      "locomotive_id": 97,
+      "locomotive_name": "2125",
+      "locomotive_model": "ВЛ-60К",
+      "total": 43,
+      "fixed": 43,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 41,
+      "locomotive_name": "1146",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 345,
+      "locomotive_name": "930",
+      "locomotive_model": "ТЭМ-2",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 338,
+      "locomotive_name": "3201",
+      "locomotive_model": "ТЭМ-2",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 330,
+      "locomotive_name": "6316",
+      "locomotive_model": "ТЭМ-2",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 359,
+      "locomotive_name": "960",
+      "locomotive_model": "ТЭМ-2",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 366,
+      "locomotive_name": "7090",
+      "locomotive_model": "ТЭМ-2",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 449,
+      "locomotive_name": "847",
+      "locomotive_model": "ТЭМ-2",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 313,
+      "locomotive_name": "1103",
+      "locomotive_model": "ТЭМ-2",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 565,
+      "locomotive_name": "6806",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 42,
+      "fixed": 42,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 52,
+      "locomotive_name": "4703",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 41,
+      "fixed": 39,
+      "unfixed": 2,
+      "fixed_rate": 0.9512
+    },
+    {
+      "locomotive_id": 181,
+      "locomotive_name": "0302",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 41,
+      "fixed": 41,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 291,
+      "locomotive_name": "2240",
+      "locomotive_model": "ВЛ-60К",
+      "total": 40,
+      "fixed": 40,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 73,
+      "locomotive_name": "4674",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 39,
+      "fixed": 33,
+      "unfixed": 6,
+      "fixed_rate": 0.8462
+    },
+    {
+      "locomotive_id": 374,
+      "locomotive_name": "3320",
+      "locomotive_model": "ТЭМ-2",
+      "total": 39,
+      "fixed": 39,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 198,
+      "locomotive_name": "3083",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 39,
+      "fixed": 39,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 54,
+      "locomotive_name": "5167",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 38,
+      "fixed": 37,
+      "unfixed": 1,
+      "fixed_rate": 0.9737
+    },
+    {
+      "locomotive_id": 360,
+      "locomotive_name": "6560",
+      "locomotive_model": "ТЭМ-2",
+      "total": 38,
+      "fixed": 38,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 356,
+      "locomotive_name": "3200",
+      "locomotive_model": "ТЭМ-2",
+      "total": 38,
+      "fixed": 38,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 253,
+      "locomotive_name": "0422",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 38,
+      "fixed": 38,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 124,
+      "locomotive_name": "1715",
+      "locomotive_model": "ТЭМ-2(12)",
+      "total": 37,
+      "fixed": 37,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 53,
+      "locomotive_name": "5165",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 37,
+      "fixed": 36,
+      "unfixed": 1,
+      "fixed_rate": 0.973
+    },
+    {
+      "locomotive_id": 341,
+      "locomotive_name": "6294",
+      "locomotive_model": "ТЭМ-2",
+      "total": 37,
+      "fixed": 37,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 3,
+      "locomotive_name": "1205",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 37,
+      "fixed": 37,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 62,
+      "locomotive_name": "2170",
+      "locomotive_model": "ТЭМ-2",
+      "total": 36,
+      "fixed": 36,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 375,
+      "locomotive_name": "7084",
+      "locomotive_model": "ТЭМ-2",
+      "total": 36,
+      "fixed": 36,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 371,
+      "locomotive_name": "1109",
+      "locomotive_model": "ТЭМ-2",
+      "total": 36,
+      "fixed": 36,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 327,
+      "locomotive_name": "7086",
+      "locomotive_model": "ТЭМ-2",
+      "total": 36,
+      "fixed": 36,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 225,
+      "locomotive_name": "6812",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 36,
+      "fixed": 36,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 66,
+      "locomotive_name": "6607",
+      "locomotive_model": "ТЭМ-2",
+      "total": 35,
+      "fixed": 35,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 281,
+      "locomotive_name": "0420",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 35,
+      "fixed": 32,
+      "unfixed": 3,
+      "fixed_rate": 0.9143
+    },
+    {
+      "locomotive_id": 46,
+      "locomotive_name": "6103",
+      "locomotive_model": "ТЭМ-2(12)",
+      "total": 35,
+      "fixed": 35,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 564,
+      "locomotive_name": "7651",
+      "locomotive_model": "ТЭМ-2(12)",
+      "total": 35,
+      "fixed": 35,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 214,
+      "locomotive_name": "0236",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 34,
+      "fixed": 34,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 131,
+      "locomotive_name": "7055",
+      "locomotive_model": "ТЭМ-2",
+      "total": 33,
+      "fixed": 33,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 56,
+      "locomotive_name": "4426",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 33,
+      "fixed": 33,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 324,
+      "locomotive_name": "5429",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 33,
+      "fixed": 33,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 364,
+      "locomotive_name": "2777",
+      "locomotive_model": "ТЭМ-2",
+      "total": 33,
+      "fixed": 33,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 363,
+      "locomotive_name": "6373",
+      "locomotive_model": "ТЭМ-2",
+      "total": 33,
+      "fixed": 33,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 106,
+      "locomotive_name": "2469",
+      "locomotive_model": "3ВЛ-80С",
+      "total": 33,
+      "fixed": 31,
+      "unfixed": 2,
+      "fixed_rate": 0.9394
+    },
+    {
+      "locomotive_id": 249,
+      "locomotive_name": "7409",
+      "locomotive_model": "ЧМЭ-3Т",
+      "total": 33,
+      "fixed": 33,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 134,
+      "locomotive_name": "3199",
+      "locomotive_model": "ТЭМ-2",
+      "total": 31,
+      "fixed": 31,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 38,
+      "locomotive_name": "1071",
+      "locomotive_model": "ВЛ-80С",
+      "total": 31,
+      "fixed": 29,
+      "unfixed": 2,
+      "fixed_rate": 0.9355
+    },
+    {
+      "locomotive_id": 194,
+      "locomotive_name": "4664",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 31,
+      "fixed": 31,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 362,
+      "locomotive_name": "6104",
+      "locomotive_model": "ТЭМ-2",
+      "total": 30,
+      "fixed": 23,
+      "unfixed": 7,
+      "fixed_rate": 0.7667
+    },
+    {
+      "locomotive_id": 533,
+      "locomotive_name": "2309",
+      "locomotive_model": "ТЭМ-2",
+      "total": 30,
+      "fixed": 30,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 149,
+      "locomotive_name": "6824",
+      "locomotive_model": "ТЭМ-2",
+      "total": 30,
+      "fixed": 27,
+      "unfixed": 3,
+      "fixed_rate": 0.9
+    },
+    {
+      "locomotive_id": 101,
+      "locomotive_name": "0505",
+      "locomotive_model": "2O‘Z-UY",
+      "total": 29,
+      "fixed": 29,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 337,
+      "locomotive_name": "6716",
+      "locomotive_model": "ТЭМ-2",
+      "total": 29,
+      "fixed": 27,
+      "unfixed": 2,
+      "fixed_rate": 0.931
+    },
+    {
+      "locomotive_id": 343,
+      "locomotive_name": "2776",
+      "locomotive_model": "ТЭМ-2",
+      "total": 29,
+      "fixed": 29,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 216,
+      "locomotive_name": "0206",
+      "locomotive_model": "O‘Z-EL",
+      "total": 28,
+      "fixed": 24,
+      "unfixed": 4,
+      "fixed_rate": 0.8571
+    },
+    {
+      "locomotive_id": 342,
+      "locomotive_name": "6374",
+      "locomotive_model": "ТЭМ-2",
+      "total": 28,
+      "fixed": 28,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 6,
+      "locomotive_name": "025",
+      "locomotive_model": "UZTE-16M2",
+      "total": 28,
+      "fixed": 25,
+      "unfixed": 3,
+      "fixed_rate": 0.8929
+    },
+    {
+      "locomotive_id": 37,
+      "locomotive_name": "2154",
+      "locomotive_model": "ВЛ-60К",
+      "total": 27,
+      "fixed": 27,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 72,
+      "locomotive_name": "0401",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 27,
+      "fixed": 23,
+      "unfixed": 4,
+      "fixed_rate": 0.8519
+    },
+    {
+      "locomotive_id": 87,
+      "locomotive_name": "0502",
+      "locomotive_model": "2O‘Z-UY",
+      "total": 27,
+      "fixed": 27,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 326,
+      "locomotive_name": "959",
+      "locomotive_model": "ТЭМ-2",
+      "total": 27,
+      "fixed": 27,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 112,
+      "locomotive_name": "0403",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 26,
+      "fixed": 22,
+      "unfixed": 4,
+      "fixed_rate": 0.8462
+    },
+    {
+      "locomotive_id": 190,
+      "locomotive_name": "0405",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 26,
+      "fixed": 26,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 246,
+      "locomotive_name": "029",
+      "locomotive_model": "UZTE-16M2",
+      "total": 26,
+      "fixed": 26,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 562,
+      "locomotive_name": "6311",
+      "locomotive_model": "ТЭМ-2",
+      "total": 26,
+      "fixed": 26,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 510,
+      "locomotive_name": "1500",
+      "locomotive_model": "ТЭМ-2",
+      "total": 25,
+      "fixed": 24,
+      "unfixed": 1,
+      "fixed_rate": 0.96
+    },
+    {
+      "locomotive_id": 350,
+      "locomotive_name": "3152",
+      "locomotive_model": "ТЭМ-2",
+      "total": 25,
+      "fixed": 25,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 192,
+      "locomotive_name": "0407",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 25,
+      "fixed": 25,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 5,
+      "locomotive_name": "019",
+      "locomotive_model": "UZTE-16M3",
+      "total": 25,
+      "fixed": 25,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 316,
+      "locomotive_name": "7396",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 24,
+      "fixed": 24,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 351,
+      "locomotive_name": "3312",
+      "locomotive_model": "ТЭМ-2",
+      "total": 24,
+      "fixed": 24,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 357,
+      "locomotive_name": "932",
+      "locomotive_model": "ТЭМ-2",
+      "total": 24,
+      "fixed": 24,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 365,
+      "locomotive_name": "6656",
+      "locomotive_model": "ТЭМ-2",
+      "total": 24,
+      "fixed": 24,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 50,
+      "locomotive_name": "955",
+      "locomotive_model": "ТЭМ-2",
+      "total": 23,
+      "fixed": 23,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 555,
+      "locomotive_name": "0421",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 23,
+      "fixed": 23,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 47,
+      "locomotive_name": "3089",
+      "locomotive_model": "ТЭМ-2",
+      "total": 23,
+      "fixed": 23,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 74,
+      "locomotive_name": "5928",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 23,
+      "fixed": 23,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 336,
+      "locomotive_name": "7083",
+      "locomotive_model": "ТЭМ-2",
+      "total": 23,
+      "fixed": 23,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 353,
+      "locomotive_name": "6563",
+      "locomotive_model": "ТЭМ-2",
+      "total": 23,
+      "fixed": 23,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 64,
+      "locomotive_name": "473",
+      "locomotive_model": "ТЭМ-2",
+      "total": 22,
+      "fixed": 22,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 135,
+      "locomotive_name": "7650",
+      "locomotive_model": "ТЭМ-2(12)",
+      "total": 22,
+      "fixed": 22,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 60,
+      "locomotive_name": "6490",
+      "locomotive_model": "ТЭМ-2",
+      "total": 22,
+      "fixed": 22,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 347,
+      "locomotive_name": "2591",
+      "locomotive_model": "ТЭМ-2",
+      "total": 22,
+      "fixed": 21,
+      "unfixed": 1,
+      "fixed_rate": 0.9545
+    },
+    {
+      "locomotive_id": 387,
+      "locomotive_name": "6731",
+      "locomotive_model": "ТЭМ-2",
+      "total": 21,
+      "fixed": 16,
+      "unfixed": 5,
+      "fixed_rate": 0.7619
+    },
+    {
+      "locomotive_id": 132,
+      "locomotive_name": "6445",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 21,
+      "fixed": 18,
+      "unfixed": 3,
+      "fixed_rate": 0.8571
+    },
+    {
+      "locomotive_id": 68,
+      "locomotive_name": "6561",
+      "locomotive_model": "ТЭМ-2(12)",
+      "total": 20,
+      "fixed": 20,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 55,
+      "locomotive_name": "6110",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 20,
+      "fixed": 20,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 183,
+      "locomotive_name": "0303",
+      "locomotive_model": "O‘Z-ELR",
+      "total": 20,
+      "fixed": 20,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 102,
+      "locomotive_name": "5773",
+      "locomotive_model": "ТЭМ-2",
+      "total": 20,
+      "fixed": 19,
+      "unfixed": 1,
+      "fixed_rate": 0.95
+    },
+    {
+      "locomotive_id": 309,
+      "locomotive_name": "6562",
+      "locomotive_model": "ТЭМ-2",
+      "total": 20,
+      "fixed": 20,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 133,
+      "locomotive_name": "4275",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 20,
+      "fixed": 20,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 48,
+      "locomotive_name": "3088",
+      "locomotive_model": "ТЭМ-2",
+      "total": 19,
+      "fixed": 19,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 117,
+      "locomotive_name": "047",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 19,
+      "fixed": 19,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 348,
+      "locomotive_name": "3037",
+      "locomotive_model": "ТЭМ-2",
+      "total": 19,
+      "fixed": 19,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 115,
+      "locomotive_name": "0202",
+      "locomotive_model": "O‘Z-EL",
+      "total": 18,
+      "fixed": 18,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 147,
+      "locomotive_name": "6524",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 18,
+      "fixed": 18,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 65,
+      "locomotive_name": "0413",
+      "locomotive_model": "2O‘Z-ELR",
+      "total": 17,
+      "fixed": 17,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 70,
+      "locomotive_name": "3176",
+      "locomotive_model": "ТЭМ-2",
+      "total": 17,
+      "fixed": 17,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 293,
+      "locomotive_name": "1583",
+      "locomotive_model": "ВЛ-60К",
+      "total": 17,
+      "fixed": 17,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 393,
+      "locomotive_name": "6540",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 17,
+      "fixed": 17,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 43,
+      "locomotive_name": "0207",
+      "locomotive_model": "O‘Z-EL",
+      "total": 16,
+      "fixed": 10,
+      "unfixed": 6,
+      "fixed_rate": 0.625
+    },
+    {
+      "locomotive_id": 75,
+      "locomotive_name": "5929",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 16,
+      "fixed": 15,
+      "unfixed": 1,
+      "fixed_rate": 0.9375
+    },
+    {
+      "locomotive_id": 322,
+      "locomotive_name": "6827",
+      "locomotive_model": "ТЭМ-2",
+      "total": 16,
+      "fixed": 16,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 18,
+      "locomotive_name": "1133",
+      "locomotive_model": "3ТЭ-10М",
+      "total": 16,
+      "fixed": 16,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 383,
+      "locomotive_name": "7118",
+      "locomotive_model": "ТЭМ-2",
+      "total": 16,
+      "fixed": 12,
+      "unfixed": 4,
+      "fixed_rate": 0.75
+    },
+    {
+      "locomotive_id": 329,
+      "locomotive_name": "7100",
+      "locomotive_model": "ТЭМ-2",
+      "total": 15,
+      "fixed": 15,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 355,
+      "locomotive_name": "1111",
+      "locomotive_model": "ТЭМ-2",
+      "total": 15,
+      "fixed": 15,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 358,
+      "locomotive_name": "6770",
+      "locomotive_model": "ТЭМ-2",
+      "total": 15,
+      "fixed": 15,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 447,
+      "locomotive_name": "6773",
+      "locomotive_model": "ТЭМ-2",
+      "total": 15,
+      "fixed": 15,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 110,
+      "locomotive_name": "6729",
+      "locomotive_model": "ТЭМ-2(12)",
+      "total": 15,
+      "fixed": 15,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 137,
+      "locomotive_name": "5215",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 15,
+      "fixed": 6,
+      "unfixed": 9,
+      "fixed_rate": 0.4
+    },
+    {
+      "locomotive_id": 158,
+      "locomotive_name": "5185",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 15,
+      "fixed": 15,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 22,
+      "locomotive_name": "5171",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 14,
+      "fixed": 14,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 340,
+      "locomotive_name": "3318",
+      "locomotive_model": "ТЭМ-2",
+      "total": 14,
+      "fixed": 14,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 310,
+      "locomotive_name": "5934",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 14,
+      "fixed": 14,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 312,
+      "locomotive_name": "5160",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 14,
+      "fixed": 14,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 325,
+      "locomotive_name": "4874",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 14,
+      "fixed": 14,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 531,
+      "locomotive_name": "956",
+      "locomotive_model": "ТЭМ-2",
+      "total": 14,
+      "fixed": 14,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 61,
+      "locomotive_name": "3315",
+      "locomotive_model": "ТЭМ-2(12)",
+      "total": 13,
+      "fixed": 13,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 521,
+      "locomotive_name": "РС004",
+      "locomotive_model": "ВЛ-60К",
+      "total": 13,
+      "fixed": 13,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 532,
+      "locomotive_name": "3172",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 13,
+      "fixed": 13,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 391,
+      "locomotive_name": "160",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 13,
+      "fixed": 13,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 125,
+      "locomotive_name": "1793",
+      "locomotive_model": "ТЭМ-2",
+      "total": 12,
+      "fixed": 12,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 199,
+      "locomotive_name": "181",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 12,
+      "fixed": 11,
+      "unfixed": 1,
+      "fixed_rate": 0.9167
+    },
+    {
+      "locomotive_id": 44,
+      "locomotive_name": "0209",
+      "locomotive_model": "O‘Z-EL",
+      "total": 12,
+      "fixed": 11,
+      "unfixed": 1,
+      "fixed_rate": 0.9167
+    },
+    {
+      "locomotive_id": 586,
+      "locomotive_name": "2429",
+      "locomotive_model": "3ВЛ80С(КЗ)",
+      "total": 12,
+      "fixed": 12,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 63,
+      "locomotive_name": "6097",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 12,
+      "fixed": 12,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 289,
+      "locomotive_name": "184",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 12,
+      "fixed": 12,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 334,
+      "locomotive_name": "6655",
+      "locomotive_model": "ТЭМ-2",
+      "total": 12,
+      "fixed": 7,
+      "unfixed": 5,
+      "fixed_rate": 0.5833
+    },
+    {
+      "locomotive_id": 85,
+      "locomotive_name": "1963",
+      "locomotive_model": "ТЭМ-2",
+      "total": 12,
+      "fixed": 12,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 40,
+      "locomotive_name": "1784",
+      "locomotive_model": "ВЛ-60К",
+      "total": 12,
+      "fixed": 12,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 140,
+      "locomotive_name": "7028",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 12,
+      "fixed": 12,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 114,
+      "locomotive_name": "6825",
+      "locomotive_model": "ТЭМ-2",
+      "total": 11,
+      "fixed": 11,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 321,
+      "locomotive_name": "4679",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 11,
+      "fixed": 11,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 587,
+      "locomotive_name": "2307",
+      "locomotive_model": "3ВЛ80С(КЗ)",
+      "total": 10,
+      "fixed": 10,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 278,
+      "locomotive_name": "038",
+      "locomotive_model": "UZTE-16M2",
+      "total": 10,
+      "fixed": 9,
+      "unfixed": 1,
+      "fixed_rate": 0.9
+    },
+    {
+      "locomotive_id": 349,
+      "locomotive_name": "6295",
+      "locomotive_model": "ТЭМ-2",
+      "total": 10,
+      "fixed": 10,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 128,
+      "locomotive_name": "1794",
+      "locomotive_model": "ТЭМ-2",
+      "total": 9,
+      "fixed": 9,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 138,
+      "locomotive_name": "4440",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 9,
+      "fixed": 9,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 145,
+      "locomotive_name": "2778",
+      "locomotive_model": "ТЭМ-2",
+      "total": 9,
+      "fixed": 9,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 381,
+      "locomotive_name": "2310",
+      "locomotive_model": "ТЭМ-2",
+      "total": 9,
+      "fixed": 4,
+      "unfixed": 5,
+      "fixed_rate": 0.4444
+    },
+    {
+      "locomotive_id": 386,
+      "locomotive_name": "6662",
+      "locomotive_model": "ТЭМ-2",
+      "total": 9,
+      "fixed": 9,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 130,
+      "locomotive_name": "6370",
+      "locomotive_model": "ТЭМ-2",
+      "total": 8,
+      "fixed": 8,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 108,
+      "locomotive_name": "6718",
+      "locomotive_model": "ТЭМ-2",
+      "total": 8,
+      "fixed": 6,
+      "unfixed": 2,
+      "fixed_rate": 0.75
+    },
+    {
+      "locomotive_id": 346,
+      "locomotive_name": "6572",
+      "locomotive_model": "ТЭМ-2",
+      "total": 8,
+      "fixed": 8,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 123,
+      "locomotive_name": "7087",
+      "locomotive_model": "ТЭМ-2",
+      "total": 7,
+      "fixed": 7,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 84,
+      "locomotive_name": "1105",
+      "locomotive_model": "ТЭМ-2",
+      "total": 7,
+      "fixed": 6,
+      "unfixed": 1,
+      "fixed_rate": 0.8571
+    },
+    {
+      "locomotive_id": 352,
+      "locomotive_name": "6583",
+      "locomotive_model": "ТЭМ-2",
+      "total": 7,
+      "fixed": 7,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 450,
+      "locomotive_name": "7050",
+      "locomotive_model": "ТЭМ-2",
+      "total": 7,
+      "fixed": 7,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 148,
+      "locomotive_name": "5052",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 7,
+      "fixed": 7,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 380,
+      "locomotive_name": "1716",
+      "locomotive_model": "ТЭМ-2",
+      "total": 7,
+      "fixed": 5,
+      "unfixed": 2,
+      "fixed_rate": 0.7143
+    },
+    {
+      "locomotive_id": 157,
+      "locomotive_name": "1151",
+      "locomotive_model": "2ТЭ-10М",
+      "total": 6,
+      "fixed": 5,
+      "unfixed": 1,
+      "fixed_rate": 0.8333
+    },
+    {
+      "locomotive_id": 413,
+      "locomotive_name": "607-09",
+      "locomotive_model": "ЭР-9Е",
+      "total": 6,
+      "fixed": 6,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 472,
+      "locomotive_name": "РС003",
+      "locomotive_model": "ВЛ-60К",
+      "total": 6,
+      "fixed": 6,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 80,
+      "locomotive_name": "964",
+      "locomotive_model": "ТЭМ-2",
+      "total": 6,
+      "fixed": 6,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 49,
+      "locomotive_name": "5775",
+      "locomotive_model": "ТЭМ-2",
+      "total": 5,
+      "fixed": 5,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 580,
+      "locomotive_name": "010",
+      "locomotive_model": "UZTE-16M3",
+      "total": 5,
+      "fixed": 5,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 409,
+      "locomotive_name": "607-01",
+      "locomotive_model": "ЭР-9Е",
+      "total": 5,
+      "fixed": 4,
+      "unfixed": 1,
+      "fixed_rate": 0.8
+    },
+    {
+      "locomotive_id": 581,
+      "locomotive_name": "1331",
+      "locomotive_model": "3ВЛ80С(КЗ)",
+      "total": 5,
+      "fixed": 5,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 558,
+      "locomotive_name": "0208",
+      "locomotive_model": "O‘Z-EL",
+      "total": 5,
+      "fixed": 5,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 388,
+      "locomotive_name": "6826",
+      "locomotive_model": "ТЭМ-2",
+      "total": 5,
+      "fixed": 1,
+      "unfixed": 4,
+      "fixed_rate": 0.2
+    },
+    {
+      "locomotive_id": 434,
+      "locomotive_name": "6313",
+      "locomotive_model": "ТЭМ-2",
+      "total": 5,
+      "fixed": 0,
+      "unfixed": 5,
+      "fixed_rate": 0.0
+    },
+    {
+      "locomotive_id": 499,
+      "locomotive_name": "4037-02",
+      "locomotive_model": "ЭР-9Е",
+      "total": 4,
+      "fixed": 4,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 410,
+      "locomotive_name": "607-04",
+      "locomotive_model": "ЭР-9Е",
+      "total": 4,
+      "fixed": 4,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 498,
+      "locomotive_name": "4037-01",
+      "locomotive_model": "ЭР-9Е",
+      "total": 4,
+      "fixed": 4,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 95,
+      "locomotive_name": "5656",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 4,
+      "fixed": 4,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 152,
+      "locomotive_name": "961",
+      "locomotive_model": "ТЭМ-2",
+      "total": 4,
+      "fixed": 4,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 579,
+      "locomotive_name": "4453",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 3,
+      "fixed": 3,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 58,
+      "locomotive_name": "6101",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 3,
+      "fixed": 3,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 591,
+      "locomotive_name": "1140",
+      "locomotive_model": "3ВЛ80С(КЗ)",
+      "total": 3,
+      "fixed": 3,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 395,
+      "locomotive_name": "103",
+      "locomotive_model": "ТЭП-70БС",
+      "total": 3,
+      "fixed": 3,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 367,
+      "locomotive_name": "3314",
+      "locomotive_model": "ТЭМ-2",
+      "total": 3,
+      "fixed": 3,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 45,
+      "locomotive_name": "6727",
+      "locomotive_model": "ТЭМ-2",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 500,
+      "locomotive_name": "4038-01",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 402,
+      "locomotive_name": "610-10",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 1,
+      "unfixed": 1,
+      "fixed_rate": 0.5
+    },
+    {
+      "locomotive_id": 398,
+      "locomotive_name": "610-02",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 1,
+      "unfixed": 1,
+      "fixed_rate": 0.5
+    },
+    {
+      "locomotive_id": 414,
+      "locomotive_name": "607-10",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 556,
+      "locomotive_name": "0211",
+      "locomotive_model": "O‘Z-EL",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 304,
+      "locomotive_name": "5808",
+      "locomotive_model": "ТЭМ-2",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 507,
+      "locomotive_name": "4051-01",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 422,
+      "locomotive_name": "4050-02",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 412,
+      "locomotive_name": "607-06",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 411,
+      "locomotive_name": "607-05",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 401,
+      "locomotive_name": "610-09",
+      "locomotive_model": "ЭР-9Е",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 139,
+      "locomotive_name": "5139",
+      "locomotive_model": "ЧМЭ-3",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 378,
+      "locomotive_name": "6317",
+      "locomotive_model": "ТЭМ-2",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 503,
+      "locomotive_name": "665-04",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": null,
+      "locomotive_name": null,
+      "locomotive_model": null,
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 557,
+      "locomotive_name": "0210",
+      "locomotive_model": "O‘Z-EL",
+      "total": 1,
+      "fixed": 0,
+      "unfixed": 1,
+      "fixed_rate": 0.0
+    },
+    {
+      "locomotive_id": 399,
+      "locomotive_name": "610-07",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 428,
+      "locomotive_name": "4050-01",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 425,
+      "locomotive_name": "659-05",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 404,
+      "locomotive_name": "660-02",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 407,
+      "locomotive_name": "660-08",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 501,
+      "locomotive_name": "659-07",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 397,
+      "locomotive_name": "610-01",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 400,
+      "locomotive_name": "610-08",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    },
+    {
+      "locomotive_id": 502,
+      "locomotive_name": "663-02",
+      "locomotive_model": "ЭР-9Е",
+      "total": 1,
+      "fixed": 1,
+      "unfixed": 0,
+      "fixed_rate": 1.0
+    }
+  ],
+  "by_month": [
+    {
+      "month": "2021-06",
+      "total": 978,
+      "fixed": 978,
+      "unfixed": 0
+    },
+    {
+      "month": "2021-07",
+      "total": 1523,
+      "fixed": 1523,
+      "unfixed": 0
+    },
+    {
+      "month": "2021-08",
+      "total": 1394,
+      "fixed": 1394,
+      "unfixed": 0
+    },
+    {
+      "month": "2021-09",
+      "total": 364,
+      "fixed": 364,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-03",
+      "total": 669,
+      "fixed": 669,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-04",
+      "total": 1060,
+      "fixed": 1060,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-05",
+      "total": 972,
+      "fixed": 972,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-06",
+      "total": 1166,
+      "fixed": 1166,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-07",
+      "total": 1077,
+      "fixed": 1077,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-08",
+      "total": 1141,
+      "fixed": 1141,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-09",
+      "total": 1013,
+      "fixed": 1013,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-10",
+      "total": 1124,
+      "fixed": 1124,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-11",
+      "total": 491,
+      "fixed": 491,
+      "unfixed": 0
+    },
+    {
+      "month": "2022-12",
+      "total": 421,
+      "fixed": 421,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-01",
+      "total": 882,
+      "fixed": 882,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-02",
+      "total": 1135,
+      "fixed": 1135,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-03",
+      "total": 997,
+      "fixed": 997,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-04",
+      "total": 987,
+      "fixed": 987,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-05",
+      "total": 847,
+      "fixed": 847,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-06",
+      "total": 531,
+      "fixed": 531,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-07",
+      "total": 171,
+      "fixed": 171,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-09",
+      "total": 87,
+      "fixed": 87,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-10",
+      "total": 115,
+      "fixed": 115,
+      "unfixed": 0
+    },
+    {
+      "month": "2023-11",
+      "total": 350,
+      "fixed": 195,
+      "unfixed": 155
+    },
+    {
+      "month": "2023-12",
+      "total": 912,
+      "fixed": 848,
+      "unfixed": 64
+    },
+    {
+      "month": "2024-01",
+      "total": 894,
+      "fixed": 894,
+      "unfixed": 0
+    },
+    {
+      "month": "2024-02",
+      "total": 849,
+      "fixed": 849,
+      "unfixed": 0
+    },
+    {
+      "month": "2024-03",
+      "total": 700,
+      "fixed": 688,
+      "unfixed": 12
+    },
+    {
+      "month": "2024-04",
+      "total": 822,
+      "fixed": 822,
+      "unfixed": 0
+    },
+    {
+      "month": "2024-05",
+      "total": 1215,
+      "fixed": 1215,
+      "unfixed": 0
+    },
+    {
+      "month": "2024-06",
+      "total": 1092,
+      "fixed": 1092,
+      "unfixed": 0
+    },
+    {
+      "month": "2024-07",
+      "total": 753,
+      "fixed": 749,
+      "unfixed": 4
+    },
+    {
+      "month": "2024-08",
+      "total": 1997,
+      "fixed": 1979,
+      "unfixed": 18
+    },
+    {
+      "month": "2024-09",
+      "total": 1649,
+      "fixed": 1649,
+      "unfixed": 0
+    },
+    {
+      "month": "2024-10",
+      "total": 1368,
+      "fixed": 1368,
+      "unfixed": 0
+    },
+    {
+      "month": "2024-11",
+      "total": 1370,
+      "fixed": 1362,
+      "unfixed": 8
+    },
+    {
+      "month": "2024-12",
+      "total": 1420,
+      "fixed": 1420,
+      "unfixed": 0
+    },
+    {
+      "month": "2025-01",
+      "total": 1413,
+      "fixed": 1407,
+      "unfixed": 6
+    },
+    {
+      "month": "2025-02",
+      "total": 1253,
+      "fixed": 1252,
+      "unfixed": 1
+    },
+    {
+      "month": "2025-03",
+      "total": 1459,
+      "fixed": 1458,
+      "unfixed": 1
+    },
+    {
+      "month": "2025-04",
+      "total": 1399,
+      "fixed": 1378,
+      "unfixed": 21
+    },
+    {
+      "month": "2025-05",
+      "total": 1652,
+      "fixed": 1487,
+      "unfixed": 165
+    },
+    {
+      "month": "2025-06",
+      "total": 2387,
+      "fixed": 2088,
+      "unfixed": 299
+    },
+    {
+      "month": "2025-07",
+      "total": 1714,
+      "fixed": 1522,
+      "unfixed": 192
+    },
+    {
+      "month": "2025-08",
+      "total": 1431,
+      "fixed": 1249,
+      "unfixed": 182
+    },
+    {
+      "month": "2025-09",
+      "total": 942,
+      "fixed": 828,
+      "unfixed": 114
+    },
+    {
+      "month": "2025-10",
+      "total": 854,
+      "fixed": 698,
+      "unfixed": 156
+    },
+    {
+      "month": "2025-11",
+      "total": 66,
+      "fixed": 54,
+      "unfixed": 12
+    },
+    {
+      "month": "2026-01",
+      "total": 2,
+      "fixed": 2,
+      "unfixed": 0
+    },
+    {
+      "month": "2026-02",
+      "total": 157,
+      "fixed": 143,
+      "unfixed": 14
+    },
+    {
+      "month": "2026-03",
+      "total": 575,
+      "fixed": 530,
+      "unfixed": 45
+    },
+    {
+      "month": "2026-04",
+      "total": 711,
+      "fixed": 682,
+      "unfixed": 29
+    },
+    {
+      "month": "2026-05",
+      "total": 210,
+      "fixed": 156,
+      "unfixed": 54
+    },
+    {
+      "month": "unknown",
+      "total": 14,
+      "fixed": 13,
+      "unfixed": 1
+    }
+  ]
+}

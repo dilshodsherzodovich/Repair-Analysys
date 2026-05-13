@@ -9,11 +9,12 @@ import {
 } from "../types/defective-works";
 import { queryKeys } from "../querykey";
 
-export function useDefectiveWorks(params?: DefectiveWorkListParams) {
+export function useDefectiveWorks(params?: DefectiveWorkListParams, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: [queryKeys.defectiveWorks.all, params],
     queryFn: () => defectiveWorksService.getDefectiveWorks(params),
     staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled ?? true,
     retry: (failureCount, error: any) => {
       if (error?.response?.status === 401 || error?.response?.status === 403) {
         return false;

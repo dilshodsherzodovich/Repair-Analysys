@@ -38,7 +38,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
   const [isClient, setIsClient] = useState(false);
   const { getAllQueryValues } = useFilterParams();
 
-  const { token, user, expires, refresh_token } = getAllQueryValues();
+  const { token, user, expires, refresh_token, page } = getAllQueryValues();
 
   const safePublicRoutes = useMemo(
     () => publicRoutes || DEFAULT_PUBLIC_ROUTES,
@@ -85,7 +85,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
           expiryDate,
         );
 
-        const defaultRoute = getDefaultRouteForRole(parsedUser);
+        const defaultRoute = page || getDefaultRouteForRole(parsedUser);
         router.replace(defaultRoute);
         return;
       } catch (error) {

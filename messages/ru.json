@@ -180,7 +180,8 @@
       "delay_reports": "Отчёты по срывам",
       "razvarot": "Разворот",
       "tu-137": "ТУ-137",
-      "tu-137-reports": "ТУ-137 Отчёты"
+      "tu-137-reports": "ТУ-137 Отчёты",
+      "tu-152": "ТУ-152"
     },
     "support_button": "Техническая поддержка",
     "sidebar_collapse": "Свернуть боковую панель",
@@ -1085,5 +1086,24 @@
     "status_open": "Открыто",
     "tab_in_progress": "В процессе",
     "tab_hal_qilingan": "Выполнено"
+  },
+  "Tu152Page": {
+    "title": "ТУ-152 Статистика",
+    "breadcrumbs_home": "Главная",
+    "generated_at": "Дата отчёта",
+    "stat_total": "Всего дефектов",
+    "stat_fixed": "Устранено",
+    "stat_unfixed": "Не устранено",
+    "stat_rate": "Процент устранения",
+    "section_by_org": "По организациям",
+    "section_by_ins": "По типу осмотра",
+    "section_records": "Записи",
+    "col_loco": "Локомотив",
+    "col_inspection": "Тип осмотра",
+    "col_issue": "Проблема",
+    "col_org": "Организация",
+    "col_date": "Дата",
+    "loading": "Загрузка...",
+    "no_data": "Данные не найдены"
   }
 }

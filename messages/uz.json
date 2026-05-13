@@ -180,7 +180,8 @@
       "delay_reports": "Sriv hisobotlar",
       "razvarot": "Razvarot",
       "tu-137": "TU-137",
-      "tu-137-reports": "TU-137 Hisoboti"
+      "tu-137-reports": "TU-137 Hisoboti",
+      "tu-152": "TU-152"
     },
     "support_button": "Texnik yordam markazi",
     "sidebar_collapse": "Yon panelni yopish",
@@ -1085,5 +1086,24 @@
     "status_open": "Ochiq",
     "tab_in_progress": "Jarayonda",
     "tab_hal_qilingan": "Hal qilingan"
+  },
+  "Tu152Page": {
+    "title": "TU-152 Statistika",
+    "breadcrumbs_home": "Bosh sahifa",
+    "generated_at": "Hisobot sanasi",
+    "stat_total": "Jami nuqsonlar",
+    "stat_fixed": "Tuzatilgan",
+    "stat_unfixed": "Tuzatilmagan",
+    "stat_rate": "Tuzatish foizi",
+    "section_by_org": "Tashkilotlar bo'yicha",
+    "section_by_ins": "Tekshiruv turi bo'yicha",
+    "section_records": "Yozuvlar",
+    "col_loco": "Lokomotiv",
+    "col_inspection": "Tekshiruv turi",
+    "col_issue": "Muammo",
+    "col_org": "Tashkilot",
+    "col_date": "Sana",
+    "loading": "Yuklanmoqda...",
+    "no_data": "Ma'lumot topilmadi"
   }
 }

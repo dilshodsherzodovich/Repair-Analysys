@@ -55,7 +55,10 @@ export type Permission =
   | "delete_maneuver_journal"
 
   // tu-137 permissions
-  | "view_tu137";
+  | "view_tu137"
+
+  // tu-152 permissions
+  | "view_tu152";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -94,6 +97,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "create_maneuver_journal",
     "edit_maneuver_journal",
     "delete_maneuver_journal",
+    "view_tu152",
   ],
   moderator: [
     "view_dashboard",
@@ -128,6 +132,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "create_maneuver_journal",
     "edit_maneuver_journal",
     "delete_maneuver_journal",
+    "view_tu152",
   ],
   passport_staff: [
     "view_depo",
@@ -275,6 +280,9 @@ export function canAccessSection(
     }
     case "tu-137": {
       return hasPermission(user, "view_tu137");
+    }
+    case "tu-152": {
+      return hasPermission(user, "view_tu152");
     }
     default:
       return false;
