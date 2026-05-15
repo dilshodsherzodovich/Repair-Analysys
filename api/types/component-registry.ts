@@ -27,6 +27,8 @@ export interface ComponentRegistryParams {
   search?: string;
   organization?: number;
   no_page?: boolean;
+  defect_date_start?: string;
+  defect_date_end?: string;
 }
 
 export interface CreateComponentRegistryPayload {

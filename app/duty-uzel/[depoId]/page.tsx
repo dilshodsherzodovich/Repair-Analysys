@@ -3,6 +3,8 @@
 import { useState, useCallback, useMemo } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import * as XLSX from "xlsx";
+import { format } from "date-fns";
 import PageFilters from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -15,6 +17,7 @@ import {
   useDeleteComponentRegistry,
 } from "@/api/hooks/use-component-registry";
 import { ComponentRegistryEntry } from "@/api/types/component-registry";
+import { componentRegistryService } from "@/api/services/component-registry.service";
 import { ComponentRegistryModal } from "./components/component-registry-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
@@ -40,10 +43,13 @@ export default function DutyUzelPage() {
 
   // Get query params
   const { q, page, pageSize } = Object.fromEntries(searchParams.entries());
+  const defectDateStart = searchParams.get("defect_date_start") || undefined;
+  const defectDateEnd = searchParams.get("defect_date_end") || undefined;
 
   // State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editEntry, setEditEntry] = useState<ComponentRegistryEntry | undefined>(undefined);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Get current page and items per page from query params
   const currentPage = page ? parseInt(page) : 1;
@@ -58,6 +64,8 @@ export default function DutyUzelPage() {
     page_size: itemsPerPage,
     search: q,
     organization: organizationId,
+    defect_date_start: defectDateStart,
+    defect_date_end: defectDateEnd,
   });
 
   const createEntryMutation = useCreateComponentRegistry();
@@ -166,6 +174,61 @@ export default function DutyUzelPage() {
     }
   };
 
+  // Handle excel export
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const allData = await componentRegistryService.getRegistry({
+        no_page: true,
+        search: q,
+        organization: organizationId,
+        defect_date_start: defectDateStart,
+        defect_date_end: defectDateEnd,
+      });
+      const rows = (allData as any).results ?? allData;
+      const headers = [
+        t("columns.defect_date"),
+        t("columns.organization"),
+        t("columns.inspection"),
+        t("columns.locomotive"),
+        t("columns.component"),
+        t("columns.section"),
+        t("columns.reason"),
+        t("columns.removed_manufacture_year"),
+        t("columns.removed_manufacture_factory"),
+        t("columns.installed_manufacture_year"),
+        t("columns.installed_manufacture_factory"),
+      ];
+      const sheetData = [
+        headers,
+        ...(rows as ComponentRegistryEntry[]).map((row) => [
+          formatDate(row.defect_date),
+          row.organization,
+          row.inspection,
+          `${row.locomotive}-${row.loc_model_name || ""}`,
+          row.component,
+          row.section || "—",
+          row.reason,
+          row.removed_manufacture_year,
+          row.removed_manufacture_factory,
+          row.installed_manufacture_year,
+          row.installed_manufacture_factory,
+        ]),
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(sheetData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+      XLSX.writeFile(wb, `duty-uzel-${format(new Date(), "yyyy-MM-dd")}.xlsx`);
+    } catch (err) {
+      showError(
+        t("error_title"),
+        err instanceof Error ? err.message : t("error_load")
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  }, [q, organizationId, defectDateStart, defectDateEnd, showError, t]);
+
   // Table columns
   const columns: TableColumn<ComponentRegistryEntry>[] = useMemo(
     () => [
@@ -254,9 +317,15 @@ export default function DutyUzelPage() {
           filters={[]}
           hasSearch={true}
           searchPlaceholder={t("search_placeholder")}
+          hasDateRangePicker={true}
+          dateRangeStartKey="defect_date_start"
+          dateRangeEndKey="defect_date_end"
+          dateRangePickerLabel={t("columns.defect_date")}
           addButtonText={t("add_button")}
           addButtonPermittion="create_duty_uzel_report"
           onAdd={handleCreate}
+          onExport={handleExport}
+          exportLoading={isExporting}
         />
       </div>
 

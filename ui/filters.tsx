@@ -45,6 +45,8 @@ interface PageFiltersProps {
   hasSearch?: boolean;
   hasDatePicker?: boolean;
   hasDateRangePicker?: boolean;
+  dateRangeStartKey?: string;
+  dateRangeEndKey?: string;
   searchPlaceholder?: string;
   datePickerLabel?: string;
   dateRangePickerLabel?: string;
@@ -67,6 +69,8 @@ export default function PageFilters({
   hasSearch = true,
   hasDatePicker = false,
   hasDateRangePicker = false,
+  dateRangeStartKey = "start_date",
+  dateRangeEndKey = "end_date",
   searchPlaceholder,
   datePickerLabel,
   dateRangePickerLabel,
@@ -162,8 +166,8 @@ export default function PageFilters({
     const startString = startDate ? format(startDate, "yyyy-MM-dd") : "";
     const endString = endDate ? format(endDate, "yyyy-MM-dd") : "";
     updateQuery({
-      start_date: startString,
-      end_date: endString,
+      [dateRangeStartKey]: startString,
+      [dateRangeEndKey]: endString,
     });
   };
 
@@ -171,11 +175,11 @@ export default function PageFilters({
   const currentDate = getQueryValue("date")
     ? new Date(getQueryValue("date"))
     : undefined;
-  const currentStartDate = getQueryValue("start_date")
-    ? new Date(getQueryValue("start_date"))
+  const currentStartDate = getQueryValue(dateRangeStartKey)
+    ? new Date(getQueryValue(dateRangeStartKey))
     : undefined;
-  const currentEndDate = getQueryValue("end_date")
-    ? new Date(getQueryValue("end_date"))
+  const currentEndDate = getQueryValue(dateRangeEndKey)
+    ? new Date(getQueryValue(dateRangeEndKey))
     : undefined;
 
   return (
