@@ -1046,11 +1046,23 @@
     "export_excel": "Excel",
     "export_filename": "Lokomotiv masofa hisoboti",
     "export_error": "Excel yuklab olishda xatolik",
+    "locomotives_count": "{count} ta lokomotiv",
     "columns": {
       "locomotive": "Lokomotiv",
       "sana": "Sana",
       "masofa": "Masofa",
-      "den": "Kun"
+      "den": "Kun",
+      "no": "№",
+      "series": "Seriya",
+      "number": "Raqam",
+      "manufactured_date": "Ishlab chiq.",
+      "bandaj_mm": "Bandaj, mm",
+      "total_mileage": "Jami km",
+      "avg_monthly_mileage": "O'rta oylik km",
+      "tamirdan_km": "Ta'mirdan, km",
+      "norma": "Norma",
+      "qoldiq": "Qoldiq",
+      "keyingi_sana": "Keyingi sana"
     }
   },
   "Tu137Page": {

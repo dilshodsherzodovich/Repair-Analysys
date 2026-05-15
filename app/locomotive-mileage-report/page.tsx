@@ -1,12 +1,9 @@
 "use client";
 
-import { useMemo, useEffect, useState, useCallback } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
-import { format, differenceInDays } from "date-fns";
 import { PageHeader } from "@/ui/page-header";
-import PageFilters, { type FiltersQuery } from "@/ui/filters";
-import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
+import { PermissionGuard } from "@/components/permission-guard";
 import {
   Table,
   TableBody,
@@ -18,78 +15,36 @@ import {
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import { useLocomotiveMileageReport } from "@/api/hooks/use-locomotive-mileage-report";
-import { locomotiveMileageReportService } from "@/api/services/locomotive-mileage-report.service";
-import type {
-  LocomotiveMileageReportResponse,
-  MileageReportLocomotiveData,
-  MileageReportInspectionEntry,
-} from "@/api/types/locomotive-mileage-report";
-import {
-  MILEAGE_REPORT_INSPECTION_KEYS,
-  MILEAGE_REPORT_INSPECTION_LABELS,
-} from "@/api/types/locomotive-mileage-report";
-import { cn } from "@/lib/utils";
-import { canAccessSection } from "@/lib/permissions";
-import { useSnackbar } from "@/providers/snackbar-provider";
+import { useTxk13Report } from "@/api/hooks/use-txk13-report";
+import type { Txk13Inspection, Txk13Locomotive } from "@/api/types/txk13-report";
+import { canAccessSection, type Permission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import type { UserData } from "@/api/types/auth";
 
-type DisplayMode = "km" | "kun";
+const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
-function formatReportDate(dateString: string | null | undefined): string {
-  if (!dateString) return "—";
-  try {
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return "—";
-    return format(d, "dd.MM.yyyy");
-  } catch {
-    return "—";
-  }
+function formatNum(n: number): string {
+  if (n == null) return "0";
+  return n.toLocaleString("en-US");
 }
 
-function getDaysFromToday(dateString: string | null | undefined): string {
-  if (!dateString) return "—";
-  try {
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return "—";
-    const days = differenceInDays(new Date(), d);
-    return String(days);
-  } catch {
-    return "—";
+function getInspectionMap(loco: Txk13Locomotive): Map<number, Txk13Inspection> {
+  const map = new Map<number, Txk13Inspection>();
+  for (const insp of loco.inspections) {
+    map.set(insp.type_id, insp);
   }
+  return map;
 }
 
-function flattenReport(
-  data: LocomotiveMileageReportResponse | undefined
-): { locomotive: string; model: string; locNumber: string; data: MileageReportLocomotiveData }[] {
-  if (!data) return [];
-  const rows: { locomotive: string; model: string; locNumber: string; data: MileageReportLocomotiveData }[] = [];
-  for (const [modelName, locs] of Object.entries(data)) {
-    if (!locs || typeof locs !== "object") continue;
-    for (const [locNumber, locData] of Object.entries(locs)) {
-      if (!locData || typeof locData !== "object") continue;
-      rows.push({
-        locomotive: `${locNumber} ${modelName}`,
-        model: modelName,
-        locNumber,
-        data: locData as MileageReportLocomotiveData,
-      });
-    }
-  }
-  return rows;
-}
+const FIXED_COL_COUNT = 7;
+const INSP_SUB_COUNT = 5;
 
-function getEntry(
-  data: MileageReportLocomotiveData,
-  key: (typeof MILEAGE_REPORT_INSPECTION_KEYS)[number]
-): MileageReportInspectionEntry {
-  return data[key] ?? { date: null, mileage: 0 };
+function inspBg(idx: number) {
+  return idx % 2 === 0 ? "bg-[#F1F5F9]" : "bg-white";
 }
 
 export default function LocomotiveMileageReportPage() {
   const t = useTranslations("LocomotiveMileageReportPage");
-  const searchParams = useSearchParams();
   const { updateQuery, getQueryValue } = useFilterParams();
 
   const currentUser: UserData | null =
@@ -102,11 +57,7 @@ export default function LocomotiveMileageReportPage() {
   }
 
   const organizationParam = getQueryValue("organization");
-  const locNumberParam = getQueryValue("loc_number");
-  const tabParam = (getQueryValue("tab") as DisplayMode) || "km";
-
-  const [displayMode, setDisplayMode] = useState<DisplayMode>(tabParam);
-  const [isExporting, setIsExporting] = useState(false);
+  const [selectedInspectionIds, setSelectedInspectionIds] = useState<number[]>(DEFAULT_INSPECTION_IDS);
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
@@ -116,21 +67,15 @@ export default function LocomotiveMileageReportPage() {
         ?.results ?? [];
 
   const organizationId = organizationParam ? Number(organizationParam) : undefined;
+
   const reportParams = useMemo(
-    () =>
-      organizationId != null
-        ? {
-            organization: organizationId,
-            loc_number: locNumberParam || undefined,
-          }
-        : null,
-    [organizationId, locNumberParam]
+    () => (organizationId != null ? { organization: organizationId } : null),
+    [organizationId]
   );
 
-  const { data: reportData, isLoading: isLoadingReport } =
-    useLocomotiveMileageReport(reportParams);
+  const { data: reportData, isLoading: isLoadingReport } = useTxk13Report(reportParams);
 
-  // When user is not admin, set organization to their organization
+  // Non-admin: auto-set org
   useEffect(() => {
     if (!currentUser || currentUser.role === "admin") return;
     const userOrgId = (currentUser.branch as { organization?: { id: number } } | undefined)
@@ -141,76 +86,7 @@ export default function LocomotiveMileageReportPage() {
     }
   }, [currentUser, organizationParam, updateQuery]);
 
-  // Sync URL tab with local state
-  useEffect(() => {
-    const tab = (searchParams.get("tab") as DisplayMode) || "km";
-    setDisplayMode(tab);
-  }, [searchParams]);
-
-  const handleTabChange = (value: string) => {
-    const mode = value as DisplayMode;
-    setDisplayMode(mode);
-    updateQuery({ tab: mode });
-  };
-
-  const flatRows = useMemo(() => flattenReport(reportData), [reportData]);
-  const { showError } = useSnackbar();
-
-  const handleExport = useCallback(async () => {
-    if (organizationId == null) {
-      showError(t("choose_organization"));
-      return;
-    }
-    setIsExporting(true);
-    try {
-      const blob = await locomotiveMileageReportService.exportExcel({
-        organization: organizationId,
-        search: locNumberParam || undefined,
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${t("export_filename")}-${format(new Date(), "yyyy-MM-dd")}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      showError(
-        err instanceof Error ? err.message : t("export_error")
-      );
-    } finally {
-      setIsExporting(false);
-    }
-  }, [organizationId, locNumberParam, showError, t]);
-
-  const pageFilters = useMemo((): FiltersQuery[] => {
-    const orgOptions = [
-      { label: t("choose_organization"), value: "" },
-      ...organizations.map((org: { id: number; name: string }) => ({
-        label: org.name,
-        value: String(org.id),
-      })),
-    ];
-    return [
-      {
-        name: "loc_number",
-        label: t("loc_number_placeholder"),
-        isSelect: false,
-        placeholder: t("loc_number_placeholder"),
-      },
-      {
-        name: "organization",
-        label: t("choose_organization"),
-        isSelect: true,
-        options: orgOptions,
-        placeholder: t("choose_organization"),
-        loading: isLoadingOrganizations,
-        permission: "choose_inspection_organization",
-      },
-    ];
-  }, [organizations, isLoadingOrganizations, t]);
-
+  // Auto-select first org
   useEffect(() => {
     if (organizationId != null || isLoadingOrganizations || organizations.length === 0) return;
     const firstOrg = organizations[0] as { id: number } | undefined;
@@ -219,159 +95,261 @@ export default function LocomotiveMileageReportPage() {
     }
   }, [organizationId, isLoadingOrganizations, organizations, updateQuery]);
 
+  // Collect unique inspection types across all orgs, sorted by type_id
+  const inspectionTypes = useMemo((): { type_id: number; type: string }[] => {
+    if (!reportData?.data) return [];
+    const map = new Map<number, string>();
+    for (const org of reportData.data) {
+      for (const loco of org.locomotives) {
+        for (const insp of loco.inspections) {
+          map.set(insp.type_id, insp.type);
+        }
+      }
+    }
+    return Array.from(map.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([type_id, type]) => ({ type_id, type }));
+  }, [reportData]);
+
+  const selectedInspectionTypes = useMemo(
+    () => inspectionTypes.filter((i) => selectedInspectionIds.includes(i.type_id)),
+    [inspectionTypes, selectedInspectionIds]
+  );
+
+  const totalColCount = FIXED_COL_COUNT + selectedInspectionTypes.length * INSP_SUB_COUNT;
+
+  const toggleInspection = (typeId: number) => {
+    setSelectedInspectionIds((prev) =>
+      prev.includes(typeId) ? prev.filter((id) => id !== typeId) : [...prev, typeId]
+    );
+  };
+
+  const orgOptions = useMemo(
+    () => [
+      { label: t("choose_organization"), value: "" },
+      ...organizations.map((org: { id: number; name: string }) => ({
+        label: org.name,
+        value: String(org.id),
+      })),
+    ],
+    [organizations, t]
+  );
+
+  const orgs = reportData?.data ?? [];
+  const isEmpty = !isLoadingReport && orgs.length === 0;
+
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t("title")}
-        description={t("description")}
-      />
+      <PageHeader title={t("title")} description={t("description")} />
 
-      <div className="mb-4">
-        <Tabs value={displayMode} onValueChange={handleTabChange}>
-          <TabsList className="bg-white border border-gray-200 p-1 gap-2 rounded-md inline-flex">
-            <TabsTrigger
-              value="km"
-              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
-            >
-              {t("tab_km")}
-            </TabsTrigger>
-            <TabsTrigger
-              value="kun"
-              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
-            >
-              {t("tab_kun")}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+      {/* Filter row */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        {/* Organization select */}
+        <PermissionGuard permission={"choose_inspection_organization" as Permission}>
+          <select
+            value={organizationParam}
+            onChange={(e) => updateQuery({ organization: e.target.value })}
+            disabled={isLoadingOrganizations}
+            className="h-10 min-w-[220px] max-w-[300px] px-3 border border-[#CAD5E2] rounded-md bg-white text-sm text-[#0F172B] focus:outline-none focus:ring-0 focus:border-[#CAD5E2] disabled:opacity-60 cursor-pointer"
+          >
+            {orgOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </PermissionGuard>
+
+        {/* Divider */}
+        {inspectionTypes.length > 0 && (
+          <div className="h-8 w-px bg-[#E2E8F0] shrink-0" />
+        )}
+
+        {/* Inspection type checkboxes */}
+        {inspectionTypes.map((insp) => (
+          <label
+            key={insp.type_id}
+            className="flex items-center gap-1.5 cursor-pointer select-none"
+          >
+            <input
+              type="checkbox"
+              checked={selectedInspectionIds.includes(insp.type_id)}
+              onChange={() => toggleInspection(insp.type_id)}
+              className="w-4 h-4 rounded border-[#CAD5E2] text-blue-600 cursor-pointer accent-blue-600"
+            />
+            <span className="text-sm text-[#0F172B] whitespace-nowrap font-medium">
+              {insp.type}
+            </span>
+          </label>
+        ))}
       </div>
 
-      <PageFilters
-        filters={pageFilters}
-        hasSearch={false}
-        onExport={handleExport}
-        exportButtonText={t("export_excel")}
-        exportLoading={isExporting}
-      />
-
-      <div className="rounded-lg border border-[#CAD5E2] overflow-hidden bg-white">
-        {isLoadingReport ? (
-          <Table className="w-full min-w-[900px]">
-            <TableHeader>
-              <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <TableHead className="min-w-[140px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
-                  {t("columns.locomotive")}
+      <div className="rounded-lg border border-[#CAD5E2] overflow-x-auto bg-white">
+        <Table className="w-full text-xs">
+          <TableHeader>
+            {/* Row 1: fixed headers + inspection group headers */}
+            <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
+              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] text-center whitespace-nowrap">
+                {t("columns.no")}
+              </TableHead>
+              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+                {t("columns.series")}
+              </TableHead>
+              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+                {t("columns.number")}
+              </TableHead>
+              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+                {t("columns.manufactured_date")}
+              </TableHead>
+              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+                {t("columns.bandaj_mm")}
+              </TableHead>
+              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+                {t("columns.total_mileage")}
+              </TableHead>
+              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+                {t("columns.avg_monthly_mileage")}
+              </TableHead>
+              {selectedInspectionTypes.map((insp, idx) => (
+                <TableHead
+                  key={insp.type_id}
+                  colSpan={INSP_SUB_COUNT}
+                  className={`py-2 px-2 text-[#475569] font-semibold text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
+                >
+                  {insp.type}
                 </TableHead>
-                {MILEAGE_REPORT_INSPECTION_KEYS.map((key) => (
-                  <TableHead
-                    key={key}
-                    colSpan={2}
-                    className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0 text-center"
-                  >
-                    {MILEAGE_REPORT_INSPECTION_LABELS[key]}
-                  </TableHead>
-                ))}
-              </TableRow>
-              <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <TableHead className="py-2 px-4 border-r border-[#E2E8F0]" />
-                {MILEAGE_REPORT_INSPECTION_KEYS.flatMap((key) => [
-                  <TableHead key={`${key}-sana`} className="py-2 px-4 text-[#64748B] text-sm font-normal border-r border-[#E2E8F0]">
-                    {t("columns.sana")}
-                  </TableHead>,
-                  <TableHead key={`${key}-masofa`} className="py-2 px-4 text-[#64748B] text-sm font-normal border-r border-[#E2E8F0] last:border-r-0">
-                    {displayMode === "kun" ? t("columns.den") : t("columns.masofa")}
-                  </TableHead>,
-                ])}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+              ))}
+            </TableRow>
+            {/* Row 2: sub-headers for each inspection type */}
+            <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
+              {selectedInspectionTypes.map((insp, idx) => [
+                <TableHead key={`${insp.type_id}-sana`} className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                  {t("columns.sana")}
+                </TableHead>,
+                <TableHead key={`${insp.type_id}-tamirdan`} className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                  {t("columns.tamirdan_km")}
+                </TableHead>,
+                <TableHead key={`${insp.type_id}-norma`} className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                  {t("columns.norma")}
+                </TableHead>,
+                <TableHead key={`${insp.type_id}-qoldiq`} className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                  {t("columns.qoldiq")}
+                </TableHead>,
+                <TableHead
+                  key={`${insp.type_id}-keyingi`}
+                  className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
+                >
+                  {t("columns.keyingi_sana")}
+                </TableHead>,
+              ])}
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {isLoadingReport ? (
               <TableSkeleton
                 rows={8}
-                columns={1 + MILEAGE_REPORT_INSPECTION_KEYS.length * 2}
-                cellClassName="py-3 px-4"
+                columns={totalColCount || FIXED_COL_COUNT}
+                cellClassName="py-2 px-2"
               />
-            </TableBody>
-          </Table>
-        ) : (
-          <Table className="w-full min-w-[900px]">
-            <TableHeader>
-              <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <TableHead className="min-w-[140px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
-                  {t("columns.locomotive")}
-                </TableHead>
-                {MILEAGE_REPORT_INSPECTION_KEYS.map((key) => (
-                  <TableHead
-                    key={key}
-                    colSpan={2}
-                    className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0 text-center"
-                  >
-                    {MILEAGE_REPORT_INSPECTION_LABELS[key]}
-                  </TableHead>
-                ))}
+            ) : isEmpty ? (
+              <TableRow>
+                <TableCell
+                  colSpan={totalColCount}
+                  className="py-8 text-center text-[#64748B]"
+                >
+                  {t("empty_title")}
+                </TableCell>
               </TableRow>
-              <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <TableHead className="py-2 px-4 border-r border-[#E2E8F0]" />
-                {MILEAGE_REPORT_INSPECTION_KEYS.flatMap((key) => [
-                  <TableHead key={`${key}-sana`} className="py-2 px-4 text-[#64748B] text-sm font-normal border-r border-[#E2E8F0] w-[100px]">
-                    {t("columns.sana")}
-                  </TableHead>,
-                  <TableHead key={`${key}-masofa`} className="py-2 px-4 text-[#64748B] text-sm font-normal border-r border-[#E2E8F0] last:border-r-0 w-[90px]">
-                    {displayMode === "kun" ? t("columns.den") : t("columns.masofa")}
-                  </TableHead>,
-                ])}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {flatRows.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={1 + MILEAGE_REPORT_INSPECTION_KEYS.length * 2}
-                    className="py-8 text-center text-[#64748B]"
-                  >
-                    {t("empty_title")}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                flatRows.map((row) => (
-                  <TableRow
-                    key={row.locomotive}
-                    className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0"
-                  >
-                    <TableCell className="py-3 px-4 text-[#0F172B] font-medium border-r border-[#E2E8F0]">
-                      {row.locomotive}
+            ) : (
+              orgs.map((org) => (
+                <React.Fragment key={org.organization_name}>
+                  {/* Org header row */}
+                  <TableRow className="bg-[#EFF6FF] hover:bg-[#EFF6FF]">
+                    <TableCell
+                      colSpan={totalColCount}
+                      className="py-2 px-3 font-semibold text-[#1e40af] border-b border-[#E2E8F0] text-sm"
+                    >
+                      {org.organization_name}
+                      <span className="ml-2 font-normal text-[#64748B]">
+                        ({t("locomotives_count", { count: org.locomotives.length })})
+                      </span>
                     </TableCell>
-                    {MILEAGE_REPORT_INSPECTION_KEYS.flatMap((key, idx) => {
-                      const entry = getEntry(row.data, key);
-                      const masofaValue =
-                        displayMode === "km"
-                          ? (entry.mileage != null && entry.mileage > 0
-                              ? String(entry.mileage)
-                              : "0")
-                          : getDaysFromToday(entry.date);
-                      const isLast = idx === MILEAGE_REPORT_INSPECTION_KEYS.length - 1;
-                      return [
-                        <TableCell
-                          key={`${row.locomotive}-${key}-sana`}
-                          className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0]"
-                        >
-                          {formatReportDate(entry.date)}
-                        </TableCell>,
-                        <TableCell
-                          key={`${row.locomotive}-${key}-masofa`}
-                          className={cn(
-                            "py-3 px-4 text-[#0F172B] font-medium border-r border-[#E2E8F0]",
-                            isLast && "border-r-0"
-                          )}
-                        >
-                          {masofaValue}
-                        </TableCell>,
-                      ];
-                    })}
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        )}
+                  {/* Locomotive rows */}
+                  {org.locomotives.map((loco) => {
+                    const inspMap = getInspectionMap(loco);
+                    return (
+                      <TableRow
+                        key={`${org.organization_name}-${loco.index}`}
+                        className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0"
+                      >
+                        <TableCell className="py-2 px-2 text-center text-[#475569] border-r border-[#E2E8F0]">
+                          {loco.index}
+                        </TableCell>
+                        <TableCell className="py-2 px-2 text-[#0F172B] border-r border-[#E2E8F0] whitespace-nowrap">
+                          {loco.series}
+                        </TableCell>
+                        <TableCell className="py-2 px-2 font-mono text-[#0F172B] border-r border-[#E2E8F0]">
+                          {loco.number}
+                        </TableCell>
+                        <TableCell className="py-2 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap">
+                          {loco.manufactured_date}
+                        </TableCell>
+                        <TableCell className="py-2 px-2 text-center text-[#475569] border-r border-[#E2E8F0]">
+                          {loco.bandaj_thickness ?? "—"}
+                        </TableCell>
+                        <TableCell className="py-2 px-2 text-right text-[#475569] border-r border-[#E2E8F0]">
+                          {formatNum(loco.total_mileage)}
+                        </TableCell>
+                        <TableCell className="py-2 px-2 text-right text-[#475569] border-r border-[#E2E8F0]">
+                          {formatNum(loco.average_monthly_mileage)}
+                        </TableCell>
+                        {selectedInspectionTypes.map((inspType, idx) => {
+                          const insp = inspMap.get(inspType.type_id);
+                          const isLast = idx === selectedInspectionTypes.length - 1;
+                          if (!insp) {
+                            return Array.from({ length: INSP_SUB_COUNT }, (_, i) => (
+                              <TableCell
+                                key={`${loco.index}-${inspType.type_id}-empty-${i}`}
+                                className={`py-2 px-2 text-[#CBD5E1] text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${isLast && i === INSP_SUB_COUNT - 1 ? "border-r-0" : ""}`}
+                              >
+                                -
+                              </TableCell>
+                            ));
+                          }
+                          return [
+                            <TableCell key={`${loco.index}-${inspType.type_id}-sana`} className={`py-2 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                              {insp.last_date === "-" ? "-" : insp.last_date}
+                            </TableCell>,
+                            <TableCell key={`${loco.index}-${inspType.type_id}-tamirdan`} className={`py-2 px-2 text-right text-[#2563EB] border-r border-[#E2E8F0] ${inspBg(idx)}`}>
+                              {formatNum(insp.mileage_since_repair)}
+                            </TableCell>,
+                            <TableCell key={`${loco.index}-${inspType.type_id}-norma`} className={`py-2 px-2 text-right text-[#475569] border-r border-[#E2E8F0] ${inspBg(idx)}`}>
+                              {formatNum(insp.norm)}
+                            </TableCell>,
+                            <TableCell
+                              key={`${loco.index}-${inspType.type_id}-qoldiq`}
+                              className={`py-2 px-2 text-right border-r border-[#E2E8F0] ${inspBg(idx)} ${insp.difference < 0 ? "text-[#DC2626]" : "text-[#475569]"}`}
+                            >
+                              {formatNum(insp.difference)}
+                            </TableCell>,
+                            <TableCell
+                              key={`${loco.index}-${inspType.type_id}-keyingi`}
+                              className={`py-2 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}
+                            >
+                              {insp.next_repair_date === "-" ? "-" : insp.next_repair_date}
+                            </TableCell>,
+                          ];
+                        })}
+                      </TableRow>
+                    );
+                  })}
+                </React.Fragment>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

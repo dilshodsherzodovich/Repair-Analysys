@@ -1046,11 +1046,23 @@
     "export_excel": "Excel",
     "export_filename": "Отчёт по пробегу локомотивов",
     "export_error": "Ошибка при загрузке Excel",
+    "locomotives_count": "{count} та локомотив",
     "columns": {
       "locomotive": "Локомотив",
       "sana": "Дата",
       "masofa": "Пробег",
-      "den": "Ден"
+      "den": "Ден",
+      "no": "№",
+      "series": "Серия",
+      "number": "Номер",
+      "manufactured_date": "Изг.",
+      "bandaj_mm": "Бандаж, мм",
+      "total_mileage": "Общий км",
+      "avg_monthly_mileage": "Сред. мес. км",
+      "tamirdan_km": "С ремонта, км",
+      "norma": "Норма",
+      "qoldiq": "Остаток",
+      "keyingi_sana": "Следующая дата"
     }
   },
   "Tu137Page": {

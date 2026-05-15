@@ -118,6 +118,9 @@ export const queryKeys = {
   locomotiveMileageReport: {
     get: "locomotive-mileage-report",
   },
+  txk13Report: {
+    get: "txk13-report",
+  },
   reserve: {
     list: "reserve-list",
   },
