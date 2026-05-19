@@ -2,10 +2,10 @@
 
 import React, { useMemo, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Settings2 } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
 import { PermissionGuard } from "@/components/permission-guard";
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -20,6 +20,7 @@ import type { Txk13Inspection, Txk13Locomotive } from "@/api/types/txk13-report"
 import { canAccessSection, type Permission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import type { UserData } from "@/api/types/auth";
+import { BaselineModal } from "./baseline-modal";
 
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
@@ -37,7 +38,7 @@ function getInspectionMap(loco: Txk13Locomotive): Map<number, Txk13Inspection> {
 }
 
 const FIXED_COL_COUNT = 7;
-const INSP_SUB_COUNT = 5;
+const INSP_SUB_COUNT = 6;
 
 function inspBg(idx: number) {
   return idx % 2 === 0 ? "bg-[#F1F5F9]" : "bg-white";
@@ -58,6 +59,13 @@ export default function LocomotiveMileageReportPage() {
 
   const organizationParam = getQueryValue("organization");
   const [selectedInspectionIds, setSelectedInspectionIds] = useState<number[]>(DEFAULT_INSPECTION_IDS);
+
+  const [baselineModal, setBaselineModal] = useState<{
+    locomotiveId: number;
+    inspectionTypeId: number;
+    locomotiveName: string;
+    inspectionTypeName: string;
+  } | null>(null);
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
@@ -184,37 +192,37 @@ export default function LocomotiveMileageReportPage() {
         ))}
       </div>
 
-      <div className="rounded-lg border border-[#CAD5E2] overflow-x-auto bg-white">
-        <Table className="w-full text-xs">
+      <div className="sticky top-0 rounded-lg border border-[#CAD5E2] overflow-x-auto overflow-y-auto h-[80vh] bg-white">
+        <table className="w-full text-xs border-collapse">
           <TableHeader>
             {/* Row 1: fixed headers + inspection group headers */}
             <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
-              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] text-center whitespace-nowrap">
+              <TableHead rowSpan={2} className="sticky top-0 left-0 z-30 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] text-center whitespace-nowrap bg-[#F8FAFC] min-w-[40px]">
                 {t("columns.no")}
               </TableHead>
-              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+              <TableHead rowSpan={2} className="sticky top-0 left-[40px] z-30 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC] min-w-[72px]">
                 {t("columns.series")}
               </TableHead>
-              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+              <TableHead rowSpan={2} className="sticky top-0 left-[112px] z-30 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC] min-w-[72px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]">
                 {t("columns.number")}
               </TableHead>
-              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
                 {t("columns.manufactured_date")}
               </TableHead>
-              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
                 {t("columns.bandaj_mm")}
               </TableHead>
-              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
                 {t("columns.total_mileage")}
               </TableHead>
-              <TableHead rowSpan={2} className="py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap">
+              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
                 {t("columns.avg_monthly_mileage")}
               </TableHead>
               {selectedInspectionTypes.map((insp, idx) => (
                 <TableHead
                   key={insp.type_id}
                   colSpan={INSP_SUB_COUNT}
-                  className={`py-2 px-2 text-[#475569] font-semibold text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
+                  className={`sticky top-0 z-20 py-2 px-2 text-[#475569] font-semibold text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
                 >
                   {insp.type}
                 </TableHead>
@@ -223,23 +231,29 @@ export default function LocomotiveMileageReportPage() {
             {/* Row 2: sub-headers for each inspection type */}
             <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
               {selectedInspectionTypes.map((insp, idx) => [
-                <TableHead key={`${insp.type_id}-sana`} className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                <TableHead key={`${insp.type_id}-sana`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                   {t("columns.sana")}
                 </TableHead>,
-                <TableHead key={`${insp.type_id}-tamirdan`} className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                <TableHead key={`${insp.type_id}-tamirdan`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                   {t("columns.tamirdan_km")}
                 </TableHead>,
-                <TableHead key={`${insp.type_id}-norma`} className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                <TableHead key={`${insp.type_id}-norma`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                   {t("columns.norma")}
                 </TableHead>,
-                <TableHead key={`${insp.type_id}-qoldiq`} className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                <TableHead key={`${insp.type_id}-qoldiq`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                   {t("columns.qoldiq")}
                 </TableHead>,
                 <TableHead
                   key={`${insp.type_id}-keyingi`}
-                  className={`py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
+                  className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}
                 >
                   {t("columns.keyingi_sana")}
+                </TableHead>,
+                <TableHead
+                  key={`${insp.type_id}-baseline`}
+                  className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap text-center ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
+                >
+                  {t("columns.sozlash")}
                 </TableHead>,
               ])}
             </TableRow>
@@ -282,15 +296,15 @@ export default function LocomotiveMileageReportPage() {
                     return (
                       <TableRow
                         key={`${org.organization_name}-${loco.index}`}
-                        className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0"
+                        className="group hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0"
                       >
-                        <TableCell className="py-2 px-2 text-center text-[#475569] border-r border-[#E2E8F0]">
+                        <TableCell className="sticky left-0 z-10 py-2 px-2 text-center text-[#475569] border-r border-[#E2E8F0] bg-white group-hover:bg-[#F8FAFC] min-w-[40px]">
                           {loco.index}
                         </TableCell>
-                        <TableCell className="py-2 px-2 text-[#0F172B] border-r border-[#E2E8F0] whitespace-nowrap">
+                        <TableCell className="sticky left-[40px] z-10 py-2 px-2 text-[#0F172B] border-r border-[#E2E8F0] whitespace-nowrap bg-white group-hover:bg-[#F8FAFC] min-w-[72px]">
                           {loco.series}
                         </TableCell>
-                        <TableCell className="py-2 px-2 font-mono text-[#0F172B] border-r border-[#E2E8F0]">
+                        <TableCell className="sticky left-[112px] z-10 py-2 px-2 font-mono text-[#0F172B] border-r border-[#E2E8F0] bg-white group-hover:bg-[#F8FAFC] min-w-[72px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]">
                           {loco.number}
                         </TableCell>
                         <TableCell className="py-2 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap">
@@ -309,14 +323,36 @@ export default function LocomotiveMileageReportPage() {
                           const insp = inspMap.get(inspType.type_id);
                           const isLast = idx === selectedInspectionTypes.length - 1;
                           if (!insp) {
-                            return Array.from({ length: INSP_SUB_COUNT }, (_, i) => (
+                            return [
+                              ...Array.from({ length: INSP_SUB_COUNT - 1 }, (_, i) => (
+                                <TableCell
+                                  key={`${loco.index}-${inspType.type_id}-empty-${i}`}
+                                  className={`py-2 px-2 text-[#CBD5E1] text-center border-r border-[#E2E8F0] ${inspBg(idx)}`}
+                                >
+                                  -
+                                </TableCell>
+                              )),
                               <TableCell
-                                key={`${loco.index}-${inspType.type_id}-empty-${i}`}
-                                className={`py-2 px-2 text-[#CBD5E1] text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${isLast && i === INSP_SUB_COUNT - 1 ? "border-r-0" : ""}`}
+                                key={`${loco.index}-${inspType.type_id}-baseline-empty`}
+                                className={`py-2 px-1 text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}
                               >
-                                -
-                              </TableCell>
-                            ));
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setBaselineModal({
+                                      locomotiveId: loco.id,
+                                      inspectionTypeId: inspType.type_id,
+                                      locomotiveName: `${loco.series} ${loco.number}`,
+                                      inspectionTypeName: inspType.type,
+                                    })
+                                  }
+                                  className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#CBD5E1] hover:text-[#475569] transition-colors"
+                                  title={t("columns.sozlash")}
+                                >
+                                  <Settings2 className="size-3.5" />
+                                </button>
+                              </TableCell>,
+                            ];
                           }
                           return [
                             <TableCell key={`${loco.index}-${inspType.type_id}-sana`} className={`py-2 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
@@ -336,9 +372,29 @@ export default function LocomotiveMileageReportPage() {
                             </TableCell>,
                             <TableCell
                               key={`${loco.index}-${inspType.type_id}-keyingi`}
-                              className={`py-2 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}
+                              className={`py-2 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}
                             >
                               {insp.next_repair_date === "-" ? "-" : insp.next_repair_date}
+                            </TableCell>,
+                            <TableCell
+                              key={`${loco.index}-${inspType.type_id}-baseline`}
+                              className={`py-2 px-1 text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}
+                            >
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setBaselineModal({
+                                    locomotiveId: loco.id,
+                                    inspectionTypeId: inspType.type_id,
+                                    locomotiveName: `${loco.series} ${loco.number}`,
+                                    inspectionTypeName: inspType.type,
+                                  })
+                                }
+                                className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#94A3B8] hover:text-[#475569] transition-colors"
+                                title="Set baseline"
+                              >
+                                <Settings2 className="size-3.5" />
+                              </button>
                             </TableCell>,
                           ];
                         })}
@@ -349,8 +405,19 @@ export default function LocomotiveMileageReportPage() {
               ))
             )}
           </TableBody>
-        </Table>
+        </table>
       </div>
+
+      {baselineModal && (
+        <BaselineModal
+          isOpen={!!baselineModal}
+          onClose={() => setBaselineModal(null)}
+          locomotiveId={baselineModal.locomotiveId}
+          inspectionTypeId={baselineModal.inspectionTypeId}
+          locomotiveName={baselineModal.locomotiveName}
+          inspectionTypeName={baselineModal.inspectionTypeName}
+        />
+      )}
     </div>
   );
 }

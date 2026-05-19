@@ -9,6 +9,7 @@ export interface Txk13Inspection {
 }
 
 export interface Txk13Locomotive {
+  id: number;
   index: number;
   series: string;
   number: string;

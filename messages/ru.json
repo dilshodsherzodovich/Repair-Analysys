@@ -1062,8 +1062,25 @@
       "tamirdan_km": "С ремонта, км",
       "norma": "Норма",
       "qoldiq": "Остаток",
-      "keyingi_sana": "Следующая дата"
+      "keyingi_sana": "Следующая дата",
+      "sozlash": "Настройка"
     }
+  },
+  "BaselineModal": {
+    "title": "{locomotiveName} / {inspectionTypeName}",
+    "loading": "Загрузка...",
+    "date_label": "Выбранная дата",
+    "date_placeholder": "Выберите дату",
+    "km_label": "Пробег до выбранной даты",
+    "km_placeholder": "Например: 450000",
+    "confirm_delete": "Подтвердить?",
+    "yes_delete": "Да, удалить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "saving": "Сохранение...",
+    "update": "Обновить",
+    "save": "Сохранить",
+    "set_baseline": "Настройка"
   },
   "Tu137Page": {
     "title": "TU-137",

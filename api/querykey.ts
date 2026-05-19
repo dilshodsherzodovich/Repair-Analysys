@@ -130,4 +130,7 @@ export const queryKeys = {
   tu137: {
     all: "tu137-all",
   },
+  locomotiveMileageBaselines: {
+    list: "locomotive-mileage-baselines-list",
+  },
 } as const;

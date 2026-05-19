@@ -1062,8 +1062,25 @@
       "tamirdan_km": "Ta'mirdan, km",
       "norma": "Norma",
       "qoldiq": "Qoldiq",
-      "keyingi_sana": "Keyingi sana"
+      "keyingi_sana": "Keyingi sana",
+      "sozlash": "Sozlash"
     }
+  },
+  "BaselineModal": {
+    "title": "{locomotiveName} / {inspectionTypeName}",
+    "loading": "Yuklanmoqda...",
+    "date_label": "Tanlangan kun",
+    "date_placeholder": "Sanani tanlang",
+    "km_label": "Shu kungacha yurgan masofasi",
+    "km_placeholder": "Masalan: 450000",
+    "confirm_delete": "Tasdiqlaysizmi?",
+    "yes_delete": "Ha, o'chirish",
+    "cancel": "Bekor qilish",
+    "delete": "O'chirish",
+    "saving": "Saqlanmoqda...",
+    "update": "Yangilash",
+    "save": "Saqlash",
+    "set_baseline": "Sozlash"
   },
   "Tu137Page": {
     "title": "TU-137",
