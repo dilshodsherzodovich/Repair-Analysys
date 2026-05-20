@@ -156,10 +156,13 @@ export function BaselineModal({
               <Label htmlFor="baseline-km">{t("km_label")}</Label>
               <Input
                 id="baseline-km"
-                type="number"
-                min={0}
-                value={baselineKm}
-                onChange={(e) => setBaselineKm(e.target.value)}
+                type="text"
+                inputMode="numeric"
+                value={baselineKm === "" ? "" : Number(baselineKm).toLocaleString("ru-RU")}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "");
+                  setBaselineKm(raw);
+                }}
                 disabled={isPending}
                 placeholder={t("km_placeholder")}
               />
