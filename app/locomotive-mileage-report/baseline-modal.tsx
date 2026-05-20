@@ -32,12 +32,16 @@ interface BaselineModalProps {
 
 function isoToDate(iso: string | undefined | null): Date | undefined {
   if (!iso) return undefined;
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? undefined : d;
+  const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return undefined;
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
 function dateToIso(date: Date): string {
-  return date.toISOString();
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}T00:00:00.000Z`;
 }
 
 export function BaselineModal({
