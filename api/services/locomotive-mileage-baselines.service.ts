@@ -6,11 +6,12 @@ import type {
 
 export const locomotiveMileageBaselinesService = {
   async getList(locomotive: number): Promise<LocomotiveMileageBaselineItem[]> {
-    const response = await api.get<LocomotiveMileageBaselineItem[]>(
+    const response = await api.get<LocomotiveMileageBaselineItem[] | { results: LocomotiveMileageBaselineItem[] }>(
       "/locomotive-mileage-baselines/",
       { params: { locomotive } }
     );
-    return response.data;
+    const data = response.data;
+    return Array.isArray(data) ? data : (data?.results ?? []);
   },
 
   async create(payload: LocomotiveMileageBaselinePayload): Promise<void> {
