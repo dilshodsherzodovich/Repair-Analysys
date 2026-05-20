@@ -1,22 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { locomotiveMileageBaselinesService } from "../services/locomotive-mileage-baselines.service";
-import type {
-  LocomotiveMileageBaselineParams,
-  LocomotiveMileageBaselinePayload,
-} from "../types/locomotive-mileage-baselines";
+import type { LocomotiveMileageBaselinePayload } from "../types/locomotive-mileage-baselines";
 import { queryKeys } from "../querykey";
 
 export function useLocomotiveMileageBaseline(
-  params: LocomotiveMileageBaselineParams,
+  locomotiveId: number | null,
   options?: { enabled?: boolean }
 ) {
   return useQuery({
-    queryKey: [queryKeys.locomotiveMileageBaselines.list, params],
-    queryFn: () => locomotiveMileageBaselinesService.getList(params),
-    enabled:
-      options?.enabled !== false &&
-      params.locomotive != null &&
-      params.inspection_type != null,
+    queryKey: [queryKeys.locomotiveMileageBaselines.list, locomotiveId],
+    queryFn: () => locomotiveMileageBaselinesService.getList(locomotiveId!),
+    enabled: options?.enabled !== false && locomotiveId != null,
     staleTime: 0,
   });
 }

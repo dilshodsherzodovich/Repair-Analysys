@@ -30,7 +30,7 @@ interface BaselineModalProps {
   inspectionTypeName: string;
 }
 
-function isoToDate(iso: string | undefined): Date | undefined {
+function isoToDate(iso: string | undefined | null): Date | undefined {
   if (!iso) return undefined;
   const d = new Date(iso);
   return isNaN(d.getTime()) ? undefined : d;
@@ -49,16 +49,17 @@ export function BaselineModal({
   inspectionTypeName,
 }: BaselineModalProps) {
   const t = useTranslations("BaselineModal");
+  const [lastInspectionDate, setLastInspectionDate] = useState<Date | undefined>(undefined);
   const [baselineDate, setBaselineDate] = useState<Date | undefined>(undefined);
   const [baselineKm, setBaselineKm] = useState<string>("");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const { data, isLoading } = useLocomotiveMileageBaseline(
-    { locomotive: locomotiveId, inspection_type: inspectionTypeId },
-    { enabled: isOpen }
-  );
+  const { data, isLoading } = useLocomotiveMileageBaseline(locomotiveId, {
+    enabled: isOpen,
+  });
 
-  const existing = data?.results?.[0] ?? null;
+  const item = data?.find((d) => d.inspection_type_id === inspectionTypeId) ?? null;
+  const existing = item?.baseline ?? null;
 
   const createMutation = useCreateLocomotiveMileageBaseline();
   const updateMutation = useUpdateLocomotiveMileageBaseline();
@@ -71,11 +72,13 @@ export function BaselineModal({
 
   useEffect(() => {
     if (!isOpen) {
+      setLastInspectionDate(undefined);
       setBaselineDate(undefined);
       setBaselineKm("");
       setConfirmDelete(false);
       return;
     }
+    setLastInspectionDate(isoToDate(item?.last_inspection_date));
     if (existing) {
       setBaselineDate(isoToDate(existing.baseline_date));
       setBaselineKm(String(existing.baseline_km));
@@ -84,13 +87,14 @@ export function BaselineModal({
       setBaselineKm("");
     }
     setConfirmDelete(false);
-  }, [isOpen, existing?.id]);
+  }, [isOpen, existing?.id, item?.last_inspection_date]);
 
   function handleSave() {
     if (!baselineDate || baselineKm === "") return;
     const payload = {
       locomotive: locomotiveId,
       inspection_type: inspectionTypeId,
+      last_inspection_date: lastInspectionDate ? dateToIso(lastInspectionDate) : null,
       baseline_date: dateToIso(baselineDate),
       baseline_km: Number(baselineKm),
     };
@@ -126,6 +130,17 @@ export function BaselineModal({
           </div>
         ) : (
           <div className="space-y-4 py-2">
+            <DatePicker
+              label={t("last_inspection_date_label")}
+              value={lastInspectionDate}
+              onValueChange={setLastInspectionDate}
+              disabled={isPending}
+              placeholder={t("last_inspection_date_placeholder")}
+              captionLayout="dropdown"
+              fromYear={2000}
+              toYear={new Date().getFullYear()}
+            />
+
             <DatePicker
               label={t("date_label")}
               value={baselineDate}

@@ -1069,6 +1069,8 @@
   "BaselineModal": {
     "title": "{locomotiveName} / {inspectionTypeName}",
     "loading": "Yuklanmoqda...",
+    "last_inspection_date_label": "Oxirgi ta'mir sanasi",
+    "last_inspection_date_placeholder": "Sanani tanlang",
     "date_label": "Tanlangan kun",
     "date_placeholder": "Sanani tanlang",
     "km_label": "Shu kungacha yurgan masofasi",

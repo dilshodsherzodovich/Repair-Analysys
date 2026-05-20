@@ -1,41 +1,24 @@
 import api from "../axios";
 import type {
-  LocomotiveMileageBaseline,
-  LocomotiveMileageBaselineListResponse,
-  LocomotiveMileageBaselineParams,
+  LocomotiveMileageBaselineItem,
   LocomotiveMileageBaselinePayload,
 } from "../types/locomotive-mileage-baselines";
 
 export const locomotiveMileageBaselinesService = {
-  async getList(
-    params: LocomotiveMileageBaselineParams
-  ): Promise<LocomotiveMileageBaselineListResponse> {
-    const response = await api.get<LocomotiveMileageBaselineListResponse>(
+  async getList(locomotive: number): Promise<LocomotiveMileageBaselineItem[]> {
+    const response = await api.get<LocomotiveMileageBaselineItem[]>(
       "/locomotive-mileage-baselines/",
-      { params }
+      { params: { locomotive } }
     );
     return response.data;
   },
 
-  async create(
-    payload: LocomotiveMileageBaselinePayload
-  ): Promise<LocomotiveMileageBaseline> {
-    const response = await api.post<LocomotiveMileageBaseline>(
-      "/locomotive-mileage-baselines/",
-      payload
-    );
-    return response.data;
+  async create(payload: LocomotiveMileageBaselinePayload): Promise<void> {
+    await api.post("/locomotive-mileage-baselines/", payload);
   },
 
-  async update(
-    id: number,
-    payload: LocomotiveMileageBaselinePayload
-  ): Promise<LocomotiveMileageBaseline> {
-    const response = await api.patch<LocomotiveMileageBaseline>(
-      `/locomotive-mileage-baselines/${id}/`,
-      payload
-    );
-    return response.data;
+  async update(id: number, payload: LocomotiveMileageBaselinePayload): Promise<void> {
+    await api.patch(`/locomotive-mileage-baselines/${id}/`, payload);
   },
 
   async remove(id: number): Promise<void> {

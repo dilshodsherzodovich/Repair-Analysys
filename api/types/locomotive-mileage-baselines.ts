@@ -1,28 +1,20 @@
-export interface LocomotiveMileageBaseline {
+export interface BaselineData {
   id: number;
-  locomotive: number;
-  locomotive_name: string;
-  inspection_type: number;
-  inspection_type_name: string;
   baseline_date: string;
   baseline_km: number;
 }
 
-export interface LocomotiveMileageBaselineListResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: LocomotiveMileageBaseline[];
+export interface LocomotiveMileageBaselineItem {
+  inspection_type_id: number;
+  inspection_type_name: string;
+  last_inspection_date: string | null;
+  baseline: BaselineData | null;
 }
 
 export interface LocomotiveMileageBaselinePayload {
   locomotive: number;
   inspection_type: number;
+  last_inspection_date: string | null;
   baseline_date: string;
   baseline_km: number;
-}
-
-export interface LocomotiveMileageBaselineParams {
-  locomotive?: number;
-  inspection_type?: number;
 }
