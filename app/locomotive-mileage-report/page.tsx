@@ -2,7 +2,7 @@
 
 import React, { useMemo, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Settings2 } from "lucide-react";
+import { Settings2, Loader2 } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
 import { PermissionGuard } from "@/components/permission-guard";
 import {
@@ -66,6 +66,8 @@ export default function LocomotiveMileageReportPage() {
     locomotiveName: string;
     inspectionTypeName: string;
   } | null>(null);
+
+  const [pendingBaselines, setPendingBaselines] = useState<Set<string>>(new Set());
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
@@ -322,6 +324,29 @@ export default function LocomotiveMileageReportPage() {
                         {selectedInspectionTypes.map((inspType, idx) => {
                           const insp = inspMap.get(inspType.type_id);
                           const isLast = idx === selectedInspectionTypes.length - 1;
+                          const isSaving = pendingBaselines.has(`${loco.id}-${inspType.type_id}`);
+
+                          const gearButton = (
+                            <button
+                              type="button"
+                              disabled={isSaving}
+                              onClick={() =>
+                                setBaselineModal({
+                                  locomotiveId: loco.id,
+                                  inspectionTypeId: inspType.type_id,
+                                  locomotiveName: `${loco.series} ${loco.number}`,
+                                  inspectionTypeName: inspType.type,
+                                })
+                              }
+                              className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#94A3B8] hover:text-[#475569] transition-colors disabled:cursor-not-allowed"
+                              title={t("columns.sozlash")}
+                            >
+                              {isSaving
+                                ? <Loader2 className="size-3.5 animate-spin text-[#2563EB]" />
+                                : <Settings2 className="size-3.5" />}
+                            </button>
+                          );
+
                           if (!insp) {
                             return [
                               ...Array.from({ length: INSP_SUB_COUNT - 1 }, (_, i) => (
@@ -336,21 +361,7 @@ export default function LocomotiveMileageReportPage() {
                                 key={`${loco.index}-${inspType.type_id}-baseline-empty`}
                                 className={`py-2 px-1 text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}
                               >
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setBaselineModal({
-                                      locomotiveId: loco.id,
-                                      inspectionTypeId: inspType.type_id,
-                                      locomotiveName: `${loco.series} ${loco.number}`,
-                                      inspectionTypeName: inspType.type,
-                                    })
-                                  }
-                                  className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#CBD5E1] hover:text-[#475569] transition-colors"
-                                  title={t("columns.sozlash")}
-                                >
-                                  <Settings2 className="size-3.5" />
-                                </button>
+                                {gearButton}
                               </TableCell>,
                             ];
                           }
@@ -380,21 +391,7 @@ export default function LocomotiveMileageReportPage() {
                               key={`${loco.index}-${inspType.type_id}-baseline`}
                               className={`py-2 px-1 text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}
                             >
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setBaselineModal({
-                                    locomotiveId: loco.id,
-                                    inspectionTypeId: inspType.type_id,
-                                    locomotiveName: `${loco.series} ${loco.number}`,
-                                    inspectionTypeName: inspType.type,
-                                  })
-                                }
-                                className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#94A3B8] hover:text-[#475569] transition-colors"
-                                title="Set baseline"
-                              >
-                                <Settings2 className="size-3.5" />
-                              </button>
+                              {gearButton}
                             </TableCell>,
                           ];
                         })}
@@ -408,16 +405,21 @@ export default function LocomotiveMileageReportPage() {
         </table>
       </div>
 
-      {baselineModal && (
-        <BaselineModal
-          isOpen={!!baselineModal}
-          onClose={() => setBaselineModal(null)}
-          locomotiveId={baselineModal.locomotiveId}
-          inspectionTypeId={baselineModal.inspectionTypeId}
-          locomotiveName={baselineModal.locomotiveName}
-          inspectionTypeName={baselineModal.inspectionTypeName}
-        />
-      )}
+      <BaselineModal
+        isOpen={!!baselineModal}
+        onClose={() => setBaselineModal(null)}
+        locomotiveId={baselineModal?.locomotiveId ?? 0}
+        inspectionTypeId={baselineModal?.inspectionTypeId ?? 0}
+        locomotiveName={baselineModal?.locomotiveName ?? ""}
+        inspectionTypeName={baselineModal?.inspectionTypeName ?? ""}
+        onPendingChange={(pending, key) => {
+          setPendingBaselines((prev) => {
+            const next = new Set(prev);
+            pending ? next.add(key) : next.delete(key);
+            return next;
+          });
+        }}
+      />
     </div>
   );
 }

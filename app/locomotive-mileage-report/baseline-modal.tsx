@@ -28,6 +28,7 @@ interface BaselineModalProps {
   inspectionTypeId: number;
   locomotiveName: string;
   inspectionTypeName: string;
+  onPendingChange?: (pending: boolean, key: string) => void;
 }
 
 function isoToDate(iso: string | undefined | null): Date | undefined {
@@ -51,6 +52,7 @@ export function BaselineModal({
   inspectionTypeId,
   locomotiveName,
   inspectionTypeName,
+  onPendingChange,
 }: BaselineModalProps) {
   const t = useTranslations("BaselineModal");
   const [lastInspectionDate, setLastInspectionDate] = useState<Date | undefined>(undefined);
@@ -102,19 +104,22 @@ export function BaselineModal({
       baseline_date: dateToIso(baselineDate),
       baseline_km: Number(baselineKm),
     };
+    const key = `${locomotiveId}-${inspectionTypeId}`;
+    onPendingChange?.(true, key);
     if (existing) {
-      updateMutation.mutate(
-        { id: existing.id, payload },
-        { onSuccess: onClose }
-      );
+      updateMutation.mutate({ id: existing.id, payload }, { onSettled: () => onPendingChange?.(false, key) });
     } else {
-      createMutation.mutate(payload, { onSuccess: onClose });
+      createMutation.mutate(payload, { onSettled: () => onPendingChange?.(false, key) });
     }
+    onClose();
   }
 
   function handleDelete() {
     if (!existing) return;
-    deleteMutation.mutate(existing.id, { onSuccess: onClose });
+    const key = `${locomotiveId}-${inspectionTypeId}`;
+    onPendingChange?.(true, key);
+    deleteMutation.mutate(existing.id, { onSettled: () => onPendingChange?.(false, key) });
+    onClose();
   }
 
   const canSave = !!baselineDate && baselineKm !== "" && !isNaN(Number(baselineKm));
