@@ -22,7 +22,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
   ({ title, description, breadcrumbs, actions, className, ...props }, ref) => {
     return (
       <div ref={ref} className={cn("bg-transparent", className)} {...props}>
-        <div className="px-6 py-4">
+        <div className="py-4">
           {breadcrumbs && breadcrumbs.length > 0 && (
             <nav className="flex items-center space-x-2 text-sm text-[#6b7280] mb-4">
               {breadcrumbs.map((item, index) => (

@@ -47,6 +47,12 @@ interface Tu152JournalModalProps {
   isPending: boolean;
   editData?: CombinedJournalEntry;
   organizationId?: number;
+  /** When set, the locomotive selector is hidden and this id is used. */
+  lockedLocomotiveId?: number;
+  /** Display name shown when locomotive is locked. */
+  lockedLocomotiveLabel?: string;
+  /** Open the modal directly on a specific tab. Default: "energy". */
+  defaultTab?: "energy" | "fire" | "camera" | "stamp" | "revision";
 }
 
 interface EnergyState {
@@ -146,6 +152,9 @@ export function Tu152JournalModal({
   isPending,
   editData,
   organizationId,
+  lockedLocomotiveId,
+  lockedLocomotiveLabel,
+  defaultTab = "energy",
 }: Tu152JournalModalProps) {
   const t = useTranslations("Tu152JournalModal");
 
@@ -271,14 +280,16 @@ export function Tu152JournalModal({
         setRevision(REVISION_INITIAL);
       }
     } else {
-      setLocomotiveId("");
+      setLocomotiveId(
+        lockedLocomotiveId ? String(lockedLocomotiveId) : "",
+      );
       setEnergy(ENERGY_INITIAL);
       setFire(FIRE_INITIAL);
       setCamera(CAMERA_INITIAL);
       setStamp(STAMP_INITIAL);
       setRevision(REVISION_INITIAL);
     }
-  }, [isOpen, editData]);
+  }, [isOpen, editData, lockedLocomotiveId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -390,53 +401,70 @@ export function Tu152JournalModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[calc(100%-2rem)] sm:!max-w-4xl max-h-[92vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:!max-w-4xl max-h-[92vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>{editData ? t("title_edit") : t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <Label htmlFor="locomotive_id">
-              {t("locomotive")} <span className="text-red-500 ml-1">*</span>
-            </Label>
-            <SearchableSelect
-              value={locomotiveId}
-              onValueChange={setLocomotiveId}
-              options={locomotiveOptions}
-              placeholder={
-                loadingLocomotives
-                  ? t("placeholder_loading")
-                  : t("placeholder_locomotive")
-              }
-              searchable
-              searchPlaceholder={t("search_locomotive")}
-              emptyMessage={t("no_results")}
-              disabled={loadingLocomotives || isPending || Boolean(editData)}
-              triggerClassName="w-full mb-0"
-            />
-          </div>
+          {lockedLocomotiveId ? (
+            <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm">
+              <div className="text-[11px] uppercase tracking-wider font-semibold text-primary/70">
+                {t("locomotive")}
+              </div>
+              <div className="font-semibold text-slate-800 mt-0.5">
+                {lockedLocomotiveLabel ??
+                  locomotiveOptions.find(
+                    (o) => o.value === String(lockedLocomotiveId),
+                  )?.label ??
+                  `#${lockedLocomotiveId}`}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Label htmlFor="locomotive_id">
+                {t("locomotive")} <span className="text-red-500 ml-1">*</span>
+              </Label>
+              <SearchableSelect
+                value={locomotiveId}
+                onValueChange={setLocomotiveId}
+                options={locomotiveOptions}
+                placeholder={
+                  loadingLocomotives
+                    ? t("placeholder_loading")
+                    : t("placeholder_locomotive")
+                }
+                searchable
+                searchPlaceholder={t("search_locomotive")}
+                emptyMessage={t("no_results")}
+                disabled={loadingLocomotives || isPending || Boolean(editData)}
+                triggerClassName="w-full mb-0"
+              />
+            </div>
+          )}
 
-          <Tabs defaultValue="energy" className="w-full">
-            <TabsList className="flex flex-wrap gap-1 bg-slate-100 p-1 w-full">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="flex-1 min-w-[120px] gap-2"
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="truncate">{tab.label}</span>
-                    {tab.enabled && (
-                      <span className="ml-1 h-2 w-2 rounded-full bg-emerald-500" />
-                    )}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+          <Tabs defaultValue={defaultTab} className="w-full">
+            <div className="-mx-1 overflow-x-auto scrollbar-thin">
+              <TabsList className="inline-flex md:flex md:flex-wrap gap-1 bg-slate-100 p-1 w-max md:w-full">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <TabsTrigger
+                      key={tab.value}
+                      value={tab.value}
+                      className="md:flex-1 shrink-0 md:min-w-[120px] gap-2 px-3"
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span className="truncate">{tab.label}</span>
+                      {tab.enabled && (
+                        <span className="ml-1 h-2 w-2 rounded-full bg-emerald-500" />
+                      )}
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
 
             {/* ENERGY TYPE */}
             <TabsContent value="energy" className="pt-4">

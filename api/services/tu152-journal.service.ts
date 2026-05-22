@@ -11,22 +11,49 @@ export const tu152JournalService = {
     params?: CombinedJournalListParams,
   ): Promise<PaginatedData<CombinedJournalEntry>> {
     try {
-      const response = await api.get<PaginatedData<CombinedJournalEntry>>(
-        "/combined-journal/",
-        {
-          params: {
-            page: params?.page,
-            page_size: params?.page_size,
-            search: params?.search || undefined,
-            locomotive_id: params?.locomotive_id || undefined,
-            organization: params?.organization || undefined,
-            date_from: params?.date_from || undefined,
-            date_to: params?.date_to || undefined,
-            no_page: params?.no_page,
-          },
+      const response = await api.get<
+        | PaginatedData<CombinedJournalEntry>
+        | CombinedJournalEntry[]
+        | { results: PaginatedData<CombinedJournalEntry> | CombinedJournalEntry[] }
+      >("/combined-journal/", {
+        params: {
+          page: params?.page,
+          page_size: params?.page_size,
+          search: params?.search || undefined,
+          locomotive_id: params?.locomotive_id || undefined,
+          organization: params?.organization || undefined,
+          date_from: params?.date_from || undefined,
+          date_to: params?.date_to || undefined,
+          no_page: params?.no_page,
         },
-      );
-      return response.data;
+      });
+
+      // Normalize: backend may return a flat array, a paginated envelope, or
+      // (when the axios interceptor wraps no_page responses while the backend
+      // already returned a paginated envelope) a double-wrapped object.
+      const data = response.data as any;
+      if (Array.isArray(data)) {
+        return { count: data.length, next: null, previous: null, results: data };
+      }
+      if (Array.isArray(data?.results)) {
+        return {
+          count: data.count ?? data.results.length,
+          next: data.next ?? null,
+          previous: data.previous ?? null,
+          results: data.results,
+        };
+      }
+      // Double-wrapped: { results: { count, next, previous, results: [] } }
+      if (Array.isArray(data?.results?.results)) {
+        const inner = data.results;
+        return {
+          count: inner.count ?? inner.results.length,
+          next: inner.next ?? null,
+          previous: inner.previous ?? null,
+          results: inner.results,
+        };
+      }
+      return { count: 0, next: null, previous: null, results: [] };
     } catch (error) {
       console.error("Error fetching combined journal list:", error);
       throw error;
