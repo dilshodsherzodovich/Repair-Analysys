@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Settings2, Loader2 } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
@@ -21,6 +21,7 @@ import { canAccessSection, type Permission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import type { UserData } from "@/api/types/auth";
 import { BaselineModal } from "./baseline-modal";
+import { txk13ReportService } from "@/api/services/txk13-report.service";
 
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
@@ -40,8 +41,128 @@ function getInspectionMap(loco: Txk13Locomotive): Map<number, Txk13Inspection> {
 const FIXED_COL_COUNT = 7;
 const INSP_SUB_COUNT = 6;
 
+function BandajCell({ locoId, serverValue }: { locoId: number; serverValue: number | null }) {
+  const [value, setValue] = useState(serverValue == null ? "" : String(serverValue));
+  const [saving, setSaving] = useState(false);
+  const committed = useRef<number | null>(serverValue);
+
+  async function handleBlur() {
+    const trimmed = value.trim();
+    const parsed = trimmed === "" ? null : parseFloat(trimmed);
+    if (trimmed !== "" && isNaN(parsed as number)) {
+      setValue(committed.current == null ? "" : String(committed.current));
+      return;
+    }
+    if (parsed === committed.current) return;
+    setSaving(true);
+    try {
+      const result = await txk13ReportService.patchBandaj(locoId, parsed);
+      committed.current = result.bandaj_thickness;
+      setValue(result.bandaj_thickness == null ? "" : String(result.bandaj_thickness));
+    } catch {
+      setValue(committed.current == null ? "" : String(committed.current));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <TableCell className="p-0 text-center text-[#475569] border-r border-[#E2E8F0] relative">
+      {saving ? (
+        <Loader2 className="size-3.5 animate-spin text-[#2563EB] mx-auto my-2" />
+      ) : (
+        <input
+          type="number"
+          min={0}
+          max={1000}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          onClick={(e) => e.currentTarget.select()}
+          onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
+          onBlur={handleBlur}
+          className="absolute inset-0 w-full h-full text-center bg-transparent border border-transparent outline-none focus:bg-white focus:border-[#93C5FD] focus:ring-1 focus:ring-[#93C5FD] px-2 text-xs [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        />
+      )}
+    </TableCell>
+  );
+}
+
 function inspBg(idx: number) {
   return idx % 2 === 0 ? "bg-[#F1F5F9]" : "bg-white";
+}
+
+function toDisplayDate(iso: string): string {
+  if (!iso) return "—";
+  const [y, m, d] = iso.split("-");
+  if (!y || !m || !d) return iso;
+  return `${d}.${m}.${y}`;
+}
+
+function ManufactureDateCell({ locoId, serverValue }: { locoId: number; serverValue: string }) {
+  const [value, setValue] = useState(serverValue ?? "");
+  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const committed = useRef<string>(serverValue ?? "");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus();
+      try { inputRef.current.showPicker(); } catch { /* unsupported */ }
+    }
+  }, [editing]);
+
+  async function patch(dateValue: string) {
+    setSaving(true);
+    setEditing(false);
+    try {
+      const result = await txk13ReportService.patchManufactureDate(locoId, dateValue);
+      committed.current = result.manufacture_date;
+      setValue(result.manufacture_date);
+    } catch {
+      setValue(committed.current);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const newVal = e.target.value;
+    setValue(newVal);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(newVal) && newVal !== committed.current) {
+      patch(newVal);
+    }
+  }
+
+  function handleBlur() {
+    setEditing(false);
+    if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      setValue(committed.current);
+    }
+  }
+
+  return (
+    <TableCell
+      className="py-2 px-2 text-[#475569] border-r border-[#E2E8F0] relative whitespace-nowrap cursor-pointer"
+      onClick={() => !editing && !saving && setEditing(true)}
+    >
+      {saving ? (
+        <Loader2 className="size-3.5 animate-spin text-[#2563EB]" />
+      ) : editing ? (
+        <input
+          ref={inputRef}
+          type="date"
+          value={value}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className="absolute inset-0 w-full h-full px-2 text-xs bg-white border border-[#93C5FD] ring-1 ring-[#93C5FD] outline-none text-[#475569]"
+        />
+      ) : (
+        <span>{toDisplayDate(value)}</span>
+      )}
+    </TableCell>
+  );
 }
 
 export default function LocomotiveMileageReportPage() {
@@ -309,12 +430,8 @@ export default function LocomotiveMileageReportPage() {
                         <TableCell className="sticky left-[112px] z-10 py-2 px-2 font-mono text-[#0F172B] border-r border-[#E2E8F0] bg-white group-hover:bg-[#F8FAFC] min-w-[72px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]">
                           {loco.number}
                         </TableCell>
-                        <TableCell className="py-2 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap">
-                          {loco.manufactured_date}
-                        </TableCell>
-                        <TableCell className="py-2 px-2 text-center text-[#475569] border-r border-[#E2E8F0]">
-                          {loco.bandaj_thickness ?? "—"}
-                        </TableCell>
+                        <ManufactureDateCell locoId={loco.id} serverValue={loco.manufactured_date} />
+                        <BandajCell locoId={loco.id} serverValue={loco.bandaj_thickness} />
                         <TableCell className="py-2 px-2 text-right text-[#475569] border-r border-[#E2E8F0]">
                           {formatNum(loco.total_mileage)}
                         </TableCell>

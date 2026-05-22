@@ -8,4 +8,26 @@ export const txk13ReportService = {
     });
     return response.data;
   },
+
+  async patchBandaj(
+    locomotiveId: number,
+    bandajThickness: number | null
+  ): Promise<{ bandaj_thickness: number }> {
+    const response = await api.patch<{ bandaj_thickness: number }>(
+      `/txk13-report/${locomotiveId}/bandaj/`,
+      { bandaj_thickness: bandajThickness }
+    );
+    return response.data;
+  },
+
+  async patchManufactureDate(
+    locomotiveId: number,
+    manufactureDate: string
+  ): Promise<{ manufacture_date: string }> {
+    const response = await api.patch<{ manufacture_date: string }>(
+      `/txk13-report/${locomotiveId}/manufacture-date/`,
+      { manufacture_date: manufactureDate }
+    );
+    return response.data;
+  },
 };
