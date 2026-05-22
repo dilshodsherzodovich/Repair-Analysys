@@ -1189,13 +1189,14 @@
     "delete_cancel": "Отмена"
   },
   "Tu152JournalDetail": {
-    "title": "Справочник локомотива",
+    "title": "Журнал ТУ-152",
     "breadcrumb_home": "Главная",
     "breadcrumb_list": "Журнал ТУ-152",
     "hero_label": "ТУ-152",
     "entries_count": "{count} записей",
     "entries_empty_title": "Записей нет",
     "entries_empty_desc": "Для этого локомотива ещё не добавлены записи",
+    "entries_loaded_all": "Загружено все {count} записей",
     "add_entry": "Добавить запись",
     "entry_empty": "Пустая запись",
     "block_energy": "Топливо / Электр.",

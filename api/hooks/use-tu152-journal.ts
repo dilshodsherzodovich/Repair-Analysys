@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { tu152JournalService } from "../services/tu152-journal.service";
 import {
   CombinedJournalListParams,
@@ -12,6 +17,33 @@ export function useTU152JournalList(params?: CombinedJournalListParams) {
   return useQuery({
     queryKey: [queryKeys.tu152Journal.all, params],
     queryFn: () => tu152JournalService.getList(params),
+    staleTime: 5 * 60 * 1000,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+}
+
+export function useTU152JournalInfinite(
+  params: Omit<CombinedJournalListParams, "page" | "no_page"> = {},
+  pageSize: number = 20,
+) {
+  return useInfiniteQuery({
+    queryKey: [queryKeys.tu152Journal.all, "infinite", params, pageSize],
+    queryFn: ({ pageParam }) =>
+      tu152JournalService.getList({
+        ...params,
+        page: pageParam as number,
+        page_size: pageSize,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage.next) return undefined;
+      return allPages.length + 1;
+    },
     staleTime: 5 * 60 * 1000,
     retry: (failureCount, error: any) => {
       if (error?.response?.status === 401 || error?.response?.status === 403) {

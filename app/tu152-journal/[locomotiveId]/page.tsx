@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
@@ -24,7 +24,7 @@ import { authService } from "@/api/services/auth.service";
 import { useGetLocomotiveDetail } from "@/api/hooks/use-locomotives";
 import { useInspectionTypes } from "@/api/hooks/use-inspection";
 import {
-  useTU152JournalList,
+  useTU152JournalInfinite,
   useCreateTU152Journal,
   useUpdateTU152Journal,
   useDeleteTU152Journal,
@@ -101,13 +101,13 @@ export default function Tu152LocomotiveHandbookPage() {
   const { data: inspectionTypesData } = useInspectionTypes(true);
 
   const {
-    data: apiResponse,
+    data: infiniteData,
     isLoading,
     error: apiError,
-  } = useTU152JournalList({
-    locomotive_id: locomotiveId,
-    no_page: true,
-  });
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useTU152JournalInfinite({ locomotive_id: locomotiveId }, 10);
 
   const createMutation = useCreateTU152Journal();
   const updateMutation = useUpdateTU152Journal();
@@ -122,9 +122,31 @@ export default function Tu152LocomotiveHandbookPage() {
   }, [inspectionTypesData]);
 
   const entries = useMemo(() => {
-    const list = apiResponse?.results ?? [];
+    const list =
+      infiniteData?.pages.flatMap((p) => p.results ?? []) ?? [];
     return [...list].sort((a, b) => entrySortDate(b) - entrySortDate(a));
-  }, [apiResponse]);
+  }, [infiniteData]);
+
+  const totalCount = infiniteData?.pages[0]?.count ?? entries.length;
+
+  // Intersection observer sentinel for infinite scroll
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node) return;
+    if (!hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "200px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, entries.length]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editEntry, setEditEntry] = useState<CombinedJournalEntry | undefined>(
@@ -204,12 +226,6 @@ export default function Tu152LocomotiveHandbookPage() {
     }
   }, [pendingDelete, deleteMutation, showSuccess, showError, tList]);
 
-  const breadcrumbs = [
-    { label: t("breadcrumb_home"), href: "/" },
-    { label: t("breadcrumb_list"), href: "/tu152-journal" },
-    { label: locomotive?.name ?? `#${locomotiveId}`, current: true },
-  ];
-
   const locomotiveLabel = locomotive
     ? `${locomotive.name}${locomotive.model_name ? " · " + locomotive.model_name : ""}`
     : undefined;
@@ -225,29 +241,23 @@ export default function Tu152LocomotiveHandbookPage() {
 
   return (
     <>
-      <PageHeader title={t("title")} breadcrumbs={breadcrumbs} />
+      <PageHeader title={t("hero_label")} />
 
       <div className="pb-8">
         {/* Locomotive line + add button */}
         <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <div className="text-[11px] uppercase tracking-wider text-slate-400">
-              {t("hero_label")}
-            </div>
             <div className="text-lg font-semibold text-slate-800 truncate">
               {locomotive?.name ?? `#${locomotiveId}`}
               {locomotive?.model_name && (
                 <span className="ml-2 font-normal text-slate-500 text-base">
-                  · {locomotive.model_name}
+                  {locomotive.model_name}
                 </span>
               )}
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-500">
-              {t("entries_count", { count: entries.length })}
-            </span>
             {canCreate && (
               <Button size="sm" onClick={handleAdd}>
                 <Plus className="h-4 w-4 mr-1" />
@@ -281,18 +291,34 @@ export default function Tu152LocomotiveHandbookPage() {
         )}
 
         {!isLoading && !apiError && entries.length > 0 && (
-          <div className="divide-y divide-slate-200 border border-slate-200 rounded-lg bg-white">
-            {entries.map((entry) => (
-              <EntryRow
-                key={entry.id}
-                entry={entry}
-                inspectionTypeMap={inspectionTypeMap}
-                onEdit={canEdit ? (tab) => handleEdit(entry, tab) : undefined}
-                onDelete={canDelete ? () => setPendingDelete(entry) : undefined}
-                t={t}
-              />
-            ))}
-          </div>
+          <>
+            <div className="divide-y divide-slate-200 border border-slate-200 rounded-lg bg-white">
+              {entries.map((entry) => (
+                <EntryRow
+                  key={entry.id}
+                  entry={entry}
+                  inspectionTypeMap={inspectionTypeMap}
+                  onEdit={canEdit ? (tab) => handleEdit(entry, tab) : undefined}
+                  onDelete={canDelete ? () => setPendingDelete(entry) : undefined}
+                  t={t}
+                />
+              ))}
+            </div>
+
+            {/* Infinite-scroll sentinel + loader */}
+            <div ref={sentinelRef} className="h-1" />
+            {isFetchingNextPage && (
+              <div className="flex items-center justify-center py-4 text-slate-500">
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <span className="text-xs">{tList("loading")}</span>
+              </div>
+            )}
+            {!hasNextPage && entries.length >= 10 && (
+              <div className="py-3 text-center text-[11px] text-slate-400">
+                {t("entries_loaded_all", { count: totalCount })}
+              </div>
+            )}
+          </>
         )}
       </div>
 

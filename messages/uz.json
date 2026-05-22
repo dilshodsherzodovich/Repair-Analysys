@@ -1189,13 +1189,14 @@
     "delete_cancel": "Bekor qilish"
   },
   "Tu152JournalDetail": {
-    "title": "Lokomotiv ma'lumotnomasi",
+    "title": "TU-152 Jurnali",
     "breadcrumb_home": "Bosh sahifa",
     "breadcrumb_list": "TU-152 Jurnali",
     "hero_label": "TU-152",
     "entries_count": "{count} ta yozuv",
     "entries_empty_title": "Yozuv yo'q",
     "entries_empty_desc": "Bu lokomotiv uchun hali yozuv kiritilmagan",
+    "entries_loaded_all": "Barcha {count} ta yozuv yuklandi",
     "add_entry": "Yozuv qo'shish",
     "entry_empty": "Bo'sh yozuv",
     "block_energy": "Yoqilg'i / Elektr",

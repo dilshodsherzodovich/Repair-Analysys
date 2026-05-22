@@ -51,8 +51,8 @@ export default function Tu152JournalPage() {
     <>
       <PageHeader title={t("title")} description={t("description")} />
 
-      <div className="pb-8">
-        <div className="mb-4 max-w-md">
+      <div className="pb-6 md:pb-8">
+        <div className="mb-3 md:mb-4 max-w-md">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             <Input
