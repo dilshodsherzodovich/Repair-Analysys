@@ -316,6 +316,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       });
     }
 
+    if (user && canAccessSection(user, "tu152-journal")) {
+      items.push({
+        key: "tu152-journal",
+        name: t("nav.tu152-journal"),
+        icon: ClipboardList,
+        section: "tu152-journal",
+        href: "/tu152-journal",
+      });
+    }
+
     return items;
   }, [user, organizations, userBranchOrg, t]);
 

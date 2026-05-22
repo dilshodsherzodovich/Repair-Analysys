@@ -58,7 +58,13 @@ export type Permission =
   | "view_tu137"
 
   // tu-152 permissions
-  | "view_tu152";
+  | "view_tu152"
+
+  // tu152-journal (combined journal) permissions
+  | "view_tu152_journal"
+  | "create_tu152_journal"
+  | "edit_tu152_journal"
+  | "delete_tu152_journal";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
@@ -98,6 +104,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_maneuver_journal",
     "delete_maneuver_journal",
     "view_tu152",
+    "view_tu152_journal",
+    "create_tu152_journal",
+    "edit_tu152_journal",
+    "delete_tu152_journal",
   ],
   moderator: [
     "view_dashboard",
@@ -133,6 +143,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_maneuver_journal",
     "delete_maneuver_journal",
     "view_tu152",
+    "view_tu152_journal",
   ],
   passport_staff: [
     "view_depo",
@@ -147,6 +158,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "create_defective_work",
     "edit_defective_work",
     "delete_defective_work",
+    "view_tu152_journal",
+    "create_tu152_journal",
+    "edit_tu152_journal",
+    "delete_tu152_journal",
   ],
   repair_engineer: [
     "view_dashboard",
@@ -283,6 +298,9 @@ export function canAccessSection(
     }
     case "tu-152": {
       return hasPermission(user, "view_tu152");
+    }
+    case "tu152-journal": {
+      return hasPermission(user, "view_tu152_journal");
     }
     default:
       return false;
