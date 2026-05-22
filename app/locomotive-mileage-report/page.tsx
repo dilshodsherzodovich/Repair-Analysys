@@ -105,23 +105,20 @@ function toDisplayDate(iso: string): string {
 
 function ManufactureDateCell({ locoId, serverValue }: { locoId: number; serverValue: string }) {
   const [value, setValue] = useState(serverValue ?? "");
-  const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const committed = useRef<string>(serverValue ?? "");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (editing && inputRef.current) {
-      inputRef.current.focus();
-      try { inputRef.current.showPicker(); } catch { /* unsupported */ }
-    }
+    if (editing) inputRef.current?.focus();
   }, [editing]);
 
-  async function patch(dateValue: string) {
+  async function patch(isoDate: string) {
     setSaving(true);
     setEditing(false);
     try {
-      const result = await txk13ReportService.patchManufactureDate(locoId, dateValue);
+      const result = await txk13ReportService.patchManufactureDate(locoId, isoDate);
       committed.current = result.manufacture_date;
       setValue(result.manufacture_date);
     } catch {
@@ -131,24 +128,15 @@ function ManufactureDateCell({ locoId, serverValue }: { locoId: number; serverVa
     }
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const newVal = e.target.value;
-    setValue(newVal);
-    if (/^\d{4}-\d{2}-\d{2}$/.test(newVal) && newVal !== committed.current) {
-      patch(newVal);
-    }
-  }
-
-  function handleBlur() {
-    setEditing(false);
-    if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      setValue(committed.current);
-    }
+  function submit() {
+    if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) { setValue(committed.current); setEditing(false); return; }
+    if (value === committed.current) { setEditing(false); return; }
+    patch(value);
   }
 
   return (
     <TableCell
-      className="py-2 px-2 text-[#475569] border-r border-[#E2E8F0] relative whitespace-nowrap cursor-pointer"
+      className="py-2 px-2 text-[#475569] border-r border-[#E2E8F0] relative whitespace-nowrap min-w-[140px] cursor-pointer"
       onClick={() => !editing && !saving && setEditing(true)}
     >
       {saving ? (
@@ -158,12 +146,13 @@ function ManufactureDateCell({ locoId, serverValue }: { locoId: number; serverVa
           ref={inputRef}
           type="date"
           value={value}
-          onChange={handleChange}
-          onBlur={handleBlur}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={submit}
+          onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
           className="absolute inset-0 w-full h-full px-2 text-xs bg-white border border-[#93C5FD] ring-1 ring-[#93C5FD] outline-none text-[#475569]"
         />
       ) : (
-        <span>{toDisplayDate(value)}</span>
+        <span className="text-xs">{toDisplayDate(value) || "—"}</span>
       )}
     </TableCell>
   );
@@ -310,7 +299,7 @@ export default function LocomotiveMileageReportPage() {
               <TableHead rowSpan={2} className="sticky top-0 left-[112px] z-30 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC] min-w-[72px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]">
                 {t("columns.number")}
               </TableHead>
-              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
+              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC] min-w-[140px]">
                 {t("columns.manufactured_date")}
               </TableHead>
               <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
@@ -445,7 +434,8 @@ export default function LocomotiveMileageReportPage() {
                             </button>
                           );
 
-                          const showKm = activeUnit !== "hours" && !!insp && insp.km_norm > 0;
+                          const hasLastDate = !!insp && !!insp.last_date && insp.last_date !== "-";
+                          const showKm = activeUnit !== "hours" && !!insp && (insp.km_norm > 0 || hasLastDate);
                           const showHours = activeUnit !== "km" && !!insp && insp.hours_norm > 0;
 
                           if (!showKm && !showHours) {
