@@ -133,4 +133,10 @@ export const queryKeys = {
   locomotiveMileageBaselines: {
     list: "locomotive-mileage-baselines-list",
   },
+  tu152Journal: {
+    all: "tu152-journal-all",
+    create: "tu152-journal-create",
+    update: "tu152-journal-update",
+    delete: "tu152-journal-delete",
+  },
 } as const;
