@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { Flame, Camera, Stamp, ClipboardList, Fuel, Check, Plus } from "lucide-react";
@@ -165,6 +165,24 @@ export function Tu152JournalModal({
   const [stamp, setStamp] = useState<StampState>(STAMP_INITIAL);
   const [revision, setRevision] = useState<RevisionState>(REVISION_INITIAL);
   const [error, setError] = useState<string>("");
+
+  // Convert vertical wheel into horizontal scroll on the tabs strip so
+  // shift+wheel (and plain wheel) work even when the modal body is the
+  // closest vertical scroller above us.
+  const tabsScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = tabsScrollRef.current;
+    if (!el || !isOpen) return;
+    const onWheel = (e: WheelEvent) => {
+      const canScrollHoriz = el.scrollWidth > el.clientWidth;
+      if (!canScrollHoriz) return;
+      if (e.deltaY === 0 && e.deltaX === 0) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY !== 0 ? e.deltaY : e.deltaX;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [isOpen]);
 
   const { data: locomotivesData, isPending: loadingLocomotives } =
     useGetLocomotives(isOpen, undefined, {
@@ -401,25 +419,30 @@ export function Tu152JournalModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:!max-w-4xl max-h-[92vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>{editData ? t("title_edit") : t("title")}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+      <DialogContent className="w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] sm:w-full sm:!max-w-4xl max-h-[95vh] md:max-h-[92vh] overflow-x-hidden overflow-y-auto p-3 sm:p-5 md:p-6 gap-3 sm:gap-4">
+        <DialogHeader className="pr-8 min-w-0">
+          <DialogTitle className="text-base sm:text-lg truncate">
+            {editData ? t("title_edit") : t("title")}
+          </DialogTitle>
+          <DialogDescription className="hidden md:block">
+            {t("description")}
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5 min-w-0">
+          {/* Inputs / selects / buttons / textareas are responsive globally via ui/* */}
           {lockedLocomotiveId ? (
-            <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm">
-              <div className="text-[11px] uppercase tracking-wider font-semibold text-primary/70">
+            <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-1.5 sm:py-2 text-sm flex items-baseline gap-2">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-primary/70 shrink-0">
                 {t("locomotive")}
-              </div>
-              <div className="font-semibold text-slate-800 mt-0.5">
+              </span>
+              <span className="font-semibold text-slate-800 truncate">
                 {lockedLocomotiveLabel ??
                   locomotiveOptions.find(
                     (o) => o.value === String(lockedLocomotiveId),
                   )?.label ??
                   `#${lockedLocomotiveId}`}
-              </div>
+              </span>
             </div>
           ) : (
             <div>
@@ -444,21 +467,24 @@ export function Tu152JournalModal({
             </div>
           )}
 
-          <Tabs defaultValue={defaultTab} className="w-full">
-            <div className="-mx-1 overflow-x-auto scrollbar-thin">
-              <TabsList className="inline-flex md:flex md:flex-wrap gap-1 bg-slate-100 p-1 w-max md:w-full">
+          <Tabs defaultValue={defaultTab}>
+            <div
+              ref={tabsScrollRef}
+              className="w-full overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain"
+            >
+              <TabsList className="inline-flex md:flex md:flex-wrap gap-1 bg-slate-100 p-1 md:w-full">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className="md:flex-1 shrink-0 md:min-w-[120px] gap-2 px-3"
+                      className="md:flex-1 shrink-0 md:min-w-[120px] gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-sm"
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       <span className="truncate">{tab.label}</span>
                       {tab.enabled && (
-                        <span className="ml-1 h-2 w-2 rounded-full bg-emerald-500" />
+                        <span className="ml-0.5 h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-500" />
                       )}
                     </TabsTrigger>
                   );
@@ -467,7 +493,7 @@ export function Tu152JournalModal({
             </div>
 
             {/* ENERGY TYPE */}
-            <TabsContent value="energy" className="pt-4">
+            <TabsContent value="energy" className="pt-3 md:pt-4">
               <SectionToggle
                 title={t("section_energy_title")}
                 description={t("section_energy_desc")}
@@ -478,7 +504,7 @@ export function Tu152JournalModal({
                 disabled={isPending}
               />
               {energy.enabled && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
                   <div>
                     <Label>{t("energy_type")}</Label>
                     <Select
@@ -591,7 +617,7 @@ export function Tu152JournalModal({
             </TabsContent>
 
             {/* FIRE EXTINGUISHER */}
-            <TabsContent value="fire" className="pt-4">
+            <TabsContent value="fire" className="pt-3 md:pt-4">
               <SectionToggle
                 title={t("section_fire_title")}
                 description={t("section_fire_desc")}
@@ -602,7 +628,7 @@ export function Tu152JournalModal({
                 disabled={isPending}
               />
               {fire.enabled && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
                   <div>
                     <Label>{t("fire_name")}</Label>
                     <Input
@@ -660,7 +686,7 @@ export function Tu152JournalModal({
             </TabsContent>
 
             {/* CAMERA */}
-            <TabsContent value="camera" className="pt-4">
+            <TabsContent value="camera" className="pt-3 md:pt-4">
               <SectionToggle
                 title={t("section_camera_title")}
                 description={t("section_camera_desc")}
@@ -671,7 +697,7 @@ export function Tu152JournalModal({
                 disabled={isPending}
               />
               {camera.enabled && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
                   <div>
                     <Label>{t("camera_name")}</Label>
                     <Input
@@ -732,7 +758,7 @@ export function Tu152JournalModal({
             </TabsContent>
 
             {/* STAMP */}
-            <TabsContent value="stamp" className="pt-4">
+            <TabsContent value="stamp" className="pt-3 md:pt-4">
               <SectionToggle
                 title={t("section_stamp_title")}
                 description={t("section_stamp_desc")}
@@ -743,11 +769,11 @@ export function Tu152JournalModal({
                 disabled={isPending}
               />
               {stamp.enabled && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-red-500" />
-                      <Label className="m-0">{t("red_stamp")}</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
+                  <div className="flex items-center justify-between gap-2 rounded-md border border-slate-200 px-2.5 py-1.5 sm:px-3 sm:py-2 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="h-3 w-3 shrink-0 rounded-full bg-red-500" />
+                      <Label className="m-0 truncate">{t("red_stamp")}</Label>
                     </div>
                     <Switch
                       checked={stamp.red_stamp}
@@ -755,12 +781,13 @@ export function Tu152JournalModal({
                         setStamp((prev) => ({ ...prev, red_stamp: v }))
                       }
                       disabled={isPending}
+                      className="shrink-0"
                     />
                   </div>
-                  <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-emerald-500" />
-                      <Label className="m-0">{t("green_stamp")}</Label>
+                  <div className="flex items-center justify-between gap-2 rounded-md border border-slate-200 px-2.5 py-1.5 sm:px-3 sm:py-2 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="h-3 w-3 shrink-0 rounded-full bg-emerald-500" />
+                      <Label className="m-0 truncate">{t("green_stamp")}</Label>
                     </div>
                     <Switch
                       checked={stamp.green_stamp}
@@ -768,6 +795,7 @@ export function Tu152JournalModal({
                         setStamp((prev) => ({ ...prev, green_stamp: v }))
                       }
                       disabled={isPending}
+                      className="shrink-0"
                     />
                   </div>
                   <div>
@@ -807,7 +835,7 @@ export function Tu152JournalModal({
             </TabsContent>
 
             {/* REVISION */}
-            <TabsContent value="revision" className="pt-4">
+            <TabsContent value="revision" className="pt-3 md:pt-4">
               <SectionToggle
                 title={t("section_revision_title")}
                 description={t("section_revision_desc")}
@@ -818,7 +846,7 @@ export function Tu152JournalModal({
                 disabled={isPending}
               />
               {revision.enabled && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
                   <div>
                     <Label>{t("inspection_type")}</Label>
                     <Select
@@ -928,16 +956,21 @@ export function Tu152JournalModal({
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex flex-row justify-between gap-2 sm:gap-3 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={isPending}
+              className="w-1/2 sm:w-auto"
             >
               {t("cancel")}
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-1/2 sm:w-auto"
+            >
               {isPending ? t("saving") : editData ? t("update") : t("save")}
             </Button>
           </div>
@@ -983,7 +1016,7 @@ function SectionToggle({
       onClick={handleToggle}
       onKeyDown={handleKeyDown}
       className={cn(
-        "group w-full select-none rounded-xl border-2 px-4 py-4 transition-all cursor-pointer",
+        "group w-full select-none rounded-lg md:rounded-xl border-2 px-2.5 py-2 sm:px-4 sm:py-3 md:py-4 transition-all cursor-pointer",
         "outline-none focus-visible:ring-4",
         disabled && "cursor-not-allowed opacity-60",
         enabled
@@ -991,29 +1024,29 @@ function SectionToggle({
           : "border-dashed border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-white focus-visible:ring-slate-200",
       )}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         <span
           className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white text-lg font-bold transition-colors",
+            "flex h-7 w-7 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-white font-bold transition-colors",
             enabled ? "bg-emerald-500" : "bg-slate-300",
           )}
           aria-hidden
         >
           {enabled ? (
-            <Check className="h-5 w-5" strokeWidth={3} />
+            <Check className="h-3.5 w-3.5 sm:h-5 sm:w-5" strokeWidth={3} />
           ) : (
-            <Plus className="h-5 w-5" strokeWidth={3} />
+            <Plus className="h-3.5 w-3.5 sm:h-5 sm:w-5" strokeWidth={3} />
           )}
         </span>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-base font-semibold text-slate-800">
+            <span className="text-sm sm:text-base font-semibold text-slate-800">
               {title}
             </span>
             <span
               className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider",
+                "inline-flex items-center gap-1 rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider",
                 enabled
                   ? "bg-emerald-500 text-white"
                   : "bg-slate-200 text-slate-600",
@@ -1024,10 +1057,12 @@ function SectionToggle({
                 : t("section_disabled_badge")}
             </span>
           </div>
-          <div className="text-xs text-slate-500 mt-1">{description}</div>
+          <div className="hidden sm:block text-xs text-slate-500 mt-1">
+            {description}
+          </div>
           <div
             className={cn(
-              "text-xs font-semibold mt-2",
+              "hidden md:block text-xs font-semibold mt-2",
               enabled ? "text-emerald-700" : "text-slate-600",
             )}
           >
@@ -1041,7 +1076,7 @@ function SectionToggle({
         <span
           aria-hidden
           className={cn(
-            "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors",
+            "relative inline-flex h-5 w-9 sm:h-7 sm:w-12 shrink-0 items-center rounded-full border transition-colors",
             enabled
               ? "bg-emerald-500 border-emerald-600"
               : "bg-slate-200 border-slate-300",
@@ -1049,8 +1084,10 @@ function SectionToggle({
         >
           <span
             className={cn(
-              "inline-block h-5 w-5 rounded-full bg-white shadow transition-transform",
-              enabled ? "translate-x-6" : "translate-x-1",
+              "inline-block h-3.5 w-3.5 sm:h-5 sm:w-5 rounded-full bg-white shadow transition-transform",
+              enabled
+                ? "translate-x-4 sm:translate-x-6"
+                : "translate-x-0.5 sm:translate-x-1",
             )}
           />
         </span>

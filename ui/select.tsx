@@ -21,13 +21,13 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
+      "flex w-full items-center justify-between cursor-pointer rounded-md border border-gray-300 bg-white",
+      "h-9 px-3 py-1.5 text-sm sm:h-10 sm:px-4 sm:py-2 sm:text-sm",
       "transition-colors outline-none",
       "focus:border-blue-500 focus:ring-0 hover:border-gray-400",
       "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
       "aria-invalid:border-red-500 aria-invalid:focus:border-red-500",
-      "mb-4", // Added margin bottom for spacing between form elements
-      "md:text-sm",
+      "mb-3 sm:mb-4",
       "[&>span]:line-clamp-1",
       "data-[placeholder]:text-muted-foreground",
       "[&>span]:text-[#0F172B] [&>span]:data-[placeholder]:text-muted-foreground",
