@@ -3,8 +3,11 @@ import type { Txk13ReportParams, Txk13ReportResponse } from "../types/txk13-repo
 
 export const txk13ReportService = {
   async getReport(params: Txk13ReportParams): Promise<Txk13ReportResponse> {
+    const cleanedParams = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined && v !== "" && v !== null)
+    );
     const response = await api.get<Txk13ReportResponse>("/txk13-report/", {
-      params: { organization: params.organization },
+      params: cleanedParams,
     });
     return response.data;
   },
