@@ -22,6 +22,7 @@ import { canAccessSection, type Permission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import type { UserData } from "@/api/types/auth";
 import { BaselineModal } from "./baseline-modal";
+import { TotalMileageBaselineModal } from "./total-mileage-baseline-modal";
 import { txk13ReportService } from "@/api/services/txk13-report.service";
 import { Txk13Filters } from "./txk13-filters";
 
@@ -187,6 +188,10 @@ export default function LocomotiveMileageReportPage() {
   } | null>(null);
 
   const [pendingBaselines, setPendingBaselines] = useState<Set<string>>(new Set());
+  const [totalMileageModal, setTotalMileageModal] = useState<{
+    locomotiveId: number;
+    locomotiveName: string;
+  } | null>(null);
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
@@ -402,8 +407,18 @@ export default function LocomotiveMileageReportPage() {
                         </TableCell>
                         <ManufactureDateCell locoId={loco.id} serverValue={loco.manufactured_date} />
                         <BandajCell locoId={loco.id} serverValue={loco.bandaj_thickness} />
-                        <TableCell className="py-2 px-2 text-right text-[#475569] border-r border-[#E2E8F0]">
-                          {formatNum(loco.total_mileage)}
+                        <TableCell className="py-2 px-2 border-r border-[#E2E8F0]">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-right text-[#475569] flex-1">{formatNum(loco.total_mileage)}</span>
+                            <button
+                              type="button"
+                              onClick={() => setTotalMileageModal({ locomotiveId: loco.id, locomotiveName: `${loco.series} ${loco.number}` })}
+                              className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#94A3B8] hover:text-[#475569] transition-colors shrink-0"
+                              title="Bazani sozlash"
+                            >
+                              <Settings2 className="size-3.5" />
+                            </button>
+                          </div>
                         </TableCell>
                         <TableCell className="py-2 px-2 text-right text-[#475569] border-r border-[#E2E8F0]">
                           {formatNum(loco.average_monthly_mileage)}
@@ -505,6 +520,13 @@ export default function LocomotiveMileageReportPage() {
             return next;
           });
         }}
+      />
+
+      <TotalMileageBaselineModal
+        isOpen={!!totalMileageModal}
+        onClose={() => setTotalMileageModal(null)}
+        locomotiveId={totalMileageModal?.locomotiveId ?? 0}
+        locomotiveName={totalMileageModal?.locomotiveName ?? ""}
       />
     </div>
   );
