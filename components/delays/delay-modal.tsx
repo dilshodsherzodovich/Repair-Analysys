@@ -81,17 +81,52 @@ function minutesToTimeString(minutes: number): string {
   return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
-// Convert HH:MM:SS or HH:MM to minutes
+// Convert HH:MM:SS or HH:MM to minutes (hours may exceed 24 — it's a duration)
 function timeStringToMinutes(timeStr: string): number {
   if (!timeStr) return 0;
-  // Handle formats: "HH:MM:SS", "HH:MM", "H:M"
-  const match = timeStr.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  // Handle formats: "HHH:MM:SS", "HH:MM", "H:M" — hours unbounded
+  const match = timeStr.match(/(\d+):(\d{1,2})(?::(\d{2}))?/);
   if (match) {
     const hours = parseInt(match[1], 10) || 0;
     const minutes = parseInt(match[2], 10) || 0;
     return hours * 60 + minutes;
   }
   return 0;
+}
+
+// Convert minutes to HH:MM (for the duration input value). Hours unbounded.
+function minutesToHHMM(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+}
+
+// Sanitize duration input: digits + single colon, minutes capped at 2 digits
+function formatDuration(raw: string): string {
+  let cleaned = raw.replace(/[^\d:]/g, "");
+  const firstColon = cleaned.indexOf(":");
+  if (firstColon !== -1) {
+    cleaned =
+      cleaned.slice(0, firstColon + 1) +
+      cleaned.slice(firstColon + 1).replace(/:/g, "");
+    const [h, m] = cleaned.split(":");
+    cleaned = `${h}:${m.slice(0, 2)}`;
+  }
+  return cleaned;
+}
+
+// Format a raw numeric string with space thousands separators (keeps optional decimals)
+function formatThousands(raw: string): string {
+  const cleaned = raw.replace(/[^\d.]/g, "");
+  if (!cleaned) return "";
+  const [intPart, ...rest] = cleaned.split(".");
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return rest.length ? `${grouped}.${rest.join("")}` : grouped;
+}
+
+// Strip separators back to a number for the API request
+function parseThousands(formatted: string): number {
+  return Number.parseFloat(formatted.replace(/\s/g, "")) || 0;
 }
 
 function OrganizationSelectField({
@@ -166,6 +201,8 @@ export function DelayModal({
     !hasPermission(user ?? null, "upload_delay_report");
   const [formDefaults, setFormDefaults] = useState<FormData>(INITIAL_FORM_DATA);
   const [stationValue, setStationValue] = useState<string>("");
+  const [delayTimeDisplay, setDelayTimeDisplay] = useState<string>("");
+  const [damageDisplay, setDamageDisplay] = useState<string>("0");
   const [formKey, setFormKey] = useState(0);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -186,7 +223,7 @@ export function DelayModal({
         delay_type: entry.delay_type || "",
         train_number: entry.train_number || "",
         station: entry.station || "",
-        delay_time: minutes > 0 ? String(minutes) : "",
+        delay_time: minutes > 0 ? minutesToHHMM(minutes) : "",
         reason: entry.reason || "",
         damage_amount: String(entry.damage_amount || 0),
         responsible_org: entry.responsible_org
@@ -202,11 +239,15 @@ export function DelayModal({
         entry.incident_date ? new Date(entry.incident_date) : undefined,
       );
       setStationValue(entry.station || "");
+      setDelayTimeDisplay(minutes > 0 ? minutesToHHMM(minutes) : "");
+      setDamageDisplay(formatThousands(String(entry.damage_amount || 0)));
       setReportFile(null); // Don't pre-fill file on edit
     } else {
       setFormDefaults(INITIAL_FORM_DATA);
       setSelectedDate(undefined);
       setStationValue("");
+      setDelayTimeDisplay("");
+      setDamageDisplay("0");
       setReportFile(null);
     }
     // Reset archive to false when opening modal
@@ -235,9 +276,9 @@ export function DelayModal({
     const delayType = (data.get("delay_type") as string) || "";
     const trainNumber = (data.get("train_number") as string) || "";
     const station = (data.get("station") as string) || "";
-    const delayTimeMinutes = (data.get("delay_time") as string) || "";
+    const delayTimeRaw = delayTimeDisplay;
     const reason = (data.get("reason") as string) || "";
-    const damageAmount = (data.get("damage_amount") as string) || "0";
+    const damageAmount = parseThousands(damageDisplay);
     const responsibleOrg = (data.get("responsible_org") as string) || "";
     const status = (data.get("status") as string) === "true";
     const groupReason = (data.get("group_reason") as string) || "";
@@ -253,11 +294,9 @@ export function DelayModal({
       return;
     }
 
-    if (
-      !delayTimeMinutes ||
-      isNaN(Number(delayTimeMinutes)) ||
-      Number(delayTimeMinutes) < 0
-    ) {
+    // Parse HH:MM input to minutes
+    const delayMinutes = timeStringToMinutes(delayTimeRaw);
+    if (!delayTimeRaw || delayMinutes <= 0) {
       showError(t("errors.delay_time"));
       return;
     }
@@ -270,9 +309,8 @@ export function DelayModal({
     // Format date as YYYY-MM-DD
     const formattedDate = selectedDate.toISOString().split("T")[0];
 
-    // Convert minutes to HH:MM:SS format
-    const minutes = parseInt(delayTimeMinutes, 10);
-    const formattedTime = minutesToTimeString(minutes);
+    // Convert minutes to HH:MM:SS format for the API
+    const formattedTime = minutesToTimeString(delayMinutes);
 
     const payload: DelayCreatePayload | DelayUpdatePayload = {
       delay_type: delayType as "Po prosledovaniyu" | "Po otpravleniyu",
@@ -280,7 +318,7 @@ export function DelayModal({
       station: station.trim(),
       delay_time: formattedTime,
       reason: reason.trim(),
-      damage_amount: Number.parseFloat(damageAmount) || 0,
+      damage_amount: damageAmount,
       responsible_org: Number(responsibleOrg),
       incident_date: formattedDate,
       // Status defaults to true when creating, can be changed by sriv_moderator or sriv_admin when editing
@@ -309,6 +347,8 @@ export function DelayModal({
     setFormDefaults(INITIAL_FORM_DATA);
     setSelectedDate(undefined);
     setStationValue("");
+    setDelayTimeDisplay("");
+    setDamageDisplay("0");
     setReportFile(null);
     setFormKey((prev) => prev + 1);
     formRef.current?.reset();
@@ -419,12 +459,11 @@ export function DelayModal({
                   id="delay_time"
                   name="delay_time"
                   label={t("fields.delay_time")}
-                  type="number"
-                  defaultValue={formDefaults.delay_time}
-                  placeholder={t("fields.delay_time_placeholder")}
+                  type="text"
+                  value={delayTimeDisplay}
+                  onChange={(v) => setDelayTimeDisplay(formatDuration(v))}
+                  placeholder="hh:mm"
                   required
-                  min="0"
-                  step="1"
                 />
 
                 <div>
@@ -464,12 +503,11 @@ export function DelayModal({
                   id="damage_amount"
                   name="damage_amount"
                   label={t("fields.damage_amount")}
-                  type="number"
-                  defaultValue={formDefaults.damage_amount}
+                  type="text"
+                  value={damageDisplay}
+                  onChange={(v) => setDamageDisplay(formatThousands(v))}
                   placeholder="0"
                   required
-                  min="0"
-                  step="0.01"
                 />
 
                 <DatePicker

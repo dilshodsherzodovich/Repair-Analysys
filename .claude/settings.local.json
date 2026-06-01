@@ -6,7 +6,10 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(powershell *)",
+      "Bash(git -C D:\\\\projects\\\\Repair-Analysys add -A)",
+      "Bash(git -C D:\\\\projects\\\\Repair-Analysys status --short)"
     ]
   },
   "enabledPlugins": {

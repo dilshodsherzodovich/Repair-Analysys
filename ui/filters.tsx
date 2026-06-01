@@ -374,7 +374,7 @@ export default function PageFilters({
 }
 
 // Single-select with search: same pattern as multi-select (custom dropdown + search input + filtered list)
-function SelectWithSearch({
+export function SelectWithSearch({
   placeholder,
   options,
   value,

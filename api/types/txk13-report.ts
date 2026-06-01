@@ -2,10 +2,14 @@ export interface Txk13Inspection {
   type_id: number;
   type: string;
   last_date: string;
-  mileage_since_repair: number;
-  norm: number;
-  difference: number;
-  next_repair_date: string;
+  km_value_since_repair: number;
+  km_norm: number;
+  km_difference: number;
+  km_next_repair_date: string;
+  hours_value_since_repair: number;
+  hours_norm: number;
+  hours_difference: number;
+  hours_next_repair_date: string;
 }
 
 export interface Txk13Locomotive {
@@ -33,4 +37,7 @@ export interface Txk13ReportResponse {
 
 export interface Txk13ReportParams {
   organization: number;
+  service_type?: string;
+  locomotive_type?: string;
+  locomotive_model?: number;
 }
