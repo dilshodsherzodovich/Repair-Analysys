@@ -12,7 +12,6 @@ import {
   DelayCreatePayload,
   DelayUpdatePayload,
   DELAY_TYPE_OPTIONS,
-  STATION_OPTIONS,
   TRAIN_TYPE_OPTIONS,
   GROUP_REASON_OPTIONS,
 } from "@/api/types/delays";
@@ -479,17 +478,6 @@ export default function DelaysPage() {
     return options;
   }, [t]);
 
-  const stationOptions = useMemo(() => {
-    const options = [{ value: "", label: t("filters.station_placeholder") }];
-    STATION_OPTIONS.forEach((station) =>
-      options.push({
-        value: station.value,
-        label: station.label,
-      }),
-    );
-    return options;
-  }, []);
-
   const organizationOptions = useMemo(() => {
     const options = [
       { value: "", label: t("filters.responsible_org_placeholder") },
@@ -576,11 +564,8 @@ export default function DelaysPage() {
             {
               name: "station",
               label: t("filters.station"),
-              isSelect: true,
-              options: stationOptions,
+              isSelect: false,
               placeholder: t("filters.station_placeholder"),
-              searchable: true,
-              loading: false,
               permission: "filter_delay_station",
             },
             {
