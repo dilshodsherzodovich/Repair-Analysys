@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from "@/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
+import { RailwayStamp } from "./railway-stamp";
 
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useInspectionTypes } from "@/api/hooks/use-inspection";
@@ -47,6 +48,8 @@ interface Tu152JournalModalProps {
   isPending: boolean;
   editData?: CombinedJournalEntry;
   organizationId?: number;
+  /** Branch (depo) name printed on the stamp. */
+  branchName?: string;
   /** When set, the locomotive selector is hidden and this id is used. */
   lockedLocomotiveId?: number;
   /** Display name shown when locomotive is locked. */
@@ -152,6 +155,7 @@ export function Tu152JournalModal({
   isPending,
   editData,
   organizationId,
+  branchName,
   lockedLocomotiveId,
   lockedLocomotiveLabel,
   defaultTab = "energy",
@@ -770,32 +774,36 @@ export function Tu152JournalModal({
               />
               {stamp.enabled && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
-                  <div className="flex items-center justify-between gap-2 rounded-md border border-slate-200 px-2.5 py-1.5 sm:px-3 sm:py-2 min-w-0">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="h-3 w-3 shrink-0 rounded-full bg-red-500" />
-                      <Label className="m-0 truncate">{t("red_stamp")}</Label>
-                    </div>
-                    <Switch
-                      checked={stamp.red_stamp}
-                      onCheckedChange={(v) =>
-                        setStamp((prev) => ({ ...prev, red_stamp: v }))
-                      }
+                  <div className="md:col-span-2 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 py-3">
+                    <RailwayStamp
+                      variant="red"
+                      date={stamp.stamp_applied_at}
+                      branchName={branchName}
+                      selected={stamp.red_stamp}
                       disabled={isPending}
-                      className="shrink-0"
+                      onClick={() =>
+                        setStamp((prev) => ({
+                          ...prev,
+                          red_stamp: !prev.red_stamp,
+                          green_stamp: !prev.red_stamp ? false : prev.green_stamp,
+                        }))
+                      }
+                      className="w-72 sm:w-80"
                     />
-                  </div>
-                  <div className="flex items-center justify-between gap-2 rounded-md border border-slate-200 px-2.5 py-1.5 sm:px-3 sm:py-2 min-w-0">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="h-3 w-3 shrink-0 rounded-full bg-emerald-500" />
-                      <Label className="m-0 truncate">{t("green_stamp")}</Label>
-                    </div>
-                    <Switch
-                      checked={stamp.green_stamp}
-                      onCheckedChange={(v) =>
-                        setStamp((prev) => ({ ...prev, green_stamp: v }))
-                      }
+                    <RailwayStamp
+                      variant="green"
+                      date={stamp.stamp_applied_at}
+                      branchName={branchName}
+                      selected={stamp.green_stamp}
                       disabled={isPending}
-                      className="shrink-0"
+                      onClick={() =>
+                        setStamp((prev) => ({
+                          ...prev,
+                          green_stamp: !prev.green_stamp,
+                          red_stamp: !prev.green_stamp ? false : prev.red_stamp,
+                        }))
+                      }
+                      className="w-72 sm:w-80"
                     />
                   </div>
                   <div>
@@ -808,27 +816,6 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_date")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("authorized_by")}</Label>
-                    <Select
-                      value={stamp.authorized_by}
-                      onValueChange={(v) =>
-                        setStamp((prev) => ({
-                          ...prev,
-                          authorized_by: v as StampAuthorizedBy,
-                        }))
-                      }
-                      disabled={isPending}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t("placeholder_authorized_by")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="KIP">KIP</SelectItem>
-                        <SelectItem value="ERB">ERB</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
               )}
@@ -979,6 +966,7 @@ export function Tu152JournalModal({
     </Dialog>
   );
 }
+
 
 function SectionToggle({
   title,

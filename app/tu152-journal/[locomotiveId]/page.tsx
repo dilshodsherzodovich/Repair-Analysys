@@ -36,6 +36,7 @@ import {
 
 import UnauthorizedPage from "../../unauthorized/page";
 import { Tu152JournalModal } from "../components/tu152-journal-modal";
+import { RailwayStamp } from "../components/railway-stamp";
 
 type TabKey = "energy" | "fire" | "camera" | "stamp" | "revision";
 
@@ -90,6 +91,7 @@ export default function Tu152LocomotiveHandbookPage() {
   const canEdit = hasPermission(currentUser, "edit_tu152_journal");
   const canDelete = hasPermission(currentUser, "delete_tu152_journal");
   const canCreate = hasPermission(currentUser, "create_tu152_journal");
+  const branchName = (currentUser.branch as { name?: string } | undefined)?.name;
 
   const locomotiveId = Number(params.locomotiveId);
 
@@ -298,6 +300,7 @@ export default function Tu152LocomotiveHandbookPage() {
                   key={entry.id}
                   entry={entry}
                   inspectionTypeMap={inspectionTypeMap}
+                  branchName={branchName}
                   onEdit={canEdit ? (tab) => handleEdit(entry, tab) : undefined}
                   onDelete={canDelete ? () => setPendingDelete(entry) : undefined}
                   t={t}
@@ -331,6 +334,7 @@ export default function Tu152LocomotiveHandbookPage() {
         onSave={handleSave}
         isPending={createMutation.isPending || updateMutation.isPending}
         editData={editEntry}
+        branchName={branchName}
         lockedLocomotiveId={editEntry ? undefined : locomotiveId}
         lockedLocomotiveLabel={locomotiveLabel}
         defaultTab={modalTab}
@@ -355,12 +359,14 @@ export default function Tu152LocomotiveHandbookPage() {
 function EntryRow({
   entry,
   inspectionTypeMap,
+  branchName,
   onEdit,
   onDelete,
   t,
 }: {
   entry: CombinedJournalEntry;
   inspectionTypeMap: Map<number, string>;
+  branchName?: string;
   onEdit?: (tab: TabKey) => void;
   onDelete?: () => void;
   t: ReturnType<typeof useTranslations>;
@@ -460,33 +466,21 @@ function EntryRow({
         )}
 
         {stamp && (
-          <Block label={t("block_stamp")}>
-            <Field label={t("col_date")}>
-              {fmtDate(stamp.stamp_applied_at)}
-            </Field>
-            <Field label={t("col_authorized_by")}>
-              {stamp.authorized_by || "—"}
-            </Field>
-            <div className="flex items-center gap-3 col-span-2 mt-1">
-              <span className="flex items-center gap-1.5 text-xs">
-                <span
-                  className={cn(
-                    "inline-block h-2.5 w-2.5 rounded-full",
-                    stamp.red_stamp ? "bg-red-500" : "bg-slate-200",
-                  )}
+          <Block label={t("block_stamp")} className="md:col-span-2">
+            {(stamp.red_stamp || stamp.green_stamp) ? (
+              <div className="col-span-2 flex justify-center py-2">
+                <RailwayStamp
+                  variant={stamp.red_stamp ? "red" : "green"}
+                  date={stamp.stamp_applied_at}
+                  branchName={branchName}
+                  className="w-64 sm:w-72"
                 />
-                <span className="text-slate-600">{t("col_red")}</span>
-              </span>
-              <span className="flex items-center gap-1.5 text-xs">
-                <span
-                  className={cn(
-                    "inline-block h-2.5 w-2.5 rounded-full",
-                    stamp.green_stamp ? "bg-emerald-500" : "bg-slate-200",
-                  )}
-                />
-                <span className="text-slate-600">{t("col_green")}</span>
-              </span>
-            </div>
+              </div>
+            ) : (
+              <Field label={t("col_date")}>
+                {fmtDate(stamp.stamp_applied_at)}
+              </Field>
+            )}
           </Block>
         )}
 
