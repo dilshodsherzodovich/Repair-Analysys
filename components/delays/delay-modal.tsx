@@ -10,7 +10,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SearchableSelect,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
@@ -22,7 +21,6 @@ import {
   DelayCreatePayload,
   DelayUpdatePayload,
   DELAY_TYPE_OPTIONS,
-  STATION_OPTIONS,
   TRAIN_TYPE_OPTIONS,
   GROUP_REASON_OPTIONS,
   TrainType,
@@ -442,18 +440,15 @@ export function DelayModal({
                   </Select>
                 </div>
 
-                <div>
-                  <Label htmlFor="station">{t("fields.station")}</Label>
-                  <SearchableSelect
-                    name="station"
-                    value={stationValue}
-                    onValueChange={setStationValue}
-                    disabled={!canEditFields && mode === "edit"}
-                    placeholder={t("fields.station_placeholder")}
-                    searchable={true}
-                    options={STATION_OPTIONS}
-                  />
-                </div>
+                <FormField
+                  id="station"
+                  name="station"
+                  label={t("fields.station")}
+                  value={stationValue}
+                  onChange={setStationValue}
+                  placeholder={t("fields.station_placeholder")}
+                  required
+                />
 
                 <FormField
                   id="delay_time"
@@ -550,7 +545,6 @@ export function DelayModal({
               rows={4}
               defaultValue={formDefaults.reason}
               placeholder={t("fields.reason_placeholder")}
-              required
             />
           )}
 
