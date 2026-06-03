@@ -79,7 +79,7 @@ export default function DelaysPage() {
     useOrganizations();
 
   const currentPage = page ? parseInt(page) : 1;
-  const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
+  const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
   // Parse status from query string
   const statusFilter =
@@ -609,7 +609,7 @@ export default function DelaysPage() {
           columns={columns}
           data={paginatedData}
           getRowId={(row) => row.id}
-          itemsPerPage={25}
+          itemsPerPage={10}
           size="xs"
           isLoading={isLoading}
           error={error}
