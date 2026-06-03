@@ -23,6 +23,7 @@ import {
 } from "@/api/hooks/use-delays";
 import { DelayModal } from "@/components/delays/delay-modal";
 import { ApproveConfirmationModal } from "@/components/delays/approve-confirmation-modal";
+import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import {
   canAccessSection,
@@ -67,6 +68,8 @@ export default function DelaysPage() {
   const [selectedEntry, setSelectedEntry] = useState<DelayEntry | null>(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [approveEntry, setApproveEntry] = useState<DelayEntry | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteEntry, setDeleteEntry] = useState<DelayEntry | null>(null);
 
   const createMutation = useCreateDelay();
   const updateMutation = useUpdateDelay();
@@ -192,26 +195,30 @@ export default function DelaysPage() {
     );
   }, [approveEntry, updateMutation, showError, showSuccess]);
 
-  const handleDelete = useCallback(
-    async (row: DelayEntry) => {
-      if (row.archive) {
-        return;
-      }
-      try {
-        await deleteMutation.mutateAsync(row.id);
-        showSuccess(t("messages.delete_success"));
-      } catch (error: any) {
-        showError(
-          t("messages.delete_error_title"),
-          error?.response?.data?.message ||
-            error?.message ||
-            t("messages.delete_error_message"),
-        );
-        throw error;
-      }
-    },
-    [deleteMutation, showError, showSuccess],
-  );
+  const handleDeleteClick = useCallback((row: DelayEntry) => {
+    if (row.archive) {
+      return;
+    }
+    setDeleteEntry(row);
+    setIsDeleteModalOpen(true);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteEntry) return;
+    try {
+      await deleteMutation.mutateAsync(deleteEntry.id);
+      showSuccess(t("messages.delete_success"));
+      setIsDeleteModalOpen(false);
+      setDeleteEntry(null);
+    } catch (error: any) {
+      showError(
+        t("messages.delete_error_title"),
+        error?.response?.data?.message ||
+          error?.message ||
+          t("messages.delete_error_message"),
+      );
+    }
+  }, [deleteEntry, deleteMutation, showError, showSuccess]);
 
   const handleCreate = useCallback(() => {
     setSelectedEntry(null);
@@ -631,7 +638,7 @@ export default function DelaysPage() {
                   {
                     label: "",
                     icon: <Trash2 className="h-4 w-4" />,
-                    onClick: handleDelete,
+                    onClick: handleDeleteClick,
                     permission: "delete_delay" as Permission,
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) => !row.archive,
@@ -712,6 +719,22 @@ export default function DelaysPage() {
         onConfirm={handleApproveConfirm}
         entry={approveEntry}
         isPending={updateMutation.isPending}
+      />
+
+      <ConfirmationDialog
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeleteEntry(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title={t("messages.delete_confirm_title")}
+        message={t("messages.delete_confirm_message")}
+        confirmText={t("messages.delete_confirm_button")}
+        cancelText={t("messages.delete_cancel_button")}
+        isDoingActionText={t("messages.delete_deleting")}
+        isDoingAction={deleteMutation.isPending}
+        variant="danger"
       />
     </div>
   );
