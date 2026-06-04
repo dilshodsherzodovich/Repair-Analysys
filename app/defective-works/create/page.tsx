@@ -50,7 +50,9 @@ function SearchableLocomotiveSelect({
 }) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">("bottom");
+  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
+    "bottom"
+  );
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -148,7 +150,9 @@ function SearchableLocomotiveSelect({
           </div>
           <div className="max-h-[240px] overflow-y-auto py-0.5">
             {loading ? (
-              <div className="p-4 text-center text-sm text-[#64748B]">Loading...</div>
+              <div className="p-4 text-center text-sm text-[#64748B]">
+                Loading...
+              </div>
             ) : filteredOptions.length === 0 ? (
               <div className="py-3 text-center text-sm text-[#64748B]">
                 {emptyMessage ?? "No items found."}
@@ -161,7 +165,8 @@ function SearchableLocomotiveSelect({
                   onClick={() => handleSelect(opt.value)}
                   className={cn(
                     "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-[#F1F5F9]",
-                    opt.value === value && "bg-[#EFF6FF] font-medium text-[#1d4ed8]"
+                    opt.value === value &&
+                      "bg-[#EFF6FF] font-medium text-[#1d4ed8]"
                   )}
                 >
                   <span className="truncate">{opt.label}</span>
@@ -204,7 +209,7 @@ export default function PublicDefectiveWorkCreatePage() {
       setAuthError(null);
 
       const credentials: LoginCredentials = {
-        username: "admin20",
+        username: "admin01",
         password: "QO123456",
       };
 
@@ -319,7 +324,10 @@ export default function PublicDefectiveWorkCreatePage() {
 
     // Combine existing issues with current issue if it exists
     const allIssues: IssueWithDate[] = trimmedCurrent
-      ? [...issues, { text: trimmedCurrent, date: currentIssueDate || new Date() }]
+      ? [
+          ...issues,
+          { text: trimmedCurrent, date: currentIssueDate || new Date() },
+        ]
       : [...issues];
 
     if (
@@ -350,15 +358,13 @@ export default function PublicDefectiveWorkCreatePage() {
     setIsPending(true);
     try {
       // Prepare payloads with individual dates
-      const payloads: DefectiveWorkCreatePayload[] = allIssues.map(
-        (issue) => ({
-          locomotive: Number(locomotive),
-          organization_id: Number(organization),
-          train_driver: trainDriver.trim(),
-          issue: issue.text,
-          date: issue.date!.toISOString(),
-        })
-      );
+      const payloads: DefectiveWorkCreatePayload[] = allIssues.map((issue) => ({
+        locomotive: Number(locomotive),
+        organization_id: Number(organization),
+        train_driver: trainDriver.trim(),
+        issue: issue.text,
+        date: issue.date!.toISOString(),
+      }));
 
       // Make bulk create request with token from state (not stored in localStorage)
       await defectiveWorksService.bulkCreateDefectiveWorks(
@@ -385,9 +391,7 @@ export default function PublicDefectiveWorkCreatePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
         <Card className="border border-[#E2E8F0] bg-white p-6 shadow-xl md:p-8">
-          <p className="text-center text-sm text-[#475569]">
-            {t("loading")}
-          </p>
+          <p className="text-center text-sm text-[#475569]">{t("loading")}</p>
         </Card>
       </div>
     );
@@ -421,12 +425,8 @@ export default function PublicDefectiveWorkCreatePage() {
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#7C8DB5]">
             Smart Depo
           </p>
-          <h1 className="text-3xl font-bold md:text-4xl">
-            {t("title")}
-          </h1>
-          <p className="text-base text-[#475569] md:text-lg">
-            {t("subtitle")}
-          </p>
+          <h1 className="text-3xl font-bold md:text-4xl">{t("title")}</h1>
+          <p className="text-base text-[#475569] md:text-lg">{t("subtitle")}</p>
           <div className="flex items-center justify-center gap-2 text-sm text-[#475569]">
             <span>{t("has_account")}</span>
             <Link
@@ -499,7 +499,9 @@ export default function PublicDefectiveWorkCreatePage() {
                     disabled={isLoadingOrganizations}
                   >
                     <SelectTrigger className="bg-white">
-                      <SelectValue placeholder={t("organization_placeholder")} />
+                      <SelectValue
+                        placeholder={t("organization_placeholder")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {organizations.length ? (
@@ -550,9 +552,7 @@ export default function PublicDefectiveWorkCreatePage() {
               />
 
               <div className="flex items-center justify-between gap-3">
-                <p className="text-xs text-[#64748B]">
-                  {t("add_issue_hint")}
-                </p>
+                <p className="text-xs text-[#64748B]">{t("add_issue_hint")}</p>
                 <Button
                   type="button"
                   variant="outline"
@@ -578,20 +578,20 @@ export default function PublicDefectiveWorkCreatePage() {
                       className="rounded-md border-2 border-dashed border-[#CBD5F5]  bg-[#F8FAFF] p-3 space-y-3"
                     >
                       <div className="flex items-center justify-between overflow-y-auto text-xs text-[#475569]">
-                       <div className="flex items-center gap-2">
-                       <span className="flex-1">
-                          {index + 1}. {issue.text}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="flex-1">
+                            {index + 1}. {issue.text}
+                          </span>
 
-                        <DateTimePicker
-                          value={issue.date}
-                          onValueChange={(date) =>
-                            handleUpdateIssueDate(index, date)
-                          }
-                          placeholder="DD/MM/YYYY HH:mm"
-                          size="sm"
-                        />
-                       </div>
+                          <DateTimePicker
+                            value={issue.date}
+                            onValueChange={(date) =>
+                              handleUpdateIssueDate(index, date)
+                            }
+                            placeholder="DD/MM/YYYY HH:mm"
+                            size="sm"
+                          />
+                        </div>
 
                         <Button
                           type="button"
@@ -611,9 +611,7 @@ export default function PublicDefectiveWorkCreatePage() {
             </div>
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-sm text-[#475569]">
-                {t("submit_note")}
-              </p>
+              <p className="text-sm text-[#475569]">{t("submit_note")}</p>
               <div className="flex gap-3">
                 <Button
                   type="button"

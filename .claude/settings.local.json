@@ -9,7 +9,10 @@
       "Bash(git commit *)",
       "Bash(powershell *)",
       "Bash(git -C D:\\\\projects\\\\Repair-Analysys add -A)",
-      "Bash(git -C D:\\\\projects\\\\Repair-Analysys status --short)"
+      "Bash(git -C D:\\\\projects\\\\Repair-Analysys status --short)",
+      "Bash(git reset *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)"
     ]
   },
   "enabledPlugins": {
