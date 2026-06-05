@@ -25,8 +25,14 @@
       "report": "Отчет"
     },
     "status": {
+      "label_pending": "Ещё не определено",
       "label_disruption": "Срыв",
-      "label_no_disruption": "Не срыв"
+      "label_not_disruption": "Не срыв",
+      "label_no_disruption": "Не срыв",
+      "mark_disruption": "Отметить как срыв",
+      "mark_not_disruption": "Отметить как не срыв",
+      "switch_to_disruption": "Сделать срывом",
+      "switch_to_not_disruption": "Сделать не срывом"
     },
     "archive": {
       "archived": "Архивировано",
@@ -47,6 +53,7 @@
       "status": "Статус",
       "status_placeholder": "Выберите статус",
       "status_all": "Все статусы",
+      "status_pending": "Ещё не определено",
       "status_disruption": "Срыв",
       "status_no_disruption": "Не срыв",
       "search_placeholder": "Поиск"
@@ -96,6 +103,9 @@
       "update_success": "Задержка успешно обновлена",
       "update_error_title": "Произошла ошибка",
       "update_error_message": "Ошибка при обновлении задержки",
+      "status_update_success": "Статус успешно обновлён",
+      "status_update_error_title": "Произошла ошибка",
+      "status_update_error_message": "Ошибка при обновлении статуса",
       "generic_error": "Произошла ошибка"
     }
   },
@@ -315,6 +325,8 @@
       "incident_date": "Дата события",
       "status": "Статус",
       "status_placeholder": "Выберите статус",
+      "status_pending": "Ещё не определено",
+      "status_pending_hint": "Новая задержка ожидает проверки",
       "status_disruption": "Срыв",
       "status_no_disruption": "Не срыв",
       "reason": "Причина",

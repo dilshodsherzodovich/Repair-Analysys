@@ -38,9 +38,13 @@ export function ApproveConfirmationModal({
   if (!entry) return null;
 
   const hasReport = !!(entry.report_filename || entry.report);
-  const statusText = entry.status 
-    ? tDelays("status.label_disruption") 
-    : tDelays("status.label_no_disruption");
+  const statusText =
+    entry.status_display ||
+    (entry.status === "disruption"
+      ? tDelays("status.label_disruption")
+      : entry.status === "not_disruption"
+        ? tDelays("status.label_not_disruption")
+        : tDelays("status.label_pending"));
   const responsibleOrgName =
     entry.responsible_org_name ||
     entry.responsible_org_detail?.name ||
@@ -126,7 +130,13 @@ export function ApproveConfirmationModal({
             </div>
             <div className="pl-13">
               <Badge
-                variant={entry.status ? "destructive" : "success"}
+                variant={
+                  entry.status === "disruption"
+                    ? "destructive"
+                    : entry.status === "not_disruption"
+                      ? "success"
+                      : "outline"
+                }
                 className="text-sm font-semibold px-3 py-1"
               >
                 {statusText}

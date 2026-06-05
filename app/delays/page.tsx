@@ -9,6 +9,7 @@ import { getPageCount } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
 import {
   DelayEntry,
+  DelayStatus,
   DelayCreatePayload,
   DelayUpdatePayload,
   DELAY_TYPE_OPTIONS,
@@ -32,7 +33,16 @@ import {
 } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import { FileUp, FileEdit, CheckCircle, Edit, Trash2 } from "lucide-react";
+import {
+  FileUp,
+  FileEdit,
+  CheckCircle,
+  Edit,
+  Trash2,
+  Check,
+  X,
+} from "lucide-react";
+import { Button } from "@/ui/button";
 import { useTranslations } from "next-intl";
 
 export default function DelaysPage() {
@@ -63,13 +73,16 @@ export default function DelaysPage() {
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit" | "moderate">(
-    "create",
+    "create"
   );
   const [selectedEntry, setSelectedEntry] = useState<DelayEntry | null>(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [approveEntry, setApproveEntry] = useState<DelayEntry | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteEntry, setDeleteEntry] = useState<DelayEntry | null>(null);
+  const [statusUpdatingId, setStatusUpdatingId] = useState<
+    string | number | null
+  >(null);
 
   const createMutation = useCreateDelay();
   const updateMutation = useUpdateDelay();
@@ -81,9 +94,13 @@ export default function DelaysPage() {
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
-  // Parse status from query string
-  const statusFilter =
-    status === "true" ? true : status === "false" ? false : undefined;
+  // Status filter is now a string value (pending | not_disruption | disruption)
+  const statusFilter = (status as DelayStatus) || undefined;
+
+  // sriv_admin can review/change status (has edit_delay but is not a moderator)
+  const isAdmin =
+    hasPermission(currentUser, "edit_delay") &&
+    !hasPermission(currentUser, "upload_delay_report");
 
   // Parse archive from query string
   const archiveFilter =
@@ -135,8 +152,8 @@ export default function DelaysPage() {
     apiError instanceof Error
       ? apiError
       : apiError
-        ? new Error(apiError?.message || t("messages.generic_error"))
-        : null;
+      ? new Error(apiError?.message || t("messages.generic_error"))
+      : null;
 
   const handleEdit = useCallback(
     (row: DelayEntry) => {
@@ -148,7 +165,7 @@ export default function DelaysPage() {
       setModalMode(isModerator ? "moderate" : "edit");
       setIsModalOpen(true);
     },
-    [currentUser],
+    [currentUser]
   );
 
   const handleCloseDelay = useCallback((row: DelayEntry) => {
@@ -188,10 +205,10 @@ export default function DelaysPage() {
             t("messages.approve_error_title"),
             error?.response?.data?.message ||
               error?.message ||
-              t("messages.approve_error_message"),
+              t("messages.approve_error_message")
           );
         },
-      },
+      }
     );
   }, [approveEntry, updateMutation, showError, showSuccess]);
 
@@ -215,10 +232,66 @@ export default function DelaysPage() {
         t("messages.delete_error_title"),
         error?.response?.data?.message ||
           error?.message ||
-          t("messages.delete_error_message"),
+          t("messages.delete_error_message")
       );
     }
   }, [deleteEntry, deleteMutation, showError, showSuccess]);
+
+  const handleStatusChange = useCallback(
+    (row: DelayEntry, newStatus: DelayStatus) => {
+      if (row.archive || row.status === newStatus) {
+        return;
+      }
+      setStatusUpdatingId(row.id);
+      updateMutation.mutate(
+        {
+          id: row.id,
+          payload: { status: newStatus },
+        },
+        {
+          onSuccess: () => {
+            showSuccess(t("messages.status_update_success"));
+            setStatusUpdatingId(null);
+          },
+          onError: (error: any) => {
+            showError(
+              t("messages.status_update_error_title"),
+              error?.response?.data?.message ||
+                error?.message ||
+                t("messages.status_update_error_message"),
+            );
+            setStatusUpdatingId(null);
+          },
+        },
+      );
+    },
+    [updateMutation, showError, showSuccess],
+  );
+
+  const getStatusLabel = useCallback(
+    (row: DelayEntry) => {
+      switch (row?.status) {
+        case "disruption":
+          return t("status.label_disruption");
+        case "not_disruption":
+          return t("status.label_not_disruption");
+        default:
+          return t("status.label_pending");
+      }
+    },
+    [t],
+  );
+
+  const getStatusVariant = useCallback((status?: DelayStatus) => {
+    switch (status) {
+      case "disruption":
+        return "destructive_outline" as const;
+      case "not_disruption":
+        return "success_outline" as const;
+      default:
+        return "outline" as const;
+    }
+  }, []);
 
   const handleCreate = useCallback(() => {
     setSelectedEntry(null);
@@ -240,7 +313,7 @@ export default function DelaysPage() {
               t("messages.create_error_title"),
               error?.response?.data?.message ||
                 error?.message ||
-                t("messages.create_error_message"),
+                t("messages.create_error_message")
             );
           },
         });
@@ -261,10 +334,10 @@ export default function DelaysPage() {
                 t("messages.update_error_title"),
                 error?.response?.data?.message ||
                   error?.message ||
-                  t("messages.update_error_message"),
+                  t("messages.update_error_message")
               );
             },
-          },
+          }
         );
       }
     },
@@ -275,7 +348,7 @@ export default function DelaysPage() {
       updateMutation,
       showSuccess,
       showError,
-    ],
+    ]
   );
 
   const formatDate = useCallback(
@@ -295,7 +368,7 @@ export default function DelaysPage() {
         return dateString;
       }
     },
-    [],
+    []
   );
 
   const formatTime = useCallback((timeString: string) => {
@@ -333,7 +406,7 @@ export default function DelaysPage() {
 
       return nameWithoutExt.substring(0, availableLength) + "..." + extension;
     },
-    [],
+    []
   );
 
   const columns: TableColumn<DelayEntry>[] = [
@@ -419,17 +492,67 @@ export default function DelaysPage() {
       key: "status",
       header: t("columns.status"),
       accessor: (row) => {
-        return (
-          <Badge
-            variant={row?.status ? "destructive_outline" : "success_outline"}
-          >
-            {row?.status
-              ? t("status.label_disruption")
-              : t("status.label_no_disruption")}
+        const badge = (
+          <Badge variant={getStatusVariant(row?.status)}>
+            {getStatusLabel(row)}
           </Badge>
         );
+
+        // Only sriv_admin reviews/changes status, and not on archived rows
+        if (!isAdmin || row?.archive) {
+          return badge;
+        }
+
+        const updating = statusUpdatingId === row.id;
+
+        if (row?.status === "pending") {
+          return (
+            <div className="flex items-center gap-2">
+              {badge}
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={updating}
+                title={t("status.mark_disruption")}
+                onClick={() => handleStatusChange(row, "disruption")}
+                className="h-7 w-7 p-0 border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10"
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={updating}
+                title={t("status.mark_not_disruption")}
+                onClick={() => handleStatusChange(row, "not_disruption")}
+                className="h-7 w-7 p-0 border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          );
+        }
+
+        // Already reviewed → allow switching to the other decided value (never back to pending)
+        const target: DelayStatus =
+          row?.status === "disruption" ? "not_disruption" : "disruption";
+        return (
+          <div className="flex items-center gap-2">
+            {badge}
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={updating}
+              title={t(`status.switch_to_${target}` as any)}
+              onClick={() => handleStatusChange(row, target)}
+              className="h-7 px-2 text-xs"
+            >
+              {t(`status.switch_to_${target}` as any)}
+            </Button>
+          </div>
+        );
       },
-      width: "100px",
+      width: "220px",
     },
     {
       key: "archive",
@@ -480,7 +603,7 @@ export default function DelaysPage() {
       options.push({
         value: type.value,
         label: getDelayTypeLabel(type.value),
-      }),
+      })
     );
     return options;
   }, [t]);
@@ -494,7 +617,7 @@ export default function DelaysPage() {
         options.push({
           value: String(org.id),
           label: org.name,
-        }),
+        })
       );
     }
     return options;
@@ -502,8 +625,9 @@ export default function DelaysPage() {
 
   const statusOptions = [
     { value: "", label: t("filters.status_all") },
-    { value: "true", label: t("filters.status_disruption") },
-    { value: "false", label: t("filters.status_no_disruption") },
+    { value: "pending", label: t("filters.status_pending") },
+    { value: "disruption", label: t("filters.status_disruption") },
+    { value: "not_disruption", label: t("filters.status_no_disruption") },
   ];
 
   const trainTypeOptions = useMemo(() => {
@@ -512,7 +636,7 @@ export default function DelaysPage() {
       options.push({
         value: type.value,
         label: getTrainTypeLabel(type.value),
-      }),
+      })
     );
     return options;
   }, [t]);
@@ -525,7 +649,7 @@ export default function DelaysPage() {
       options.push({
         value: reason.value,
         label: getGroupReasonLabel(reason.value),
-      }),
+      })
     );
     return options;
   }, [t]);

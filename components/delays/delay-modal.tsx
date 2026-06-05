@@ -12,12 +12,14 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
+import { Badge } from "@/ui/badge";
 import { FormField } from "@/ui/form-field";
 import { DatePicker } from "@/ui/date-picker";
 import { FileUpload } from "@/ui/file-upload";
 import { FileText } from "lucide-react";
 import {
   DelayEntry,
+  DelayStatus,
   DelayCreatePayload,
   DelayUpdatePayload,
   DELAY_TYPE_OPTIONS,
@@ -65,7 +67,7 @@ const INITIAL_FORM_DATA: FormData = {
   reason: "",
   damage_amount: "0",
   responsible_org: "",
-  status: "true", // Defaults to true when creating
+  status: "pending", // New delays are always "pending" (backend default)
   archive: "false", // Defaults to false (not archived)
   group_reason: "",
   train_type: "",
@@ -227,7 +229,7 @@ export function DelayModal({
         responsible_org: entry.responsible_org
           ? String(entry.responsible_org)
           : "",
-        status: entry.status ? "true" : "false", // Use actual entry status
+        status: entry.status || "pending", // Use actual entry status (3-state string)
         archive: entry.archive ? "true" : "false",
         group_reason: entry.group_reason || "",
         train_type: entry.train_type || "",
@@ -262,7 +264,7 @@ export function DelayModal({
 
     if (isModerateMode) {
       // In moderate mode, sriv_moderator can change status and upload report
-      const statusValue = (data.get("status") as string) === "true";
+      const statusValue = (data.get("status") as DelayStatus) || "pending";
       const payload: DelayUpdatePayload = {
         status: statusValue, // sriv_moderator can change status
         ...(canUploadReport && reportFile && { report: reportFile }),
@@ -278,7 +280,7 @@ export function DelayModal({
     const reason = (data.get("reason") as string) || "";
     const damageAmount = parseThousands(damageDisplay);
     const responsibleOrg = (data.get("responsible_org") as string) || "";
-    const status = (data.get("status") as string) === "true";
+    const status = (data.get("status") as DelayStatus) || "pending";
     const groupReason = (data.get("group_reason") as string) || "";
     const trainType = (data.get("train_type") as string) || "";
 
@@ -304,8 +306,10 @@ export function DelayModal({
       return;
     }
 
-    // Format date as YYYY-MM-DD
-    const formattedDate = selectedDate.toISOString().split("T")[0];
+    // Format date as YYYY-MM-DD using local parts (avoid UTC off-by-one)
+    const formattedDate = `${selectedDate.getFullYear()}-${String(
+      selectedDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
 
     // Convert minutes to HH:MM:SS format for the API
     const formattedTime = minutesToTimeString(delayMinutes);
@@ -319,9 +323,9 @@ export function DelayModal({
       damage_amount: damageAmount,
       responsible_org: Number(responsibleOrg),
       incident_date: formattedDate,
-      // Status defaults to true when creating, can be changed by sriv_moderator or sriv_admin when editing
+      // Status is always "pending" on create (backend default); editable by moderator/admin
       ...(mode === "create"
-        ? { status: true }
+        ? { status: "pending" as DelayStatus }
         : (canChangeStatus || canChangeStatusAdmin) && { status }),
       // Archive defaults to false, only changed by sriv_admin via "Tasdiqlash" action
       ...(mode === "create" ? { archive: false } : {}),
@@ -512,25 +516,42 @@ export function DelayModal({
                   placeholder="DD/MM/YYYY"
                 />
 
-                {(canChangeStatus || canChangeStatusAdmin) && (
+                {mode === "create" ? (
                   <div className="w-full flex-1">
                     <Label htmlFor="status">{t("fields.status")}</Label>
-                    <Select name="status" defaultValue={formDefaults.status}>
-                      <SelectTrigger className="mb-0 w-full" id="status">
-                        <SelectValue
-                          placeholder={t("fields.status_placeholder")}
-                        />
-                      </SelectTrigger>
-                      <SelectContent className="mb-0">
-                        <SelectItem value="true">
-                          {t("fields.status_disruption")}
-                        </SelectItem>
-                        <SelectItem value="false">
-                          {t("fields.status_no_disruption")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center gap-2 rounded-md border border-input bg-muted/40 px-3 py-2">
+                      <Badge variant="outline">
+                        {t("fields.status_pending")}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {t("fields.status_pending_hint")}
+                      </span>
+                    </div>
                   </div>
+                ) : (
+                  (canChangeStatus || canChangeStatusAdmin) && (
+                    <div className="w-full flex-1">
+                      <Label htmlFor="status">{t("fields.status")}</Label>
+                      <Select name="status" defaultValue={formDefaults.status}>
+                        <SelectTrigger className="mb-0 w-full" id="status">
+                          <SelectValue
+                            placeholder={t("fields.status_placeholder")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent className="mb-0">
+                          <SelectItem value="pending">
+                            {t("fields.status_pending")}
+                          </SelectItem>
+                          <SelectItem value="not_disruption">
+                            {t("fields.status_no_disruption")}
+                          </SelectItem>
+                          <SelectItem value="disruption">
+                            {t("fields.status_disruption")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )
                 )}
               </>
             )}
@@ -560,11 +581,14 @@ export function DelayModal({
                       />
                     </SelectTrigger>
                     <SelectContent className="mb-0">
-                      <SelectItem value="true">
-                        {t("fields.status_disruption")}
+                      <SelectItem value="pending">
+                        {t("fields.status_pending")}
                       </SelectItem>
-                      <SelectItem value="false">
+                      <SelectItem value="not_disruption">
                         {t("fields.status_no_disruption")}
+                      </SelectItem>
+                      <SelectItem value="disruption">
+                        {t("fields.status_disruption")}
                       </SelectItem>
                     </SelectContent>
                   </Select>

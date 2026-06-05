@@ -25,8 +25,14 @@
       "report": "Hisobot"
     },
     "status": {
+      "label_pending": "Hali aniqlanmagan",
       "label_disruption": "Sriv",
-      "label_no_disruption": "Sriv emas"
+      "label_not_disruption": "Sriv emas",
+      "label_no_disruption": "Sriv emas",
+      "mark_disruption": "Sriv deb belgilash",
+      "mark_not_disruption": "Sriv emas deb belgilash",
+      "switch_to_disruption": "Srivga o‘zgartirish",
+      "switch_to_not_disruption": "Sriv emasga o‘zgartirish"
     },
     "archive": {
       "archived": "Arxivlangan",
@@ -47,6 +53,7 @@
       "status": "Holati",
       "status_placeholder": "Holatni tanlang",
       "status_all": "Barcha holatlar",
+      "status_pending": "Hali aniqlanmagan",
       "status_disruption": "Sriv",
       "status_no_disruption": "Sriv emas",
       "search_placeholder": "Qidiruv"
@@ -96,6 +103,9 @@
       "update_success": "Kechikish muvaffaqiyatli yangilandi",
       "update_error_title": "Xatolik yuz berdi",
       "update_error_message": "Kechikishni yangilashda xatolik yuz berdi",
+      "status_update_success": "Holat muvaffaqiyatli yangilandi",
+      "status_update_error_title": "Xatolik yuz berdi",
+      "status_update_error_message": "Holatni yangilashda xatolik yuz berdi",
       "generic_error": "Xatolik yuz berdi"
     }
   },
@@ -315,6 +325,8 @@
       "incident_date": "Voqea sanasi",
       "status": "Holati",
       "status_placeholder": "Holatni tanlang",
+      "status_pending": "Hali aniqlanmagan",
+      "status_pending_hint": "Yangi kechikish tekshiruvni kutmoqda",
       "status_disruption": "Sriv",
       "status_no_disruption": "Sriv emas",
       "reason": "Sabab",

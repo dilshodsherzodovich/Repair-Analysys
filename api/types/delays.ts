@@ -2,6 +2,15 @@ import { Organization } from "./organizations";
 
 export type DelayType = "Po prosledovaniyu" | "Po otpravleniyu";
 
+// Delay review status — 3-state (replaces old boolean)
+export type DelayStatus = "pending" | "not_disruption" | "disruption";
+
+export const DELAY_STATUS_VALUES: DelayStatus[] = [
+  "pending",
+  "not_disruption",
+  "disruption",
+];
+
 // Station names - can be extended as needed
 export type Station = string;
 
@@ -236,7 +245,7 @@ export interface DelayEntry {
   report?: string;
   report_filename?: string;
   incident_date: string; // YYYY-MM-DD
-  status: boolean;
+  status: DelayStatus;
   archive: boolean;
   status_display?: string;
   created_at?: string; // ISO datetime string
@@ -256,7 +265,7 @@ export interface DelayCreatePayload {
   responsible_org: number;
   report?: File | null;
   incident_date: string; // YYYY-MM-DD
-  status?: boolean; // Defaults to false when creating
+  status?: DelayStatus; // Always "pending" on create (backend default)
   archive?: boolean; // Defaults to false when creating
   group_reason: GroupReason;
   train_type: TrainType;
@@ -272,7 +281,7 @@ export interface DelayUpdatePayload {
   responsible_org?: number;
   report?: File | null;
   incident_date?: string;
-  status?: boolean;
+  status?: DelayStatus;
   archive?: boolean;
   group_reason?: GroupReason;
   train_type?: TrainType;
@@ -285,7 +294,7 @@ export interface DelayListParams {
   delay_type?: DelayType;
   station?: string;
   responsible_org?: number | string;
-  status?: boolean;
+  status?: DelayStatus | string;
   archive?: boolean;
   incident_date?: string;
   from_date?: string;
