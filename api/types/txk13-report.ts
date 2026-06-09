@@ -2,6 +2,7 @@ export interface Txk13Inspection {
   type_id: number;
   type: string;
   last_date: string;
+  actual_last_date: string;
   km_value_since_repair: number;
   km_norm: number;
   km_difference: number;

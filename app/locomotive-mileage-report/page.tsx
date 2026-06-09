@@ -43,7 +43,7 @@ function getInspectionMap(loco: Txk13Locomotive): Map<number, Txk13Inspection> {
 }
 
 const FIXED_COL_COUNT = 7;
-const INSP_SUB_COUNT = 6;
+const INSP_SUB_COUNT = 7;
 
 function BandajCell({ locoId, serverValue }: { locoId: number; serverValue: number | null }) {
   const [value, setValue] = useState(serverValue == null ? "" : String(serverValue));
@@ -332,6 +332,9 @@ export default function LocomotiveMileageReportPage() {
                 <TableHead key={`${insp.type_id}-sana`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                   {t("columns.sana")}
                 </TableHead>,
+                <TableHead key={`${insp.type_id}-actual-sana`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                  {t("columns.actual_sana")}
+                </TableHead>,
                 <TableHead key={`${insp.type_id}-tamirdan`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                   {activeUnit === "hours" ? "Ta'mirdan, soat" : activeUnit === "km" ? t("columns.tamirdan_km") : "Ta'mirdan"}
                 </TableHead>,
@@ -474,6 +477,9 @@ export default function LocomotiveMileageReportPage() {
                           return [
                             <TableCell key={`${loco.index}-${inspType.type_id}-sana`} className={`py-1 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                               {insp!.last_date === "-" ? "—" : insp!.last_date}
+                            </TableCell>,
+                            <TableCell key={`${loco.index}-${inspType.type_id}-actual-sana`} className={`py-1 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                              {insp!.actual_last_date === "-" ? "—" : (insp!.actual_last_date || "—")}
                             </TableCell>,
                             <TableCell key={`${loco.index}-${inspType.type_id}-tamirdan`} className={`py-1 px-2 text-right border-r border-[#E2E8F0] ${inspBg(idx)}`}>
                               {showKm && <div className="text-[#2563EB]">{formatNum(insp!.km_value_since_repair)}<span className="ml-0.5 text-[9px]">km</span></div>}
