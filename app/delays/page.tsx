@@ -24,6 +24,7 @@ import {
 } from "@/api/hooks/use-delays";
 import { DelayModal } from "@/components/delays/delay-modal";
 import { ApproveConfirmationModal } from "@/components/delays/approve-confirmation-modal";
+import { CulpritsListModal } from "@/components/culprits/culprits-list-modal";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import {
@@ -41,6 +42,7 @@ import {
   Trash2,
   Check,
   X,
+  Users,
 } from "lucide-react";
 import { Button } from "@/ui/button";
 import { useTranslations } from "next-intl";
@@ -83,6 +85,11 @@ export default function DelaysPage() {
   const [statusUpdatingId, setStatusUpdatingId] = useState<
     string | number | null
   >(null);
+  const [isCulpritsModalOpen, setIsCulpritsModalOpen] = useState(false);
+  const [culpritsEntry, setCulpritsEntry] = useState<DelayEntry | null>(null);
+
+  const canViewCulprits = hasPermission(currentUser, "view_culprits");
+  const canManageCulprits = hasPermission(currentUser, "manage_culprits");
 
   const createMutation = useCreateDelay();
   const updateMutation = useUpdateDelay();
@@ -291,6 +298,11 @@ export default function DelaysPage() {
       default:
         return "outline" as const;
     }
+  }, []);
+
+  const handleOpenCulprits = useCallback((row: DelayEntry) => {
+    setCulpritsEntry(row);
+    setIsCulpritsModalOpen(true);
   }, []);
 
   const handleCreate = useCallback(() => {
@@ -809,6 +821,19 @@ export default function DelaysPage() {
                   },
                 ]
               : []),
+
+            // Culprits (причастные) — sriv_admin (read-only) + sriv_moderator (manage)
+            ...(canViewCulprits
+              ? [
+                  {
+                    label: "",
+                    icon: <Users className="h-4 w-4" />,
+                    onClick: handleOpenCulprits,
+                    permission: "view_culprits" as Permission,
+                    variant: "outline" as const,
+                  },
+                ]
+              : []),
           ]}
           isDeleting={deleteMutation.isPending}
           selectable
@@ -843,6 +868,16 @@ export default function DelaysPage() {
         onConfirm={handleApproveConfirm}
         entry={approveEntry}
         isPending={updateMutation.isPending}
+      />
+
+      <CulpritsListModal
+        isOpen={isCulpritsModalOpen}
+        onClose={() => {
+          setIsCulpritsModalOpen(false);
+          setCulpritsEntry(null);
+        }}
+        delay={culpritsEntry}
+        canManage={canManageCulprits}
       />
 
       <ConfirmationDialog

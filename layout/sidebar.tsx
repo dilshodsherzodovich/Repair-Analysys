@@ -22,6 +22,8 @@ import {
   type LucideIcon,
   RotateCw,
   FormInput,
+  Users,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
@@ -280,6 +282,26 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         icon: ClipboardMinus,
         section: "delays-reports",
         href: "/delays/reports",
+      });
+    }
+
+    if (user && canAccessSection(user, "culprits")) {
+      items.push({
+        key: "culprits",
+        name: t("nav.culprits"),
+        icon: Users,
+        section: "culprits",
+        href: "/culprits",
+      });
+    }
+
+    if (user && canAccessSection(user, "recovery")) {
+      items.push({
+        key: "recovery",
+        name: t("nav.recovery"),
+        icon: Wallet,
+        section: "recovery",
+        href: "/recovery",
       });
     }
 

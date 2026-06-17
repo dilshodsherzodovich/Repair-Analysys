@@ -28,6 +28,15 @@ export type Permission =
   | "choose_organization"
   | "filter_delay_station"
 
+  // sriv culprits (причастные к срыву)
+  | "view_culprits"
+  | "manage_culprits"
+
+  // sriv recovery (согласование изъятия)
+  | "view_recovery"
+  | "confirm_payroll"
+  | "confirm_recovery"
+
   // passport permissions
   | "view_depo"
   | "view_duty_uzel"
@@ -206,13 +215,19 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "edit_delay",
     "delete_delay",
     "filter_delay_station",
+    "view_culprits",
   ],
   sriv_moderator: [
     "view_delays",
     "edit_delay",
     "upload_delay_report",
     "view_tu137",
+    "view_culprits",
+    "manage_culprits",
   ],
+  payroll: ["view_recovery", "confirm_payroll"],
+  payroll_admin: ["view_recovery", "confirm_payroll"],
+  accountant: ["view_recovery", "confirm_recovery"],
 };
 
 export function hasPermission(
@@ -274,6 +289,12 @@ export function canAccessSection(
     }
     case "delays-reports": {
       return hasPermission(user, "view_delays_reports");
+    }
+    case "culprits": {
+      return hasPermission(user, "view_culprits");
+    }
+    case "recovery": {
+      return hasPermission(user, "view_recovery");
     }
     case "depo": {
       return hasPermission(user, "view_depo");

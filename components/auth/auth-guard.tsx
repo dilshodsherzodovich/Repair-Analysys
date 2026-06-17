@@ -21,6 +21,14 @@ function getDefaultRouteForRole(user: UserData | null): string {
     return "/delays";
   }
 
+  if (
+    role === "payroll" ||
+    role === "payroll_admin" ||
+    role === "accountant"
+  ) {
+    return "/recovery";
+  }
+
   if (role === "repair_staff") {
     return `/duty-uzel/${user?.branch?.organization?.id}`;
   }

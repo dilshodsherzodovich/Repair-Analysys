@@ -11,6 +11,9 @@ export type UserRole =
   | "sriv_admin"
   | "sriv_moderator"
   | "passport_staff"
+  | "payroll"
+  | "payroll_admin"
+  | "accountant"
 
 // Interface for the ProfileModel object
 export interface ProfileModel {

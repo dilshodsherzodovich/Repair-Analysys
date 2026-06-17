@@ -107,6 +107,166 @@
       "status_update_error_title": "Произошла ошибка",
       "status_update_error_message": "Ошибка при обновлении статуса",
       "generic_error": "Произошла ошибка"
+    },
+    "actions": {
+      "culprits": "Причастные"
+    }
+  },
+  "CulpritsPage": {
+    "title": "Причастные к срыву",
+    "description": "Список причастных к срыву и суммы к изъятию",
+    "breadcrumbs": {
+      "home": "Главная",
+      "current": "Причастные"
+    },
+    "columns": {
+      "full_name": "ФИО",
+      "amount": "Сумма",
+      "train_number": "Поезд",
+      "station": "Станция",
+      "incident_date": "Дата",
+      "responsible_org": "Организация",
+      "payroll_confirmed": "ОТЗ",
+      "recovered": "Изъято",
+      "recovery_status": "Стадия"
+    },
+    "filters": {
+      "organization": "Организация",
+      "organization_placeholder": "Выберите организацию",
+      "full_name": "ФИО",
+      "full_name_placeholder": "Введите ФИО",
+      "payroll_confirmed": "Подтверждение ОТЗ",
+      "recovered": "Изъятие",
+      "yes": "Да",
+      "no": "Нет",
+      "all": "Все"
+    },
+    "empty": {
+      "title": "Данные не найдены",
+      "description": "Причастные отсутствуют"
+    },
+    "messages": {
+      "generic_error": "Произошла ошибка"
+    }
+  },
+  "CulpritsModal": {
+    "title": "Причастные к срыву",
+    "subtitle": "Поезд {train} · {station}",
+    "add_button": "Добавить причастного",
+    "columns": {
+      "full_name": "ФИО",
+      "amount": "Сумма",
+      "status": "Статус",
+      "actions": "Действия"
+    },
+    "status": {
+      "pending": "Ожидает ОТЗ",
+      "payroll_confirmed": "Подтверждено ОТЗ",
+      "recovered": "Изъято"
+    },
+    "locked_hint": "Подтверждён ОТЗ — изменение недоступно",
+    "empty": "Причастные не добавлены",
+    "close": "Закрыть",
+    "form": {
+      "title_create": "Добавить причастного",
+      "title_edit": "Редактировать причастного",
+      "full_name": "ФИО",
+      "full_name_placeholder": "Введите ФИО",
+      "amount": "Сумма к изъятию",
+      "amount_placeholder": "0",
+      "submit_create": "Добавить",
+      "submit_edit": "Сохранить",
+      "cancel": "Отмена"
+    },
+    "errors": {
+      "full_name_required": "Введите ФИО",
+      "amount_invalid": "Сумма должна быть больше нуля"
+    },
+    "delete": {
+      "title": "Удалить причастного",
+      "message": "Вы уверены, что хотите удалить этого причастного? Это действие нельзя отменить.",
+      "confirm": "Удалить",
+      "cancel": "Отмена",
+      "deleting": "Удаление"
+    },
+    "messages": {
+      "create_success": "Причастный добавлен",
+      "update_success": "Причастный обновлён",
+      "delete_success": "Причастный удалён",
+      "error_title": "Произошла ошибка",
+      "error_message": "Не удалось выполнить действие"
+    }
+  },
+  "RecoveryPage": {
+    "title": "Согласование изъятия",
+    "description": "Поимённое согласование и изъятие сумм с причастных",
+    "breadcrumbs": {
+      "home": "Главная",
+      "current": "Изъятие"
+    },
+    "columns": {
+      "incident_date": "Дата",
+      "train_number": "Поезд",
+      "station": "Станция",
+      "responsible_org": "Организация",
+      "recovery_status": "Стадия",
+      "total_amount": "Сумма",
+      "recovered_amount": "Изъято",
+      "culprits": "Причастные",
+      "actions": "Действия"
+    },
+    "recovery_status": {
+      "pending": "Ожидает подтверждения ОТЗ",
+      "payroll_confirmed": "Подтверждено ОТЗ, ожидает изъятия",
+      "accountant_confirmed": "Сумма изъята"
+    },
+    "filters": {
+      "recovery_status": "Стадия",
+      "recovery_status_placeholder": "Выберите стадию",
+      "recovery_status_all": "Все стадии",
+      "train_number": "Поезд",
+      "train_number_placeholder": "Введите номер поезда",
+      "station": "Станция",
+      "station_placeholder": "Введите станцию"
+    },
+    "open_button": "Причастные",
+    "empty": {
+      "title": "Данные не найдены",
+      "description": "Срывы на согласование отсутствуют"
+    },
+    "messages": {
+      "generic_error": "Произошла ошибка"
+    }
+  },
+  "RecoveryModal": {
+    "title": "Причастные к срыву",
+    "subtitle": "Поезд {train} · {station}",
+    "progress": "Изъято {recovered} из {total}",
+    "columns": {
+      "full_name": "ФИО",
+      "amount": "Сумма",
+      "payroll": "ОТЗ",
+      "recovered": "Изъято",
+      "actions": "Действия"
+    },
+    "yes": "Да",
+    "no": "Нет",
+    "confirmed_by": "Подтвердил: {name}",
+    "recovered_by": "Изъял: {name}",
+    "payroll_confirm": "Подтвердить ОТЗ",
+    "payroll_unconfirm": "Снять подтверждение",
+    "recover": "Отметить изъято",
+    "unrecover": "Откатить изъятие",
+    "confirm_all": "Подтвердить все",
+    "recover_all": "Изъять все",
+    "not_confirmed_yet": "Ещё не подтверждён ОТЗ",
+    "empty": "Причастные не добавлены",
+    "close": "Закрыть",
+    "messages": {
+      "payroll_success": "Подтверждение ОТЗ обновлено",
+      "recover_success": "Отметка изъятия обновлена",
+      "error_title": "Произошла ошибка",
+      "error_message": "Не удалось выполнить действие"
     }
   },
   "ManeuverJournalPage": {
@@ -193,6 +353,8 @@
       "defective_works": "Неисправности",
       "delays": "Срывы",
       "delay_reports": "Отчёты по срывам",
+      "culprits": "Причастные",
+      "recovery": "Изъятие",
       "razvarot": "Разворот",
       "tu-137": "ТУ-137",
       "tu-137-reports": "ТУ-137 Отчёты",
@@ -212,7 +374,10 @@
     "repair_staff": "Сотрудник ремонта",
     "passport_staff": "Паспортист",
     "sriv_admin": "Админ СРИВ",
-    "sriv_moderator": "Сривчи"
+    "sriv_moderator": "Сривчи",
+    "payroll": "ОТЗ",
+    "payroll_admin": "Админ ОТЗ",
+    "accountant": "Бухгалтер"
   },
   "PaginatedTable": {
     "actions_label": "Действия",

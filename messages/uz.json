@@ -107,6 +107,166 @@
       "status_update_error_title": "Xatolik yuz berdi",
       "status_update_error_message": "Holatni yangilashda xatolik yuz berdi",
       "generic_error": "Xatolik yuz berdi"
+    },
+    "actions": {
+      "culprits": "Aybdorlar"
+    }
+  },
+  "CulpritsPage": {
+    "title": "Srivga aybdorlar",
+    "description": "Srivga aybdorlar va undiriladigan summalar ro'yxati",
+    "breadcrumbs": {
+      "home": "Bosh sahifa",
+      "current": "Aybdorlar"
+    },
+    "columns": {
+      "full_name": "F.I.Sh.",
+      "amount": "Summa",
+      "train_number": "Poyezd",
+      "station": "Stansiya",
+      "incident_date": "Sana",
+      "responsible_org": "Tashkilot",
+      "payroll_confirmed": "OTZ",
+      "recovered": "Undirilgan",
+      "recovery_status": "Bosqich"
+    },
+    "filters": {
+      "organization": "Tashkilot",
+      "organization_placeholder": "Tashkilotni tanlang",
+      "full_name": "F.I.Sh.",
+      "full_name_placeholder": "F.I.Sh. kiriting",
+      "payroll_confirmed": "OTZ tasdiqlovi",
+      "recovered": "Undirish",
+      "yes": "Ha",
+      "no": "Yo'q",
+      "all": "Barchasi"
+    },
+    "empty": {
+      "title": "Ma'lumot topilmadi",
+      "description": "Aybdorlar mavjud emas"
+    },
+    "messages": {
+      "generic_error": "Xatolik yuz berdi"
+    }
+  },
+  "CulpritsModal": {
+    "title": "Srivga aybdorlar",
+    "subtitle": "Poyezd {train} · {station}",
+    "add_button": "Aybdor qo'shish",
+    "columns": {
+      "full_name": "F.I.Sh.",
+      "amount": "Summa",
+      "status": "Holat",
+      "actions": "Amallar"
+    },
+    "status": {
+      "pending": "OTZ kutilmoqda",
+      "payroll_confirmed": "OTZ tasdiqladi",
+      "recovered": "Undirilgan"
+    },
+    "locked_hint": "OTZ tasdiqlagan — o'zgartirib bo'lmaydi",
+    "empty": "Aybdorlar qo'shilmagan",
+    "close": "Yopish",
+    "form": {
+      "title_create": "Aybdor qo'shish",
+      "title_edit": "Aybdorni tahrirlash",
+      "full_name": "F.I.Sh.",
+      "full_name_placeholder": "F.I.Sh. kiriting",
+      "amount": "Undiriladigan summa",
+      "amount_placeholder": "0",
+      "submit_create": "Qo'shish",
+      "submit_edit": "Saqlash",
+      "cancel": "Bekor qilish"
+    },
+    "errors": {
+      "full_name_required": "F.I.Sh. kiriting",
+      "amount_invalid": "Summa noldan katta bo'lishi kerak"
+    },
+    "delete": {
+      "title": "Aybdorni o'chirish",
+      "message": "Ushbu aybdorni o'chirishga ishonchingiz komilmi? Bu amalni qaytarib bo'lmaydi.",
+      "confirm": "O'chirish",
+      "cancel": "Bekor qilish",
+      "deleting": "O'chirilmoqda"
+    },
+    "messages": {
+      "create_success": "Aybdor qo'shildi",
+      "update_success": "Aybdor yangilandi",
+      "delete_success": "Aybdor o'chirildi",
+      "error_title": "Xatolik yuz berdi",
+      "error_message": "Amalni bajarib bo'lmadi"
+    }
+  },
+  "RecoveryPage": {
+    "title": "Undirishni kelishish",
+    "description": "Aybdorlardan summalarni nomma-nom kelishish va undirish",
+    "breadcrumbs": {
+      "home": "Bosh sahifa",
+      "current": "Undirish"
+    },
+    "columns": {
+      "incident_date": "Sana",
+      "train_number": "Poyezd",
+      "station": "Stansiya",
+      "responsible_org": "Tashkilot",
+      "recovery_status": "Bosqich",
+      "total_amount": "Summa",
+      "recovered_amount": "Undirilgan",
+      "culprits": "Aybdorlar",
+      "actions": "Amallar"
+    },
+    "recovery_status": {
+      "pending": "OTZ tasdig'i kutilmoqda",
+      "payroll_confirmed": "OTZ tasdiqladi, undirish kutilmoqda",
+      "accountant_confirmed": "Summa undirilgan"
+    },
+    "filters": {
+      "recovery_status": "Bosqich",
+      "recovery_status_placeholder": "Bosqichni tanlang",
+      "recovery_status_all": "Barcha bosqichlar",
+      "train_number": "Poyezd",
+      "train_number_placeholder": "Poyezd raqamini kiriting",
+      "station": "Stansiya",
+      "station_placeholder": "Stansiyani kiriting"
+    },
+    "open_button": "Aybdorlar",
+    "empty": {
+      "title": "Ma'lumot topilmadi",
+      "description": "Kelishishga srivlar mavjud emas"
+    },
+    "messages": {
+      "generic_error": "Xatolik yuz berdi"
+    }
+  },
+  "RecoveryModal": {
+    "title": "Srivga aybdorlar",
+    "subtitle": "Poyezd {train} · {station}",
+    "progress": "{total} dan {recovered} undirilgan",
+    "columns": {
+      "full_name": "F.I.Sh.",
+      "amount": "Summa",
+      "payroll": "OTZ",
+      "recovered": "Undirilgan",
+      "actions": "Amallar"
+    },
+    "yes": "Ha",
+    "no": "Yo'q",
+    "confirmed_by": "Tasdiqladi: {name}",
+    "recovered_by": "Undirdi: {name}",
+    "payroll_confirm": "OTZ tasdiqlash",
+    "payroll_unconfirm": "Tasdiqni olib tashlash",
+    "recover": "Undirilgan deb belgilash",
+    "unrecover": "Undirishni qaytarish",
+    "confirm_all": "Barchasini tasdiqlash",
+    "recover_all": "Barchasini undirish",
+    "not_confirmed_yet": "Hali OTZ tasdiqlamagan",
+    "empty": "Aybdorlar qo'shilmagan",
+    "close": "Yopish",
+    "messages": {
+      "payroll_success": "OTZ tasdig'i yangilandi",
+      "recover_success": "Undirish belgisi yangilandi",
+      "error_title": "Xatolik yuz berdi",
+      "error_message": "Amalni bajarib bo'lmadi"
     }
   },
   "ManeuverJournalPage": {
@@ -193,6 +353,8 @@
       "defective_works": "Nosozliklar",
       "delays": "Sriv",
       "delay_reports": "Sriv hisobotlar",
+      "culprits": "Aybdorlar",
+      "recovery": "Undirish",
       "razvarot": "Razvarot",
       "tu-137": "TU-137",
       "tu-137-reports": "TU-137 Hisoboti",
@@ -212,7 +374,10 @@
     "repair_staff": "Tamir xodimi",
     "passport_staff": "Passportchi",
     "sriv_admin": "Sriv admin",
-    "sriv_moderator": "srivchi"
+    "sriv_moderator": "srivchi",
+    "payroll": "OTZ",
+    "payroll_admin": "OTZ admin",
+    "accountant": "Buxgalter"
   },
   "PaginatedTable": {
     "actions_label": "Amallar",

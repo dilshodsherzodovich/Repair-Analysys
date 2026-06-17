@@ -84,6 +84,19 @@ export const queryKeys = {
     reports: "delays-reports",
     depotReasonReports: "delays-depot-reason-reports",
   },
+  culprits: {
+    all: "culprits-all",
+    detail: (id: string | number) => `culprits-detail-${id}`,
+    create: "culprits-create",
+    update: "culprits-update",
+    delete: "culprits-delete",
+  },
+  recovery: {
+    all: "recovery-delays-all",
+    detail: (id: string | number) => `recovery-delays-detail-${id}`,
+    payrollConfirm: "recovery-payroll-confirm",
+    recover: "recovery-recover",
+  },
   tu152: {
     all: "tu152-all",
     locomotives: "tu152-locomotives",

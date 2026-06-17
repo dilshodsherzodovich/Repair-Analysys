@@ -1,4 +1,5 @@
 import { Organization } from "./organizations";
+import type { Culprit, RecoveryStatus } from "./culprits";
 
 export type DelayType = "Po prosledovaniyu" | "Po otpravleniyu";
 
@@ -253,6 +254,12 @@ export interface DelayEntry {
   group_reason_display?: string;
   train_type?: TrainType;
   train_type_display?: string;
+  // Recovery/culprits (read-only, present on GET /sriv/delays/)
+  culprits?: Culprit[];
+  recovery_status?: RecoveryStatus;
+  recovery_status_display?: string;
+  culprits_total_amount?: number;
+  culprits_recovered_amount?: number;
 }
 
 export interface DelayCreatePayload {
