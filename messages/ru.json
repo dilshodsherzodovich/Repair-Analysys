@@ -1088,6 +1088,8 @@
   "BaselineModal": {
     "title": "{locomotiveName} / {inspectionTypeName}",
     "loading": "Загрузка...",
+    "actual_inspection_date_label": "Фактическая дата ремонта",
+    "actual_inspection_date_placeholder": "Выберите дату",
     "last_inspection_date_label": "Дата последнего ремонта",
     "last_inspection_date_placeholder": "Выберите дату",
     "date_label": "Выбранная дата",

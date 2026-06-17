@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useQueryClient } from "@tanstack/react-query";
+import { txk13ReportService } from "@/api/services/txk13-report.service";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +30,7 @@ interface BaselineModalProps {
   inspectionTypeId: number;
   locomotiveName: string;
   inspectionTypeName: string;
+  currentActualDate?: string;
   onPendingChange?: (pending: boolean, key: string) => void;
 }
 
@@ -38,11 +41,27 @@ function isoToDate(iso: string | undefined | null): Date | undefined {
   return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
+function parseServerDate(s: string | undefined | null): Date | undefined {
+  if (!s || s === "-") return undefined;
+  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return new Date(+iso[1], +iso[2] - 1, +iso[3]);
+  const display = s.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
+  if (display) return new Date(+display[3], +display[2] - 1, +display[1]);
+  return undefined;
+}
+
 function dateToIso(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}T00:00:00.000Z`;
+}
+
+function dateToIsoSimple(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 export function BaselineModal({
@@ -52,9 +71,12 @@ export function BaselineModal({
   inspectionTypeId,
   locomotiveName,
   inspectionTypeName,
+  currentActualDate,
   onPendingChange,
 }: BaselineModalProps) {
   const t = useTranslations("BaselineModal");
+  const queryClient = useQueryClient();
+  const [actualInspectionDate, setActualInspectionDate] = useState<Date | undefined>(undefined);
   const [lastInspectionDate, setLastInspectionDate] = useState<Date | undefined>(undefined);
   const [baselineDate, setBaselineDate] = useState<Date | undefined>(undefined);
   const [baselineKm, setBaselineKm] = useState<string>("");
@@ -78,12 +100,14 @@ export function BaselineModal({
 
   useEffect(() => {
     if (!isOpen) {
+      setActualInspectionDate(undefined);
       setLastInspectionDate(undefined);
       setBaselineDate(undefined);
       setBaselineKm("");
       setConfirmDelete(false);
       return;
     }
+    setActualInspectionDate(parseServerDate(currentActualDate));
     setLastInspectionDate(isoToDate(item?.last_inspection_date));
     if (existing) {
       setBaselineDate(isoToDate(existing.baseline_date));
@@ -93,24 +117,35 @@ export function BaselineModal({
       setBaselineKm("");
     }
     setConfirmDelete(false);
-  }, [isOpen, existing?.id, item?.last_inspection_date]);
+  }, [isOpen, existing?.id, item?.last_inspection_date, currentActualDate]);
 
   function handleSave() {
-    if (!baselineDate || baselineKm === "") return;
-    const payload = {
-      locomotive: locomotiveId,
-      inspection_type: inspectionTypeId,
-      last_inspection_date: lastInspectionDate ? dateToIso(lastInspectionDate) : null,
-      baseline_date: dateToIso(baselineDate),
-      baseline_km: Number(baselineKm),
-    };
     const key = `${locomotiveId}-${inspectionTypeId}`;
-    onPendingChange?.(true, key);
-    if (existing) {
-      updateMutation.mutate({ id: existing.id, payload }, { onSettled: () => onPendingChange?.(false, key) });
-    } else {
-      createMutation.mutate(payload, { onSettled: () => onPendingChange?.(false, key) });
+
+    if (actualInspectionDate) {
+      const iso = dateToIsoSimple(actualInspectionDate);
+      txk13ReportService
+        .patchActualInspectionDate(locomotiveId, inspectionTypeId, iso)
+        .then(() => queryClient.invalidateQueries({ queryKey: ["txk13-report"] }))
+        .catch(() => {});
     }
+
+    if (baselineDate && baselineKm !== "" && !isNaN(Number(baselineKm))) {
+      const payload = {
+        locomotive: locomotiveId,
+        inspection_type: inspectionTypeId,
+        last_inspection_date: lastInspectionDate ? dateToIso(lastInspectionDate) : null,
+        baseline_date: dateToIso(baselineDate),
+        baseline_km: Number(baselineKm),
+      };
+      onPendingChange?.(true, key);
+      if (existing) {
+        updateMutation.mutate({ id: existing.id, payload }, { onSettled: () => onPendingChange?.(false, key) });
+      } else {
+        createMutation.mutate(payload, { onSettled: () => onPendingChange?.(false, key) });
+      }
+    }
+
     onClose();
   }
 
@@ -122,7 +157,9 @@ export function BaselineModal({
     onClose();
   }
 
-  const canSave = !!baselineDate && baselineKm !== "" && !isNaN(Number(baselineKm));
+  const canSave =
+    !!actualInspectionDate ||
+    (!!baselineDate && baselineKm !== "" && !isNaN(Number(baselineKm)));
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -139,6 +176,17 @@ export function BaselineModal({
           </div>
         ) : (
           <div className="space-y-4 py-2">
+            <DatePicker
+              label={t("actual_inspection_date_label")}
+              value={actualInspectionDate}
+              onValueChange={setActualInspectionDate}
+              disabled={isPending}
+              placeholder={t("actual_inspection_date_placeholder")}
+              captionLayout="dropdown"
+              fromYear={2000}
+              toYear={new Date().getFullYear()}
+            />
+
             <DatePicker
               label={t("last_inspection_date_label")}
               value={lastInspectionDate}

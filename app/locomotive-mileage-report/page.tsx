@@ -185,6 +185,7 @@ export default function LocomotiveMileageReportPage() {
     inspectionTypeId: number;
     locomotiveName: string;
     inspectionTypeName: string;
+    currentActualDate?: string;
   } | null>(null);
 
   const [pendingBaselines, setPendingBaselines] = useState<Set<string>>(new Set());
@@ -441,6 +442,7 @@ export default function LocomotiveMileageReportPage() {
                                   inspectionTypeId: inspType.type_id,
                                   locomotiveName: `${loco.series} ${loco.number}`,
                                   inspectionTypeName: inspType.type,
+                                  currentActualDate: insp?.actual_last_date,
                                 })
                               }
                               className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#94A3B8] hover:text-[#475569] transition-colors disabled:cursor-not-allowed"
@@ -519,6 +521,7 @@ export default function LocomotiveMileageReportPage() {
         inspectionTypeId={baselineModal?.inspectionTypeId ?? 0}
         locomotiveName={baselineModal?.locomotiveName ?? ""}
         inspectionTypeName={baselineModal?.inspectionTypeName ?? ""}
+        currentActualDate={baselineModal?.currentActualDate}
         onPendingChange={(pending, key) => {
           setPendingBaselines((prev) => {
             const next = new Set(prev);

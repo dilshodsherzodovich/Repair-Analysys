@@ -1088,6 +1088,8 @@
   "BaselineModal": {
     "title": "{locomotiveName} / {inspectionTypeName}",
     "loading": "Yuklanmoqda...",
+    "actual_inspection_date_label": "Haqiqiy ta'mir sanasi",
+    "actual_inspection_date_placeholder": "Sanani tanlang",
     "last_inspection_date_label": "Oxirgi ta'mir sanasi",
     "last_inspection_date_placeholder": "Sanani tanlang",
     "date_label": "Tanlangan kun",

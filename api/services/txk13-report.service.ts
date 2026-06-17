@@ -33,4 +33,15 @@ export const txk13ReportService = {
     );
     return response.data;
   },
+
+  async patchActualInspectionDate(
+    locomotiveId: number,
+    inspectionTypeId: number,
+    inspectionDate: string
+  ): Promise<void> {
+    await api.patch(
+      `/txk13-report/${locomotiveId}/actual-inspection-date/`,
+      { inspection_type_id: inspectionTypeId, inspection_date: inspectionDate }
+    );
+  },
 };
