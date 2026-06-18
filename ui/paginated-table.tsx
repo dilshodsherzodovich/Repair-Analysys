@@ -91,6 +91,8 @@ export interface PaginatedTableProps<T = any> {
   editPermission?: Permission;
   isDeleting?: boolean;
   actionsDisplayMode?: "dropdown" | "row"; // How to display actions: dropdown (default) or row of buttons
+  alwaysShowKebab?: boolean; // Force the kebab menu even when only one action is available
+  rowBadge?: (row: T) => React.ReactNode; // Optional stamp shown in the actions cell (e.g. archived)
 
   // Empty & Error states
   emptyTitle?: string;
@@ -139,6 +141,8 @@ export function PaginatedTable<T extends Record<string, any>>({
   showActions = true,
   actionsLabel,
   actionsDisplayMode = "dropdown",
+  alwaysShowKebab = false,
+  rowBadge,
   emptyTitle,
   emptyDescription,
   errorTitle,
@@ -475,15 +479,19 @@ export function PaginatedTable<T extends Record<string, any>>({
                         isSelected ? "bg-blue-50" : "bg-white"
                       )}
                     >
-                      <ActionsDropdown
-                        row={row}
-                        onEdit={onEdit}
-                        onDelete={onDelete ? handleDeleteClick : undefined}
-                        extraActions={extraActions}
-                        editPermission={editPermission}
-                        deletePermission={deletePermission}
-                        actionsDisplayMode={actionsDisplayMode}
-                      />
+                      <div className="flex items-center justify-center gap-2">
+                        {rowBadge?.(row)}
+                        <ActionsDropdown
+                          row={row}
+                          onEdit={onEdit}
+                          onDelete={onDelete ? handleDeleteClick : undefined}
+                          extraActions={extraActions}
+                          editPermission={editPermission}
+                          deletePermission={deletePermission}
+                          actionsDisplayMode={actionsDisplayMode}
+                          alwaysShowKebab={alwaysShowKebab}
+                        />
+                      </div>
                     </TableCell>
                   )}
                 </TableRow>
@@ -905,6 +913,7 @@ function ActionsDropdown<T>({
   editPermission,
   deletePermission,
   actionsDisplayMode = "dropdown",
+  alwaysShowKebab = false,
 }: {
   row: T;
   onEdit?: (row: T) => void;
@@ -913,6 +922,7 @@ function ActionsDropdown<T>({
   editPermission?: Permission;
   deletePermission?: Permission;
   actionsDisplayMode?: "dropdown" | "row";
+  alwaysShowKebab?: boolean;
 }) {
     // All hooks must be called unconditionally at the top
   const [isOpen, setIsOpen] = React.useState(false);
@@ -987,7 +997,7 @@ function ActionsDropdown<T>({
     return null;
   }
 
-  if (totalActions === 1) {
+  if (totalActions === 1 && !alwaysShowKebab) {
     if (canEdit) {
       return (
         <Button

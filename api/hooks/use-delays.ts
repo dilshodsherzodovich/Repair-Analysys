@@ -6,6 +6,8 @@ import {
   DelayListParams,
   DelayCreatePayload,
   DelayUpdatePayload,
+  UploadProtocolPayload,
+  ClassifyPayload,
   DelayReportParams,
 } from "../types/delays";
 import { queryKeys } from "../querykey";
@@ -97,6 +99,60 @@ export function useDeleteDelay() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.delays.all],
+      });
+    },
+  });
+}
+
+export function useAcceptDelay() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number | string) => delaysService.acceptDelay(id),
+    mutationKey: [queryKeys.delays.accept],
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.delays.all] });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.delays.detail(id)],
+      });
+    },
+  });
+}
+
+export function useUploadProtocol() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number | string;
+      payload: UploadProtocolPayload;
+    }) => delaysService.uploadProtocol(id, payload),
+    mutationKey: [queryKeys.delays.uploadProtocol],
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.delays.all] });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.delays.detail(id)],
+      });
+    },
+  });
+}
+
+export function useClassifyDelay() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number | string;
+      payload: ClassifyPayload;
+    }) => delaysService.classifyDelay(id, payload),
+    mutationKey: [queryKeys.delays.classify],
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.delays.all] });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.delays.detail(id)],
       });
     },
   });

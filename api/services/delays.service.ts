@@ -5,32 +5,13 @@ import {
   DelayCreatePayload,
   DelayUpdatePayload,
   DelayListParams,
+  UploadProtocolPayload,
+  ClassifyPayload,
   DelayReportParams,
   DelayReportResponse,
   DelayReportFreightResponse,
   DepotReasonReportResponse,
 } from "../types/delays";
-
-const buildDelayFormData = (
-  delayData: DelayCreatePayload | DelayUpdatePayload
-) => {
-  const formData = new FormData();
-
-  Object.entries(delayData).forEach(([key, value]) => {
-    if (value === undefined || value === null) {
-      return;
-    }
-
-    if (value instanceof File) {
-      formData.append(key, value);
-      return;
-    }
-
-    formData.append(key, String(value));
-  });
-
-  return formData;
-};
 
 export const delaysService = {
   async getDelays(
@@ -44,7 +25,8 @@ export const delaysService = {
         delay_type: params?.delay_type,
         station: params?.station,
         responsible_org: params?.responsible_org,
-        status: params?.status,
+        stage: params?.stage,
+        protocol_overdue: params?.protocol_overdue,
         archive: params?.archive,
         incident_date: params?.incident_date,
         from_date: params?.from_date,
@@ -62,36 +44,15 @@ export const delaysService = {
   },
 
   async createDelay(payload: DelayCreatePayload): Promise<DelayEntry> {
-    const hasFile = payload.report instanceof File;
-    const requestPayload = hasFile ? buildDelayFormData(payload) : payload;
-
-    const config = hasFile
-      ? { headers: { "Content-Type": "multipart/form-data" } }
-      : {};
-
-    const response = await api.post<DelayEntry>(
-      "/sriv/delays/",
-      requestPayload,
-      config
-    );
+    // report/protocol_number/status are NOT part of create — handled via actions
+    const response = await api.post<DelayEntry>("/sriv/delays/", payload);
     return response.data;
   },
 
   async bulkCreateDelays(payload: DelayCreatePayload[]): Promise<DelayEntry[]> {
-    // Bulk create expects JSON array, so we need to remove File objects
-    // If files are needed, they should be uploaded separately or handled differently
-    const jsonPayload = payload.map((item) => {
-      const { report, ...rest } = item;
-      // Only include report if it's not a File (i.e., it's a string/URL)
-      if (report && !(report instanceof File)) {
-        return { ...rest, report };
-      }
-      return rest;
-    });
-
     const response = await api.post<DelayEntry[]>(
       "/sriv/delays/bulk-create/",
-      jsonPayload
+      payload
     );
     return response.data;
   },
@@ -100,23 +61,48 @@ export const delaysService = {
     id: number | string,
     payload: DelayUpdatePayload
   ): Promise<DelayEntry> {
-    const hasFile = payload.report instanceof File;
-    const requestPayload = hasFile ? buildDelayFormData(payload) : payload;
-
-    const config = hasFile
-      ? { headers: { "Content-Type": "multipart/form-data" } }
-      : {};
-
-    const response = await api.patch<DelayEntry>(
-      `/sriv/delays/${id}/`,
-      requestPayload,
-      config
-    );
+    const response = await api.patch<DelayEntry>(`/sriv/delays/${id}/`, payload);
     return response.data;
   },
 
   async deleteDelay(id: number | string): Promise<void> {
     await api.delete(`/sriv/delays/${id}/`);
+  },
+
+  // Stage transitions ------------------------------------------------------
+
+  // created → accepted (sriv_moderator)
+  async acceptDelay(id: number | string): Promise<DelayEntry> {
+    const response = await api.post<DelayEntry>(`/sriv/delays/${id}/accept/`, {});
+    return response.data;
+  },
+
+  // accepted → protocol_uploaded (sriv_moderator) — multipart report + number
+  async uploadProtocol(
+    id: number | string,
+    payload: UploadProtocolPayload
+  ): Promise<DelayEntry> {
+    const formData = new FormData();
+    formData.append("report", payload.report);
+    formData.append("protocol_number", payload.protocol_number);
+    const response = await api.post<DelayEntry>(
+      `/sriv/delays/${id}/upload-protocol/`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+    return response.data;
+  },
+
+  // protocol_uploaded → disruption | not_disruption (sriv_admin)
+  async classifyDelay(
+    id: number | string,
+    payload: ClassifyPayload
+  ): Promise<DelayEntry> {
+    const response = await api.post<DelayEntry>(
+      `/sriv/delays/${id}/classify/`,
+      payload
+    );
+    return response.data;
   },
 
   async getDelayReportsByPassengerTrain(

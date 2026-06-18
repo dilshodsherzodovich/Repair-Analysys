@@ -6,7 +6,18 @@ import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 import { Input } from "@/ui/input";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
-import { Plus, Check, Trash2, X, Lock, Loader2, Pencil } from "lucide-react";
+import {
+  Plus,
+  Check,
+  Trash2,
+  X,
+  Lock,
+  Loader2,
+  Pencil,
+  Train,
+  MapPin,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import {
@@ -74,11 +85,13 @@ export function CulpritsListModal({
   const [savingDraftId, setSavingDraftId] = useState<number | null>(null);
   const tempIdRef = useRef(0);
 
+  // Read-only view (admin/info) reuses the culprits already on the delay object;
+  // only fetch when the moderator needs fresh data for CRUD.
   const { data, isLoading } = useCulprits(
     { delay: delay?.id, page_size: 100 },
-    isOpen && !!delay
+    isOpen && !!delay && canManage
   );
-  const culprits = data?.results ?? [];
+  const culprits = canManage ? (data?.results ?? []) : (delay?.culprits ?? []);
 
   const createMutation = useCreateCulprit();
   const updateMutation = useUpdateCulprit();
@@ -104,6 +117,27 @@ export function CulpritsListModal({
       setEditingId(null);
     }
   }, [isOpen]);
+
+  const canAdd = canManage && !delay?.archive;
+
+  // Distribution of the delay's damage across culprits (existing + draft, live)
+  const damage = delay?.damage_amount ?? 0;
+  const assignedSum =
+    culprits.reduce((sum, c) => sum + (Number(c.amount) || 0), 0) +
+    drafts.reduce((sum, d) => sum + parseThousands(d.amount), 0);
+  const percent = damage > 0 ? Math.round((assignedSum / damage) * 100) : 0;
+  const remaining = damage - assignedSum;
+  const over = assignedSum > damage;
+
+  // Max a given draft may take = zarar minus everyone else already assigned
+  const maxForDraft = (tempId: number) => {
+    const others =
+      culprits.reduce((sum, c) => sum + (Number(c.amount) || 0), 0) +
+      drafts
+        .filter((d) => d.tempId !== tempId)
+        .reduce((sum, d) => sum + parseThousands(d.amount), 0);
+    return Math.max(0, damage - others);
+  };
 
   const onErr = useCallback(
     (error: any) =>
@@ -262,15 +296,65 @@ export function CulpritsListModal({
       >
         <div className="mt-2 space-y-4">
           {delay && (
-            <p className="text-sm text-muted-foreground">
-              {t("subtitle", {
-                train: delay.train_number || "-",
-                station: delay.station || "-",
-              })}
-            </p>
+            <div className="rounded-xl border bg-muted/30 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-background px-2 py-1 text-xs font-medium shadow-sm">
+                    <Train className="h-3.5 w-3.5 text-muted-foreground" />
+                    {delay.train_number || "-"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-md bg-background px-2 py-1 text-xs font-medium shadow-sm">
+                    <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                    {delay.station || "-"}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    {t("zarar")}
+                  </div>
+                  <div className="text-base font-semibold tabular-nums">
+                    {formatAmount(damage)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className={cn(
+                      "h-full rounded-full transition-all",
+                      over
+                        ? "bg-red-500"
+                        : percent >= 100
+                          ? "bg-success"
+                          : "bg-primary"
+                    )}
+                    style={{ width: `${Math.min(100, Math.max(percent, 0))}%` }}
+                  />
+                </div>
+                <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span className="text-muted-foreground">
+                    {t("distributed", {
+                      sum: formatAmount(assignedSum),
+                      total: formatAmount(damage),
+                      percent,
+                    })}
+                  </span>
+                  <span
+                    className={
+                      over ? "font-medium text-red-600" : "text-muted-foreground"
+                    }
+                  >
+                    {over
+                      ? t("over_limit", { amount: formatAmount(-remaining) })
+                      : t("remaining", { amount: formatAmount(remaining) })}
+                  </span>
+                </div>
+              </div>
+            </div>
           )}
 
-          {canManage && (
+          {canAdd && (
             <div className="flex justify-end">
               <Button size="sm" onClick={addDraft}>
                 <Plus className="h-4 w-4 mr-1" />
@@ -279,9 +363,9 @@ export function CulpritsListModal({
             </div>
           )}
 
-          <div className="rounded-md border">
+          <div className="overflow-hidden rounded-xl border">
             <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-muted-foreground">
+              <thead className="bg-muted/40 text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 text-left font-medium">
                     {t("columns.full_name")}
@@ -330,7 +414,7 @@ export function CulpritsListModal({
 
                   if (!canManage || locked) {
                     return (
-                      <tr key={culprit.id} className="border-t">
+                      <tr key={culprit.id} className="border-t hover:bg-muted/20">
                         <td className="px-3 py-2">{culprit.full_name}</td>
                         <td className="px-3 py-2">
                           {formatAmount(culprit.amount)}
@@ -355,7 +439,7 @@ export function CulpritsListModal({
                   // Default: plain text row with Edit/Delete
                   if (editingId !== culprit.id) {
                     return (
-                      <tr key={culprit.id} className="border-t">
+                      <tr key={culprit.id} className="border-t hover:bg-muted/20">
                         <td className="px-3 py-2">{culprit.full_name}</td>
                         <td className="px-3 py-2">
                           {formatAmount(culprit.amount)}
@@ -387,7 +471,7 @@ export function CulpritsListModal({
 
                   // Edit mode: inline inputs + Save/Cancel
                   return (
-                    <tr key={culprit.id} className="border-t">
+                    <tr key={culprit.id} className="border-t hover:bg-muted/20">
                       <td className="px-3 py-2">
                         <Input
                           className="mb-0 h-8"
@@ -453,8 +537,10 @@ export function CulpritsListModal({
                 {canManage &&
                   drafts.map((row) => {
                     const saving = savingDraftId === row.tempId;
+                    const max = maxForDraft(row.tempId);
+                    const maxStr = max > 0 ? formatThousands(String(max)) : "";
                     return (
-                      <tr key={`draft-${row.tempId}`} className="border-t bg-muted/20">
+                      <tr key={`draft-${row.tempId}`} className="border-t bg-primary/5">
                         <td className="px-3 py-2">
                           <Input
                             className="mb-0 h-8"
@@ -469,22 +555,43 @@ export function CulpritsListModal({
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <Input
-                            className="mb-0 h-8"
-                            placeholder={t("form.amount_placeholder")}
-                            value={row.amount}
-                            onChange={(e) =>
-                              updateDraft(row.tempId, {
-                                amount: formatThousands(e.target.value),
-                              })
-                            }
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                submitDraft(row);
+                          <div className="relative">
+                            <Input
+                              className="mb-0 h-8 pr-12"
+                              placeholder={
+                                maxStr || t("form.amount_placeholder")
                               }
-                            }}
-                          />
+                              title={
+                                max > 0
+                                  ? t("max_hint", { amount: maxStr })
+                                  : undefined
+                              }
+                              value={row.amount}
+                              onChange={(e) => {
+                                let next = formatThousands(e.target.value);
+                                if (max > 0 && parseThousands(next) > max) {
+                                  next = maxStr;
+                                }
+                                updateDraft(row.tempId, { amount: next });
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  submitDraft(row);
+                                  return;
+                                }
+                                if (e.key === "Tab" && !row.amount && max > 0) {
+                                  e.preventDefault();
+                                  updateDraft(row.tempId, { amount: maxStr });
+                                }
+                              }}
+                            />
+                            {!row.amount && max > 0 && (
+                              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border bg-muted px-1 text-[10px] font-medium text-muted-foreground">
+                                Tab
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-3 py-2">
                           <Badge variant="outline">{t("status.pending")}</Badge>
@@ -520,7 +627,7 @@ export function CulpritsListModal({
                   })}
 
                 {/* Persistent "+ add" row, always last */}
-                {canManage && (
+                {canAdd && (
                   <tr className="border-t">
                     <td colSpan={colSpan} className="px-3 py-2">
                       <button

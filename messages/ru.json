@@ -11,29 +11,39 @@
     },
     "columns": {
       "incident_date": "Дата",
+      "train": "Поезд",
       "train_number": "Номер поезда",
       "train_type": "Тип поезда",
       "delay_type": "Тип задержки",
       "group_reason": "Группа",
       "station": "Станция",
-      "delay_time": "Время задержки",
+      "delay_time": "Время",
       "reason": "Причина",
       "damage_amount": "Ущерб",
       "responsible_org": "Ответственная организация",
-      "status": "Статус",
+      "stage": "Стадия",
       "archive": "Архив",
-      "report": "Отчет"
+      "report": "Отчет",
+      "protocol_number": "Номер протокола"
     },
-    "status": {
-      "label_pending": "Ещё не определено",
-      "label_disruption": "Срыв",
-      "label_not_disruption": "Не срыв",
-      "label_no_disruption": "Не срыв",
-      "mark_disruption": "Отметить как срыв",
-      "mark_not_disruption": "Отметить как не срыв",
-      "switch_to_disruption": "Сделать срывом",
-      "switch_to_not_disruption": "Сделать не срывом"
+    "stage": {
+      "created": "Создан",
+      "accepted": "Принят",
+      "protocol_uploaded": "Протокол загружен",
+      "disruption": "Срыв",
+      "not_disruption": "Не срыв",
+      "payroll_confirmed": "Подтверждён ОТЗ",
+      "accountant_confirmed": "Сумма изъята"
     },
+    "stage_next": {
+      "created": "Ожидает принятия модератором",
+      "accepted": "Ожидает загрузки протокола",
+      "protocol_uploaded": "Ожидает классификации админом",
+      "disruption": "Ожидает подтверждения ОТЗ",
+      "payroll_confirmed": "Ожидает изъятия"
+    },
+    "protocol_overdue": "Протокол просрочен",
+    "recovery_people": "{rc} из {tc} взыскано",
     "archive": {
       "archived": "Архивировано",
       "not_archived": "Не архивировано"
@@ -50,12 +60,12 @@
       "station_placeholder": "Введите станцию",
       "responsible_org": "Ответственная организация",
       "responsible_org_placeholder": "Выберите ответственную организацию",
-      "status": "Статус",
-      "status_placeholder": "Выберите статус",
-      "status_all": "Все статусы",
-      "status_pending": "Ещё не определено",
-      "status_disruption": "Срыв",
-      "status_no_disruption": "Не срыв",
+      "stage": "Стадия",
+      "stage_placeholder": "Выберите стадию",
+      "stage_all": "Все стадии",
+      "protocol_overdue": "Протокол",
+      "protocol_overdue_all": "Все",
+      "protocol_overdue_only": "Просрочен",
       "search_placeholder": "Поиск"
     },
     "train_types": {
@@ -103,14 +113,72 @@
       "update_success": "Задержка успешно обновлена",
       "update_error_title": "Произошла ошибка",
       "update_error_message": "Ошибка при обновлении задержки",
-      "status_update_success": "Статус успешно обновлён",
-      "status_update_error_title": "Произошла ошибка",
-      "status_update_error_message": "Ошибка при обновлении статуса",
+      "accept_success": "Срыв принят",
+      "upload_protocol_success": "Протокол загружен",
+      "classify_success": "Стадия обновлена",
+      "action_error_title": "Произошла ошибка",
+      "action_error_message": "Не удалось выполнить действие",
+      "classify_confirm_title": "Классификация срыва",
+      "classify_confirm_message_disruption": "Отметить как срыв? После этого начнётся согласование изъятия.",
+      "classify_confirm_message_not_disruption": "Отметить как «не срыв»? Запись будет перемещена в архив.",
+      "classify_confirm_button": "Подтвердить",
+      "classify_cancel_button": "Отмена",
       "generic_error": "Произошла ошибка"
     },
     "actions": {
-      "culprits": "Причастные"
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "culprits": "Причастные",
+      "accept": "Принять",
+      "upload_protocol": "Загрузить протокол",
+      "classify_disruption": "Отметить срывом",
+      "classify_not_disruption": "Отметить «не срыв»",
+      "timeline": "Хронология"
     }
+  },
+  "UploadProtocolModal": {
+    "title": "Загрузка протокола",
+    "report_file": "Файл протокола",
+    "protocol_number": "Номер протокола",
+    "protocol_number_placeholder": "Например: ПР-2026-014",
+    "current_report": "Текущий файл:",
+    "submit": "Загрузить",
+    "pending": "Загрузка...",
+    "cancel": "Отмена",
+    "errors": {
+      "file_required": "Прикрепите файл протокола",
+      "protocol_required": "Введите номер протокола"
+    }
+  },
+  "DelayTimelineModal": {
+    "title": "Хронология срыва",
+    "subtitle": "Поезд {train} · {station}",
+    "stage": "Стадия",
+    "at": "Время",
+    "by": "Кто",
+    "by_system": "Система",
+    "empty": "Шагов пока нет",
+    "close": "Закрыть"
+  },
+  "RecoveryInfoModal": {
+    "title": "Взыскание с причастных",
+    "subtitle": "Поезд {train} · {station}",
+    "to_recover": "К взысканию",
+    "recovered": "Взыскано",
+    "progress": "Взыскано {recovered} из {total} ({percent}%)",
+    "people": "{rc} из {tc} взыскано",
+    "columns": {
+      "full_name": "ФИО",
+      "amount": "Сумма",
+      "payroll": "ОТЗ",
+      "recovered": "Взыскано"
+    },
+    "yes": "Да",
+    "no": "Нет",
+    "recovered_by": "Взыскал: {name}",
+    "confirmed_by": "Подтвердил ОТЗ: {name}",
+    "empty": "Причастных нет",
+    "close": "Закрыть"
   },
   "CulpritsPage": {
     "title": "Причастные к срыву",
@@ -152,6 +220,11 @@
   "CulpritsModal": {
     "title": "Причастные к срыву",
     "subtitle": "Поезд {train} · {station}",
+    "zarar": "Ущерб",
+    "distributed": "Распределено {sum} из {total} ({percent}%)",
+    "remaining": "Осталось {amount}",
+    "over_limit": "Превышение на {amount}",
+    "max_hint": "Макс: {amount} — нажмите Tab",
     "add_button": "Добавить причастного",
     "columns": {
       "full_name": "ФИО",
@@ -259,6 +332,10 @@
     "unrecover": "Откатить изъятие",
     "confirm_all": "Подтвердить все",
     "recover_all": "Изъять все",
+    "confirm_selected": "Подтвердить выбранных ({count})",
+    "recover_selected": "Изъять выбранных ({count})",
+    "progress_percent": "Изъято {recovered} из {total} · {percent}%",
+    "people_count": "{count} причастных",
     "not_confirmed_yet": "Ещё не подтверждён ОТЗ",
     "empty": "Причастные не добавлены",
     "close": "Закрыть",
@@ -498,7 +575,9 @@
       "reason_placeholder": "Введите причину задержки",
       "report_file": "Файл отчета",
       "current_report": "Текущий отчет:",
-      "view_report": "Просмотреть отчет"
+      "view_report": "Просмотреть отчет",
+      "protocol_number": "Номер протокола",
+      "protocol_number_placeholder": "Например: ПР-2026-014"
     },
     "errors": {
       "required_fields": "Пожалуйста, заполните все обязательные поля",

@@ -1,15 +1,4 @@
-import { DelayType } from "./delays";
-
-export type RecoveryStatus =
-  | "pending"
-  | "payroll_confirmed"
-  | "accountant_confirmed";
-
-export const RECOVERY_STATUS_VALUES: RecoveryStatus[] = [
-  "pending",
-  "payroll_confirmed",
-  "accountant_confirmed",
-];
+import { DelayType, DelayStage } from "./delays";
 
 // Причастный к срыву — person + amount to recover, attached to a Delay
 export interface Culprit {
@@ -32,8 +21,8 @@ export interface Culprit {
   delay_type?: DelayType;
   responsible_org?: number;
   responsible_org_name?: string;
-  recovery_status?: RecoveryStatus;
-  recovery_status_display?: string;
+  stage?: DelayStage;
+  stage_display?: string;
 }
 
 export interface CulpritCreatePayload {

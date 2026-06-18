@@ -17,7 +17,7 @@ export const recoveryService = {
         params: {
           page: params?.page,
           page_size: params?.page_size,
-          recovery_status: params?.recovery_status,
+          stage: params?.stage,
           from_date: params?.from_date,
           end_date: params?.end_date,
           incident_date: params?.incident_date,

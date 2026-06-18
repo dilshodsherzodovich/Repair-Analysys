@@ -11,29 +11,39 @@
     },
     "columns": {
       "incident_date": "Sana",
+      "train": "Poyezd",
       "train_number": "Poyezd raqami",
       "train_type": "Poyezd turi",
       "delay_type": "Kechikish turi",
       "group_reason": "Sabab guruhi",
       "station": "Stansiya",
-      "delay_time": "Kechikish vaqti",
+      "delay_time": "Vaqti",
       "reason": "Sabab",
       "damage_amount": "Zarar",
       "responsible_org": "Mas’ul tashkilot",
-      "status": "Holati",
+      "stage": "Bosqich",
       "archive": "Arxiv",
-      "report": "Hisobot"
+      "report": "Hisobot",
+      "protocol_number": "Bayonnoma raqami"
     },
-    "status": {
-      "label_pending": "Hali aniqlanmagan",
-      "label_disruption": "Sriv",
-      "label_not_disruption": "Sriv emas",
-      "label_no_disruption": "Sriv emas",
-      "mark_disruption": "Sriv deb belgilash",
-      "mark_not_disruption": "Sriv emas deb belgilash",
-      "switch_to_disruption": "Srivga o‘zgartirish",
-      "switch_to_not_disruption": "Sriv emasga o‘zgartirish"
+    "stage": {
+      "created": "Yaratilgan",
+      "accepted": "Qabul qilingan",
+      "protocol_uploaded": "Bayonnoma yuklangan",
+      "disruption": "Sriv",
+      "not_disruption": "Sriv emas",
+      "payroll_confirmed": "OTZ tasdiqlagan",
+      "accountant_confirmed": "Summa undirilgan"
     },
+    "stage_next": {
+      "created": "Moderator qabul qilishi kutilmoqda",
+      "accepted": "Bayonnoma yuklash kutilmoqda",
+      "protocol_uploaded": "Admin tasnifi kutilmoqda",
+      "disruption": "OTZ tasdig'i kutilmoqda",
+      "payroll_confirmed": "Undirish kutilmoqda"
+    },
+    "protocol_overdue": "Bayonnoma muddati o'tgan",
+    "recovery_people": "{tc} kishidan {rc} tasi undirilgan",
     "archive": {
       "archived": "Arxivlangan",
       "not_archived": "Arxivlanmagan"
@@ -50,12 +60,12 @@
       "station_placeholder": "Stansiyani kiriting",
       "responsible_org": "Mas’ul tashkilot",
       "responsible_org_placeholder": "Mas’ul tashkilotni tanlang",
-      "status": "Holati",
-      "status_placeholder": "Holatni tanlang",
-      "status_all": "Barcha holatlar",
-      "status_pending": "Hali aniqlanmagan",
-      "status_disruption": "Sriv",
-      "status_no_disruption": "Sriv emas",
+      "stage": "Bosqich",
+      "stage_placeholder": "Bosqichni tanlang",
+      "stage_all": "Barcha bosqichlar",
+      "protocol_overdue": "Bayonnoma",
+      "protocol_overdue_all": "Barchasi",
+      "protocol_overdue_only": "Muddati o'tgan",
       "search_placeholder": "Qidiruv"
     },
     "train_types": {
@@ -103,14 +113,72 @@
       "update_success": "Kechikish muvaffaqiyatli yangilandi",
       "update_error_title": "Xatolik yuz berdi",
       "update_error_message": "Kechikishni yangilashda xatolik yuz berdi",
-      "status_update_success": "Holat muvaffaqiyatli yangilandi",
-      "status_update_error_title": "Xatolik yuz berdi",
-      "status_update_error_message": "Holatni yangilashda xatolik yuz berdi",
+      "accept_success": "Sriv qabul qilindi",
+      "upload_protocol_success": "Bayonnoma yuklandi",
+      "classify_success": "Bosqich yangilandi",
+      "action_error_title": "Xatolik yuz berdi",
+      "action_error_message": "Amalni bajarib bo'lmadi",
+      "classify_confirm_title": "Srivni tasniflash",
+      "classify_confirm_message_disruption": "Sriv deb belgilansinmi? Shundan so'ng undirishni kelishish boshlanadi.",
+      "classify_confirm_message_not_disruption": "«Sriv emas» deb belgilansinmi? Yozuv arxivga o'tkaziladi.",
+      "classify_confirm_button": "Tasdiqlash",
+      "classify_cancel_button": "Bekor qilish",
       "generic_error": "Xatolik yuz berdi"
     },
     "actions": {
-      "culprits": "Aybdorlar"
+      "edit": "Tahrirlash",
+      "delete": "O'chirish",
+      "culprits": "Aybdorlar",
+      "accept": "Qabul qilish",
+      "upload_protocol": "Bayonnoma yuklash",
+      "classify_disruption": "Sriv deb belgilash",
+      "classify_not_disruption": "Sriv emas deb belgilash",
+      "timeline": "Xronologiya"
     }
+  },
+  "UploadProtocolModal": {
+    "title": "Bayonnoma yuklash",
+    "report_file": "Bayonnoma fayli",
+    "protocol_number": "Bayonnoma raqami",
+    "protocol_number_placeholder": "Masalan: PR-2026-014",
+    "current_report": "Joriy fayl:",
+    "submit": "Yuklash",
+    "pending": "Yuklanmoqda...",
+    "cancel": "Bekor qilish",
+    "errors": {
+      "file_required": "Bayonnoma faylini biriktiring",
+      "protocol_required": "Bayonnoma raqamini kiriting"
+    }
+  },
+  "DelayTimelineModal": {
+    "title": "Sriv xronologiyasi",
+    "subtitle": "Poyezd {train} · {station}",
+    "stage": "Bosqich",
+    "at": "Vaqt",
+    "by": "Kim",
+    "by_system": "Tizim",
+    "empty": "Hali bosqichlar yo'q",
+    "close": "Yopish"
+  },
+  "RecoveryInfoModal": {
+    "title": "Aybdorlardan undirish",
+    "subtitle": "Poyezd {train} · {station}",
+    "to_recover": "Undirilishi kerak",
+    "recovered": "Undirilgan",
+    "progress": "{total} dan {recovered} undirilgan ({percent}%)",
+    "people": "{tc} dan {rc} tasi undirilgan",
+    "columns": {
+      "full_name": "F.I.Sh.",
+      "amount": "Summa",
+      "payroll": "OTZ",
+      "recovered": "Undirilgan"
+    },
+    "yes": "Ha",
+    "no": "Yo'q",
+    "recovered_by": "Undirdi: {name}",
+    "confirmed_by": "OTZ tasdiqladi: {name}",
+    "empty": "Aybdorlar yo'q",
+    "close": "Yopish"
   },
   "CulpritsPage": {
     "title": "Srivga aybdorlar",
@@ -152,6 +220,11 @@
   "CulpritsModal": {
     "title": "Srivga aybdorlar",
     "subtitle": "Poyezd {train} · {station}",
+    "zarar": "Zarar",
+    "distributed": "{total} dan {sum} taqsimlangan ({percent}%)",
+    "remaining": "Qoldi: {amount}",
+    "over_limit": "{amount} ga oshib ketdi",
+    "max_hint": "Maks: {amount} — Tab bosing",
     "add_button": "Aybdor qo'shish",
     "columns": {
       "full_name": "F.I.Sh.",
@@ -259,6 +332,10 @@
     "unrecover": "Undirishni qaytarish",
     "confirm_all": "Barchasini tasdiqlash",
     "recover_all": "Barchasini undirish",
+    "confirm_selected": "Tanlanganlarni tasdiqlash ({count})",
+    "recover_selected": "Tanlanganlarni undirish ({count})",
+    "progress_percent": "{total} dan {recovered} undirilgan · {percent}%",
+    "people_count": "{count} ta aybdor",
     "not_confirmed_yet": "Hali OTZ tasdiqlamagan",
     "empty": "Aybdorlar qo'shilmagan",
     "close": "Yopish",
@@ -498,7 +575,9 @@
       "reason_placeholder": "Kechikish sababini kiriting",
       "report_file": "Hisobot fayli",
       "current_report": "Joriy hisobot:",
-      "view_report": "Hisobotni ko'rish"
+      "view_report": "Hisobotni ko'rish",
+      "protocol_number": "Bayonnoma raqami",
+      "protocol_number_placeholder": "Masalan: PR-2026-014"
     },
     "errors": {
       "required_fields": "Iltimos, barcha majburiy maydonlarni to'ldiring",

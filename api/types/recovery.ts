@@ -1,10 +1,15 @@
-import { DelayEntry } from "./delays";
-import { Culprit, RecoveryStatus } from "./culprits";
+import { DelayEntry, DelayStage } from "./delays";
+import { Culprit } from "./culprits";
+
+// Stages that show up in the recovery (изъятие) flow
+export const RECOVERY_STAGE_VALUES: DelayStage[] = [
+  "disruption",
+  "payroll_confirmed",
+  "accountant_confirmed",
+];
 
 // A Delay enriched with recovery/agreement fields for the изъятие flow
 export interface RecoveryDelay extends DelayEntry {
-  recovery_status: RecoveryStatus;
-  recovery_status_display?: string;
   culprits: Culprit[];
   culprits_total_amount: number;
   culprits_recovered_amount: number;
@@ -13,7 +18,7 @@ export interface RecoveryDelay extends DelayEntry {
 export interface RecoveryListParams {
   page?: number;
   page_size?: number;
-  recovery_status?: RecoveryStatus | string;
+  stage?: DelayStage | string;
   from_date?: string;
   end_date?: string;
   incident_date?: string;

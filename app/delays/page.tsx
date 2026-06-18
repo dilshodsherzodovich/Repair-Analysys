@@ -9,22 +9,29 @@ import { getPageCount } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
 import {
   DelayEntry,
-  DelayStatus,
+  DelayStage,
   DelayCreatePayload,
   DelayUpdatePayload,
+  UploadProtocolPayload,
   DELAY_TYPE_OPTIONS,
   TRAIN_TYPE_OPTIONS,
   GROUP_REASON_OPTIONS,
+  DELAY_STAGE_VALUES,
 } from "@/api/types/delays";
 import {
   useCreateDelay,
   useDelays,
   useDeleteDelay,
   useUpdateDelay,
+  useAcceptDelay,
+  useUploadProtocol,
+  useClassifyDelay,
 } from "@/api/hooks/use-delays";
 import { DelayModal } from "@/components/delays/delay-modal";
-import { ApproveConfirmationModal } from "@/components/delays/approve-confirmation-modal";
 import { CulpritsListModal } from "@/components/culprits/culprits-list-modal";
+import { UploadProtocolModal } from "@/components/delays/upload-protocol-modal";
+import { DelayTimelineModal } from "@/components/delays/delay-timeline-modal";
+import { RecoveryInfoModal } from "@/components/delays/recovery-info-modal";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import {
@@ -36,21 +43,33 @@ import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import {
   FileUp,
-  FileEdit,
-  CheckCircle,
   Edit,
   Trash2,
-  Check,
-  X,
+  AlertTriangle,
+  ShieldCheck,
+  ClipboardCheck,
+  History,
   Users,
+  Clock,
+  CornerDownRight,
+  Archive,
+  Info,
 } from "lucide-react";
 import { Button } from "@/ui/button";
 import { useTranslations } from "next-intl";
 
+// Stages that still have a "next" awaited step (terminal stages excluded)
+const STAGES_WITH_NEXT: DelayStage[] = [
+  "created",
+  "accepted",
+  "protocol_uploaded",
+  "disruption",
+  "payroll_confirmed",
+];
+
 export default function DelaysPage() {
   const t = useTranslations("DelaysPage");
   const { getAllQueryValues } = useFilterParams();
-  const { updateQuery } = useFilterParams();
   const {
     q,
     page,
@@ -60,7 +79,8 @@ export default function DelaysPage() {
     end_date,
     responsible_org,
     station,
-    status,
+    stage,
+    protocol_overdue,
     archive,
     train_type,
     group_reason,
@@ -74,26 +94,34 @@ export default function DelaysPage() {
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "moderate">(
-    "create"
-  );
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedEntry, setSelectedEntry] = useState<DelayEntry | null>(null);
-  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-  const [approveEntry, setApproveEntry] = useState<DelayEntry | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteEntry, setDeleteEntry] = useState<DelayEntry | null>(null);
-  const [statusUpdatingId, setStatusUpdatingId] = useState<
-    string | number | null
-  >(null);
+
   const [isCulpritsModalOpen, setIsCulpritsModalOpen] = useState(false);
   const [culpritsEntry, setCulpritsEntry] = useState<DelayEntry | null>(null);
 
-  const canViewCulprits = hasPermission(currentUser, "view_culprits");
-  const canManageCulprits = hasPermission(currentUser, "manage_culprits");
+  const [isProtocolModalOpen, setIsProtocolModalOpen] = useState(false);
+  const [protocolEntry, setProtocolEntry] = useState<DelayEntry | null>(null);
+
+  const [isTimelineOpen, setIsTimelineOpen] = useState(false);
+  const [timelineEntry, setTimelineEntry] = useState<DelayEntry | null>(null);
+
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [infoEntry, setInfoEntry] = useState<DelayEntry | null>(null);
+
+  const [classifyTarget, setClassifyTarget] = useState<{
+    row: DelayEntry;
+    isDisruption: boolean;
+  } | null>(null);
 
   const createMutation = useCreateDelay();
   const updateMutation = useUpdateDelay();
   const deleteMutation = useDeleteDelay();
+  const acceptMutation = useAcceptDelay();
+  const uploadProtocolMutation = useUploadProtocol();
+  const classifyMutation = useClassifyDelay();
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
@@ -101,22 +129,17 @@ export default function DelaysPage() {
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
-  // Status filter is now a string value (pending | not_disruption | disruption)
-  const statusFilter = (status as DelayStatus) || undefined;
-
-  // sriv_admin can review/change status (has edit_delay but is not a moderator)
+  const isModerator = hasPermission(currentUser, "upload_delay_report");
   const isAdmin =
-    hasPermission(currentUser, "edit_delay") &&
-    !hasPermission(currentUser, "upload_delay_report");
+    hasPermission(currentUser, "edit_delay") && !isModerator;
+  const canManageCulprits = hasPermission(currentUser, "manage_culprits");
 
-  // Parse archive from query string
+  const stageFilter = (stage as DelayStage) || undefined;
   const archiveFilter =
     archive === "true" ? true : archive === "false" ? false : undefined;
 
-  const getTrainTypeLabel = (value?: string | null) => {
-    if (!value) return "-";
-    return t(`train_types.${value}` as any);
-  };
+  const getTrainTypeLabel = (value?: string | null) =>
+    value ? t(`train_types.${value}` as any) : "-";
 
   const getGroupReasonLabel = (value?: string | null) => {
     if (!value) return "-";
@@ -124,10 +147,8 @@ export default function DelaysPage() {
     return option ? option.label : value;
   };
 
-  const getDelayTypeLabel = (value?: string | null) => {
-    if (!value) return "-";
-    return t(`delay_types.${value}` as any);
-  };
+  const getDelayTypeLabel = (value?: string | null) =>
+    value ? t(`delay_types.${value}` as any) : "-";
 
   const {
     data: apiResponse,
@@ -143,10 +164,11 @@ export default function DelaysPage() {
       | undefined,
     station: station || undefined,
     responsible_org: responsible_org || undefined,
-    status: statusFilter,
+    stage: stageFilter,
+    protocol_overdue: protocol_overdue === "true" ? true : undefined,
     archive: archiveFilter,
-    from_date: start_date || undefined, // Map "start_date" query param to "from_date" API param
-    end_date: end_date || undefined, // Map "end_date" query param to "end_date" API param
+    from_date: start_date || undefined,
+    end_date: end_date || undefined,
     train_type: train_type || undefined,
     group_reason: group_reason || undefined,
   });
@@ -159,150 +181,26 @@ export default function DelaysPage() {
     apiError instanceof Error
       ? apiError
       : apiError
-      ? new Error(apiError?.message || t("messages.generic_error"))
-      : null;
+        ? new Error(apiError?.message || t("messages.generic_error"))
+        : null;
 
-  const handleEdit = useCallback(
-    (row: DelayEntry) => {
-      if (row.archive) {
-        return;
-      }
-      setSelectedEntry(row);
-      const isModerator = hasPermission(currentUser, "upload_delay_report");
-      setModalMode(isModerator ? "moderate" : "edit");
-      setIsModalOpen(true);
-    },
-    [currentUser]
-  );
-
-  const handleCloseDelay = useCallback((row: DelayEntry) => {
-    if (row.archive) {
-      return;
-    }
-    setSelectedEntry(row);
-    setModalMode("moderate");
-    setIsModalOpen(true);
-  }, []);
-
-  const handleApproveClick = useCallback((row: DelayEntry) => {
-    if (row.archive) {
-      return;
-    }
-    setApproveEntry(row);
-    setIsApproveModalOpen(true);
-  }, []);
-
-  const handleApproveConfirm = useCallback(async () => {
-    if (!approveEntry) return;
-    updateMutation.mutate(
-      {
-        id: approveEntry.id,
-        payload: {
-          archive: true,
-        },
-      },
-      {
-        onSuccess: () => {
-          showSuccess(t("messages.approve_success"));
-          setIsApproveModalOpen(false);
-          setApproveEntry(null);
-        },
-        onError: (error: any) => {
-          showError(
-            t("messages.approve_error_title"),
-            error?.response?.data?.message ||
-              error?.message ||
-              t("messages.approve_error_message")
-          );
-        },
-      }
-    );
-  }, [approveEntry, updateMutation, showError, showSuccess]);
-
-  const handleDeleteClick = useCallback((row: DelayEntry) => {
-    if (row.archive) {
-      return;
-    }
-    setDeleteEntry(row);
-    setIsDeleteModalOpen(true);
-  }, []);
-
-  const handleDeleteConfirm = useCallback(async () => {
-    if (!deleteEntry) return;
-    try {
-      await deleteMutation.mutateAsync(deleteEntry.id);
-      showSuccess(t("messages.delete_success"));
-      setIsDeleteModalOpen(false);
-      setDeleteEntry(null);
-    } catch (error: any) {
+  const actionError = useCallback(
+    (e: any) =>
       showError(
-        t("messages.delete_error_title"),
-        error?.response?.data?.message ||
-          error?.message ||
-          t("messages.delete_error_message")
-      );
-    }
-  }, [deleteEntry, deleteMutation, showError, showSuccess]);
-
-  const handleStatusChange = useCallback(
-    (row: DelayEntry, newStatus: DelayStatus) => {
-      if (row.archive || row.status === newStatus) {
-        return;
-      }
-      setStatusUpdatingId(row.id);
-      updateMutation.mutate(
-        {
-          id: row.id,
-          payload: { status: newStatus },
-        },
-        {
-          onSuccess: () => {
-            showSuccess(t("messages.status_update_success"));
-            setStatusUpdatingId(null);
-          },
-          onError: (error: any) => {
-            showError(
-              t("messages.status_update_error_title"),
-              error?.response?.data?.message ||
-                error?.message ||
-                t("messages.status_update_error_message"),
-            );
-            setStatusUpdatingId(null);
-          },
-        },
-      );
-    },
-    [updateMutation, showError, showSuccess],
+        t("messages.action_error_title"),
+        e?.response?.data?.detail ||
+          e?.response?.data?.message ||
+          e?.message ||
+          t("messages.action_error_message")
+      ),
+    [showError, t]
   );
 
-  const getStatusLabel = useCallback(
-    (row: DelayEntry) => {
-      switch (row?.status) {
-        case "disruption":
-          return t("status.label_disruption");
-        case "not_disruption":
-          return t("status.label_not_disruption");
-        default:
-          return t("status.label_pending");
-      }
-    },
-    [t],
-  );
-
-  const getStatusVariant = useCallback((status?: DelayStatus) => {
-    switch (status) {
-      case "disruption":
-        return "destructive_outline" as const;
-      case "not_disruption":
-        return "success_outline" as const;
-      default:
-        return "outline" as const;
-    }
-  }, []);
-
-  const handleOpenCulprits = useCallback((row: DelayEntry) => {
-    setCulpritsEntry(row);
-    setIsCulpritsModalOpen(true);
+  const handleEdit = useCallback((row: DelayEntry) => {
+    if (row.archive) return;
+    setSelectedEntry(row);
+    setModalMode("edit");
+    setIsModalOpen(true);
   }, []);
 
   const handleCreate = useCallback(() => {
@@ -320,76 +218,174 @@ export default function DelaysPage() {
             setIsModalOpen(false);
             setSelectedEntry(null);
           },
-          onError: (error: any) => {
+          onError: (e: any) =>
             showError(
               t("messages.create_error_title"),
-              error?.response?.data?.message ||
-                error?.message ||
+              e?.response?.data?.message ||
+                e?.message ||
                 t("messages.create_error_message")
-            );
-          },
+            ),
         });
       } else if (selectedEntry) {
         updateMutation.mutate(
-          {
-            id: selectedEntry.id,
-            payload: payload as DelayUpdatePayload,
-          },
+          { id: selectedEntry.id, payload: payload as DelayUpdatePayload },
           {
             onSuccess: () => {
               showSuccess(t("messages.update_success"));
               setIsModalOpen(false);
               setSelectedEntry(null);
             },
-            onError: (error: any) => {
+            onError: (e: any) =>
               showError(
                 t("messages.update_error_title"),
-                error?.response?.data?.message ||
-                  error?.message ||
+                e?.response?.data?.message ||
+                  e?.message ||
                   t("messages.update_error_message")
-              );
-            },
+              ),
           }
         );
       }
     },
-    [
-      modalMode,
-      selectedEntry,
-      createMutation,
-      updateMutation,
-      showSuccess,
-      showError,
-    ]
+    [modalMode, selectedEntry, createMutation, updateMutation, showSuccess, showError, t]
   );
 
-  const formatDate = useCallback(
-    (dateString: string, isTime: boolean = false) => {
-      try {
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const year = date.getFullYear();
-        if (!isTime) {
-          return `${day}.${month}.${year}`;
-        }
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-        return `${hours}:${minutes}`;
-      } catch {
-        return dateString;
-      }
+  const handleDeleteClick = useCallback((row: DelayEntry) => {
+    if (row.archive) return;
+    setDeleteEntry(row);
+    setIsDeleteModalOpen(true);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteEntry) return;
+    try {
+      await deleteMutation.mutateAsync(deleteEntry.id);
+      showSuccess(t("messages.delete_success"));
+      setIsDeleteModalOpen(false);
+      setDeleteEntry(null);
+    } catch (e: any) {
+      showError(
+        t("messages.delete_error_title"),
+        e?.response?.data?.message ||
+          e?.message ||
+          t("messages.delete_error_message")
+      );
+    }
+  }, [deleteEntry, deleteMutation, showError, showSuccess, t]);
+
+  const handleAccept = useCallback(
+    (row: DelayEntry) => {
+      acceptMutation.mutate(row.id, {
+        onSuccess: () => showSuccess(t("messages.accept_success")),
+        onError: actionError,
+      });
     },
-    []
+    [acceptMutation, showSuccess, t, actionError]
   );
+
+  const handleOpenProtocol = useCallback((row: DelayEntry) => {
+    setProtocolEntry(row);
+    setIsProtocolModalOpen(true);
+  }, []);
+
+  const handleProtocolSave = useCallback(
+    (payload: UploadProtocolPayload) => {
+      if (!protocolEntry) return;
+      uploadProtocolMutation.mutate(
+        { id: protocolEntry.id, payload },
+        {
+          onSuccess: () => {
+            showSuccess(t("messages.upload_protocol_success"));
+            setIsProtocolModalOpen(false);
+            setProtocolEntry(null);
+          },
+          onError: actionError,
+        }
+      );
+    },
+    [protocolEntry, uploadProtocolMutation, showSuccess, t, actionError]
+  );
+
+  const handleClassifyConfirm = useCallback(() => {
+    if (!classifyTarget) return;
+    classifyMutation.mutate(
+      {
+        id: classifyTarget.row.id,
+        payload: { is_disruption: classifyTarget.isDisruption },
+      },
+      {
+        onSuccess: () => {
+          showSuccess(t("messages.classify_success"));
+          setClassifyTarget(null);
+        },
+        onError: (e) => {
+          actionError(e);
+          setClassifyTarget(null);
+        },
+      }
+    );
+  }, [classifyTarget, classifyMutation, showSuccess, t, actionError]);
+
+  const handleOpenCulprits = useCallback((row: DelayEntry) => {
+    setCulpritsEntry(row);
+    setIsCulpritsModalOpen(true);
+  }, []);
+
+  const handleTimeline = useCallback((row: DelayEntry) => {
+    setTimelineEntry(row);
+    setIsTimelineOpen(true);
+  }, []);
+
+  const handleOpenInfo = useCallback((row: DelayEntry) => {
+    setInfoEntry(row);
+    setIsInfoOpen(true);
+  }, []);
+
+  const getStageLabel = useCallback(
+    (s?: DelayStage) => (s ? t(`stage.${s}` as any) : "-"),
+    [t]
+  );
+
+  const getStageNext = useCallback(
+    (s?: DelayStage) =>
+      s && STAGES_WITH_NEXT.includes(s) ? t(`stage_next.${s}` as any) : null,
+    [t]
+  );
+
+  const getStageVariant = useCallback((s?: DelayStage) => {
+    switch (s) {
+      case "disruption":
+        return "destructive_outline" as const;
+      case "not_disruption":
+        return "success_outline" as const;
+      case "payroll_confirmed":
+        return "info" as const;
+      case "accountant_confirmed":
+        return "success" as const;
+      case "protocol_uploaded":
+        return "warning_outline" as const;
+      case "accepted":
+        return "secondary" as const;
+      default:
+        return "outline" as const;
+    }
+  }, []);
+
+  const formatDate = useCallback((dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return `${String(date.getDate()).padStart(2, "0")}.${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}.${date.getFullYear()}`;
+    } catch {
+      return dateString;
+    }
+  }, []);
 
   const formatTime = useCallback((timeString: string) => {
     try {
       const match = timeString.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
       if (match) {
-        const hours = match[1].padStart(2, "0");
-        const minutes = match[2].padStart(2, "0");
-        return `${hours}:${minutes}`;
+        return `${match[1].padStart(2, "0")}:${match[2].padStart(2, "0")}`;
       }
       return timeString;
     } catch {
@@ -399,23 +395,14 @@ export default function DelaysPage() {
 
   const truncateFilename = useCallback(
     (filename: string, maxLength: number = 25) => {
-      if (!filename || filename.length <= maxLength) {
-        return filename;
-      }
-
+      if (!filename || filename.length <= maxLength) return filename;
       const lastDotIndex = filename.lastIndexOf(".");
-      if (lastDotIndex === -1) {
+      if (lastDotIndex === -1)
         return filename.substring(0, maxLength) + "...";
-      }
-
       const extension = filename.substring(lastDotIndex);
       const nameWithoutExt = filename.substring(0, lastDotIndex);
       const availableLength = maxLength - extension.length;
-
-      if (nameWithoutExt.length <= availableLength) {
-        return filename;
-      }
-
+      if (nameWithoutExt.length <= availableLength) return filename;
       return nameWithoutExt.substring(0, availableLength) + "..." + extension;
     },
     []
@@ -426,41 +413,33 @@ export default function DelaysPage() {
       key: "incident_date",
       header: t("columns.incident_date"),
       accessor: (row) =>
-        row?.incident_date ? formatDate(row.incident_date, false) : "-",
-    },
-
-    {
-      key: "train_number",
-      header: t("columns.train_number"),
-      accessor: (row) => row?.train_number || "-",
-      width: "20px",
+        row?.incident_date ? formatDate(row.incident_date) : "-",
     },
     {
-      key: "train_type",
-      header: t("columns.train_type"),
-      accessor: (row) => {
-        if (row?.train_type) {
-          return getTrainTypeLabel(row.train_type);
-        }
-        return "-";
-      },
+      key: "train",
+      header: t("columns.train"),
+      accessor: (row) => (
+        <div className="flex flex-col leading-tight">
+          <span className="font-medium">{row?.train_number || "-"}</span>
+          {row?.train_type && (
+            <span className="text-xs text-muted-foreground">
+              {getTrainTypeLabel(row.train_type)}
+            </span>
+          )}
+        </div>
+      ),
+      width: "110px",
     },
     {
       key: "delay_type",
       header: t("columns.delay_type"),
-      accessor: (row) =>
-        row?.delay_type ? getDelayTypeLabel(row.delay_type) : "-",
+      accessor: (row) => getDelayTypeLabel(row?.delay_type),
       width: "150px",
     },
     {
       key: "group_reason",
       header: t("columns.group_reason"),
-      accessor: (row) => {
-        if (row?.group_reason) {
-          return getGroupReasonLabel(row.group_reason);
-        }
-        return "-";
-      },
+      accessor: (row) => getGroupReasonLabel(row?.group_reason),
     },
     {
       key: "station",
@@ -472,6 +451,7 @@ export default function DelaysPage() {
       key: "delay_time",
       header: t("columns.delay_time"),
       accessor: (row) => (row?.delay_time ? formatTime(row.delay_time) : "-"),
+      width: "70px",
     },
     {
       key: "reason",
@@ -485,14 +465,45 @@ export default function DelaysPage() {
     {
       key: "damage_amount",
       header: t("columns.damage_amount"),
-      accessor: (row) =>
-        row?.damage_amount
-          ? new Intl.NumberFormat("uz-UZ", {
-              style: "currency",
-              currency: "UZS",
-              minimumFractionDigits: 0,
-            }).format(row.damage_amount)
-          : "0",
+      width: "180px",
+      accessor: (row) => {
+        const fmt = (v: number) =>
+          new Intl.NumberFormat("uz-UZ", { maximumFractionDigits: 0 }).format(v);
+        const culprits = row?.culprits ?? [];
+        const totalCount = culprits.length;
+        const recoveredList = culprits.filter((c) => c.recovered);
+        const recoveredCount = recoveredList.length;
+        // recovered zarar summasi = сумма amount причастных с recovered=true
+        const recoveredSum = recoveredList.reduce(
+          (sum, c) => sum + (Number(c.amount) || 0),
+          0
+        );
+        return (
+          <div className="flex flex-col gap-0.5">
+            <span className="tabular-nums font-medium">
+              {fmt(row?.damage_amount || 0)}
+              <span className="text-muted-foreground"> / </span>
+              <span className="text-success">{fmt(recoveredSum)}</span>
+            </span>
+            {totalCount > 0 && (
+              <button
+                type="button"
+                onClick={() => handleOpenInfo(row)}
+                className="inline-flex w-fit items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+                title={t("actions.culprits")}
+              >
+                <Info className="h-3 w-3 shrink-0" />
+                <span>
+                  {t("recovery_people", {
+                    rc: recoveredCount,
+                    tc: totalCount,
+                  })}
+                </span>
+              </button>
+            )}
+          </div>
+        );
+      },
     },
     {
       key: "responsible_org",
@@ -501,105 +512,72 @@ export default function DelaysPage() {
         row?.responsible_org_name || row?.responsible_org_detail?.name || "-",
     },
     {
-      key: "status",
-      header: t("columns.status"),
+      key: "stage",
+      header: t("columns.stage"),
       accessor: (row) => {
-        const badge = (
-          <Badge variant={getStatusVariant(row?.status)}>
-            {getStatusLabel(row)}
-          </Badge>
-        );
-
-        // Only sriv_admin reviews/changes status, and not on archived rows
-        if (!isAdmin || row?.archive) {
-          return badge;
-        }
-
-        const updating = statusUpdatingId === row.id;
-
-        if (row?.status === "pending") {
-          return (
-            <div className="flex items-center gap-2">
-              {badge}
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={updating}
-                title={t("status.mark_disruption")}
-                onClick={() => handleStatusChange(row, "disruption")}
-                className="h-7 w-7 p-0 border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10"
-              >
-                <Check className="h-4 w-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={updating}
-                title={t("status.mark_not_disruption")}
-                onClick={() => handleStatusChange(row, "not_disruption")}
-                className="h-7 w-7 p-0 border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          );
-        }
-
-        // Already reviewed → allow switching to the other decided value (never back to pending)
-        const target: DelayStatus =
-          row?.status === "disruption" ? "not_disruption" : "disruption";
+        const next = getStageNext(row?.stage);
         return (
-          <div className="flex items-center gap-2">
-            {badge}
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={updating}
-              title={t(`status.switch_to_${target}` as any)}
-              onClick={() => handleStatusChange(row, target)}
-              className="h-7 px-2 text-xs"
+          <div className="flex flex-col gap-1.5">
+            <Badge
+              variant={getStageVariant(row?.stage)}
+              className="w-fit gap-1.5 font-medium"
             >
-              {t(`status.switch_to_${target}` as any)}
-            </Button>
+              <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+              {row?.stage_display || getStageLabel(row?.stage)}
+            </Badge>
+
+            {next && (
+              <div className="flex items-center gap-1 pl-0.5 text-muted-foreground">
+                <CornerDownRight className="h-3 w-3 shrink-0 opacity-50" />
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 ring-1 ring-amber-200/70">
+                  <Clock className="h-3 w-3 shrink-0" />
+                  {next}
+                </span>
+              </div>
+            )}
+
+            {row?.protocol_overdue && (
+              <span className="inline-flex w-fit items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600 ring-1 ring-red-200">
+                <AlertTriangle className="h-3 w-3 shrink-0" />
+                {t("protocol_overdue")}
+              </span>
+            )}
           </div>
         );
       },
-      width: "220px",
-    },
-    {
-      key: "archive",
-      header: t("columns.archive"),
-      accessor: (row) => {
-        const isArchived = row?.archive;
-        return (
-          <Badge variant={isArchived ? "default" : "outline"}>
-            {isArchived ? t("archive.archived") : t("archive.not_archived")}
-          </Badge>
-        );
-      },
+      width: "260px",
     },
     {
       key: "report",
       header: t("columns.report"),
       accessor: (row) => {
-        if (row?.report_filename || row?.report) {
-          const filename = row.report_filename || "Просмотреть отчет";
-          const truncated = truncateFilename(filename, 25);
-          return (
-            <div className="max-w-[200px]">
+        const hasFile = !!(row?.report_filename || row?.report);
+        if (!hasFile && !row?.protocol_number) {
+          return <span className="text-gray-400">-</span>;
+        }
+        const filename = row.report_filename || t("columns.report");
+        return (
+          <div className="flex max-w-[220px] flex-col gap-0.5">
+            {row?.protocol_number && (
+              <span className="text-xs font-medium text-foreground">
+                № {row.protocol_number}
+              </span>
+            )}
+            {hasFile ? (
               <a
                 href={row.report}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline text-sm truncate block"
+                className="block truncate text-sm text-blue-600 hover:underline"
                 title={filename}
               >
-                {truncated}
+                {truncateFilename(filename, 25)}
               </a>
-            </div>
-          );
-        }
-        return <span className="text-gray-400">-</span>;
+            ) : (
+              <span className="text-xs text-gray-400">—</span>
+            )}
+          </div>
+        );
       },
     },
   ];
@@ -612,10 +590,7 @@ export default function DelaysPage() {
   const delayTypeOptions = useMemo(() => {
     const options = [{ value: "", label: t("filters.delay_type_all") }];
     DELAY_TYPE_OPTIONS.forEach((type) =>
-      options.push({
-        value: type.value,
-        label: getDelayTypeLabel(type.value),
-      })
+      options.push({ value: type.value, label: getDelayTypeLabel(type.value) })
     );
     return options;
   }, [t]);
@@ -624,31 +599,35 @@ export default function DelaysPage() {
     const options = [
       { value: "", label: t("filters.responsible_org_placeholder") },
     ];
-    if (organizationsData) {
-      organizationsData?.forEach((org) =>
-        options.push({
-          value: String(org.id),
-          label: org.name,
-        })
-      );
-    }
+    organizationsData?.forEach((org) =>
+      options.push({ value: String(org.id), label: org.name })
+    );
     return options;
-  }, [organizationsData]);
+  }, [organizationsData, t]);
 
-  const statusOptions = [
-    { value: "", label: t("filters.status_all") },
-    { value: "pending", label: t("filters.status_pending") },
-    { value: "disruption", label: t("filters.status_disruption") },
-    { value: "not_disruption", label: t("filters.status_no_disruption") },
-  ];
+  const stageOptions = useMemo(
+    () => [
+      { value: "", label: t("filters.stage_all") },
+      ...DELAY_STAGE_VALUES.map((s) => ({
+        value: s,
+        label: t(`stage.${s}` as any),
+      })),
+    ],
+    [t]
+  );
+
+  const protocolOverdueOptions = useMemo(
+    () => [
+      { value: "", label: t("filters.protocol_overdue_all") },
+      { value: "true", label: t("filters.protocol_overdue_only") },
+    ],
+    [t]
+  );
 
   const trainTypeOptions = useMemo(() => {
     const options = [{ value: "", label: t("filters.train_type_placeholder") }];
     TRAIN_TYPE_OPTIONS.forEach((type) =>
-      options.push({
-        value: type.value,
-        label: getTrainTypeLabel(type.value),
-      })
+      options.push({ value: type.value, label: getTrainTypeLabel(type.value) })
     );
     return options;
   }, [t]);
@@ -684,7 +663,6 @@ export default function DelaysPage() {
               options: delayTypeOptions,
               placeholder: t("filters.delay_type_placeholder"),
               searchable: false,
-              loading: false,
             },
             {
               name: "train_type",
@@ -693,7 +671,6 @@ export default function DelaysPage() {
               options: trainTypeOptions,
               placeholder: t("filters.train_type_placeholder"),
               searchable: false,
-              loading: false,
             },
             {
               name: "group_reason",
@@ -702,7 +679,6 @@ export default function DelaysPage() {
               options: groupReasonOptions,
               placeholder: t("filters.group_reason_placeholder"),
               searchable: false,
-              loading: false,
             },
             {
               name: "station",
@@ -721,13 +697,19 @@ export default function DelaysPage() {
               loading: isLoadingOrganizations,
             },
             {
-              name: "status",
-              label: t("filters.status"),
+              name: "stage",
+              label: t("filters.stage"),
               isSelect: true,
-              options: statusOptions,
-              placeholder: t("filters.status_placeholder"),
+              options: stageOptions,
+              placeholder: t("filters.stage_placeholder"),
               searchable: false,
-              loading: false,
+            },
+            {
+              name: "protocol_overdue",
+              label: t("filters.protocol_overdue"),
+              isSelect: true,
+              options: protocolOverdueOptions,
+              searchable: false,
             },
           ]}
           hasSearch={false}
@@ -745,20 +727,99 @@ export default function DelaysPage() {
           columns={columns}
           data={paginatedData}
           getRowId={(row) => row.id}
-          itemsPerPage={10}
+          itemsPerPage={itemsPerPage}
           size="xs"
           isLoading={isLoading}
           error={error}
           totalPages={totalPages}
           totalItems={totalItems}
           updateQueryParams
-          actionsDisplayMode="row"
+          actionsDisplayMode="dropdown"
+          alwaysShowKebab
+          rowBadge={(row) =>
+            row.archive ? (
+              <span className="inline-flex -rotate-6 select-none items-center gap-1 rounded-md border-2 border-red-400/60 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-500/80">
+                <Archive className="h-3 w-3" />
+                {t("archive.archived")}
+              </span>
+            ) : null
+          }
           extraActions={[
-            ...(hasPermission(currentUser, "edit_delay") &&
-            !hasPermission(currentUser, "upload_delay_report")
+            // Timeline — anyone who can view delays
+            {
+              label: t("actions.timeline"),
+              icon: <History className="h-4 w-4" />,
+              onClick: handleTimeline,
+              variant: "outline" as const,
+            },
+
+            // Culprits — sriv_moderator only (admin uses read-only /culprits page)
+            ...(canManageCulprits
               ? [
                   {
-                    label: "",
+                    label: t("actions.culprits"),
+                    icon: <Users className="h-4 w-4" />,
+                    onClick: handleOpenCulprits,
+                    permission: "manage_culprits" as Permission,
+                    variant: "outline" as const,
+                  },
+                ]
+              : []),
+
+            // Moderator: accept (created → accepted)
+            ...(isModerator
+              ? [
+                  {
+                    label: t("actions.accept"),
+                    icon: <ClipboardCheck className="h-4 w-4" />,
+                    onClick: handleAccept,
+                    permission: "upload_delay_report" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) =>
+                      row.stage === "created" && !row.archive,
+                    className: "text-success focus:text-success",
+                  },
+                  // Moderator: upload protocol (accepted → protocol_uploaded)
+                  {
+                    label: t("actions.upload_protocol"),
+                    icon: <FileUp className="h-4 w-4" />,
+                    onClick: handleOpenProtocol,
+                    permission: "upload_delay_report" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) =>
+                      row.stage === "accepted" && !row.archive,
+                  },
+                ]
+              : []),
+
+            // Admin: classify (protocol_uploaded → disruption | not_disruption)
+            ...(isAdmin
+              ? [
+                  {
+                    label: t("actions.classify_disruption"),
+                    icon: <AlertTriangle className="h-4 w-4" />,
+                    onClick: (row: DelayEntry) =>
+                      setClassifyTarget({ row, isDisruption: true }),
+                    permission: "edit_delay" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) =>
+                      row.stage === "protocol_uploaded" && !row.archive,
+                    className: "text-red-600 focus:text-red-600 focus:bg-red-50",
+                  },
+                  {
+                    label: t("actions.classify_not_disruption"),
+                    icon: <ShieldCheck className="h-4 w-4" />,
+                    onClick: (row: DelayEntry) =>
+                      setClassifyTarget({ row, isDisruption: false }),
+                    permission: "edit_delay" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) =>
+                      row.stage === "protocol_uploaded" && !row.archive,
+                    className: "text-success focus:text-success",
+                  },
+                  // Admin: edit fields
+                  {
+                    label: t("actions.edit"),
                     icon: <Edit className="h-4 w-4" />,
                     onClick: handleEdit,
                     permission: "edit_delay" as Permission,
@@ -768,69 +829,17 @@ export default function DelaysPage() {
                 ]
               : []),
 
-            // Delete action (for sriv_admin only)
+            // Delete (sriv_admin)
             ...(hasPermission(currentUser, "delete_delay")
               ? [
                   {
-                    label: "",
+                    label: t("actions.delete"),
                     icon: <Trash2 className="h-4 w-4" />,
                     onClick: handleDeleteClick,
                     permission: "delete_delay" as Permission,
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) => !row.archive,
-                    className:
-                      "border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10",
-                  },
-                ]
-              : []),
-
-            ...(hasPermission(currentUser, "upload_delay_report")
-              ? [
-                  {
-                    label: "",
-                    icon: (row: DelayEntry) =>
-                      row?.report || row?.report_filename ? (
-                        <FileEdit className="h-4 w-4" />
-                      ) : (
-                        <FileUp className="h-4 w-4" />
-                      ),
-                    onClick: handleCloseDelay,
-                    permission: "upload_delay_report" as Permission,
-                    variant: "outline" as const,
-                    shouldShow: (row: DelayEntry) => !row.archive,
-                  },
-                ]
-              : []),
-
-            // Approve action (for sriv_admin only, when report is uploaded)
-            ...(hasPermission(currentUser, "edit_delay") &&
-            !hasPermission(currentUser, "upload_delay_report")
-              ? [
-                  {
-                    label: "",
-                    icon: <CheckCircle className="h-4 w-4" />,
-                    onClick: handleApproveClick,
-                    permission: "edit_delay" as Permission,
-                    variant: "outline" as const,
-                    shouldShow: (row: DelayEntry) => {
-                      const hasReport = !!(row?.report_filename || row?.report);
-                      return hasReport && !row.archive;
-                    },
-                    className:
-                      "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
-                  },
-                ]
-              : []),
-
-            // Culprits (причастные) — sriv_admin (read-only) + sriv_moderator (manage)
-            ...(canViewCulprits
-              ? [
-                  {
-                    label: "",
-                    icon: <Users className="h-4 w-4" />,
-                    onClick: handleOpenCulprits,
-                    permission: "view_culprits" as Permission,
-                    variant: "outline" as const,
+                    className: "text-red-600 focus:text-red-600 focus:bg-red-50",
                   },
                 ]
               : []),
@@ -859,15 +868,15 @@ export default function DelaysPage() {
         user={currentUser}
       />
 
-      <ApproveConfirmationModal
-        isOpen={isApproveModalOpen}
+      <UploadProtocolModal
+        isOpen={isProtocolModalOpen}
         onClose={() => {
-          setIsApproveModalOpen(false);
-          setApproveEntry(null);
+          setIsProtocolModalOpen(false);
+          setProtocolEntry(null);
         }}
-        onConfirm={handleApproveConfirm}
-        entry={approveEntry}
-        isPending={updateMutation.isPending}
+        onSave={handleProtocolSave}
+        entry={protocolEntry}
+        isPending={uploadProtocolMutation.isPending}
       />
 
       <CulpritsListModal
@@ -878,6 +887,40 @@ export default function DelaysPage() {
         }}
         delay={culpritsEntry}
         canManage={canManageCulprits}
+      />
+
+      <DelayTimelineModal
+        isOpen={isTimelineOpen}
+        onClose={() => {
+          setIsTimelineOpen(false);
+          setTimelineEntry(null);
+        }}
+        delay={timelineEntry}
+      />
+
+      <RecoveryInfoModal
+        isOpen={isInfoOpen}
+        onClose={() => {
+          setIsInfoOpen(false);
+          setInfoEntry(null);
+        }}
+        delay={infoEntry}
+      />
+
+      <ConfirmationDialog
+        isOpen={!!classifyTarget}
+        onClose={() => setClassifyTarget(null)}
+        onConfirm={handleClassifyConfirm}
+        title={t("messages.classify_confirm_title")}
+        message={
+          classifyTarget?.isDisruption
+            ? t("messages.classify_confirm_message_disruption")
+            : t("messages.classify_confirm_message_not_disruption")
+        }
+        confirmText={t("messages.classify_confirm_button")}
+        cancelText={t("messages.classify_cancel_button")}
+        isDoingAction={classifyMutation.isPending}
+        variant={classifyTarget?.isDisruption ? "danger" : "info"}
       />
 
       <ConfirmationDialog

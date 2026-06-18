@@ -1,16 +1,45 @@
 import { Organization } from "./organizations";
-import type { Culprit, RecoveryStatus } from "./culprits";
+import type { Culprit } from "./culprits";
 
 export type DelayType = "Po prosledovaniyu" | "Po otpravleniyu";
 
-// Delay review status — 3-state (replaces old boolean)
-export type DelayStatus = "pending" | "not_disruption" | "disruption";
+// Delay lifecycle — single linear stage (replaces old status + recovery_status)
+export type DelayStage =
+  | "created"
+  | "accepted"
+  | "protocol_uploaded"
+  | "disruption"
+  | "not_disruption"
+  | "payroll_confirmed"
+  | "accountant_confirmed";
 
-export const DELAY_STATUS_VALUES: DelayStatus[] = [
-  "pending",
-  "not_disruption",
+export const DELAY_STAGE_VALUES: DelayStage[] = [
+  "created",
+  "accepted",
+  "protocol_uploaded",
   "disruption",
+  "not_disruption",
+  "payroll_confirmed",
+  "accountant_confirmed",
 ];
+
+// Stages that count as "является срывом" (relevant for reports / recovery)
+export const DISRUPTION_STAGES: DelayStage[] = [
+  "disruption",
+  "payroll_confirmed",
+  "accountant_confirmed",
+];
+
+export function isDisruptionStage(stage?: DelayStage): boolean {
+  return !!stage && DISRUPTION_STAGES.includes(stage);
+}
+
+// One passed step of a delay's lifecycle
+export interface DelayTimelineEntry {
+  stage: DelayStage;
+  at: string;
+  by: string | null;
+}
 
 // Station names - can be extended as needed
 export type Station = string;
@@ -245,19 +274,31 @@ export interface DelayEntry {
   responsible_org_name?: string;
   report?: string;
   report_filename?: string;
+  report_uploaded_by_name?: string;
+  protocol_number?: string | null;
+  protocol_deadline?: string | null;
+  protocol_overdue?: boolean;
   incident_date: string; // YYYY-MM-DD
-  status: DelayStatus;
+  // Single lifecycle stage (read-only; moved via actions, not PATCH)
+  stage: DelayStage;
+  stage_display?: string;
   archive: boolean;
-  status_display?: string;
   created_at?: string; // ISO datetime string
   group_reason?: GroupReason;
   group_reason_display?: string;
   train_type?: TrainType;
   train_type_display?: string;
+  // Lifecycle timestamps + actors
+  accepted_at?: string | null;
+  protocol_uploaded_at?: string | null;
+  classified_at?: string | null;
+  payroll_confirmed_at?: string | null;
+  accountant_confirmed_at?: string | null;
+  accepted_by_name?: string | null;
+  classified_by_name?: string | null;
+  timeline?: DelayTimelineEntry[];
   // Recovery/culprits (read-only, present on GET /sriv/delays/)
   culprits?: Culprit[];
-  recovery_status?: RecoveryStatus;
-  recovery_status_display?: string;
   culprits_total_amount?: number;
   culprits_recovered_amount?: number;
 }
@@ -270,10 +311,7 @@ export interface DelayCreatePayload {
   reason: string;
   damage_amount: number;
   responsible_org: number;
-  report?: File | null;
   incident_date: string; // YYYY-MM-DD
-  status?: DelayStatus; // Always "pending" on create (backend default)
-  archive?: boolean; // Defaults to false when creating
   group_reason: GroupReason;
   train_type: TrainType;
 }
@@ -286,12 +324,19 @@ export interface DelayUpdatePayload {
   reason?: string;
   damage_amount?: number;
   responsible_org?: number;
-  report?: File | null;
   incident_date?: string;
-  status?: DelayStatus;
-  archive?: boolean;
   group_reason?: GroupReason;
   train_type?: TrainType;
+}
+
+// Action payloads (stage transitions — not part of create/update)
+export interface UploadProtocolPayload {
+  report: File;
+  protocol_number: string;
+}
+
+export interface ClassifyPayload {
+  is_disruption: boolean;
 }
 
 export interface DelayListParams {
@@ -301,7 +346,8 @@ export interface DelayListParams {
   delay_type?: DelayType;
   station?: string;
   responsible_org?: number | string;
-  status?: DelayStatus | string;
+  stage?: DelayStage | string;
+  protocol_overdue?: boolean;
   archive?: boolean;
   incident_date?: string;
   from_date?: string;

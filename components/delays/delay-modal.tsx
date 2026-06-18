@@ -12,14 +12,11 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
-import { Badge } from "@/ui/badge";
 import { FormField } from "@/ui/form-field";
 import { DatePicker } from "@/ui/date-picker";
-import { FileUpload } from "@/ui/file-upload";
-import { FileText } from "lucide-react";
 import {
   DelayEntry,
-  DelayStatus,
+  DelayType,
   DelayCreatePayload,
   DelayUpdatePayload,
   DELAY_TYPE_OPTIONS,
@@ -30,7 +27,6 @@ import {
 } from "@/api/types/delays";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import { hasPermission } from "@/lib/permissions";
 import type { UserData } from "@/api/types/auth";
 import type { Organization } from "@/api/types/organizations";
 import { useTranslations } from "next-intl";
@@ -40,7 +36,7 @@ interface DelayModalProps {
   onClose: () => void;
   onSave: (payload: DelayCreatePayload | DelayUpdatePayload) => void;
   entry?: DelayEntry | null;
-  mode: "create" | "edit" | "moderate";
+  mode: "create" | "edit";
   isPending: boolean;
   user?: UserData | null;
 }
@@ -53,8 +49,6 @@ type FormData = {
   reason: string;
   damage_amount: string;
   responsible_org: string;
-  status: string;
-  archive: string;
   group_reason: string;
   train_type: string;
 };
@@ -63,28 +57,22 @@ const INITIAL_FORM_DATA: FormData = {
   delay_type: "",
   train_number: "",
   station: "",
-  delay_time: "", // Minutes
+  delay_time: "",
   reason: "",
   damage_amount: "0",
   responsible_org: "",
-  status: "pending", // New delays are always "pending" (backend default)
-  archive: "false", // Defaults to false (not archived)
   group_reason: "",
   train_type: "",
 };
 
-// Convert minutes to HH:MM:SS format
 function minutesToTimeString(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  const secs = 0; // Always 0 for seconds
-  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:00`;
 }
 
-// Convert HH:MM:SS or HH:MM to minutes (hours may exceed 24 — it's a duration)
 function timeStringToMinutes(timeStr: string): number {
   if (!timeStr) return 0;
-  // Handle formats: "HHH:MM:SS", "HH:MM", "H:M" — hours unbounded
   const match = timeStr.match(/(\d+):(\d{1,2})(?::(\d{2}))?/);
   if (match) {
     const hours = parseInt(match[1], 10) || 0;
@@ -94,14 +82,12 @@ function timeStringToMinutes(timeStr: string): number {
   return 0;
 }
 
-// Convert minutes to HH:MM (for the duration input value). Hours unbounded.
 function minutesToHHMM(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
   return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
 }
 
-// Sanitize duration input: digits + single colon, minutes capped at 2 digits
 function formatDuration(raw: string): string {
   let cleaned = raw.replace(/[^\d:]/g, "");
   const firstColon = cleaned.indexOf(":");
@@ -115,7 +101,6 @@ function formatDuration(raw: string): string {
   return cleaned;
 }
 
-// Format a raw numeric string with space thousands separators (keeps optional decimals)
 function formatThousands(raw: string): string {
   const cleaned = raw.replace(/[^\d.]/g, "");
   if (!cleaned) return "";
@@ -124,7 +109,6 @@ function formatThousands(raw: string): string {
   return rest.length ? `${grouped}.${rest.join("")}` : grouped;
 }
 
-// Strip separators back to a number for the API request
 function parseThousands(formatted: string): number {
   return Number.parseFloat(formatted.replace(/\s/g, "")) || 0;
 }
@@ -134,24 +118,18 @@ function OrganizationSelectField({
   defaultValue,
   organizations,
   isLoading,
-  disabled,
 }: {
   name: string;
   defaultValue?: string;
   organizations: Organization[];
   isLoading: boolean;
-  disabled?: boolean;
 }) {
   const t = useTranslations("DelayModal");
 
   return (
     <div>
       <Label htmlFor="responsible_org">{t("fields.responsible_org")}</Label>
-      <Select
-        name={name}
-        defaultValue={defaultValue}
-        disabled={isLoading || disabled}
-      >
+      <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
         <SelectTrigger id="responsible_org">
           <SelectValue placeholder={t("fields.responsible_org_placeholder")} />
         </SelectTrigger>
@@ -184,21 +162,8 @@ export function DelayModal({
   entry,
   mode,
   isPending,
-  user,
 }: DelayModalProps) {
   const t = useTranslations("DelayModal");
-  const isModerateMode = mode === "moderate";
-  const canUploadReport = hasPermission(user ?? null, "upload_delay_report");
-  // sriv_moderator can change status and upload report
-  const canChangeStatus = hasPermission(user ?? null, "upload_delay_report"); // sriv_moderator can change status
-  // sriv_admin can change status when editing (but not in moderate mode)
-  const canChangeStatusAdmin =
-    hasPermission(user ?? null, "edit_delay") &&
-    !hasPermission(user ?? null, "upload_delay_report") &&
-    !isModerateMode;
-  const canEditFields =
-    hasPermission(user ?? null, "edit_delay") &&
-    !hasPermission(user ?? null, "upload_delay_report");
   const [formDefaults, setFormDefaults] = useState<FormData>(INITIAL_FORM_DATA);
   const [stationValue, setStationValue] = useState<string>("");
   const [delayTimeDisplay, setDelayTimeDisplay] = useState<string>("");
@@ -206,7 +171,6 @@ export function DelayModal({
   const [formKey, setFormKey] = useState(0);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [reportFile, setReportFile] = useState<File | null>(null);
   const { showError } = useSnackbar();
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
@@ -215,11 +179,9 @@ export function DelayModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    if (entry && (mode === "edit" || mode === "moderate")) {
-      // Convert delay_time from HH:MM:SS to minutes
+    if (entry && mode === "edit") {
       const minutes = timeStringToMinutes(entry.delay_time || "");
-
-      const defaults = {
+      const defaults: FormData = {
         delay_type: entry.delay_type || "",
         train_number: entry.train_number || "",
         station: entry.station || "",
@@ -229,30 +191,22 @@ export function DelayModal({
         responsible_org: entry.responsible_org
           ? String(entry.responsible_org)
           : "",
-        status: entry.status || "pending", // Use actual entry status (3-state string)
-        archive: entry.archive ? "true" : "false",
         group_reason: entry.group_reason || "",
         train_type: entry.train_type || "",
       };
       setFormDefaults(defaults);
       setSelectedDate(
-        entry.incident_date ? new Date(entry.incident_date) : undefined,
+        entry.incident_date ? new Date(entry.incident_date) : undefined
       );
       setStationValue(entry.station || "");
       setDelayTimeDisplay(minutes > 0 ? minutesToHHMM(minutes) : "");
       setDamageDisplay(formatThousands(String(entry.damage_amount || 0)));
-      setReportFile(null); // Don't pre-fill file on edit
     } else {
       setFormDefaults(INITIAL_FORM_DATA);
       setSelectedDate(undefined);
       setStationValue("");
       setDelayTimeDisplay("");
       setDamageDisplay("0");
-      setReportFile(null);
-    }
-    // Reset archive to false when opening modal
-    if (mode === "create") {
-      setFormDefaults((prev) => ({ ...prev, archive: "false" }));
     }
     setFormKey((prev) => prev + 1);
   }, [entry, mode, isOpen]);
@@ -262,17 +216,6 @@ export function DelayModal({
     const formElement = event.currentTarget as HTMLFormElement;
     const data = new FormData(formElement);
 
-    if (isModerateMode) {
-      // In moderate mode, sriv_moderator can change status and upload report
-      const statusValue = (data.get("status") as DelayStatus) || "pending";
-      const payload: DelayUpdatePayload = {
-        status: statusValue, // sriv_moderator can change status
-        ...(canUploadReport && reportFile && { report: reportFile }),
-      };
-      onSave(payload);
-      return;
-    }
-
     const delayType = (data.get("delay_type") as string) || "";
     const trainNumber = (data.get("train_number") as string) || "";
     const station = (data.get("station") as string) || "";
@@ -280,7 +223,6 @@ export function DelayModal({
     const reason = (data.get("reason") as string) || "";
     const damageAmount = parseThousands(damageDisplay);
     const responsibleOrg = (data.get("responsible_org") as string) || "";
-    const status = (data.get("status") as DelayStatus) || "pending";
     const groupReason = (data.get("group_reason") as string) || "";
     const trainType = (data.get("train_type") as string) || "";
 
@@ -294,7 +236,6 @@ export function DelayModal({
       return;
     }
 
-    // Parse HH:MM input to minutes
     const delayMinutes = timeStringToMinutes(delayTimeRaw);
     if (!delayTimeRaw || delayMinutes <= 0) {
       showError(t("errors.delay_time"));
@@ -306,16 +247,15 @@ export function DelayModal({
       return;
     }
 
-    // Format date as YYYY-MM-DD using local parts (avoid UTC off-by-one)
+    // Local YYYY-MM-DD (avoid UTC off-by-one)
     const formattedDate = `${selectedDate.getFullYear()}-${String(
       selectedDate.getMonth() + 1
     ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
 
-    // Convert minutes to HH:MM:SS format for the API
     const formattedTime = minutesToTimeString(delayMinutes);
 
     const payload: DelayCreatePayload | DelayUpdatePayload = {
-      delay_type: delayType as "Po prosledovaniyu" | "Po otpravleniyu",
+      delay_type: delayType as DelayType,
       train_number: trainNumber.trim(),
       station: station.trim(),
       delay_time: formattedTime,
@@ -323,14 +263,6 @@ export function DelayModal({
       damage_amount: damageAmount,
       responsible_org: Number(responsibleOrg),
       incident_date: formattedDate,
-      // Status is always "pending" on create (backend default); editable by moderator/admin
-      ...(mode === "create"
-        ? { status: "pending" as DelayStatus }
-        : (canChangeStatus || canChangeStatusAdmin) && { status }),
-      // Archive defaults to false, only changed by sriv_admin via "Tasdiqlash" action
-      ...(mode === "create" ? { archive: false } : {}),
-      ...(canUploadReport && reportFile && { report: reportFile }),
-      // Add new fields
       ...(mode === "create"
         ? {
             group_reason: groupReason as GroupReason,
@@ -351,7 +283,6 @@ export function DelayModal({
     setStationValue("");
     setDelayTimeDisplay("");
     setDamageDisplay("0");
-    setReportFile(null);
     setFormKey((prev) => prev + 1);
     formRef.current?.reset();
     onClose();
@@ -359,16 +290,11 @@ export function DelayModal({
 
   const modalTexts = useMemo(
     () => ({
-      title:
-        mode === "create"
-          ? t("title_create")
-          : mode === "moderate"
-            ? t("title_moderate")
-            : t("title_edit"),
+      title: mode === "create" ? t("title_create") : t("title_edit"),
       submit: mode === "create" ? t("submit_create") : t("submit_edit"),
       pending: mode === "create" ? t("pending_create") : t("pending_edit"),
     }),
-    [mode, t],
+    [mode, t]
   );
 
   return (
@@ -387,241 +313,137 @@ export function DelayModal({
           className="space-y-4"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {!isModerateMode && (
-              <>
-                <FormField
-                  id="train_number"
-                  name="train_number"
-                  label={t("fields.train_number")}
-                  defaultValue={formDefaults.train_number}
-                  placeholder={t("fields.train_number_placeholder")}
-                  required
-                />
+            <FormField
+              id="train_number"
+              name="train_number"
+              label={t("fields.train_number")}
+              defaultValue={formDefaults.train_number}
+              placeholder={t("fields.train_number_placeholder")}
+              required
+            />
 
-                <div>
-                  <Label htmlFor="train_type">{t("fields.train_type")}</Label>
-                  <Select
-                    name="train_type"
-                    defaultValue={formDefaults.train_type}
-                    required
-                    disabled={!canEditFields && mode === "edit"}
-                  >
-                    <SelectTrigger id="train_type">
-                      <SelectValue
-                        placeholder={t("fields.train_type_placeholder")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TRAIN_TYPE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div>
+              <Label htmlFor="train_type">{t("fields.train_type")}</Label>
+              <Select
+                name="train_type"
+                defaultValue={formDefaults.train_type}
+                required
+              >
+                <SelectTrigger id="train_type">
+                  <SelectValue
+                    placeholder={t("fields.train_type_placeholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {TRAIN_TYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-                <div>
-                  <Label htmlFor="delay_type">{t("fields.delay_type")}</Label>
-                  <Select
-                    name="delay_type"
-                    defaultValue={formDefaults.delay_type}
-                    required
-                    disabled={!canEditFields && mode === "edit"}
-                  >
-                    <SelectTrigger id="delay_type">
-                      <SelectValue
-                        placeholder={t("fields.delay_type_placeholder")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DELAY_TYPE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div>
+              <Label htmlFor="delay_type">{t("fields.delay_type")}</Label>
+              <Select
+                name="delay_type"
+                defaultValue={formDefaults.delay_type}
+                required
+              >
+                <SelectTrigger id="delay_type">
+                  <SelectValue
+                    placeholder={t("fields.delay_type_placeholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {DELAY_TYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-                <FormField
-                  id="station"
-                  name="station"
-                  label={t("fields.station")}
-                  value={stationValue}
-                  onChange={setStationValue}
-                  placeholder={t("fields.station_placeholder")}
-                  required
-                />
+            <FormField
+              id="station"
+              name="station"
+              label={t("fields.station")}
+              value={stationValue}
+              onChange={setStationValue}
+              placeholder={t("fields.station_placeholder")}
+              required
+            />
 
-                <FormField
-                  id="delay_time"
-                  name="delay_time"
-                  label={t("fields.delay_time")}
-                  type="text"
-                  value={delayTimeDisplay}
-                  onChange={(v) => setDelayTimeDisplay(formatDuration(v))}
-                  placeholder="hh:mm"
-                  required
-                />
+            <FormField
+              id="delay_time"
+              name="delay_time"
+              label={t("fields.delay_time")}
+              type="text"
+              value={delayTimeDisplay}
+              onChange={(v) => setDelayTimeDisplay(formatDuration(v))}
+              placeholder="hh:mm"
+              required
+            />
 
-                <div>
-                  <Label htmlFor="group_reason">
-                    {t("fields.group_reason")}
-                  </Label>
-                  <Select
-                    name="group_reason"
-                    defaultValue={formDefaults.group_reason}
-                    required
-                    disabled={!canEditFields && mode === "edit"}
-                  >
-                    <SelectTrigger id="group_reason">
-                      <SelectValue
-                        placeholder={t("fields.group_reason_placeholder")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GROUP_REASON_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div>
+              <Label htmlFor="group_reason">{t("fields.group_reason")}</Label>
+              <Select
+                name="group_reason"
+                defaultValue={formDefaults.group_reason}
+                required
+              >
+                <SelectTrigger id="group_reason">
+                  <SelectValue
+                    placeholder={t("fields.group_reason_placeholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {GROUP_REASON_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-                <OrganizationSelectField
-                  name="responsible_org"
-                  defaultValue={formDefaults.responsible_org}
-                  organizations={organizationsData || []}
-                  isLoading={isLoadingOrganizations}
-                  disabled={!canEditFields && mode === "edit"}
-                />
+            <OrganizationSelectField
+              name="responsible_org"
+              defaultValue={formDefaults.responsible_org}
+              organizations={organizationsData || []}
+              isLoading={isLoadingOrganizations}
+            />
 
-                <FormField
-                  id="damage_amount"
-                  name="damage_amount"
-                  label={t("fields.damage_amount")}
-                  type="text"
-                  value={damageDisplay}
-                  onChange={(v) => setDamageDisplay(formatThousands(v))}
-                  placeholder="0"
-                  required
-                />
+            <FormField
+              id="damage_amount"
+              name="damage_amount"
+              label={t("fields.damage_amount")}
+              type="text"
+              value={damageDisplay}
+              onChange={(v) => setDamageDisplay(formatThousands(v))}
+              placeholder="0"
+              required
+            />
 
-                <DatePicker
-                  label={t("fields.incident_date")}
-                  value={selectedDate}
-                  onValueChange={setSelectedDate}
-                  placeholder="DD/MM/YYYY"
-                />
-
-                {mode === "create" ? (
-                  <div className="w-full flex-1">
-                    <Label htmlFor="status">{t("fields.status")}</Label>
-                    <div className="flex items-center gap-2 rounded-md border border-input bg-muted/40 px-3 py-2">
-                      <Badge variant="outline">
-                        {t("fields.status_pending")}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {t("fields.status_pending_hint")}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  (canChangeStatus || canChangeStatusAdmin) && (
-                    <div className="w-full flex-1">
-                      <Label htmlFor="status">{t("fields.status")}</Label>
-                      <Select name="status" defaultValue={formDefaults.status}>
-                        <SelectTrigger className="mb-0 w-full" id="status">
-                          <SelectValue
-                            placeholder={t("fields.status_placeholder")}
-                          />
-                        </SelectTrigger>
-                        <SelectContent className="mb-0">
-                          <SelectItem value="pending">
-                            {t("fields.status_pending")}
-                          </SelectItem>
-                          <SelectItem value="not_disruption">
-                            {t("fields.status_no_disruption")}
-                          </SelectItem>
-                          <SelectItem value="disruption">
-                            {t("fields.status_disruption")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )
-                )}
-              </>
-            )}
+            <DatePicker
+              label={t("fields.incident_date")}
+              value={selectedDate}
+              onValueChange={setSelectedDate}
+              placeholder="DD/MM/YYYY"
+            />
           </div>
 
-          {!isModerateMode && (
-            <FormField
-              id="reason"
-              name="reason"
-              label={t("fields.reason")}
-              type="textarea"
-              rows={4}
-              defaultValue={formDefaults.reason}
-              placeholder={t("fields.reason_placeholder")}
-            />
-          )}
-
-          {canUploadReport && (
-            <>
-              {(canChangeStatus || canChangeStatusAdmin) && (
-                <div className="w-full flex-1">
-                  <Label htmlFor="status">{t("fields.status")}</Label>
-                  <Select name="status" defaultValue={formDefaults.status}>
-                    <SelectTrigger className="mb-0 w-full" id="status">
-                      <SelectValue
-                        placeholder={t("fields.status_placeholder")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="mb-0">
-                      <SelectItem value="pending">
-                        {t("fields.status_pending")}
-                      </SelectItem>
-                      <SelectItem value="not_disruption">
-                        {t("fields.status_no_disruption")}
-                      </SelectItem>
-                      <SelectItem value="disruption">
-                        {t("fields.status_disruption")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-              <div>
-                <FileUpload
-                  label={t("fields.report_file")}
-                  filesUploaded={reportFile ? [reportFile] : []}
-                  onFilesChange={(files) => setReportFile(files[0] || null)}
-                  accept=".pdf,.doc,.docx,.xls,.xlsx"
-                  multiple={false}
-                  maxSize={10}
-                />
-                {!reportFile && entry?.report && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600 mb-1">
-                      {t("fields.current_report")}
-                    </p>
-                    <a
-                      href={entry.report}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-                    >
-                      <FileText className="h-4 w-4" />
-                      {entry.report_filename || t("fields.view_report")}
-                    </a>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+          <FormField
+            id="reason"
+            name="reason"
+            label={t("fields.reason")}
+            type="textarea"
+            rows={4}
+            defaultValue={formDefaults.reason}
+            placeholder={t("fields.reason_placeholder")}
+          />
 
           <div className="flex justify-end gap-3 pt-4">
             <Button

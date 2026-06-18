@@ -14,8 +14,8 @@ import { canAccessSection, hasPermission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useRecoveryDelays } from "@/api/hooks/use-recovery";
 import type { RecoveryDelay } from "@/api/types/recovery";
-import type { RecoveryStatus } from "@/api/types/culprits";
-import { RECOVERY_STATUS_VALUES } from "@/api/types/culprits";
+import { RECOVERY_STAGE_VALUES } from "@/api/types/recovery";
+import type { DelayStage } from "@/api/types/delays";
 import { RecoveryCulpritsModal } from "@/components/recovery/recovery-culprits-modal";
 
 function formatAmount(amount: string | number): string {
@@ -30,12 +30,13 @@ function formatAmount(amount: string | number): string {
 
 export default function RecoveryPage() {
   const t = useTranslations("RecoveryPage");
+  const tStage = useTranslations("DelaysPage");
   const { getAllQueryValues } = useFilterParams();
   const {
     q,
     page,
     pageSize,
-    recovery_status,
+    stage,
     train_number,
     station,
     start_date,
@@ -69,7 +70,7 @@ export default function RecoveryPage() {
     page: currentPage,
     page_size: itemsPerPage,
     search: q || undefined,
-    recovery_status: (recovery_status as RecoveryStatus) || undefined,
+    stage: (stage as DelayStage) || undefined,
     train_number: train_number || undefined,
     station: station || undefined,
     from_date: start_date || undefined,
@@ -87,21 +88,22 @@ export default function RecoveryPage() {
         ? new Error(t("messages.generic_error"))
         : null;
 
-  const recoveryStatusVariant = (status?: RecoveryStatus) => {
-    switch (status) {
+  const stageVariant = (s?: DelayStage) => {
+    switch (s) {
       case "accountant_confirmed":
         return "success" as const;
       case "payroll_confirmed":
         return "info" as const;
+      case "disruption":
+        return "destructive_outline" as const;
       default:
         return "outline" as const;
     }
   };
 
-  const recoveryStatusLabel = useCallback(
-    (status?: RecoveryStatus) =>
-      status ? t(`recovery_status.${status}` as any) : "-",
-    [t]
+  const stageLabel = useCallback(
+    (s?: DelayStage) => (s ? tStage(`stage.${s}` as any) : "-"),
+    [tStage]
   );
 
   const formatDate = useCallback((dateString?: string) => {
@@ -144,11 +146,11 @@ export default function RecoveryPage() {
         row.responsible_org_name || row.responsible_org_detail?.name || "-",
     },
     {
-      key: "recovery_status",
+      key: "stage",
       header: t("columns.recovery_status"),
       accessor: (row) => (
-        <Badge variant={recoveryStatusVariant(row.recovery_status)}>
-          {recoveryStatusLabel(row.recovery_status)}
+        <Badge variant={stageVariant(row.stage)}>
+          {row.stage_display || stageLabel(row.stage)}
         </Badge>
       ),
       width: "220px",
@@ -185,15 +187,15 @@ export default function RecoveryPage() {
     { label: t("breadcrumbs.current"), current: true },
   ];
 
-  const recoveryStatusOptions = useMemo(
+  const stageOptions = useMemo(
     () => [
       { value: "", label: t("filters.recovery_status_all") },
-      ...RECOVERY_STATUS_VALUES.map((s) => ({
+      ...RECOVERY_STAGE_VALUES.map((s) => ({
         value: s,
-        label: t(`recovery_status.${s}` as any),
+        label: stageLabel(s),
       })),
     ],
-    [t]
+    [t, stageLabel]
   );
 
   return (
@@ -208,10 +210,10 @@ export default function RecoveryPage() {
         <PageFilters
           filters={[
             {
-              name: "recovery_status",
+              name: "stage",
               label: t("filters.recovery_status"),
               isSelect: true,
-              options: recoveryStatusOptions,
+              options: stageOptions,
               placeholder: t("filters.recovery_status_placeholder"),
               searchable: false,
             },
