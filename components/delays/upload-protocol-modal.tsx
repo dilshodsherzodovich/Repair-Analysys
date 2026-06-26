@@ -55,7 +55,7 @@ export function UploadProtocolModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={t("title")}
+      title={entry?.protocol_number ? t("title_edit") : t("title")}
       size="md"
       ariaDescribedBy="upload-protocol-modal"
     >

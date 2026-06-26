@@ -133,7 +133,8 @@
       "upload_protocol": "Bayonnoma yuklash",
       "classify_disruption": "Sriv deb belgilash",
       "classify_not_disruption": "Sriv emas deb belgilash",
-      "timeline": "Xronologiya"
+      "timeline": "Xronologiya",
+      "edit_protocol": "Bayonnomani tahrirlash"
     }
   },
   "UploadProtocolModal": {
@@ -148,7 +149,8 @@
     "errors": {
       "file_required": "Bayonnoma faylini biriktiring",
       "protocol_required": "Bayonnoma raqamini kiriting"
-    }
+    },
+    "title_edit": "Bayonnomani tahrirlash"
   },
   "DelayTimelineModal": {
     "title": "Sriv xronologiyasi",

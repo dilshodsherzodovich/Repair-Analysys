@@ -43,6 +43,7 @@ import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import {
   FileUp,
+  FilePen,
   Edit,
   Trash2,
   AlertTriangle,
@@ -788,6 +789,16 @@ export default function DelaysPage() {
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) =>
                       row.stage === "accepted" && !row.archive,
+                  },
+                  // Moderator: edit already uploaded protocol file
+                  {
+                    label: t("actions.edit_protocol"),
+                    icon: <FilePen className="h-4 w-4" />,
+                    onClick: handleOpenProtocol,
+                    permission: "upload_delay_report" as Permission,
+                    variant: "outline" as const,
+                    shouldShow: (row: DelayEntry) =>
+                      row.stage === "protocol_uploaded" && !row.archive,
                   },
                 ]
               : []),

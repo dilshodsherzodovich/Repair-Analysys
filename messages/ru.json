@@ -133,7 +133,8 @@
       "upload_protocol": "Загрузить протокол",
       "classify_disruption": "Отметить срывом",
       "classify_not_disruption": "Отметить «не срыв»",
-      "timeline": "Хронология"
+      "timeline": "Хронология",
+      "edit_protocol": "Редактировать протокол"
     }
   },
   "UploadProtocolModal": {
@@ -148,7 +149,8 @@
     "errors": {
       "file_required": "Прикрепите файл протокола",
       "protocol_required": "Введите номер протокола"
-    }
+    },
+    "title_edit": "Редактировать протокол"
   },
   "DelayTimelineModal": {
     "title": "Хронология срыва",
