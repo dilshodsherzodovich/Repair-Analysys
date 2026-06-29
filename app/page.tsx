@@ -22,6 +22,9 @@ import {
 } from "@/api/types/pantograph";
 import { responsibleOrganizations } from "@/data";
 import { PantographModal } from "@/components/pantograph/pantograph-modal";
+import { JournalStatisticsPanel } from "@/components/statistics/journal-statistics-panel";
+import { usePantographStatistics } from "@/api/hooks/use-statistics";
+import type { GenericOrgStatistics } from "@/api/types/statistics";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "./unauthorized/page";
@@ -131,6 +134,12 @@ export default function PantografPage() {
     organization: +organization || undefined,
     tab: currentTab === "all" ? undefined : currentTab,
   });
+
+  const {
+    data: pantographStats,
+    isLoading: isLoadingStats,
+    error: statsError,
+  } = usePantographStatistics();
 
   const createEntryMutation = useCreatePantographEntry();
   const updateEntryMutation = useUpdatePantographEntry();
@@ -346,6 +355,26 @@ export default function PantografPage() {
           exportButtonText="Export EXCEL"
           exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
           className="!mb-0"
+        />
+      </div>
+
+      <div className="px-6">
+        <JournalStatisticsPanel
+          title={t("statistics.title")}
+          data={pantographStats as unknown as GenericOrgStatistics[]}
+          isLoading={isLoadingStats}
+          error={statsError}
+          defaultOpen={false}
+          metrics={[
+            {
+              key: "damage",
+              totalKey: "total_damage",
+              label: t("statistics.damage"),
+              color: "#dc2626",
+              kind: "currency",
+              chart: "line",
+            },
+          ]}
         />
       </div>
 

@@ -1,4 +1,25 @@
 {
+  "JournalStatistics": {
+    "loading": "Загрузка статистики...",
+    "error": "Не удалось загрузить статистику",
+    "empty": "Нет данных за текущий год",
+    "table_month": "Месяц",
+    "table_total": "Итого",
+    "months": {
+      "January": "Янв",
+      "February": "Фев",
+      "March": "Мар",
+      "April": "Апр",
+      "May": "Май",
+      "June": "Июн",
+      "July": "Июл",
+      "August": "Авг",
+      "September": "Сен",
+      "October": "Окт",
+      "November": "Ноя",
+      "December": "Дек"
+    }
+  },
   "HomePage": {
     "title": "Система электронного анализа ремонта"
   },
@@ -619,6 +640,10 @@
     "selected_count": "Выбрано: {count}"
   },
   "PantographPage": {
+    "statistics": {
+      "title": "Статистика (текущий год)",
+      "damage": "Сумма ущерба"
+    },
     "title": "Пантограф",
     "description": "Эти устройства являются основными компонентами электровоза.",
     "breadcrumbs": {
@@ -739,6 +764,11 @@
     "tab_tu152": "Неисправности TU152"
   },
   "NosozliklarTab": {
+    "statistics": {
+      "title": "Статистика ревизий (текущий год)",
+      "with_table_number": "С табельным номером",
+      "without_table_number": "Без табельного номера"
+    },
     "columns": {
       "date": "Дата",
       "organization": "Организация",
@@ -862,6 +892,13 @@
     "error_status": "Пожалуйста, выберите статус."
   },
   "OrdersPage": {
+    "statistics": {
+      "title": "Статистика МПР (текущий год)",
+      "mpr": "МПР",
+      "invalid": "Брак",
+      "defect": "Дефект",
+      "damage_amount": "Сумма ущерба"
+    },
     "title": "МПР",
     "description": "Межпоездной ремонт электровозов",
     "breadcrumbs": {

@@ -24,6 +24,9 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useOrganizations } from "@/api/hooks/use-organizations";
+import { useRevisionStatistics } from "@/api/hooks/use-statistics";
+import { JournalStatisticsPanel } from "@/components/statistics/journal-statistics-panel";
+import type { GenericOrgStatistics } from "@/api/types/statistics";
 
 export function NosozliklarTab() {
   const t = useTranslations("NosozliklarTab");
@@ -52,6 +55,14 @@ export function NosozliklarTab() {
   const createMutation = useCreateDefectiveWork();
   const updateMutation = useUpdateDefectiveWork();
   const deleteMutation = useDeleteDefectiveWork();
+
+  const {
+    data: revisionStats,
+    isLoading: isLoadingStats,
+    error: statsError,
+  } = useRevisionStatistics({
+    inspection_type: inspection_type ? +inspection_type : undefined,
+  });
 
   // Fetch filter options
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =
@@ -376,6 +387,34 @@ export function NosozliklarTab() {
           onExport={handleExport}
           exportLoading={isExporting}
           className="!mb-0"
+        />
+      </div>
+
+      <div className="px-6">
+        <JournalStatisticsPanel
+          title={t("statistics.title")}
+          data={revisionStats as unknown as GenericOrgStatistics[]}
+          isLoading={isLoadingStats}
+          error={statsError}
+          defaultOpen={false}
+          metrics={[
+            {
+              key: "table_number_not_null",
+              totalKey: "total_table_number_not_null",
+              label: t("statistics.with_table_number"),
+              color: "#2563eb",
+              kind: "count",
+              chart: "bar",
+            },
+            {
+              key: "table_number_null",
+              totalKey: "total_table_number_null",
+              label: t("statistics.without_table_number"),
+              color: "#f59e0b",
+              kind: "count",
+              chart: "bar",
+            },
+          ]}
         />
       </div>
 

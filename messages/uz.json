@@ -1,4 +1,25 @@
 {
+  "JournalStatistics": {
+    "loading": "Statistika yuklanmoqda...",
+    "error": "Statistikani yuklab bo'lmadi",
+    "empty": "Joriy yil uchun ma'lumot yo'q",
+    "table_month": "Oy",
+    "table_total": "Jami",
+    "months": {
+      "January": "Yan",
+      "February": "Fev",
+      "March": "Mar",
+      "April": "Apr",
+      "May": "May",
+      "June": "Iyn",
+      "July": "Iyl",
+      "August": "Avg",
+      "September": "Sen",
+      "October": "Okt",
+      "November": "Noy",
+      "December": "Dek"
+    }
+  },
   "HomePage": {
     "title": "Elektron ta'mir tahlili tizimi"
   },
@@ -619,6 +640,10 @@
     "selected_count": "{count} ta tanlangan"
   },
   "PantographPage": {
+    "statistics": {
+      "title": "Statistika (joriy yil)",
+      "damage": "Zarar summasi"
+    },
     "title": "Pantograf",
     "description": "Bu qurilmalar elektrovozning asosiy komponentlari hisoblanadi.",
     "breadcrumbs": {
@@ -739,6 +764,11 @@
     "tab_tu152": "TU152 Nosozliklar"
   },
   "NosozliklarTab": {
+    "statistics": {
+      "title": "Reviziya statistikasi (joriy yil)",
+      "with_table_number": "Tabel raqami bilan",
+      "without_table_number": "Tabel raqamisiz"
+    },
     "columns": {
       "date": "Sana",
       "organization": "Tashkilot",
@@ -862,6 +892,13 @@
     "error_status": "Iltimos, holatni tanlang."
   },
   "OrdersPage": {
+    "statistics": {
+      "title": "MPR statistikasi (joriy yil)",
+      "mpr": "MPR",
+      "invalid": "Brak",
+      "defect": "Defekt",
+      "damage_amount": "Zarar summasi"
+    },
     "title": "MPR",
     "description": "Elektrovozlarni poezdlararo ta'mirlash",
     "breadcrumbs": {

@@ -155,4 +155,9 @@ export const queryKeys = {
     update: "tu152-journal-update",
     delete: "tu152-journal-delete",
   },
+  statistics: {
+    mpr: "statistics-mpr",
+    revision: "statistics-revision",
+    pantograph: "statistics-pantograph",
+  },
 } as const;
