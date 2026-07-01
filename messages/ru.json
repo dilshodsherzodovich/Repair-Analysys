@@ -3,6 +3,12 @@
     "loading": "Загрузка статистики...",
     "error": "Не удалось загрузить статистику",
     "empty": "Нет данных за текущий год",
+    "organization": "Организация",
+    "all_organizations": "Все организации",
+    "locomotive": "Локомотив",
+    "inspection_type": "Тип осмотра",
+    "all": "Все",
+    "monthly_dynamics": "Динамика по месяцам",
     "table_month": "Месяц",
     "table_total": "Итого",
     "months": {
@@ -642,6 +648,7 @@
   "PantographPage": {
     "statistics": {
       "title": "Статистика (текущий год)",
+      "details": "Подробная статистика",
       "damage": "Сумма ущерба"
     },
     "title": "Пантограф",
@@ -766,8 +773,9 @@
   "NosozliklarTab": {
     "statistics": {
       "title": "Статистика ревизий (текущий год)",
-      "with_table_number": "С табельным номером",
-      "without_table_number": "Без табельного номера"
+      "details": "Подробная статистика",
+      "with_table_number": "Выполнено",
+      "without_table_number": "Не выполнено"
     },
     "columns": {
       "date": "Дата",
@@ -894,6 +902,7 @@
   "OrdersPage": {
     "statistics": {
       "title": "Статистика МПР (текущий год)",
+      "details": "Подробная статистика",
       "mpr": "МПР",
       "invalid": "Брак",
       "defect": "Дефект",

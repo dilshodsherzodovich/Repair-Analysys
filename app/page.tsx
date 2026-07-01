@@ -22,9 +22,10 @@ import {
 } from "@/api/types/pantograph";
 import { responsibleOrganizations } from "@/data";
 import { PantographModal } from "@/components/pantograph/pantograph-modal";
-import { JournalStatisticsPanel } from "@/components/statistics/journal-statistics-panel";
+import { StatsPanel } from "@/components/statistics/stats-panel";
+import type { StatMetric, StatsHook } from "@/components/statistics/stats-panel";
 import { usePantographStatistics } from "@/api/hooks/use-statistics";
-import type { GenericOrgStatistics } from "@/api/types/statistics";
+import { Coins } from "lucide-react";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "./unauthorized/page";
@@ -134,12 +135,6 @@ export default function PantografPage() {
     organization: +organization || undefined,
     tab: currentTab === "all" ? undefined : currentTab,
   });
-
-  const {
-    data: pantographStats,
-    isLoading: isLoadingStats,
-    error: statsError,
-  } = usePantographStatistics();
 
   const createEntryMutation = useCreatePantographEntry();
   const updateEntryMutation = useUpdatePantographEntry();
@@ -330,6 +325,27 @@ export default function PantografPage() {
     },
   ];
 
+  const pantographMetrics: StatMetric[] = [
+    {
+      key: "damage",
+      totalKey: "total_damage",
+      label: t("statistics.damage"),
+      color: "#dc2626",
+      kind: "currency",
+      chart: "line",
+      icon: Coins,
+    },
+  ];
+
+  const statLocomotiveOptions = useMemo(
+    () =>
+      (locomotivesData?.results ?? []).map((loc) => ({
+        value: String(loc.id),
+        label: `${loc.name}${loc.model_name ? ` (${loc.model_name})` : ""}`,
+      })),
+    [locomotivesData]
+  );
+
   const breadcrumbs = [
     { label: t("breadcrumbs.home"), href: "/" },
     { label: t("breadcrumbs.current"), current: true },
@@ -341,6 +357,13 @@ export default function PantografPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+      />
+
+      <StatsPanel
+        title={t("statistics.title")}
+        metrics={pantographMetrics}
+        useStats={usePantographStatistics as unknown as StatsHook}
+        locomotiveOptions={statLocomotiveOptions}
       />
 
       <div className="px-6 py-4">
@@ -355,26 +378,6 @@ export default function PantografPage() {
           exportButtonText="Export EXCEL"
           exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
           className="!mb-0"
-        />
-      </div>
-
-      <div className="px-6">
-        <JournalStatisticsPanel
-          title={t("statistics.title")}
-          data={pantographStats as unknown as GenericOrgStatistics[]}
-          isLoading={isLoadingStats}
-          error={statsError}
-          defaultOpen={false}
-          metrics={[
-            {
-              key: "damage",
-              totalKey: "total_damage",
-              label: t("statistics.damage"),
-              color: "#dc2626",
-              kind: "currency",
-              chart: "line",
-            },
-          ]}
         />
       </div>
 

@@ -3,6 +3,12 @@
     "loading": "Statistika yuklanmoqda...",
     "error": "Statistikani yuklab bo'lmadi",
     "empty": "Joriy yil uchun ma'lumot yo'q",
+    "organization": "Tashkilot",
+    "all_organizations": "Barcha tashkilotlar",
+    "locomotive": "Lokomotiv",
+    "inspection_type": "Ko'rik turi",
+    "all": "Barchasi",
+    "monthly_dynamics": "Oylar bo'yicha dinamika",
     "table_month": "Oy",
     "table_total": "Jami",
     "months": {
@@ -642,6 +648,7 @@
   "PantographPage": {
     "statistics": {
       "title": "Statistika (joriy yil)",
+      "details": "Batafsil statistika",
       "damage": "Zarar summasi"
     },
     "title": "Pantograf",
@@ -766,8 +773,9 @@
   "NosozliklarTab": {
     "statistics": {
       "title": "Reviziya statistikasi (joriy yil)",
-      "with_table_number": "Tabel raqami bilan",
-      "without_table_number": "Tabel raqamisiz"
+      "details": "Batafsil statistika",
+      "with_table_number": "Bajarilgan",
+      "without_table_number": "Bajarilmagan"
     },
     "columns": {
       "date": "Sana",
@@ -894,6 +902,7 @@
   "OrdersPage": {
     "statistics": {
       "title": "MPR statistikasi (joriy yil)",
+      "details": "Batafsil statistika",
       "mpr": "MPR",
       "invalid": "Brak",
       "defect": "Defekt",

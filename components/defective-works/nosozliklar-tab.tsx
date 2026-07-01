@@ -25,8 +25,9 @@ import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useRevisionStatistics } from "@/api/hooks/use-statistics";
-import { JournalStatisticsPanel } from "@/components/statistics/journal-statistics-panel";
-import type { GenericOrgStatistics } from "@/api/types/statistics";
+import { StatsPanel } from "@/components/statistics/stats-panel";
+import type { StatMetric, StatsHook } from "@/components/statistics/stats-panel";
+import { ClipboardCheck, ClipboardX } from "lucide-react";
 
 export function NosozliklarTab() {
   const t = useTranslations("NosozliklarTab");
@@ -56,13 +57,26 @@ export function NosozliklarTab() {
   const updateMutation = useUpdateDefectiveWork();
   const deleteMutation = useDeleteDefectiveWork();
 
-  const {
-    data: revisionStats,
-    isLoading: isLoadingStats,
-    error: statsError,
-  } = useRevisionStatistics({
-    inspection_type: inspection_type ? +inspection_type : undefined,
-  });
+  const revisionMetrics: StatMetric[] = [
+    {
+      key: "table_number_not_null",
+      totalKey: "total_table_number_not_null",
+      label: t("statistics.with_table_number"),
+      color: "#16a34a",
+      kind: "count",
+      chart: "bar",
+      icon: ClipboardCheck,
+    },
+    {
+      key: "table_number_null",
+      totalKey: "total_table_number_null",
+      label: t("statistics.without_table_number"),
+      color: "#f59e0b",
+      kind: "count",
+      chart: "bar",
+      icon: ClipboardX,
+    },
+  ];
 
   // Fetch filter options
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =
@@ -316,6 +330,26 @@ export function NosozliklarTab() {
     return options;
   }, [inspectionTypesData, t]);
 
+  const statLocomotiveOptions = useMemo(
+    () =>
+      (locomotivesData?.results ?? []).map((loc) => ({
+        value: String(loc.id),
+        label: loc.name || loc.model_name || `Lokomotiv ${loc.id}`,
+      })),
+    [locomotivesData],
+  );
+
+  const statInspectionTypeOptions = useMemo(
+    () =>
+      (Array.isArray(inspectionTypesData) ? inspectionTypesData : []).map(
+        (it) => ({
+          value: it.id.toString(),
+          label: it.name || it.name_uz || it.name_ru || `Tekshiruv ${it.id}`,
+        }),
+      ),
+    [inspectionTypesData],
+  );
+
   const organizationOptions = useMemo(() => {
     const options = [{ value: "", label: t("options.all_organizations") }];
     if (organizationsData && Array.isArray(organizationsData)) {
@@ -339,6 +373,14 @@ export function NosozliklarTab() {
 
   return (
     <>
+      <StatsPanel
+        title={t("statistics.title")}
+        metrics={revisionMetrics}
+        useStats={useRevisionStatistics as unknown as StatsHook}
+        locomotiveOptions={statLocomotiveOptions}
+        inspectionTypeOptions={statInspectionTypeOptions}
+      />
+
       <div className="px-6 py-4">
         <PageFilters
           filters={[
@@ -387,34 +429,6 @@ export function NosozliklarTab() {
           onExport={handleExport}
           exportLoading={isExporting}
           className="!mb-0"
-        />
-      </div>
-
-      <div className="px-6">
-        <JournalStatisticsPanel
-          title={t("statistics.title")}
-          data={revisionStats as unknown as GenericOrgStatistics[]}
-          isLoading={isLoadingStats}
-          error={statsError}
-          defaultOpen={false}
-          metrics={[
-            {
-              key: "table_number_not_null",
-              totalKey: "total_table_number_not_null",
-              label: t("statistics.with_table_number"),
-              color: "#2563eb",
-              kind: "count",
-              chart: "bar",
-            },
-            {
-              key: "table_number_null",
-              totalKey: "total_table_number_null",
-              label: t("statistics.without_table_number"),
-              color: "#f59e0b",
-              kind: "count",
-              chart: "bar",
-            },
-          ]}
         />
       </div>
 

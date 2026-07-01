@@ -12,7 +12,7 @@ export const statisticsService = {
     params?: JournalStatisticsParams
   ): Promise<MprOrgStatistics[]> {
     const response = await api.get<MprOrgStatistics[]>(
-      "journal/mpr/statistics/",
+      "mpr-journal/statistics/",
       {
         params: {
           locomotive: params?.locomotive,
@@ -27,7 +27,7 @@ export const statisticsService = {
     params?: JournalStatisticsParams
   ): Promise<RevisionOrgStatistics[]> {
     const response = await api.get<RevisionOrgStatistics[]>(
-      "journal/revision/statics/",
+      "revision-journal/statics/",
       {
         params: {
           locomotive: params?.locomotive,
@@ -43,7 +43,7 @@ export const statisticsService = {
     params?: JournalStatisticsParams
   ): Promise<PantographOrgStatistics[]> {
     const response = await api.get<PantographOrgStatistics[]>(
-      "journal/pantograph/statics/",
+      "pantograph-journal/statics/",
       {
         params: {
           locomotive: params?.locomotive,

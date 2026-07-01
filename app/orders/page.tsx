@@ -32,8 +32,9 @@ import { FileSpreadsheet } from "lucide-react";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useMprStatistics } from "@/api/hooks/use-statistics";
-import { JournalStatisticsPanel } from "@/components/statistics/journal-statistics-panel";
-import type { GenericOrgStatistics } from "@/api/types/statistics";
+import { StatsPanel } from "@/components/statistics/stats-panel";
+import type { StatMetric, StatsHook } from "@/components/statistics/stats-panel";
+import { Wrench, Ban, AlertTriangle, Coins } from "lucide-react";
 import { hasPermission, type Permission } from "@/lib/permissions";
 import { Badge } from "@/ui/badge";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
@@ -82,12 +83,6 @@ export default function OrdersPage() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [orderToConfirm, setOrderToConfirm] = useState<OrderData | null>(null);
   const { showSuccess, showError } = useSnackbar();
-  const {
-    data: mprStats,
-    isLoading: isLoadingStats,
-    error: statsError,
-  } = useMprStatistics();
-
   const createOrderMutation = useCreateOrder();
   const updateOrderMutation = useUpdateOrder();
   const deleteOrderMutation = useDeleteOrder();
@@ -138,6 +133,19 @@ export default function OrdersPage() {
     }
     return options;
   }, [locomotivesData, t]);
+
+  const statLocomotiveOptions = useMemo(
+    () =>
+      (locomotivesData?.results ?? []).map(
+        (loc: { id: number; name?: string; model_name?: string }) => ({
+          value: String(loc.id),
+          label: `${loc.name ?? loc.model_name ?? loc.id}${
+            loc.model_name ? ` (${loc.model_name})` : ""
+          }`,
+        }),
+      ),
+    [locomotivesData],
+  );
 
   const organizationOptions = useMemo(() => {
     const options = [{ value: "", label: t("options.all_organizations") }];
@@ -409,6 +417,45 @@ export default function OrdersPage() {
     },
   ];
 
+  const mprMetrics: StatMetric[] = [
+    {
+      key: "mpr",
+      totalKey: "total_mpr",
+      label: t("statistics.mpr"),
+      color: "#2563eb",
+      kind: "count",
+      chart: "bar",
+      icon: Wrench,
+    },
+    {
+      key: "invalid",
+      totalKey: "total_invalid",
+      label: t("statistics.invalid"),
+      color: "#f59e0b",
+      kind: "count",
+      chart: "bar",
+      icon: Ban,
+    },
+    {
+      key: "defect",
+      totalKey: "total_defect",
+      label: t("statistics.defect"),
+      color: "#8b5cf6",
+      kind: "count",
+      chart: "bar",
+      icon: AlertTriangle,
+    },
+    {
+      key: "damage_amount",
+      totalKey: "total_damage_amount",
+      label: t("statistics.damage_amount"),
+      color: "#dc2626",
+      kind: "currency",
+      chart: "line",
+      icon: Coins,
+    },
+  ];
+
   const breadcrumbs = [
     { label: t("breadcrumbs.home"), href: "/" },
     { label: t("breadcrumbs.current"), current: true },
@@ -420,6 +467,13 @@ export default function OrdersPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+      />
+
+      <StatsPanel
+        title={t("statistics.title")}
+        metrics={mprMetrics}
+        useStats={useMprStatistics as unknown as StatsHook}
+        locomotiveOptions={statLocomotiveOptions}
       />
 
       <div className="px-6 py-4">
@@ -466,50 +520,6 @@ export default function OrdersPage() {
           exportButtonText="Export EXCEL"
           exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
           className="!mb-0"
-        />
-      </div>
-
-      <div className="px-6">
-        <JournalStatisticsPanel
-          title={t("statistics.title")}
-          data={mprStats as unknown as GenericOrgStatistics[]}
-          isLoading={isLoadingStats}
-          error={statsError}
-          defaultOpen={false}
-          metrics={[
-            {
-              key: "mpr",
-              totalKey: "total_mpr",
-              label: t("statistics.mpr"),
-              color: "#2563eb",
-              kind: "count",
-              chart: "bar",
-            },
-            {
-              key: "invalid",
-              totalKey: "total_invalid",
-              label: t("statistics.invalid"),
-              color: "#f59e0b",
-              kind: "count",
-              chart: "bar",
-            },
-            {
-              key: "defect",
-              totalKey: "total_defect",
-              label: t("statistics.defect"),
-              color: "#8b5cf6",
-              kind: "count",
-              chart: "bar",
-            },
-            {
-              key: "damage_amount",
-              totalKey: "total_damage_amount",
-              label: t("statistics.damage_amount"),
-              color: "#dc2626",
-              kind: "currency",
-              chart: "line",
-            },
-          ]}
         />
       </div>
 
