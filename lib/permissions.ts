@@ -26,6 +26,7 @@ export type Permission =
   | "upload_delay_report"
   | "view_delays_reports"
   | "view_sriv_payment_report"
+  | "export_sriv_delays"
   | "choose_organization"
   | "filter_delay_station"
 
@@ -87,6 +88,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_delays",
     "view_delays_reports",
     "view_sriv_payment_report",
+    "export_sriv_delays",
     "create_defective_work",
     "edit_defective_work",
     "delete_defective_work",
@@ -214,6 +216,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_delays",
     "view_delays_reports",
     "view_sriv_payment_report",
+    "export_sriv_delays",
     "create_delay",
     "edit_delay",
     "delete_delay",
@@ -227,6 +230,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_tu137",
     "view_culprits",
     "manage_culprits",
+    "view_sriv_payment_report",
+    "export_sriv_delays",
   ],
   payroll: ["view_recovery", "confirm_payroll"],
   payroll_admin: ["view_recovery", "confirm_payroll"],

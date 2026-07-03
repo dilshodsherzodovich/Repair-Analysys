@@ -471,3 +471,23 @@ export interface SrivPaymentReportResponse {
   rows: SrivPaymentReportRow[];
   total: SrivPaymentReportRow;
 }
+
+export type SrivPaymentBucket = "paid" | "unpaid" | "undetermined";
+
+// Drill-down: the actual delays behind a bucket.
+export interface SrivPaymentReportDetailsParams {
+  start_date: string;
+  end_date: string;
+  bucket?: SrivPaymentBucket; // omit => all delays of the period, each tagged
+  organizations?: string; // comma-separated responsible_org IDs
+}
+
+export interface SrivPaymentReportDetailItem extends DelayEntry {
+  bucket: SrivPaymentBucket;
+}
+
+export interface SrivPaymentReportDetailsResponse {
+  bucket: SrivPaymentBucket | "all";
+  count: number;
+  results: SrivPaymentReportDetailItem[];
+}

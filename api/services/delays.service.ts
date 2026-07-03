@@ -13,6 +13,8 @@ import {
   DepotReasonReportResponse,
   SrivPaymentReportParams,
   SrivPaymentReportResponse,
+  SrivPaymentReportDetailsParams,
+  SrivPaymentReportDetailsResponse,
 } from "../types/delays";
 
 export const delaysService = {
@@ -164,6 +166,43 @@ export const delaysService = {
         params: {
           start_date: params.start_date,
           end_date: params.end_date,
+          organizations: params.organizations,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  async exportDelaysXlsx(params?: DelayListParams): Promise<Blob> {
+    const response = await api.get("/sriv/delays/export-xlsx/", {
+      params: {
+        search: params?.search,
+        delay_type: params?.delay_type,
+        station: params?.station,
+        responsible_org: params?.responsible_org,
+        stage: params?.stage,
+        protocol_overdue: params?.protocol_overdue,
+        archive: params?.archive,
+        from_date: params?.from_date,
+        end_date: params?.end_date,
+        train_type: params?.train_type,
+        group_reason: params?.group_reason,
+      },
+      responseType: "blob",
+    });
+    return response.data as Blob;
+  },
+
+  async getSrivPaymentReportDetails(
+    params: SrivPaymentReportDetailsParams
+  ): Promise<SrivPaymentReportDetailsResponse> {
+    const response = await api.get<SrivPaymentReportDetailsResponse>(
+      "/sriv/payment-reports/details/",
+      {
+        params: {
+          start_date: params.start_date,
+          end_date: params.end_date,
+          bucket: params.bucket,
           organizations: params.organizations,
         },
       }

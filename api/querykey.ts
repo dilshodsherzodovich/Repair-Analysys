@@ -87,6 +87,7 @@ export const queryKeys = {
     reports: "delays-reports",
     depotReasonReports: "delays-depot-reason-reports",
     paymentReport: "delays-payment-report",
+    paymentReportDetails: "delays-payment-report-details",
   },
   culprits: {
     all: "culprits-all",

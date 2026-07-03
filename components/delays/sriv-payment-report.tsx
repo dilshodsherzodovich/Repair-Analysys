@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { format, startOfYear, startOfMonth, subDays } from "date-fns";
 import {
@@ -14,10 +14,15 @@ import type { LucideIcon } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useSrivPaymentReport } from "@/api/hooks/use-delays";
-import type { SrivPaymentReportRow } from "@/api/types/delays";
+import type {
+  SrivPaymentReportRow,
+  SrivPaymentBucket,
+  SrivPaymentReportDetailsParams,
+} from "@/api/types/delays";
 import { DatePicker } from "@/ui/date-picker";
 import { MultiSelect } from "@/ui/multi-select";
 import { cn } from "@/lib/utils";
+import { SrivPaymentDrilldownModal } from "./sriv-payment-drilldown-modal";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -116,6 +121,36 @@ export function SrivPaymentReport() {
   }, [start_date, end_date, selectedOrganizations]);
 
   const { data, isLoading, error } = useSrivPaymentReport(params);
+
+  // depo name -> org id, to scope drill-down to a single depo row.
+  const orgIdByName = useMemo(() => {
+    const map = new Map<string, string>();
+    (organizationsData ?? []).forEach((org) => map.set(org.name, String(org.id)));
+    return map;
+  }, [organizationsData]);
+
+  const [drilldown, setDrilldown] = useState<{
+    title: string;
+    params: SrivPaymentReportDetailsParams;
+  } | null>(null);
+
+  const openDrilldown = useCallback(
+    (bucket: SrivPaymentBucket | undefined, depo: string | undefined, label: string) => {
+      if (!start_date || !end_date) return;
+      // A specific depo row scopes by that org; total/aggregate uses current filter.
+      const orgs =
+        depo && orgIdByName.has(depo)
+          ? orgIdByName.get(depo)
+          : selectedOrganizations.length > 0
+            ? selectedOrganizations.join(",")
+            : undefined;
+      setDrilldown({
+        title: depo ? `${label} · ${depo}` : label,
+        params: { start_date, end_date, bucket, organizations: orgs },
+      });
+    },
+    [start_date, end_date, orgIdByName, selectedOrganizations]
+  );
 
   const startDate = start_date ? new Date(start_date) : undefined;
   const endDate = end_date ? new Date(end_date) : undefined;
@@ -346,6 +381,9 @@ export function SrivPaymentReport() {
                           sum={row.total_sum}
                           count={row.total_count}
                           bold
+                          onClick={() =>
+                            openDrilldown(undefined, row.depo, t("total"))
+                          }
                         />
                         {BUCKETS.map((b) => (
                           <MoneyCell
@@ -361,6 +399,9 @@ export function SrivPaymentReport() {
                               ] as number
                             }
                             textClass={b.text}
+                            onClick={() =>
+                              openDrilldown(b.key, row.depo, t(b.labelKey))
+                            }
                           />
                         ))}
                         <td className="px-4 py-3">
@@ -380,6 +421,9 @@ export function SrivPaymentReport() {
                         sum={total.total_sum}
                         count={total.total_count}
                         bold
+                        onClick={() =>
+                          openDrilldown(undefined, undefined, t("total"))
+                        }
                       />
                       {BUCKETS.map((b) => (
                         <MoneyCell
@@ -396,6 +440,9 @@ export function SrivPaymentReport() {
                           }
                           textClass={b.text}
                           bold
+                          onClick={() =>
+                            openDrilldown(b.key, undefined, t(b.labelKey))
+                          }
                         />
                       ))}
                       <td className="px-4 py-3">
@@ -409,6 +456,13 @@ export function SrivPaymentReport() {
           </div>
         </>
       )}
+
+      <SrivPaymentDrilldownModal
+        isOpen={!!drilldown}
+        onClose={() => setDrilldown(null)}
+        params={drilldown?.params}
+        title={drilldown?.title ?? ""}
+      />
     </div>
   );
 }
@@ -496,12 +550,15 @@ function MoneyCell({
   count,
   textClass,
   bold,
+  onClick,
 }: {
   sum: number;
   count: number;
   textClass?: string;
   bold?: boolean;
+  onClick?: () => void;
 }) {
+  const clickable = !!onClick && count > 0;
   return (
     <td className="px-4 py-3 text-right">
       <span
@@ -513,7 +570,20 @@ function MoneyCell({
       >
         {fmtSum(sum)}
       </span>
-      <span className="ml-1 text-xs tabular-nums text-slate-400">· {count}</span>
+      {clickable ? (
+        <button
+          type="button"
+          onClick={onClick}
+          className="ml-1 rounded text-xs tabular-nums text-slate-400 underline decoration-dotted underline-offset-2 transition-colors hover:text-primary"
+          title={String(count)}
+        >
+          · {count}
+        </button>
+      ) : (
+        <span className="ml-1 text-xs tabular-nums text-slate-400">
+          · {count}
+        </span>
+      )}
     </td>
   );
 }

@@ -27,6 +27,7 @@ import {
   useUploadProtocol,
   useClassifyDelay,
 } from "@/api/hooks/use-delays";
+import { delaysService } from "@/api/services/delays.service";
 import { DelayModal } from "@/components/delays/delay-modal";
 import { CulpritsListModal } from "@/components/culprits/culprits-list-modal";
 import { UploadProtocolModal } from "@/components/delays/upload-protocol-modal";
@@ -55,6 +56,7 @@ import {
   CornerDownRight,
   Archive,
   Info,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Button } from "@/ui/button";
 import { useTranslations } from "next-intl";
@@ -94,6 +96,7 @@ export default function DelaysPage() {
   }
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedEntry, setSelectedEntry] = useState<DelayEntry | null>(null);
@@ -134,6 +137,7 @@ export default function DelaysPage() {
   const isAdmin =
     hasPermission(currentUser, "edit_delay") && !isModerator;
   const canManageCulprits = hasPermission(currentUser, "manage_culprits");
+  const canExport = hasPermission(currentUser, "export_sriv_delays");
 
   const stageFilter = (stage as DelayStage) || undefined;
   const archiveFilter =
@@ -209,6 +213,56 @@ export default function DelaysPage() {
     setModalMode("create");
     setIsModalOpen(true);
   }, []);
+
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const blob = await delaysService.exportDelaysXlsx({
+        search: q,
+        delay_type: delay_type as any,
+        station: station || undefined,
+        responsible_org: responsible_org || undefined,
+        stage: stageFilter,
+        protocol_overdue: protocol_overdue === "true" ? true : undefined,
+        archive: archiveFilter,
+        from_date: start_date || undefined,
+        end_date: end_date || undefined,
+        train_type: train_type || undefined,
+        group_reason: group_reason || undefined,
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sriv_delays_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      showError(
+        t("messages.action_error_title"),
+        e?.response?.data?.detail ||
+          e?.message ||
+          t("messages.action_error_message")
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  }, [
+    q,
+    delay_type,
+    station,
+    responsible_org,
+    stageFilter,
+    protocol_overdue,
+    archiveFilter,
+    start_date,
+    end_date,
+    train_type,
+    group_reason,
+    showError,
+    t,
+  ]);
 
   const handleSave = useCallback(
     (payload: DelayCreatePayload | DelayUpdatePayload) => {
@@ -719,6 +773,10 @@ export default function DelaysPage() {
           searchPlaceholder={t("filters.search_placeholder")}
           addButtonPermittion="create_delay"
           onAdd={handleCreate}
+          onExport={canExport ? handleExport : undefined}
+          exportButtonText={t("export_button")}
+          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
+          exportLoading={isExporting}
           className="!mb-0"
         />
       </div>

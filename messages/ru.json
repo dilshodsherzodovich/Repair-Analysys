@@ -19,7 +19,14 @@
     "grand_total": "Всего",
     "count_n": "{n} срывов",
     "empty": "За выбранный период срывов нет",
-    "error": "Не удалось загрузить отчёт"
+    "error": "Не удалось загрузить отчёт",
+    "loading": "Загрузка...",
+    "dd_date": "Дата",
+    "dd_train": "Поезд",
+    "dd_station": "Станция",
+    "dd_damage": "Ущерб",
+    "dd_culprits": "Изъято / причастных",
+    "dd_stage": "Статус"
   },
   "JournalStatistics": {
     "loading": "Загрузка статистики...",
@@ -54,6 +61,7 @@
   "DelaysPage": {
     "title": "Задержки",
     "description": "Просмотр и управление задержками поездов",
+    "export_button": "Экспорт в Excel",
     "breadcrumbs": {
       "home": "Главная",
       "current": "Задержки"
