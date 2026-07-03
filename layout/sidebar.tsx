@@ -24,6 +24,7 @@ import {
   FormInput,
   Users,
   Wallet,
+  Banknote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
@@ -282,6 +283,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         icon: ClipboardMinus,
         section: "delays-reports",
         href: "/delays/reports",
+      });
+    }
+
+    if (user && canAccessSection(user, "sriv-payment-report")) {
+      items.push({
+        key: "sriv_payment_report",
+        name: t("nav.sriv_payment_report"),
+        icon: Banknote,
+        section: "sriv-payment-report",
+        href: "/delays/payment-report",
       });
     }
 

@@ -25,6 +25,7 @@ export type Permission =
   | "delete_delay"
   | "upload_delay_report"
   | "view_delays_reports"
+  | "view_sriv_payment_report"
   | "choose_organization"
   | "filter_delay_station"
 
@@ -85,6 +86,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_orders",
     "view_delays",
     "view_delays_reports",
+    "view_sriv_payment_report",
     "create_defective_work",
     "edit_defective_work",
     "delete_defective_work",
@@ -211,6 +213,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_dashboard",
     "view_delays",
     "view_delays_reports",
+    "view_sriv_payment_report",
     "create_delay",
     "edit_delay",
     "delete_delay",
@@ -289,6 +292,9 @@ export function canAccessSection(
     }
     case "delays-reports": {
       return hasPermission(user, "view_delays_reports");
+    }
+    case "sriv-payment-report": {
+      return hasPermission(user, "view_sriv_payment_report");
     }
     case "culprits": {
       return hasPermission(user, "view_culprits");

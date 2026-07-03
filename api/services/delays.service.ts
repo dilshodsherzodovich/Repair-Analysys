@@ -11,6 +11,8 @@ import {
   DelayReportResponse,
   DelayReportFreightResponse,
   DepotReasonReportResponse,
+  SrivPaymentReportParams,
+  SrivPaymentReportResponse,
 } from "../types/delays";
 
 export const delaysService = {
@@ -147,6 +149,22 @@ export const delaysService = {
           end_date: params.end_date,
           organizations: params.organizations,
           train_types: params.train_types,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  async getSrivPaymentReport(
+    params: SrivPaymentReportParams
+  ): Promise<SrivPaymentReportResponse> {
+    const response = await api.get<SrivPaymentReportResponse>(
+      "/sriv/payment-reports/",
+      {
+        params: {
+          start_date: params.start_date,
+          end_date: params.end_date,
+          organizations: params.organizations,
         },
       }
     );

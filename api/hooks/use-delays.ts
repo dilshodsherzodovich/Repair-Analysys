@@ -9,6 +9,7 @@ import {
   UploadProtocolPayload,
   ClassifyPayload,
   DelayReportParams,
+  SrivPaymentReportParams,
 } from "../types/delays";
 import { queryKeys } from "../querykey";
 
@@ -193,6 +194,21 @@ export function useDepotReasonReports(params?: DelayReportParams) {
     queryKey: [queryKeys.delays.depotReasonReports, params],
     queryFn: () => delaysService.getDepotReasonReports(params!),
     enabled: !!params?.start_date && !!params?.end_date && !!params?.train_types,
+    staleTime: 5 * 60 * 1000,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+}
+
+export function useSrivPaymentReport(params?: SrivPaymentReportParams) {
+  return useQuery({
+    queryKey: [queryKeys.delays.paymentReport, params],
+    queryFn: () => delaysService.getSrivPaymentReport(params!),
+    enabled: !!params?.start_date && !!params?.end_date,
     staleTime: 5 * 60 * 1000,
     retry: (failureCount, error: any) => {
       if (error?.response?.status === 401 || error?.response?.status === 403) {

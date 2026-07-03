@@ -447,3 +447,27 @@ export interface DelayReportParams {
   organizations?: string; // Optional, comma-separated IDs like "1,2"
   train_types?: string; // Optional, comma-separated train types like "passenger,electric,high_speed"
 }
+
+// SRIV payment report — damage amount split into paid / unpaid / remainder, grouped by depo.
+export interface SrivPaymentReportParams {
+  start_date: string; // Required, "YYYY-MM-DD" (by incident_date)
+  end_date: string; // Required, "YYYY-MM-DD" (inclusive)
+  organizations?: string; // Optional, comma-separated responsible_org IDs
+}
+
+export interface SrivPaymentReportRow {
+  depo: string; // depo name; "Всего" for the total row
+  total_sum: number;
+  total_count: number;
+  paid_sum: number; // Оплачено — accountant_confirmed
+  paid_count: number;
+  unpaid_sum: number; // Не оплачено — culprits set, recovery not finished
+  unpaid_count: number;
+  undetermined_sum: number; // Остаток — determined, no culprits yet
+  undetermined_count: number;
+}
+
+export interface SrivPaymentReportResponse {
+  rows: SrivPaymentReportRow[];
+  total: SrivPaymentReportRow;
+}
