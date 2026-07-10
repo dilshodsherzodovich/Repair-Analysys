@@ -55,11 +55,18 @@ export default function DelayReportsPage() {
   const startDate = start_date ? new Date(start_date) : undefined;
   const endDate = end_date ? new Date(end_date) : undefined;
 
-  // Parse organizations from comma-separated string
+  // Parse organizations from comma-separated string.
+  // sriv_moderator is pinned to its own depo (backend scopes it too).
+  const scopedOrgId =
+    currentUser?.role === "sriv_moderator"
+      ? currentUser?.branch?.organization?.id
+      : undefined;
+
   const selectedOrganizations = useMemo(() => {
+    if (scopedOrgId) return [String(scopedOrgId)];
     if (!organizationsParam) return [];
     return organizationsParam.split(",").filter(Boolean);
-  }, [organizationsParam]);
+  }, [organizationsParam, scopedOrgId]);
 
   // Prepare API params for passenger trains
   const passengerReportParams = useMemo(() => {

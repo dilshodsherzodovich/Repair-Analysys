@@ -310,7 +310,8 @@ export interface DelayCreatePayload {
   delay_time: string; // Format: "HH:MM:SS" (e.g., "01:03:00" for 1 hour 3 minutes)
   reason: string;
   damage_amount: number;
-  responsible_org: number;
+  /** sriv_admin only — for sriv_moderator the backend sets its own organization. */
+  responsible_org?: number;
   incident_date: string; // YYYY-MM-DD
   group_reason: GroupReason;
   train_type: TrainType;

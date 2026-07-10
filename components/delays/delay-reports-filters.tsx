@@ -25,6 +25,14 @@ interface DelayReportsFiltersProps {
 export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
   const t = useTranslations("DelayReportsFilters");
   const { getAllQueryValues, updateQuery } = useFilterParams();
+
+  // sriv_moderator only ever sees its own depo — the backend scopes the
+  // response, so there is nothing to choose.
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
+  const isOrgScoped = currentUser?.role === "sriv_moderator";
   const {
     start_date,
     end_date,
@@ -230,19 +238,21 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
             />
           </div>
 
-          {/* Organization Multiselect */}
-          <div className="min-w-[300px] flex-1 max-w-[400px] flex-shrink-0">
-            <MultiSelect
-              options={organizationOptions}
-              selectedValues={selectedOrganizations}
-              onSelectionChange={handleOrganizationsChange}
-              placeholder={t("organizations_placeholder")}
-              searchPlaceholder={t("organizations_search")}
-              emptyMessage={t("organizations_empty")}
-              disabled={isLoadingOrganizations}
-              className="border-[#d1d5db] hover:border-[#d1d5db] focus:border-[#d1d5db] focus:ring-0 py-0 min-h-auto"
-            />
-          </div>
+          {/* Organization Multiselect — hidden for depo-scoped roles */}
+          {!isOrgScoped && (
+            <div className="min-w-[300px] flex-1 max-w-[400px] flex-shrink-0">
+              <MultiSelect
+                options={organizationOptions}
+                selectedValues={selectedOrganizations}
+                onSelectionChange={handleOrganizationsChange}
+                placeholder={t("organizations_placeholder")}
+                searchPlaceholder={t("organizations_search")}
+                emptyMessage={t("organizations_empty")}
+                disabled={isLoadingOrganizations}
+                className="border-[#d1d5db] hover:border-[#d1d5db] focus:border-[#d1d5db] focus:ring-0 py-0 min-h-auto"
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2 items-center">

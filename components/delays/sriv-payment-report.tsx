@@ -94,10 +94,21 @@ export function SrivPaymentReport() {
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
 
-  const selectedOrganizations = useMemo(
-    () => (organizationsParam ? organizationsParam.split(",").filter(Boolean) : []),
-    [organizationsParam]
-  );
+  // sriv_moderator is pinned to its own depo (the backend scopes it too).
+  const currentUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
+  const scopedOrgId =
+    currentUser?.role === "sriv_moderator"
+      ? currentUser?.branch?.organization?.id
+      : undefined;
+  const isOrgScoped = !!scopedOrgId;
+
+  const selectedOrganizations = useMemo(() => {
+    if (scopedOrgId) return [String(scopedOrgId)];
+    return organizationsParam ? organizationsParam.split(",").filter(Boolean) : [];
+  }, [organizationsParam, scopedOrgId]);
 
   const organizationOptions = useMemo(
     () =>
@@ -250,16 +261,21 @@ export function SrivPaymentReport() {
             ))}
           </div>
 
-          <Field label={t("organizations")} className="min-w-[280px] flex-1 max-w-[420px]">
-            <MultiSelect
-              options={organizationOptions}
-              selectedValues={selectedOrganizations}
-              onSelectionChange={handleOrganizations}
-              placeholder={t("organizations_placeholder")}
-              disabled={isLoadingOrganizations}
-              className="border-slate-300"
-            />
-          </Field>
+          {!isOrgScoped && (
+            <Field
+              label={t("organizations")}
+              className="min-w-[280px] flex-1 max-w-[420px]"
+            >
+              <MultiSelect
+                options={organizationOptions}
+                selectedValues={selectedOrganizations}
+                onSelectionChange={handleOrganizations}
+                placeholder={t("organizations_placeholder")}
+                disabled={isLoadingOrganizations}
+                className="border-slate-300"
+              />
+            </Field>
+          )}
         </div>
       </div>
 

@@ -162,8 +162,13 @@ export function DelayModal({
   entry,
   mode,
   isPending,
+  user,
 }: DelayModalProps) {
   const t = useTranslations("DelayModal");
+
+  // sriv_moderator always creates for its own depo — the backend sets
+  // responsible_org, so the field is hidden and never sent.
+  const orgIsServerAssigned = user?.role === "sriv_moderator";
   const [formDefaults, setFormDefaults] = useState<FormData>(INITIAL_FORM_DATA);
   const [stationValue, setStationValue] = useState<string>("");
   const [delayTimeDisplay, setDelayTimeDisplay] = useState<string>("");
@@ -226,7 +231,12 @@ export function DelayModal({
     const groupReason = (data.get("group_reason") as string) || "";
     const trainType = (data.get("train_type") as string) || "";
 
-    if (!delayType || !trainNumber || !station || !responsibleOrg) {
+    if (
+      !delayType ||
+      !trainNumber ||
+      !station ||
+      (!orgIsServerAssigned && !responsibleOrg)
+    ) {
       showError(t("errors.required_fields"));
       return;
     }
@@ -261,7 +271,9 @@ export function DelayModal({
       delay_time: formattedTime,
       reason: reason.trim(),
       damage_amount: damageAmount,
-      responsible_org: Number(responsibleOrg),
+      ...(orgIsServerAssigned
+        ? {}
+        : { responsible_org: Number(responsibleOrg) }),
       incident_date: formattedDate,
       ...(mode === "create"
         ? {
@@ -409,12 +421,14 @@ export function DelayModal({
               </Select>
             </div>
 
-            <OrganizationSelectField
-              name="responsible_org"
-              defaultValue={formDefaults.responsible_org}
-              organizations={organizationsData || []}
-              isLoading={isLoadingOrganizations}
-            />
+            {!orgIsServerAssigned && (
+              <OrganizationSelectField
+                name="responsible_org"
+                defaultValue={formDefaults.responsible_org}
+                organizations={organizationsData || []}
+                isLoading={isLoadingOrganizations}
+              />
+            )}
 
             <FormField
               id="damage_amount"

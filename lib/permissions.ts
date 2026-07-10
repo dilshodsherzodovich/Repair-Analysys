@@ -225,6 +225,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   ],
   sriv_moderator: [
     "view_delays",
+    "view_delays_reports",
+    "create_delay",
     "edit_delay",
     "upload_delay_report",
     "view_tu137",
