@@ -1,6 +1,9 @@
 {
   "SrivPaymentReportPage": {
-    "breadcrumbs": { "home": "Bosh sahifa", "current": "Zarar to'lovi" },
+    "breadcrumbs": {
+      "home": "Bosh sahifa",
+      "current": "Zarar to'lovi"
+    },
     "title": "Sriv zararini to'lash hisoboti",
     "description": "Aniqlangan srivlar zarari: to'langan, to'lanmagan va qoldiq — depolar bo'yicha",
     "date_start": "Boshlanish sanasi",
@@ -81,7 +84,8 @@
       "stage": "Bosqich",
       "archive": "Arxiv",
       "report": "Hisobot",
-      "protocol_number": "Bayonnoma raqami"
+      "protocol_number": "Bayonnoma raqami",
+      "locomotiv": "Lokomotiv"
     },
     "stage": {
       "created": "Yaratilgan",
@@ -95,7 +99,7 @@
     "stage_next": {
       "created": "Moderator qabul qilishi kutilmoqda",
       "accepted": "Bayonnoma yuklash kutilmoqda",
-      "protocol_uploaded": "Admin tasnifi kutilmoqda",
+      "protocol_uploaded": "Sriv tasnifi kutilmoqda",
       "disruption": "OTZ tasdig'i kutilmoqda",
       "payroll_confirmed": "Undirish kutilmoqda"
     },
@@ -123,7 +127,11 @@
       "protocol_overdue": "Bayonnoma",
       "protocol_overdue_all": "Barchasi",
       "protocol_overdue_only": "Muddati o'tgan",
-      "search_placeholder": "Qidiruv"
+      "search_placeholder": "Qidiruv",
+      "mashinist": "Mashinist",
+      "mashinist_placeholder": "Mashinist F.I.Sh.",
+      "locomotiv": "Lokomotiv",
+      "locomotiv_placeholder": "Lokomotivni tanlang"
     },
     "train_types": {
       "passenger": "Yo'lovchi",
@@ -345,7 +353,8 @@
       "total_amount": "Summa",
       "recovered_amount": "Undirilgan",
       "culprits": "Aybdorlar",
-      "actions": "Amallar"
+      "actions": "Amallar",
+      "locomotiv": "Lokomotiv"
     },
     "recovery_status": {
       "pending": "OTZ tasdig'i kutilmoqda",
@@ -359,7 +368,11 @@
       "train_number": "Poyezd",
       "train_number_placeholder": "Poyezd raqamini kiriting",
       "station": "Stansiya",
-      "station_placeholder": "Stansiyani kiriting"
+      "station_placeholder": "Stansiyani kiriting",
+      "mashinist": "Mashinist",
+      "mashinist_placeholder": "Mashinist F.I.Sh.",
+      "locomotiv": "Lokomotiv",
+      "locomotiv_placeholder": "Lokomotivni tanlang"
     },
     "open_button": "Aybdorlar",
     "empty": {
@@ -637,7 +650,11 @@
       "current_report": "Joriy hisobot:",
       "view_report": "Hisobotni ko'rish",
       "protocol_number": "Bayonnoma raqami",
-      "protocol_number_placeholder": "Masalan: PR-2026-014"
+      "protocol_number_placeholder": "Masalan: PR-2026-014",
+      "mashinist": "Mashinist",
+      "mashinist_placeholder": "F.I.Sh. kiriting",
+      "locomotiv": "Lokomotiv",
+      "locomotiv_placeholder": "Lokomotivni tanlang"
     },
     "errors": {
       "required_fields": "Iltimos, barcha majburiy maydonlarni to'ldiring",

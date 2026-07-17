@@ -27,6 +27,8 @@ export interface RecoveryListParams {
   train_type?: string;
   train_number?: string;
   station?: string;
+  mashinist?: string;
+  locomotiv?: number | string;
   responsible_org?: number | string;
   search?: string;
   ordering?: string;

@@ -11,9 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/select";
+import { EnhancedSelect } from "@/ui/enhanced-select";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
 import { DatePicker } from "@/ui/date-picker";
+import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import {
   DelayEntry,
   DelayType,
@@ -45,6 +47,7 @@ type FormData = {
   delay_type: string;
   train_number: string;
   station: string;
+  mashinist: string;
   delay_time: string; // Minutes as string
   reason: string;
   damage_amount: string;
@@ -57,6 +60,7 @@ const INITIAL_FORM_DATA: FormData = {
   delay_type: "",
   train_number: "",
   station: "",
+  mashinist: "",
   delay_time: "",
   reason: "",
   damage_amount: "0",
@@ -173,6 +177,7 @@ export function DelayModal({
   const [stationValue, setStationValue] = useState<string>("");
   const [delayTimeDisplay, setDelayTimeDisplay] = useState<string>("");
   const [damageDisplay, setDamageDisplay] = useState<string>("0");
+  const [locomotivValue, setLocomotivValue] = useState<string>("");
   const [formKey, setFormKey] = useState(0);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -180,6 +185,30 @@ export function DelayModal({
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
+
+  const { data: locomotivesData, isPending: isLoadingLocomotives } =
+    useGetLocomotives(isOpen);
+
+  // Locomotive options; keep the current selection visible even if the loaded
+  // page doesn't include it (edit of an older delay).
+  const locomotiveOptions = useMemo(() => {
+    const opts = (locomotivesData?.results ?? []).map((loc) => ({
+      value: String(loc.id),
+      label: loc.model_name ? `${loc.name} — ${loc.model_name}` : loc.name,
+    }));
+    if (
+      locomotivValue &&
+      !opts.some((o) => o.value === locomotivValue) &&
+      entry?.locomotiv &&
+      String(entry.locomotiv) === locomotivValue
+    ) {
+      opts.unshift({
+        value: locomotivValue,
+        label: entry.locomotiv_name || locomotivValue,
+      });
+    }
+    return opts;
+  }, [locomotivesData, locomotivValue, entry]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -190,6 +219,7 @@ export function DelayModal({
         delay_type: entry.delay_type || "",
         train_number: entry.train_number || "",
         station: entry.station || "",
+        mashinist: entry.mashinist || "",
         delay_time: minutes > 0 ? minutesToHHMM(minutes) : "",
         reason: entry.reason || "",
         damage_amount: String(entry.damage_amount || 0),
@@ -206,12 +236,14 @@ export function DelayModal({
       setStationValue(entry.station || "");
       setDelayTimeDisplay(minutes > 0 ? minutesToHHMM(minutes) : "");
       setDamageDisplay(formatThousands(String(entry.damage_amount || 0)));
+      setLocomotivValue(entry.locomotiv ? String(entry.locomotiv) : "");
     } else {
       setFormDefaults(INITIAL_FORM_DATA);
       setSelectedDate(undefined);
       setStationValue("");
       setDelayTimeDisplay("");
       setDamageDisplay("0");
+      setLocomotivValue("");
     }
     setFormKey((prev) => prev + 1);
   }, [entry, mode, isOpen]);
@@ -224,6 +256,7 @@ export function DelayModal({
     const delayType = (data.get("delay_type") as string) || "";
     const trainNumber = (data.get("train_number") as string) || "";
     const station = (data.get("station") as string) || "";
+    const mashinist = (data.get("mashinist") as string) || "";
     const delayTimeRaw = delayTimeDisplay;
     const reason = (data.get("reason") as string) || "";
     const damageAmount = parseThousands(damageDisplay);
@@ -268,6 +301,8 @@ export function DelayModal({
       delay_type: delayType as DelayType,
       train_number: trainNumber.trim(),
       station: station.trim(),
+      mashinist: mashinist.trim().slice(0, 256),
+      locomotiv: locomotivValue ? Number(locomotivValue) : null,
       delay_time: formattedTime,
       reason: reason.trim(),
       damage_amount: damageAmount,
@@ -295,6 +330,7 @@ export function DelayModal({
     setStationValue("");
     setDelayTimeDisplay("");
     setDamageDisplay("0");
+    setLocomotivValue("");
     setFormKey((prev) => prev + 1);
     formRef.current?.reset();
     onClose();
@@ -387,6 +423,27 @@ export function DelayModal({
               placeholder={t("fields.station_placeholder")}
               required
             />
+
+            <FormField
+              id="mashinist"
+              name="mashinist"
+              label={t("fields.mashinist")}
+              defaultValue={formDefaults.mashinist}
+              placeholder={t("fields.mashinist_placeholder")}
+            />
+
+            <div>
+              <Label htmlFor="locomotiv">{t("fields.locomotiv")}</Label>
+              <EnhancedSelect
+                options={locomotiveOptions}
+                value={locomotivValue}
+                onValueChange={setLocomotivValue}
+                placeholder={t("fields.locomotiv_placeholder")}
+                searchable
+                clearable
+                loading={isLoadingLocomotives}
+              />
+            </div>
 
             <FormField
               id="delay_time"

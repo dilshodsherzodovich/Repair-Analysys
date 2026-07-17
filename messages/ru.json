@@ -1,6 +1,9 @@
 {
   "SrivPaymentReportPage": {
-    "breadcrumbs": { "home": "Главная", "current": "Оплата ущерба" },
+    "breadcrumbs": {
+      "home": "Главная",
+      "current": "Оплата ущерба"
+    },
     "title": "Отчёт по оплате ущерба срывов",
     "description": "Сумма ущерба определённых срывов: оплачено, не оплачено и остаток по депо",
     "date_start": "Дата начала",
@@ -81,7 +84,8 @@
       "stage": "Стадия",
       "archive": "Архив",
       "report": "Отчет",
-      "protocol_number": "Номер протокола"
+      "protocol_number": "Номер протокола",
+      "locomotiv": "Локомотив"
     },
     "stage": {
       "created": "Создан",
@@ -95,7 +99,7 @@
     "stage_next": {
       "created": "Ожидает принятия модератором",
       "accepted": "Ожидает загрузки протокола",
-      "protocol_uploaded": "Ожидает классификации админом",
+      "protocol_uploaded": "Ожидается классификация срыва",
       "disruption": "Ожидает подтверждения ОТЗ",
       "payroll_confirmed": "Ожидает изъятия"
     },
@@ -123,7 +127,11 @@
       "protocol_overdue": "Протокол",
       "protocol_overdue_all": "Все",
       "protocol_overdue_only": "Просрочен",
-      "search_placeholder": "Поиск"
+      "search_placeholder": "Поиск",
+      "mashinist": "Машинист",
+      "mashinist_placeholder": "Ф.И.О. машиниста",
+      "locomotiv": "Локомотив",
+      "locomotiv_placeholder": "Выберите локомотив"
     },
     "train_types": {
       "passenger": "Пассажирский",
@@ -345,7 +353,8 @@
       "total_amount": "Сумма",
       "recovered_amount": "Изъято",
       "culprits": "Причастные",
-      "actions": "Действия"
+      "actions": "Действия",
+      "locomotiv": "Локомотив"
     },
     "recovery_status": {
       "pending": "Ожидает подтверждения ОТЗ",
@@ -359,7 +368,11 @@
       "train_number": "Поезд",
       "train_number_placeholder": "Введите номер поезда",
       "station": "Станция",
-      "station_placeholder": "Введите станцию"
+      "station_placeholder": "Введите станцию",
+      "mashinist": "Машинист",
+      "mashinist_placeholder": "Ф.И.О. машиниста",
+      "locomotiv": "Локомотив",
+      "locomotiv_placeholder": "Выберите локомотив"
     },
     "open_button": "Причастные",
     "empty": {
@@ -637,7 +650,11 @@
       "current_report": "Текущий отчет:",
       "view_report": "Просмотреть отчет",
       "protocol_number": "Номер протокола",
-      "protocol_number_placeholder": "Например: ПР-2026-014"
+      "protocol_number_placeholder": "Например: ПР-2026-014",
+      "mashinist": "Машинист",
+      "mashinist_placeholder": "Введите Ф.И.О.",
+      "locomotiv": "Локомотив",
+      "locomotiv_placeholder": "Выберите локомотив"
     },
     "errors": {
       "required_fields": "Пожалуйста, заполните все обязательные поля",

@@ -266,6 +266,9 @@ export interface DelayEntry {
   delay_type: DelayType;
   train_number: string;
   station: string;
+  mashinist?: string | null;
+  locomotiv?: number | null;
+  locomotiv_name?: string | null; // read-only, resolved locomotive name
   delay_time: string; // ISO time string
   reason: string;
   damage_amount: number;
@@ -307,6 +310,8 @@ export interface DelayCreatePayload {
   delay_type: DelayType;
   train_number: string;
   station: string;
+  mashinist?: string; // optional, up to 256 chars
+  locomotiv?: number | null; // optional, locomotive id
   delay_time: string; // Format: "HH:MM:SS" (e.g., "01:03:00" for 1 hour 3 minutes)
   reason: string;
   damage_amount: number;
@@ -321,9 +326,12 @@ export interface DelayUpdatePayload {
   delay_type?: DelayType;
   train_number?: string;
   station?: string;
+  mashinist?: string;
+  locomotiv?: number | null;
   delay_time?: string; // Format: "HH:MM:SS" (e.g., "01:03:00" for 1 hour 3 minutes)
   reason?: string;
   damage_amount?: number;
+  /** ignored for sriv_moderator — backend keeps its own organization. */
   responsible_org?: number;
   incident_date?: string;
   group_reason?: GroupReason;
@@ -346,6 +354,8 @@ export interface DelayListParams {
   search?: string;
   delay_type?: DelayType;
   station?: string;
+  mashinist?: string;
+  locomotiv?: number | string;
   responsible_org?: number | string;
   stage?: DelayStage | string;
   protocol_overdue?: boolean;

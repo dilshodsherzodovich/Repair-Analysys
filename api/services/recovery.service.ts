@@ -26,6 +26,8 @@ export const recoveryService = {
           train_type: params?.train_type,
           train_number: params?.train_number,
           station: params?.station,
+          mashinist: params?.mashinist,
+          locomotiv: params?.locomotiv,
           responsible_org: params?.responsible_org,
           search: params?.search,
           ordering: params?.ordering,

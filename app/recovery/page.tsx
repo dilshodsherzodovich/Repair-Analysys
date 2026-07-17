@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { canAccessSection, hasPermission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useRecoveryDelays } from "@/api/hooks/use-recovery";
+import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import type { RecoveryDelay } from "@/api/types/recovery";
 import { RECOVERY_STAGE_VALUES } from "@/api/types/recovery";
 import type { DelayStage } from "@/api/types/delays";
@@ -39,6 +40,8 @@ export default function RecoveryPage() {
     stage,
     train_number,
     station,
+    mashinist,
+    locomotiv,
     start_date,
     end_date,
   } = getAllQueryValues();
@@ -59,6 +62,9 @@ export default function RecoveryPage() {
   const [selected, setSelected] = useState<RecoveryDelay | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { data: locomotivesData, isPending: isLoadingLocomotives } =
+    useGetLocomotives();
+
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
@@ -73,6 +79,8 @@ export default function RecoveryPage() {
     stage: (stage as DelayStage) || undefined,
     train_number: train_number || undefined,
     station: station || undefined,
+    mashinist: mashinist || undefined,
+    locomotiv: locomotiv || undefined,
     from_date: start_date || undefined,
     end_date: end_date || undefined,
   });
@@ -140,6 +148,20 @@ export default function RecoveryPage() {
       accessor: (row) => row.station || "-",
     },
     {
+      key: "locomotiv",
+      header: t("columns.locomotiv"),
+      accessor: (row) => (
+        <div className="flex flex-col leading-tight">
+          <span>{row.locomotiv_name || "-"}</span>
+          {row.mashinist && (
+            <span className="text-xs text-muted-foreground">
+              {row.mashinist}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
       key: "responsible_org",
       header: t("columns.responsible_org"),
       accessor: (row) =>
@@ -198,6 +220,17 @@ export default function RecoveryPage() {
     [t, stageLabel]
   );
 
+  const locomotiveOptions = useMemo(() => {
+    const options = [{ value: "", label: t("filters.locomotiv_placeholder") }];
+    locomotivesData?.results?.forEach((loc) =>
+      options.push({
+        value: String(loc.id),
+        label: loc.model_name ? `${loc.name} — ${loc.model_name}` : loc.name,
+      })
+    );
+    return options;
+  }, [locomotivesData, t]);
+
   return (
     <div className="min-h-screen">
       <PageHeader
@@ -228,6 +261,21 @@ export default function RecoveryPage() {
               label: t("filters.station"),
               isSelect: false,
               placeholder: t("filters.station_placeholder"),
+            },
+            {
+              name: "mashinist",
+              label: t("filters.mashinist"),
+              isSelect: false,
+              placeholder: t("filters.mashinist_placeholder"),
+            },
+            {
+              name: "locomotiv",
+              label: t("filters.locomotiv"),
+              isSelect: true,
+              options: locomotiveOptions,
+              placeholder: t("filters.locomotiv_placeholder"),
+              searchable: true,
+              loading: isLoadingLocomotives,
             },
           ]}
           hasSearch={false}

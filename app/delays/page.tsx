@@ -42,6 +42,7 @@ import {
 } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
+import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import {
   FileUp,
   FilePen,
@@ -82,6 +83,8 @@ export default function DelaysPage() {
     end_date,
     responsible_org,
     station,
+    mashinist,
+    locomotiv,
     stage,
     protocol_overdue,
     archive,
@@ -130,12 +133,13 @@ export default function DelaysPage() {
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
 
+  const { data: locomotivesData, isPending: isLoadingLocomotives } =
+    useGetLocomotives();
+
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 10;
 
   const isModerator = hasPermission(currentUser, "upload_delay_report");
-  const isAdmin =
-    hasPermission(currentUser, "edit_delay") && !isModerator;
   const canManageCulprits = hasPermission(currentUser, "manage_culprits");
   const canExport = hasPermission(currentUser, "export_sriv_delays");
 
@@ -168,6 +172,8 @@ export default function DelaysPage() {
       | "Po otpravleniyu"
       | undefined,
     station: station || undefined,
+    mashinist: mashinist || undefined,
+    locomotiv: locomotiv || undefined,
     responsible_org: responsible_org || undefined,
     stage: stageFilter,
     protocol_overdue: protocol_overdue === "true" ? true : undefined,
@@ -503,6 +509,21 @@ export default function DelaysPage() {
       width: "100px",
     },
     {
+      key: "locomotiv",
+      header: t("columns.locomotiv"),
+      width: "130px",
+      accessor: (row) => (
+        <div className="flex flex-col leading-tight">
+          <span className="font-medium">{row?.locomotiv_name || "-"}</span>
+          {row?.mashinist && (
+            <span className="text-xs text-muted-foreground">
+              {row.mashinist}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
       key: "delay_time",
       header: t("columns.delay_time"),
       accessor: (row) => (row?.delay_time ? formatTime(row.delay_time) : "-"),
@@ -660,6 +681,19 @@ export default function DelaysPage() {
     return options;
   }, [organizationsData, t]);
 
+  const locomotiveOptions = useMemo(() => {
+    const options = [
+      { value: "", label: t("filters.locomotiv_placeholder") },
+    ];
+    locomotivesData?.results?.forEach((loc) =>
+      options.push({
+        value: String(loc.id),
+        label: loc.model_name ? `${loc.name} — ${loc.model_name}` : loc.name,
+      })
+    );
+    return options;
+  }, [locomotivesData, t]);
+
   const stageOptions = useMemo(
     () => [
       { value: "", label: t("filters.stage_all") },
@@ -741,6 +775,21 @@ export default function DelaysPage() {
               isSelect: false,
               placeholder: t("filters.station_placeholder"),
               permission: "filter_delay_station",
+            },
+            {
+              name: "mashinist",
+              label: t("filters.mashinist"),
+              isSelect: false,
+              placeholder: t("filters.mashinist_placeholder"),
+            },
+            {
+              name: "locomotiv",
+              label: t("filters.locomotiv"),
+              isSelect: true,
+              options: locomotiveOptions,
+              placeholder: t("filters.locomotiv_placeholder"),
+              searchable: true,
+              loading: isLoadingLocomotives,
             },
             {
               name: "responsible_org",
@@ -861,8 +910,9 @@ export default function DelaysPage() {
                 ]
               : []),
 
-            // Admin: classify (protocol_uploaded → disruption | not_disruption)
-            ...(isAdmin
+            // Classify (protocol_uploaded → disruption | not_disruption)
+            // — sriv_admin + sriv_moderator
+            ...(hasPermission(currentUser, "edit_delay")
               ? [
                   {
                     label: t("actions.classify_disruption"),
@@ -886,7 +936,12 @@ export default function DelaysPage() {
                       row.stage === "protocol_uploaded" && !row.archive,
                     className: "text-success focus:text-success",
                   },
-                  // Admin: edit fields
+                ]
+              : []),
+
+            // Edit fields — sriv_admin (any org) + sriv_moderator (own org)
+            ...(hasPermission(currentUser, "edit_delay")
+              ? [
                   {
                     label: t("actions.edit"),
                     icon: <Edit className="h-4 w-4" />,
