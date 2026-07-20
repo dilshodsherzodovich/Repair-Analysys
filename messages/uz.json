@@ -150,6 +150,13 @@
       "late_loco_exit": "Lokomotiv kech chiqishi",
       "no_electric_loco": "Elektrovoz yoq",
       "no_diesel_loco": "Teplovoz yoq",
+      "loco_cooling": "Lokomotivni sovitish",
+      "train_aftermath": "Poyezd oqibati",
+      "loco_derailment": "Lokomotiv relsdan chiqishi",
+      "loco_fire": "Lokomotiv yong'ini",
+      "loco_crash": "Lokomotiv halokati",
+      "loco_inspection": "Lokomotivni ko'rikdan o'tkazish",
+      "train_skip": "Poyezdni o'tkazib yuborish",
       "other": "Boshqa"
     },
     "delay_types": {

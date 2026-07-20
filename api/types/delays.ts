@@ -235,6 +235,13 @@ export type GroupReason =
   | "late_loco_exit"
   | "no_electric_loco"
   | "no_diesel_loco"
+  | "loco_cooling"
+  | "train_aftermath"
+  | "loco_derailment"
+  | "loco_fire"
+  | "loco_crash"
+  | "loco_inspection"
+  | "train_skip"
   | "other";
 
 export const TRAIN_TYPE_OPTIONS: Array<{ value: TrainType; label: string }> = [
@@ -258,6 +265,13 @@ export const GROUP_REASON_OPTIONS: Array<{
   { value: "late_loco_exit", label: "Поздний выход локомотива" },
   { value: "no_electric_loco", label: "Нет электровоза" },
   { value: "no_diesel_loco", label: "Нет тепловоза" },
+  { value: "loco_cooling", label: "Охлаждение локомотива" },
+  { value: "train_aftermath", label: "Последствие поезда" },
+  { value: "loco_derailment", label: "Сход локомотива" },
+  { value: "loco_fire", label: "Пожар локомотива" },
+  { value: "loco_crash", label: "Крушение локомотива" },
+  { value: "loco_inspection", label: "Осмотр локомотива" },
+  { value: "train_skip", label: "Пропуск поезда" },
   { value: "other", label: "Прочие случаи" },
 ];
 

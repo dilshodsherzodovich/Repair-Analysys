@@ -150,6 +150,13 @@
       "late_loco_exit": "Поздний выход локомотива",
       "no_electric_loco": "Нет электровоза",
       "no_diesel_loco": "Нет тепловоза",
+      "loco_cooling": "Охлаждение локомотива",
+      "train_aftermath": "Последствие поезда",
+      "loco_derailment": "Сход локомотива",
+      "loco_fire": "Пожар локомотива",
+      "loco_crash": "Крушение локомотива",
+      "loco_inspection": "Осмотр локомотива",
+      "train_skip": "Пропуск поезда",
       "other": "Другое"
     },
     "delay_types": {

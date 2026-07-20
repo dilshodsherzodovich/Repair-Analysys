@@ -500,7 +500,9 @@ export default function DelaysPage() {
     {
       key: "group_reason",
       header: t("columns.group_reason"),
-      accessor: (row) => getGroupReasonLabel(row?.group_reason),
+      // Prefer the backend-rendered label so new codes work without a frontend map
+      accessor: (row) =>
+        row?.group_reason_display || getGroupReasonLabel(row?.group_reason),
     },
     {
       key: "station",
