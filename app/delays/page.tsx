@@ -816,7 +816,7 @@ export default function DelaysPage() {
               searchable: false,
             },
           ]}
-          hasSearch={false}
+          hasSearch
           hasDateRangePicker
           dateRangePickerLabel=""
           searchPlaceholder={t("filters.search_placeholder")}

@@ -127,7 +127,7 @@
       "protocol_overdue": "Протокол",
       "protocol_overdue_all": "Все",
       "protocol_overdue_only": "Просрочен",
-      "search_placeholder": "Поиск",
+      "search_placeholder": "Поиск по поезду, станции, машинисту, причине",
       "mashinist": "Машинист",
       "mashinist_placeholder": "Ф.И.О. машиниста",
       "locomotiv": "Локомотив",
