@@ -84,6 +84,7 @@ export const queryKeys = {
     accept: "delays-accept",
     uploadProtocol: "delays-upload-protocol",
     classify: "delays-classify",
+    unclassify: "delays-unclassify",
     reports: "delays-reports",
     depotReasonReports: "delays-depot-reason-reports",
     paymentReport: "delays-payment-report",

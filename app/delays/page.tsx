@@ -26,6 +26,7 @@ import {
   useAcceptDelay,
   useUploadProtocol,
   useClassifyDelay,
+  useUnclassifyDelay,
 } from "@/api/hooks/use-delays";
 import { delaysService } from "@/api/services/delays.service";
 import { DelayModal } from "@/components/delays/delay-modal";
@@ -50,6 +51,7 @@ import {
   Trash2,
   AlertTriangle,
   ShieldCheck,
+  Undo2,
   ClipboardCheck,
   History,
   Users,
@@ -59,7 +61,6 @@ import {
   Info,
   FileSpreadsheet,
 } from "lucide-react";
-import { Button } from "@/ui/button";
 import { useTranslations } from "next-intl";
 
 // Stages that still have a "next" awaited step (terminal stages excluded)
@@ -122,6 +123,9 @@ export default function DelaysPage() {
     row: DelayEntry;
     isDisruption: boolean;
   } | null>(null);
+  const [unclassifyTarget, setUnclassifyTarget] = useState<DelayEntry | null>(
+    null
+  );
 
   const createMutation = useCreateDelay();
   const updateMutation = useUpdateDelay();
@@ -129,6 +133,7 @@ export default function DelaysPage() {
   const acceptMutation = useAcceptDelay();
   const uploadProtocolMutation = useUploadProtocol();
   const classifyMutation = useClassifyDelay();
+  const unclassifyMutation = useUnclassifyDelay();
 
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
@@ -385,6 +390,20 @@ export default function DelaysPage() {
       }
     );
   }, [classifyTarget, classifyMutation, showSuccess, t, actionError]);
+
+  const handleUnclassifyConfirm = useCallback(() => {
+    if (!unclassifyTarget) return;
+    unclassifyMutation.mutate(unclassifyTarget.id, {
+      onSuccess: () => {
+        showSuccess(t("messages.unclassify_success"));
+        setUnclassifyTarget(null);
+      },
+      onError: (e) => {
+        actionError(e);
+        setUnclassifyTarget(null);
+      },
+    });
+  }, [unclassifyTarget, unclassifyMutation, showSuccess, t, actionError]);
 
   const handleOpenCulprits = useCallback((row: DelayEntry) => {
     setCulpritsEntry(row);
@@ -938,6 +957,22 @@ export default function DelaysPage() {
                       row.stage === "protocol_uploaded" && !row.archive,
                     className: "text-success focus:text-success",
                   },
+                  // Revert classification (disruption | not_disruption → protocol_uploaded)
+                  {
+                    label: t("actions.unclassify"),
+                    icon: <Undo2 className="h-4 w-4" />,
+                    onClick: (row: DelayEntry) => setUnclassifyTarget(row),
+                    permission: "edit_delay" as Permission,
+                    variant: "outline" as const,
+                    // not_disruption is archived — allow it; disruption only if no
+                    // culprit has ОТЗ/recovery confirmation (backend blocks otherwise).
+                    shouldShow: (row: DelayEntry) =>
+                      row.stage === "not_disruption" ||
+                      (row.stage === "disruption" &&
+                        !(row.culprits ?? []).some(
+                          (c) => c.payroll_confirmed || c.recovered
+                        )),
+                  },
                 ]
               : []),
 
@@ -1047,6 +1082,18 @@ export default function DelaysPage() {
         cancelText={t("messages.classify_cancel_button")}
         isDoingAction={classifyMutation.isPending}
         variant={classifyTarget?.isDisruption ? "danger" : "info"}
+      />
+
+      <ConfirmationDialog
+        isOpen={!!unclassifyTarget}
+        onClose={() => setUnclassifyTarget(null)}
+        onConfirm={handleUnclassifyConfirm}
+        title={t("messages.unclassify_confirm_title")}
+        message={t("messages.unclassify_confirm_message")}
+        confirmText={t("messages.unclassify_confirm_button")}
+        cancelText={t("messages.classify_cancel_button")}
+        isDoingAction={unclassifyMutation.isPending}
+        variant="warning"
       />
 
       <ConfirmationDialog

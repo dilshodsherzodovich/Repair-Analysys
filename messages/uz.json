@@ -195,7 +195,11 @@
       "classify_confirm_message_not_disruption": "«Sriv emas» deb belgilansinmi? Yozuv arxivga o'tkaziladi.",
       "classify_confirm_button": "Tasdiqlash",
       "classify_cancel_button": "Bekor qilish",
-      "generic_error": "Xatolik yuz berdi"
+      "generic_error": "Xatolik yuz berdi",
+      "unclassify_success": "Klassifikatsiya qaytarildi",
+      "unclassify_confirm_title": "Klassifikatsiyani qaytarish",
+      "unclassify_confirm_message": "Ushbu sriv \"Bayonnoma yuklangan\" bosqichiga qaytariladi va qayta tasniflash mumkin bo'ladi. Davom etilsinmi?",
+      "unclassify_confirm_button": "Qaytarish"
     },
     "actions": {
       "edit": "Tahrirlash",
@@ -206,7 +210,8 @@
       "classify_disruption": "Sriv deb belgilash",
       "classify_not_disruption": "Sriv emas deb belgilash",
       "timeline": "Xronologiya",
-      "edit_protocol": "Bayonnomani tahrirlash"
+      "edit_protocol": "Bayonnomani tahrirlash",
+      "unclassify": "Klassifikatsiyani qaytarish"
     }
   },
   "UploadProtocolModal": {

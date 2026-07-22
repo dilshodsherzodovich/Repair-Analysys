@@ -99,7 +99,7 @@ export const delaysService = {
     return response.data;
   },
 
-  // protocol_uploaded → disruption | not_disruption (sriv_admin)
+  // protocol_uploaded → disruption | not_disruption (sriv_admin | sriv_moderator)
   async classifyDelay(
     id: number | string,
     payload: ClassifyPayload
@@ -107,6 +107,15 @@ export const delaysService = {
     const response = await api.post<DelayEntry>(
       `/sriv/delays/${id}/classify/`,
       payload
+    );
+    return response.data;
+  },
+
+  // disruption | not_disruption → protocol_uploaded (revert classification)
+  async unclassifyDelay(id: number | string): Promise<DelayEntry> {
+    const response = await api.post<DelayEntry>(
+      `/sriv/delays/${id}/unclassify/`,
+      {}
     );
     return response.data;
   },

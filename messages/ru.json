@@ -195,7 +195,11 @@
       "classify_confirm_message_not_disruption": "Отметить как «не срыв»? Запись будет перемещена в архив.",
       "classify_confirm_button": "Подтвердить",
       "classify_cancel_button": "Отмена",
-      "generic_error": "Произошла ошибка"
+      "generic_error": "Произошла ошибка",
+      "unclassify_success": "Классификация откачена",
+      "unclassify_confirm_title": "Откатить классификацию",
+      "unclassify_confirm_message": "Срыв вернётся на стадию «Загружен протокол», после чего его можно переклассифицировать. Продолжить?",
+      "unclassify_confirm_button": "Откатить"
     },
     "actions": {
       "edit": "Редактировать",
@@ -206,7 +210,8 @@
       "classify_disruption": "Отметить срывом",
       "classify_not_disruption": "Отметить «не срыв»",
       "timeline": "Хронология",
-      "edit_protocol": "Редактировать протокол"
+      "edit_protocol": "Редактировать протокол",
+      "unclassify": "Откатить классификацию"
     }
   },
   "UploadProtocolModal": {

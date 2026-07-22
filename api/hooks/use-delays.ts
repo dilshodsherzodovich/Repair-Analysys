@@ -160,6 +160,20 @@ export function useClassifyDelay() {
   });
 }
 
+export function useUnclassifyDelay() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number | string) => delaysService.unclassifyDelay(id),
+    mutationKey: [queryKeys.delays.unclassify],
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.delays.all] });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.delays.detail(id)],
+      });
+    },
+  });
+}
+
 export function useDelayReportsByPassengerTrain(params?: DelayReportParams) {
   return useQuery({
     queryKey: [queryKeys.delays.reports, params],
