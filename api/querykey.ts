@@ -4,6 +4,14 @@ export const queryKeys = {
     logout: "auth-logout",
   },
 
+  annualInspectionPlans: {
+    report: "annual-inspection-plans-report",
+    all: "annual-inspection-plans-all",
+  },
+  locomotiveModels: {
+    list: "locomotive-models-list",
+  },
+
   users: {
     all: "users-all",
     detail: (id: string) => `users-detail-${id}`,

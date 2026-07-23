@@ -25,6 +25,7 @@ import {
   Users,
   Wallet,
   Banknote,
+  CalendarRange,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
@@ -243,6 +244,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         icon: ClipboardList,
         section: "inspections",
         href: "/inspections",
+      });
+    }
+
+    if (user && canAccessSection(user, "inspections")) {
+      items.push({
+        key: "annual_inspection_plan",
+        name: t("nav.annual_inspection_plan"),
+        icon: CalendarRange,
+        section: "inspections",
+        href: "/annual-inspection-plan",
       });
     }
 
