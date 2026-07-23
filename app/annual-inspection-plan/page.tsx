@@ -184,7 +184,7 @@ export default function AnnualInspectionPlanPage() {
         <div className="px-5 py-3 bg-muted/30 flex flex-wrap items-center gap-2">
           {/* Year */}
           <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-            <SelectTrigger className="w-[110px] h-8 text-xs">
+            <SelectTrigger className="w-[110px] h-8 sm:h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -200,7 +200,7 @@ export default function AnnualInspectionPlanPage() {
             onValueChange={setOrgFilter}
             disabled={!isAdmin}
           >
-            <SelectTrigger className="w-[220px] h-8 text-xs">
+            <SelectTrigger className="w-[220px] h-8 sm:h-8 text-xs">
               <SelectValue placeholder="Tashkilot" />
             </SelectTrigger>
             <SelectContent>
@@ -214,7 +214,7 @@ export default function AnnualInspectionPlanPage() {
           {mode === "view" && (
             <>
               {/* Source: plan / fact / compare */}
-              <div className="flex items-center rounded-lg border border-border p-0.5 bg-background">
+              <div className="flex items-center h-8 rounded-lg border border-border p-0.5 bg-background mb-3 sm:mb-4">
                 {([
                   ["reja", "Reja"],
                   ["fakt", "Fakt"],
@@ -224,7 +224,7 @@ export default function AnnualInspectionPlanPage() {
                     key={key}
                     onClick={() => setSource(key)}
                     className={cn(
-                      "px-2.5 py-1 rounded-md text-xs font-medium transition-colors",
+                      "h-full flex items-center px-2.5 rounded-md text-xs font-medium transition-colors",
                       source === key
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
@@ -237,7 +237,7 @@ export default function AnnualInspectionPlanPage() {
 
               {/* Inspection type */}
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[160px] h-8 text-xs">
+                <SelectTrigger className="w-[160px] h-8 sm:h-8 text-xs">
                   <SelectValue placeholder="Ko'rik turi" />
                 </SelectTrigger>
                 <SelectContent>
@@ -252,7 +252,7 @@ export default function AnnualInspectionPlanPage() {
 
               {/* Locomotive model */}
               <Select value={modelFilter} onValueChange={setModelFilter}>
-                <SelectTrigger className="w-[160px] h-8 text-xs">
+                <SelectTrigger className="w-[160px] h-8 sm:h-8 text-xs">
                   <SelectValue placeholder="Rusum" />
                 </SelectTrigger>
                 <SelectContent>
@@ -263,12 +263,12 @@ export default function AnnualInspectionPlanPage() {
                 </SelectContent>
               </Select>
 
-              <div className="ml-auto flex items-center gap-2">
+              <div className="ml-auto flex items-center gap-2 mb-3 sm:mb-4">
                 {activeFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
                 <button
                   onClick={handleExcel}
                   disabled={!hasData || isExporting}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-50"
+                  className="flex items-center h-8 gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-50"
                 >
                   {isExporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
                   Excel

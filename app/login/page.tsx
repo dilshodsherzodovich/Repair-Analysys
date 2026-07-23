@@ -4,12 +4,20 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/ui/button";
+import { Input } from "@/ui/input";
 import { getSmartDepoUrl } from "@/lib/config";
-import { ArrowRight, Shield, Zap, Users } from "lucide-react";
+import { ArrowRight, Loader2, Shield, Zap, Users } from "lucide-react";
 import { config } from "@/lib/config";
+import { useLogin } from "@/api/hooks/use-auth";
+
+// Dev-only credentials form is compiled away in production builds.
+const IS_DEV = process.env.NODE_ENV === "development";
 
 export default function LoginPage() {
   const [smartDepoUrl, setSmartDepoUrl] = useState("https://mydepo.uz/");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { mutate: login, isPending, isError, error } = useLogin();
 
   useEffect(() => {
     const redirectUri = encodeURIComponent(window.location.origin);
@@ -18,6 +26,12 @@ export default function LoginPage() {
 
   const handleSsoLogin = () => {
     window.location.href = config.ssoLoginUrl;
+  };
+
+  const handleDevLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username || !password || isPending) return;
+    login({ username, password });
   };
 
   return (
@@ -136,35 +150,82 @@ export default function LoginPage() {
               </div>
             </motion.div>
 
-            {/* Login Buttons */}
+            {/* Login: SSO buttons in production, credentials form in dev */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
               className="flex flex-col gap-3"
             >
-              <Button
-                asChild
-                className="w-full h-14 text-base font-semibold bg-gradient-to-r from-[#2354bf] via-[#4978ce] to-[#644ac4] hover:from-[#1e47a8] hover:via-[#3d6bc4] hover:to-[#5538a8] text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
-              >
-                <Link
-                  href={smartDepoUrl}
-                  className="flex items-center justify-center gap-2"
-                >
-                  <span>Smart Depo tizimi orqali kirish</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
+              {!IS_DEV && (
+                <>
+                  <Button
+                    asChild
+                    className="w-full h-14 text-base font-semibold bg-gradient-to-r from-[#2354bf] via-[#4978ce] to-[#644ac4] hover:from-[#1e47a8] hover:via-[#3d6bc4] hover:to-[#5538a8] text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  >
+                    <Link
+                      href={smartDepoUrl}
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <span>Smart Depo tizimi orqali kirish</span>
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
 
-              <Button
-                onClick={handleSsoLogin}
-                className="w-full h-14 text-base font-semibold bg-white hover:bg-gray-50 text-[#2354bf] border-2 border-[#2354bf] shadow-lg hover:shadow-xl transition-all duration-300 group"
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <span>SSO orqali kirish</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </Button>
+                  <Button
+                    onClick={handleSsoLogin}
+                    className="w-full h-14 text-base font-semibold bg-white hover:bg-gray-50 text-[#2354bf] border-2 border-[#2354bf] shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span>SSO orqali kirish</span>
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Button>
+                </>
+              )}
+
+              {IS_DEV && (
+                <form onSubmit={handleDevLogin} className="flex flex-col gap-3">
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Login"
+                    autoComplete="username"
+                    className="h-12 bg-white"
+                  />
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Parol"
+                    autoComplete="current-password"
+                    className="h-12 bg-white"
+                  />
+                  {isError && (
+                    <p className="text-sm text-red-600">
+                      {(error as any)?.response?.data?.detail ||
+                        (error as any)?.response?.data?.non_field_errors?.[0] ||
+                        "Login yoki parol noto'g'ri"}
+                    </p>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={isPending || !username || !password}
+                    className="w-full h-14 text-base font-semibold bg-gradient-to-r from-[#2354bf] via-[#4978ce] to-[#644ac4] hover:from-[#1e47a8] hover:via-[#3d6bc4] hover:to-[#5538a8] text-white shadow-lg hover:shadow-xl transition-all duration-300 group disabled:opacity-60"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
+                      <span>Kirish</span>
+                      {!isPending && (
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      )}
+                    </span>
+                  </Button>
+                  <p className="text-center text-xs text-[#94a3b8]">
+                    Dev rejimi — login/parol orqali kirish
+                  </p>
+                </form>
+              )}
             </motion.div>
 
             {/* Footer Link */}
