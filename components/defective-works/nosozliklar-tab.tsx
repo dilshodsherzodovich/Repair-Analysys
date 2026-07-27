@@ -18,6 +18,7 @@ import {
   useDefectiveWorks,
   useDeleteDefectiveWork,
   useUpdateDefectiveWork,
+  useRevisionRemarkGroups,
 } from "@/api/hooks/use-defective-works";
 import { DefectiveWorkModal } from "@/components/defective-works/defective-work-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
@@ -40,6 +41,9 @@ export function NosozliklarTab() {
     organization_id,
     inspection_type,
     locomotive,
+    locomotive_type,
+    remark_group,
+    remark,
     start_date,
     end_date,
   } = getAllQueryValues();
@@ -85,6 +89,8 @@ export function NosozliklarTab() {
     useGetInspectionTypes();
   const { data: organizationsData, isLoading: isLoadingOrganizations } =
     useOrganizations();
+  const { data: remarkGroupsData, isLoading: isLoadingRemarkGroups } =
+    useRevisionRemarkGroups({ only_active: true, no_page: true });
 
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
@@ -100,6 +106,9 @@ export function NosozliklarTab() {
     tab: tab && tab !== "all" ? tab : undefined,
     organization_id: organization_id || undefined,
     inspection_type: inspection_type || undefined,
+    locomotive_type: locomotive_type || undefined,
+    remark_group: remark_group || undefined,
+    remark: remark || undefined,
     fromDate: start_date || undefined,
     toDate: end_date || undefined,
   });
@@ -243,6 +252,16 @@ export function NosozliklarTab() {
         })`,
     },
     {
+      key: "remark_group_info",
+      header: t("columns.remark_group"),
+      accessor: (row) => row?.remark_group_info?.name || "-",
+    },
+    {
+      key: "remark_info",
+      header: t("columns.remark"),
+      accessor: (row) => row?.remark_info?.name || "-",
+    },
+    {
       key: "train_driver",
       header: t("columns.train_driver"),
       accessor: (row) => row?.train_driver,
@@ -371,6 +390,45 @@ export function NosozliklarTab() {
     ];
   }, [t]);
 
+  const locomotiveTypeOptions = useMemo(
+    () => [
+      { value: "", label: t("filters.locomotive_type_all") },
+      { value: "electric_loco", label: t("locomotive_types.electric_loco") },
+      { value: "diesel_loco", label: t("locomotive_types.diesel_loco") },
+      { value: "electric_train", label: t("locomotive_types.electric_train") },
+      { value: "high_speed", label: t("locomotive_types.high_speed") },
+      { value: "carriage", label: t("locomotive_types.carriage") },
+    ],
+    [t],
+  );
+
+  const remarkGroupOptions = useMemo(() => {
+    const options = [{ value: "", label: t("filters.remark_group_all") }];
+    (remarkGroupsData ?? [])
+      .filter((g) => !locomotive_type || g.locomotive_type === locomotive_type)
+      .forEach((g) =>
+        options.push({
+          value: String(g.id),
+          label: g.code ? `${g.code} — ${g.name}` : g.name,
+        }),
+      );
+    return options;
+  }, [remarkGroupsData, locomotive_type, t]);
+
+  const remarkOptions = useMemo(() => {
+    const options = [{ value: "", label: t("filters.remark_all") }];
+    const grp = (remarkGroupsData ?? []).find(
+      (g) => String(g.id) === remark_group,
+    );
+    (grp?.remarks ?? []).forEach((r) =>
+      options.push({
+        value: String(r.id),
+        label: r.code ? `${r.code} — ${r.name}` : r.name,
+      }),
+    );
+    return options;
+  }, [remarkGroupsData, remark_group, t]);
+
   return (
     <>
       <StatsPanel
@@ -411,6 +469,31 @@ export function NosozliklarTab() {
               placeholder: t("filters.inspection_type_placeholder"),
               searchable: false,
               loading: isLoadingInspectionTypes,
+            },
+            {
+              name: "locomotive_type",
+              label: t("filters.locomotive_type"),
+              isSelect: true,
+              options: locomotiveTypeOptions,
+              placeholder: t("filters.locomotive_type_placeholder"),
+              searchable: false,
+            },
+            {
+              name: "remark_group",
+              label: t("filters.remark_group"),
+              isSelect: true,
+              options: remarkGroupOptions,
+              placeholder: t("filters.remark_group_placeholder"),
+              searchable: true,
+              loading: isLoadingRemarkGroups,
+            },
+            {
+              name: "remark",
+              label: t("filters.remark"),
+              isSelect: true,
+              options: remarkOptions,
+              placeholder: t("filters.remark_placeholder"),
+              searchable: true,
             },
             {
               name: "tab",

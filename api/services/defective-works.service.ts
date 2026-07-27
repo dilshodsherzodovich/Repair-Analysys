@@ -5,9 +5,31 @@ import {
   DefectiveWorkCreatePayload,
   DefectiveWorkUpdatePayload,
   DefectiveWorkListParams,
+  RevisionRemarkGroup,
+  RevisionRemarkGroupParams,
 } from "../types/defective-works";
 
 export const defectiveWorksService = {
+  async getRevisionRemarkGroups(
+    params?: RevisionRemarkGroupParams,
+  ): Promise<RevisionRemarkGroup[]> {
+    const response = await api.get<
+      RevisionRemarkGroup[] | PaginatedData<RevisionRemarkGroup>
+    >("/revision-remark-groups/", {
+      params: {
+        locomotive: params?.locomotive,
+        locomotive_id: params?.locomotive_id,
+        locomotive_type: params?.locomotive_type,
+        is_active: params?.is_active,
+        only_active: params?.only_active,
+        search: params?.search,
+        ordering: params?.ordering,
+        no_page: params?.no_page,
+      },
+    });
+    const data = response.data;
+    return Array.isArray(data) ? data : (data?.results ?? []);
+  },
   async getDefectiveWorks(
     params?: DefectiveWorkListParams,
   ): Promise<PaginatedData<DefectiveWorkEntry>> {
@@ -23,6 +45,9 @@ export const defectiveWorksService = {
           organization: params?.organization_id,
           inspection_type: params?.inspection_type,
           locomotive: params?.locomotive,
+          locomotive_type: params?.locomotive_type,
+          remark_group: params?.remark_group,
+          remark: params?.remark,
           fromDate: params?.fromDate,
           toDate: params?.toDate,
         },

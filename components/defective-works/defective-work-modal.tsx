@@ -25,6 +25,7 @@ import {
 } from "@/api/types/defective-works";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
+import { useRevisionRemarkGroups } from "@/api/hooks/use-defective-works";
 import { LocomotiveData } from "@/api/types/locomotive";
 import { InspectionType } from "@/api/types/inspectionTypes";
 import { useSnackbar } from "@/providers/snackbar-provider";
@@ -75,6 +76,7 @@ function LocomotiveSelectField({
   emptyText,
   searchPlaceholder = "Qidirish...",
   noResultsText = "Natija topilmadi",
+  onSelect,
 }: {
   name: string;
   defaultValue?: string;
@@ -86,6 +88,7 @@ function LocomotiveSelectField({
   emptyText: string;
   searchPlaceholder?: string;
   noResultsText?: string;
+  onSelect?: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -158,6 +161,7 @@ function LocomotiveSelectField({
     setSelectedValue(optionId);
     setOpen(false);
     setSearchValue("");
+    onSelect?.(optionId);
   };
 
   return (
@@ -315,6 +319,9 @@ export function DefectiveWorkModal({
   const [formKey, setFormKey] = useState(0);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedLocomotive, setSelectedLocomotive] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedRemark, setSelectedRemark] = useState("");
   const { showError } = useSnackbar();
 
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
@@ -322,6 +329,21 @@ export function DefectiveWorkModal({
 
   const { data: inspectionTypes, isPending: isLoadingInspectionTypes } =
     useGetInspectionTypes(isOpen);
+
+  // TU-152 remark groups for the picked locomotive (backend derives the type).
+  const { data: remarkGroups, isFetching: isLoadingRemarkGroups } =
+    useRevisionRemarkGroups(
+      {
+        locomotive: selectedLocomotive || undefined,
+        only_active: true,
+        no_page: true,
+      },
+      { enabled: isOpen && !!selectedLocomotive },
+    );
+
+  const groups = remarkGroups ?? [];
+  const activeGroup = groups.find((g) => String(g.id) === selectedGroup);
+  const remarkOptions = activeGroup?.remarks ?? [];
 
   useEffect(() => {
     if (!isOpen) return;
@@ -339,8 +361,15 @@ export function DefectiveWorkModal({
       };
       setFormDefaults(defaults);
       setSelectedDate(entry.date ? new Date(entry.date) : undefined);
+      setSelectedLocomotive(entry.locomotive ? String(entry.locomotive) : "");
+      setSelectedGroup(entry.remark_group ? String(entry.remark_group) : "");
+      setSelectedRemark(entry.remark ? String(entry.remark) : "");
     } else {
       setFormDefaults(INITIAL_FORM_DATA);
+      setSelectedDate(undefined);
+      setSelectedLocomotive("");
+      setSelectedGroup("");
+      setSelectedRemark("");
     }
     setFormKey((prev) => prev + 1);
   }, [entry, mode, isOpen]);
@@ -368,6 +397,8 @@ export function DefectiveWorkModal({
       issue: issue.trim(),
       code: code.trim(),
       date: selectedDate?.toISOString() || "",
+      ...(selectedRemark ? { remark: Number(selectedRemark) } : {}),
+      ...(selectedGroup ? { remark_group: Number(selectedGroup) } : {}),
     };
 
     onSave(payload);
@@ -376,6 +407,9 @@ export function DefectiveWorkModal({
   const handleClose = () => {
     setFormDefaults(INITIAL_FORM_DATA);
     setSelectedDate(undefined);
+    setSelectedLocomotive("");
+    setSelectedGroup("");
+    setSelectedRemark("");
     setFormKey((prev) => prev + 1);
     formRef.current?.reset();
     onClose();
@@ -415,6 +449,11 @@ export function DefectiveWorkModal({
               placeholder={t("locomotive_placeholder")}
               loadingText={t("locomotive_loading")}
               emptyText={t("locomotive_empty")}
+              onSelect={(id) => {
+                setSelectedLocomotive(id);
+                setSelectedGroup("");
+                setSelectedRemark("");
+              }}
             />
 
             <InspectionTypesSelectField
@@ -427,6 +466,69 @@ export function DefectiveWorkModal({
               loadingText={t("locomotive_loading")}
               emptyText={t("inspection_type_empty")}
             />
+
+            {/* TU-152 remark group */}
+            <div className="mb-4">
+              <Label htmlFor="remark_group">{t("remark_group")}</Label>
+              <Select
+                value={selectedGroup}
+                onValueChange={(v) => {
+                  setSelectedGroup(v);
+                  setSelectedRemark("");
+                }}
+                disabled={!selectedLocomotive || isLoadingRemarkGroups}
+              >
+                <SelectTrigger id="remark_group">
+                  <SelectValue
+                    placeholder={
+                      !selectedLocomotive
+                        ? t("remark_group_pick_locomotive")
+                        : isLoadingRemarkGroups
+                          ? t("locomotive_loading")
+                          : groups.length === 0
+                            ? t("remark_group_empty")
+                            : t("remark_group_placeholder")
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {groups.map((g) => (
+                    <SelectItem key={g.id} value={String(g.id)}>
+                      {g.code ? `${g.code} — ${g.name}` : g.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* TU-152 remark (child of the selected group) */}
+            <div className="mb-4">
+              <Label htmlFor="remark">{t("remark")}</Label>
+              <Select
+                value={selectedRemark}
+                onValueChange={setSelectedRemark}
+                disabled={!selectedGroup || remarkOptions.length === 0}
+              >
+                <SelectTrigger id="remark">
+                  <SelectValue
+                    placeholder={
+                      !selectedGroup
+                        ? t("remark_pick_group")
+                        : remarkOptions.length === 0
+                          ? t("remark_empty")
+                          : t("remark_placeholder")
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {remarkOptions.map((r) => (
+                    <SelectItem key={r.id} value={String(r.id)}>
+                      {r.code ? `${r.code} — ${r.name}` : r.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             <FormField
               id="train_driver"
