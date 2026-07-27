@@ -18,6 +18,7 @@ export const inspectionsService = {
         {
           params: {
             organization: params?.organization,
+            locomotive: params?.locomotive,
             is_closed: params?.is_closed,
             locomotive_type: params?.locomotive_type,
             inspection_type: params?.inspection_type,

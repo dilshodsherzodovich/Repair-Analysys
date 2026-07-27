@@ -1671,5 +1671,313 @@
     "save": "Saqlash",
     "update": "Yangilash",
     "saving": "Saqlanmoqda..."
+  },
+  "locomotivePassport": {
+    "title": "Lokomotiv pasporti",
+    "noPermission": "Sizda bu sahifani ko'rish uchun ruxsat yo'q",
+    "back": "Orqaga",
+    "locomotiveAlt": "Lokomotiv",
+    "tabs": {
+      "overview": "Umumiy ma'lumot",
+      "inspections": "Texnik ko'riklar",
+      "components": "Uzellar",
+      "journals": "Jurnallar"
+    },
+    "identity": {
+      "eyebrow": "Raqamli pasport",
+      "issuer": "O‘zbekiston temir yo‘llari · Tortuvchi harakat tarkibi",
+      "serial": "SERIYA",
+      "boardNumber": "Bort raqami",
+      "sectionsShort": "{count} seksiya"
+    },
+    "dashboard": {
+      "seeDetails": "Batafsil",
+      "backToOverview": "Orqaga",
+      "readiness": {
+        "title": "Tayyorlik",
+        "sub": "Texnik holati",
+        "of100": "100 dan",
+        "inspections": "Ko'riklar",
+        "oil": "Moy",
+        "gps": "GPS",
+        "online": "aloqada",
+        "offline": "signal yo'q",
+        "statusOk": "me'yorda",
+        "statusCrit": "{count} muddati o'tgan",
+        "oilAllValid": "hammasi yaroqli",
+        "oilOverdue": "{count} muddati o'tgan",
+        "readyOk": "Ishga tayyor",
+        "readyWarn": "E'tibor talab qiladi",
+        "readyCrit": "Tayyor emas",
+        "revision": "Nosozliklar",
+        "revisionOk": "e'tirozsiz",
+        "revisionOpen": "{count} yopilmagan",
+        "statusReady": "Ishga tayyor",
+        "statusLimited": "Cheklangan holda yaroqli",
+        "statusNotReady": "Ishga tayyor emas",
+        "allClear": "Barcha tizimlar meyorda",
+        "issues": "Izohlar: {count}"
+      },
+      "nextRepair": {
+        "title": "Yaqin ta'mir",
+        "byMileage": "yugurish bo'yicha",
+        "byHours": "vaqt bo'yicha",
+        "days": "kun",
+        "daysOverdue": "kun kechikish",
+        "until": "{date} gacha",
+        "km": "km",
+        "hours": "soat",
+        "sinceRepair": "Oxirgi ta'mirdan beri",
+        "remaining": "{value} {unit} qoldi",
+        "overdue": "{value} {unit} o'tib ketgan",
+        "none": "Ko'rik me'yorlari kiritilmagan",
+        "inDays": "{count} kundan keyin",
+        "inDaysOverdue": "{count} kun kechikkan"
+      },
+      "gps": {
+        "title": "Joylashuv",
+        "sub": "Onlayn · GPS",
+        "engineOn": "Dvigatel yoniq",
+        "engineOff": "Dvigatel o'chiq",
+        "noSignal": "Signal yo'q",
+        "noImei": "GPS biriktirilmagan",
+        "speed": "{value} km/soat"
+      },
+      "oil": {
+        "title": "Moy tahlillari",
+        "summaryValid": "{total} dan {valid} yaroqli",
+        "summaryBad": "{total} dan {valid} yaroqli · {bad} muddati o'tgan",
+        "dieselExchange": "Dizel moyi · almashtirish",
+        "none": "Tahlil ma'lumotlari yo'q"
+      },
+      "crew": {
+        "title": "Lokomotiv brigadasi",
+        "count": "{count} mashinist",
+        "senior": "Katta mashinist",
+        "none": "Brigada ma'lumotlari yo'q"
+      },
+      "components": {
+        "title": "Uzellar va reestr",
+        "sub": "Seksiya uzellari va komponentlar",
+        "sections": "Bo'limlar",
+        "registry": "Reestr yozuvlari"
+      },
+      "journals": {
+        "title": "Jurnallar",
+        "sub": "Jami {count} ta yozuv",
+        "revision": "Nosozliklar",
+        "mpr": "MPR",
+        "pantograph": "Tokopriyomnik"
+      }
+    },
+    "actions": {
+      "pdfExport": "PDF eksport",
+      "exporting": "Eksport...",
+      "edit": "Tahrirlash",
+      "cancel": "Bekor qilish",
+      "save": "Saqlash",
+      "saving": "Saqlanmoqda..."
+    },
+    "toasts": {
+      "componentsLoadedTitle": "Uzellar yuklandi",
+      "componentsLoadedDesc": "{count} ta uzel topildi.",
+      "componentsErrorTitle": "Uzellarni yuklashda xatolik",
+      "componentsErrorDesc": "Uzellarni yuklashda xatolik yuz berdi.",
+      "pdfCannotTitle": "PDF eksport qilish mumkin emas",
+      "pdfCannotDesc": "Ma'lumotlar to'liq yuklanmagan.",
+      "pdfSuccessTitle": "PDF muvaffaqiyatli eksport qilindi",
+      "pdfSuccessDesc": "PDF yangi oynada ochildi.",
+      "pdfErrorTitle": "PDF eksport qilishda xatolik",
+      "pdfErrorDesc": "PDF faylni yaratishda muammo yuz berdi.",
+      "noComponentsTitle": "Uzellar topilmadi",
+      "noComponentsDesc": "Saqlashdan oldin uzellar ro'yxatini yuklab oling.",
+      "noValidDataTitle": "Yaroqli ma'lumot topilmadi",
+      "noValidDataDesc": "Iltimos, kamida bitta uzel qiymatini kiriting.",
+      "savedTitle": "Ma'lumotlar saqlandi",
+      "savedDesc": "Uzel qiymatlari muvaffaqiyatli yangilandi.",
+      "saveErrorTitle": "Saqlashda xatolik",
+      "saveErrorDesc": "Server bilan aloqa muvaffaqiyatsiz bo'ldi. Qayta urinib ko'ring."
+    },
+    "details": {
+      "onAssignment": "Yo'nalishda",
+      "totalMileage": "Umumiy yurish",
+      "monthlyAverage": "Oylik o'rtacha",
+      "bandaj": "Bandaj",
+      "seriesNumber": "Seriya / Raqam",
+      "depo": "Depo",
+      "manufactured": "Ishlab chiqarilgan",
+      "type": "Turi",
+      "serviceType": "Xizmat turi",
+      "sections": "Seksiyalar",
+      "state": "Holati"
+    },
+    "location": {
+      "title": "GPS joylashuv",
+      "description": "UzGPS orqali real vaqtdagi ma'lumot",
+      "history": "Tarix",
+      "historyTitle": "Joylashuv tarixi",
+      "noHistory": "Tarix ma'lumotlari topilmadi.",
+      "noImei": "Ushbu lokomotiv uchun IMEI topilmadi.",
+      "loadError": "Joylashuv ma'lumotini olishning iloji bo'lmadi.",
+      "moving": "Harakatda",
+      "stopped": "To'xtagan",
+      "engineOn": "Dvigatel yoniq",
+      "engineOff": "Dvigatel o'chiq",
+      "coordinates": "Koordinatalar",
+      "speed": "Tezlik",
+      "satellites": "Sun'iy yo'ldoshlar",
+      "lastUpdate": "Oxirgi yangilanish",
+      "openLargeMap": "Katta xaritada ochish",
+      "mapLink": "Xarita",
+      "time": "Vaqt",
+      "kmh": "km/soat"
+    },
+    "drivers": {
+      "title": "Mashinistlar",
+      "description": "Lokomotivga biriktirilgan mashinistlar",
+      "unavailable": "Mashinist ma'lumoti mavjud emas.",
+      "loadError": "Mashinist ma'lumotini olishning iloji bo'lmadi.",
+      "notFound": "Biriktirilgan mashinist topilmadi."
+    },
+    "inspections": {
+      "intervalTitle": "Interval tahlili",
+      "intervalDescription": "Oxirgi ko'riklar bo'yicha o'rtacha interval va qolgan resurs",
+      "intervalEmpty": "Interval tahlili ma'lumotlari topilmadi.",
+      "title": "Texnik ko'riklar",
+      "description": "Har bir ko'rik turi bo'yicha norma, o'tilgan va qolgan resurs",
+      "empty": "Ko'rik ma'lumotlari topilmadi.",
+      "statusNormal": "Normada",
+      "statusApproaching": "Yaqinlashmoqda",
+      "statusOverdue": "Muddati o'tgan",
+      "mileage": "Yurish",
+      "hours": "Soatlar",
+      "km": "km",
+      "hoursUnit": "soat",
+      "remaining": "{value} {unit} qoldi",
+      "overdue": "{value} {unit} muddati o'tgan",
+      "last": "Oxirgi: {date}",
+      "normNotSet": "Norma belgilanmagan."
+    },
+    "oilStatus": {
+      "title": "Moy tahlillari",
+      "description": "Laboratoriya moy tahlillarining oxirgi natijalari va yaroqlilik holati",
+      "empty": "Ushbu lokomotiv uchun moy tahlillari topilmadi.",
+      "loadError": "Moy tahlillari ma'lumotlarini yuklashda xatolik yuz berdi.",
+      "exchangeDate": "Almashtirilgan sana",
+      "lastOilDate": "Oxirgi moy sanasi",
+      "noData": "Ma'lumot yo'q",
+      "valid": "Yaroqli",
+      "invalid": "Yaroqsiz",
+      "expired": "Muddati o'tgan",
+      "types": {
+        "DieselOilAnalysis": "Dizel moyi",
+        "CompressorOilAnalysis": "Kompressor moyi",
+        "ElectricCompressorOilAnalysis": "Elektr kompressor moyi",
+        "MOPOilAnalysis": "MOP moyi",
+        "ElectricMOPOilAnalysis": "Elektr MOP moyi",
+        "CoolingWaterAnalysis": "Sovutish suvi",
+        "DieselFuelAnalysis": "Dizel yoqilg'isi"
+      },
+      "historyTitle": "Tahlillar tarixi",
+      "historyDescription": "Moy laboratoriya tahlillari yozuvlari",
+      "historyEmpty": "Tahlil yozuvlari hozircha yo'q"
+    },
+    "history": {
+      "title": "Ko'riklar tarixi",
+      "description": "Ushbu lokomotiv bo'yicha ko'riklar tarixi",
+      "empty": "Ko'riklar tarixi topilmadi.",
+      "statusCancelled": "Bekor qilingan",
+      "statusClosed": "Yopilgan",
+      "statusInProgress": "Jarayonda",
+      "norm": "Norma:",
+      "remaining": "Qolgan:",
+      "columns": {
+        "createdTime": "Yaratilgan vaqt",
+        "kanavaEntry": "Kanavaga kirish",
+        "inspectionType": "Ko'rik turi",
+        "xkp": "XKP",
+        "interval": "Interval",
+        "progress": "Progress",
+        "status": "Holati"
+      }
+    },
+    "components": {
+      "title": "Uzellar",
+      "description": "Seksiya bo'yicha uzellar va ularning zavod raqamlari",
+      "factoryNumber": "Zavod raqami",
+      "manufactureYear": "Chiqarilgan yili",
+      "numberPlaceholder": "Raqam",
+      "yearPlaceholder": "Yil",
+      "selectSection": "Bo'limni tanlang.",
+      "empty": "Uzellar topilmadi. Avval uzellar ro'yxatini yarating."
+    },
+    "registry": {
+      "title": "Uzellar reyestri",
+      "description": "O'rnatilgan va yechilgan uzellar tarixi",
+      "empty": "Reyestr yozuvlari topilmadi.",
+      "manufactureYear": "Chiqarilgan yili",
+      "factoryNumber": "Zavod raqami",
+      "columns": {
+        "date": "Sana",
+        "component": "Uzel",
+        "section": "Seksiya",
+        "reason": "Sabab",
+        "installed": "O'rnatilgan",
+        "removed": "Yechilgan",
+        "staff": "Xodim"
+      }
+    },
+    "journals": {
+      "mprTitle": "MPR jurnali",
+      "mprDescription": "Lokomotiv bo'yicha buyurtmalar",
+      "pantographTitle": "Pantograf jurnali",
+      "pantographDescription": "Lokomotiv bo'yicha yozuvlar",
+      "revisionTitle": "Nosozliklar jurnali",
+      "revisionDescription": "Lokomotiv bo'yicha yozuvlar",
+      "empty": "Yozuvlar topilmadi.",
+      "done": "Bajarilgan",
+      "notDone": "Bajarilmagan",
+      "columns": {
+        "date": "Sana",
+        "train": "Poyezd №",
+        "person": "Mas'ul",
+        "damage": "Zarar",
+        "desc": "Tavsif",
+        "section": "Seksiya",
+        "code": "Kod",
+        "locomotive": "Lokomotiv",
+        "driver": "Mashinist",
+        "issue": "Nosozlik",
+        "status": "Holati"
+      }
+    },
+    "enums": {
+      "state": {
+        "in_use": "Foydalanishda",
+        "in_reserve": "Zaxirada",
+        "in_inspection": "Ko'rikda"
+      },
+      "serviceType": {
+        "passenger": "Yo'lovchi",
+        "freight": "Yuk tashuvchi",
+        "mixed": "Aralash (yuk-yo'lovchi)",
+        "intercity": "Shaharlararo",
+        "afrosiyob": "Afrosiyob (tezyurar)",
+        "switcher": "Manyovr",
+        "pusher": "Itaruvchi",
+        "lead": "Tortuvchi",
+        "carriage": "Vagon"
+      },
+      "locomotiveType": {
+        "electric_loco": "Elektrovoz",
+        "diesel_loco": "Teplovoz",
+        "electric_train": "Elektropoyezd",
+        "high_speed": "Tezyurar poyezd",
+        "carriage": "Vagon"
+      }
+    }
+  },
+  "common": {
+    "loading": "Yuklanmoqda..."
   }
 }

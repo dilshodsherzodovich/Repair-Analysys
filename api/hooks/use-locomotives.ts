@@ -44,6 +44,25 @@ export const useGetLocomotiveDetail = (
   });
 };
 
+export const useLocomotiveFullDetail = (
+  id?: number | string,
+  enabled: boolean = true
+) => {
+  return useQuery({
+    queryKey: [queryKeys.locomotives.fullDetail(id ?? "unknown")],
+    queryFn: () => locomotivesService.getLocomotiveFullDetail(id!),
+    enabled: enabled && !!id,
+    staleTime: 30 * 60 * 1000,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    refetchOnWindowFocus: false,
+  });
+};
+
 export const useGetLocomotiveModels = (params: LocomotiveModelGetParams) => {
   return useQuery({
     queryKey: [queryKeys.locomotives.models.list, { ...params }],

@@ -1671,5 +1671,313 @@
     "save": "Сохранить",
     "update": "Обновить",
     "saving": "Сохранение..."
+  },
+  "locomotivePassport": {
+    "title": "Паспорт локомотива",
+    "noPermission": "У вас нет доступа для просмотра этой страницы",
+    "back": "Назад",
+    "locomotiveAlt": "Локомотив",
+    "tabs": {
+      "overview": "Общая информация",
+      "inspections": "Технические осмотры",
+      "components": "Узлы",
+      "journals": "Журналы"
+    },
+    "identity": {
+      "eyebrow": "Цифровой паспорт",
+      "issuer": "O‘zbekiston temir yo‘llari · Тяговый подвижной состав",
+      "serial": "СЕРИЯ",
+      "boardNumber": "Бортовой номер",
+      "sectionsShort": "{count} секц."
+    },
+    "dashboard": {
+      "seeDetails": "Подробнее",
+      "backToOverview": "Назад",
+      "readiness": {
+        "title": "Готовность",
+        "sub": "Техническое состояние",
+        "of100": "из 100",
+        "inspections": "Осмотры",
+        "oil": "Масло",
+        "gps": "GPS",
+        "online": "на связи",
+        "offline": "нет сигнала",
+        "statusOk": "в норме",
+        "statusCrit": "{count} просрочено",
+        "oilAllValid": "все годны",
+        "oilOverdue": "{count} просрочен",
+        "readyOk": "Готов к работе",
+        "readyWarn": "Требует внимания",
+        "readyCrit": "Не готов",
+        "revision": "Неисправности",
+        "revisionOk": "нет замечаний",
+        "revisionOpen": "{count} не закрыто",
+        "statusReady": "Готов к эксплуатации",
+        "statusLimited": "Ограниченно годен",
+        "statusNotReady": "Не готов к эксплуатации",
+        "allClear": "Все системы в норме",
+        "issues": "Замечаний: {count}"
+      },
+      "nextRepair": {
+        "title": "Ближайший ремонт",
+        "byMileage": "по пробегу",
+        "byHours": "по времени",
+        "days": "дней",
+        "daysOverdue": "дней просрочки",
+        "until": "до {date}",
+        "km": "км",
+        "hours": "ч",
+        "sinceRepair": "С последнего ремонта",
+        "remaining": "Осталось {value} {unit}",
+        "overdue": "Просрочено {value} {unit}",
+        "none": "Нормы осмотров не заданы",
+        "inDays": "через {count} дн.",
+        "inDaysOverdue": "просрочен {count} дн."
+      },
+      "gps": {
+        "title": "Местоположение",
+        "sub": "Онлайн · GPS",
+        "engineOn": "Двигатель вкл",
+        "engineOff": "Двигатель выкл",
+        "noSignal": "Нет сигнала",
+        "noImei": "GPS не привязан",
+        "speed": "{value} км/ч"
+      },
+      "oil": {
+        "title": "Анализы масла",
+        "summaryValid": "{valid} из {total} годны",
+        "summaryBad": "{valid} из {total} годны · {bad} просрочен",
+        "dieselExchange": "Дизельное масло · замена",
+        "none": "Нет данных анализов"
+      },
+      "crew": {
+        "title": "Локомотивная бригада",
+        "count": "{count} машинист",
+        "senior": "Ст. машинист",
+        "none": "Нет данных о бригаде"
+      },
+      "components": {
+        "title": "Узлы и реестр",
+        "sub": "Узлы секций и компоненты",
+        "sections": "Разделов",
+        "registry": "Записей в реестре"
+      },
+      "journals": {
+        "title": "Журналы",
+        "sub": "{count} записей всего",
+        "revision": "Неисправности",
+        "mpr": "МПР",
+        "pantograph": "Токоприёмник"
+      }
+    },
+    "actions": {
+      "pdfExport": "Экспорт PDF",
+      "exporting": "Экспорт...",
+      "edit": "Редактировать",
+      "cancel": "Отмена",
+      "save": "Сохранить",
+      "saving": "Сохранение..."
+    },
+    "toasts": {
+      "componentsLoadedTitle": "Узлы загружены",
+      "componentsLoadedDesc": "Найдено {count} узлов.",
+      "componentsErrorTitle": "Ошибка при загрузке узлов",
+      "componentsErrorDesc": "Произошла ошибка при загрузке узлов.",
+      "pdfCannotTitle": "Экспорт PDF невозможен",
+      "pdfCannotDesc": "Данные загружены не полностью.",
+      "pdfSuccessTitle": "PDF успешно экспортирован",
+      "pdfSuccessDesc": "PDF открыт в новом окне.",
+      "pdfErrorTitle": "Ошибка при экспорте PDF",
+      "pdfErrorDesc": "Возникла проблема при создании PDF-файла.",
+      "noComponentsTitle": "Узлы не найдены",
+      "noComponentsDesc": "Перед сохранением загрузите список узлов.",
+      "noValidDataTitle": "Допустимые данные не найдены",
+      "noValidDataDesc": "Пожалуйста, введите хотя бы одно значение узла.",
+      "savedTitle": "Данные сохранены",
+      "savedDesc": "Значения узлов успешно обновлены.",
+      "saveErrorTitle": "Ошибка при сохранении",
+      "saveErrorDesc": "Не удалось связаться с сервером. Повторите попытку."
+    },
+    "details": {
+      "onAssignment": "В рейсе",
+      "totalMileage": "Общий пробег",
+      "monthlyAverage": "Среднемесячный",
+      "bandaj": "Бандаж",
+      "seriesNumber": "Серия / Номер",
+      "depo": "Депо",
+      "manufactured": "Дата выпуска",
+      "type": "Тип",
+      "serviceType": "Вид обслуживания",
+      "sections": "Секции",
+      "state": "Состояние"
+    },
+    "location": {
+      "title": "GPS местоположение",
+      "description": "Данные в реальном времени через UzGPS",
+      "history": "История",
+      "historyTitle": "История местоположения",
+      "noHistory": "Данные истории не найдены.",
+      "noImei": "Для этого локомотива не найден IMEI.",
+      "loadError": "Не удалось получить данные о местоположении.",
+      "moving": "В движении",
+      "stopped": "Остановлен",
+      "engineOn": "Двигатель включён",
+      "engineOff": "Двигатель выключен",
+      "coordinates": "Координаты",
+      "speed": "Скорость",
+      "satellites": "Спутники",
+      "lastUpdate": "Последнее обновление",
+      "openLargeMap": "Открыть на большой карте",
+      "mapLink": "Карта",
+      "time": "Время",
+      "kmh": "км/ч"
+    },
+    "drivers": {
+      "title": "Машинисты",
+      "description": "Машинисты, закреплённые за локомотивом",
+      "unavailable": "Данные о машинисте отсутствуют.",
+      "loadError": "Не удалось получить данные о машинисте.",
+      "notFound": "Закреплённый машинист не найден."
+    },
+    "inspections": {
+      "intervalTitle": "Интервальный анализ",
+      "intervalDescription": "Средний интервал и остаточный ресурс по последним осмотрам",
+      "intervalEmpty": "Данные интервального анализа не найдены.",
+      "title": "Технические осмотры",
+      "description": "Норма, пройдено и остаточный ресурс по каждому виду осмотра",
+      "empty": "Данные осмотров не найдены.",
+      "statusNormal": "В норме",
+      "statusApproaching": "Приближается",
+      "statusOverdue": "Просрочено",
+      "mileage": "Пробег",
+      "hours": "Часы",
+      "km": "км",
+      "hoursUnit": "ч",
+      "remaining": "Осталось {value} {unit}",
+      "overdue": "Просрочено {value} {unit}",
+      "last": "Последний: {date}",
+      "normNotSet": "Норма не задана."
+    },
+    "oilStatus": {
+      "title": "Анализы масла",
+      "description": "Последние результаты лабораторных анализов масла и статус годности",
+      "empty": "Для этого локомотива анализы масла не найдены.",
+      "loadError": "Ошибка при загрузке данных анализов масла.",
+      "exchangeDate": "Дата замены",
+      "lastOilDate": "Дата последнего масла",
+      "noData": "Нет данных",
+      "valid": "Годен",
+      "invalid": "Не годен",
+      "expired": "Просрочен",
+      "types": {
+        "DieselOilAnalysis": "Дизельное масло",
+        "CompressorOilAnalysis": "Компрессорное масло",
+        "ElectricCompressorOilAnalysis": "Масло электрокомпрессора",
+        "MOPOilAnalysis": "Масло МОП",
+        "ElectricMOPOilAnalysis": "Масло электро-МОП",
+        "CoolingWaterAnalysis": "Охлаждающая вода",
+        "DieselFuelAnalysis": "Дизельное топливо"
+      },
+      "historyTitle": "История анализов",
+      "historyDescription": "Записи лабораторных анализов масла",
+      "historyEmpty": "Записи анализов пока отсутствуют"
+    },
+    "history": {
+      "title": "История осмотров",
+      "description": "История осмотров по этому локомотиву",
+      "empty": "История осмотров не найдена.",
+      "statusCancelled": "Отменён",
+      "statusClosed": "Закрыт",
+      "statusInProgress": "В процессе",
+      "norm": "Норма:",
+      "remaining": "Осталось:",
+      "columns": {
+        "createdTime": "Время создания",
+        "kanavaEntry": "Заход на канаву",
+        "inspectionType": "Вид осмотра",
+        "xkp": "ХКП",
+        "interval": "Интервал",
+        "progress": "Прогресс",
+        "status": "Состояние"
+      }
+    },
+    "components": {
+      "title": "Узлы",
+      "description": "Узлы по секциям и их заводские номера",
+      "factoryNumber": "Заводской номер",
+      "manufactureYear": "Год выпуска",
+      "numberPlaceholder": "Номер",
+      "yearPlaceholder": "Год",
+      "selectSection": "Выберите раздел.",
+      "empty": "Узлы не найдены. Сначала создайте список узлов."
+    },
+    "registry": {
+      "title": "Реестр узлов",
+      "description": "История установленных и снятых узлов",
+      "empty": "Записи реестра не найдены.",
+      "manufactureYear": "Год выпуска",
+      "factoryNumber": "Заводской номер",
+      "columns": {
+        "date": "Дата",
+        "component": "Узел",
+        "section": "Секция",
+        "reason": "Причина",
+        "installed": "Установлен",
+        "removed": "Снят",
+        "staff": "Сотрудник"
+      }
+    },
+    "journals": {
+      "mprTitle": "Журнал МПР",
+      "mprDescription": "Заказы по локомотиву",
+      "pantographTitle": "Журнал пантографа",
+      "pantographDescription": "Записи по локомотиву",
+      "revisionTitle": "Журнал неисправностей",
+      "revisionDescription": "Записи по локомотиву",
+      "empty": "Записи не найдены.",
+      "done": "Выполнено",
+      "notDone": "Не выполнено",
+      "columns": {
+        "date": "Дата",
+        "train": "Поезд №",
+        "person": "Ответственный",
+        "damage": "Ущерб",
+        "desc": "Описание",
+        "section": "Секция",
+        "code": "Код",
+        "locomotive": "Локомотив",
+        "driver": "Машинист",
+        "issue": "Неисправность",
+        "status": "Состояние"
+      }
+    },
+    "enums": {
+      "state": {
+        "in_use": "В эксплуатации",
+        "in_reserve": "В резерве",
+        "in_inspection": "На осмотре"
+      },
+      "serviceType": {
+        "passenger": "Пассажирский",
+        "freight": "Грузовой",
+        "mixed": "Смешанный (груз-пассажир)",
+        "intercity": "Междугородный",
+        "afrosiyob": "Афросиёб (высокоскоростной)",
+        "switcher": "Маневровый",
+        "pusher": "Толкач",
+        "lead": "Ведущий",
+        "carriage": "Вагон"
+      },
+      "locomotiveType": {
+        "electric_loco": "Электровоз",
+        "diesel_loco": "Тепловоз",
+        "electric_train": "Электропоезд",
+        "high_speed": "Высокоскоростной поезд",
+        "carriage": "Вагон"
+      }
+    }
+  },
+  "common": {
+    "loading": "Загрузка..."
   }
 }

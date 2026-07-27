@@ -19,6 +19,7 @@ export const componentRegistryService = {
             page_size: params?.page_size,
             search: params?.search,
             organization: params?.organization,
+            locomotive_id: params?.locomotive_id,
             no_page: params?.no_page,
             defect_date_start: params?.defect_date_start || undefined,
             defect_date_end: params?.defect_date_end || undefined,

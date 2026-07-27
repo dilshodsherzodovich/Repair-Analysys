@@ -65,9 +65,16 @@ export const queryKeys = {
       list: "locomotive-models-list",
     },
     detail: (id: string | number) => `locomotives-detail-${id}`,
+    fullDetail: (id: string | number) => `locomotives-full-detail-${id}`,
   },
   inspectionTypes: {
     list: "inspection-types-list",
+  },
+  revisionJournal: {
+    all: "revision-journal-all",
+    create: "revision-journal-create",
+    update: "revision-journal-update",
+    delete: "revision-journal-delete",
   },
   pantograph: {
     all: "pantograph-all",
