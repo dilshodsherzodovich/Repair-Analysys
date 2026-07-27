@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -13,8 +13,16 @@ import {
   QUARTER_LABELS,
   accentFor,
   computeOrgTotals,
+  monthCount,
+  monthInspections,
+  quarterCount,
+  rowInspections,
 } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
+import {
+  InspectionsDialogData,
+  PlanInspectionsDialog,
+} from "./plan-inspections-dialog";
 
 function num(v: number) {
   return v ? (
@@ -28,22 +36,30 @@ function typeTotals(type: AnnualPlanReportType) {
   const quarters: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 };
   let yearly = 0;
   type.locomotive_models.forEach((row) => {
-    for (let q = 1; q <= 4; q++) quarters[q] += row.quarters[String(q)] ?? 0;
+    for (let q = 1; q <= 4; q++) quarters[q] += quarterCount(row, q);
     yearly += row.yearly_count ?? 0;
   });
   return { quarters, yearly };
 }
 
-/** One inspection type = one collapsible card: summary header + month table. */
-function PlanTypeCard({
+/**
+ * One inspection type = one collapsible card: summary header + month table.
+ *
+ * Memoised on purpose: the table is the expensive part of this page (models ×
+ * 17 columns) and `type`/`index` only change when new data arrives, so opening
+ * the inspections dialog no longer rebuilds every card.
+ */
+const PlanTypeCard = memo(function PlanTypeCard({
   type,
   index,
+  onShowInspections,
 }: {
   type: AnnualPlanReportType;
   index: number;
+  onShowInspections: (data: InspectionsDialogData) => void;
 }) {
   const accent = accentFor(index);
-  const { quarters, yearly } = typeTotals(type);
+  const { quarters, yearly } = useMemo(() => typeTotals(type), [type]);
   const [open, setOpen] = useState(true);
 
   return (
@@ -113,48 +129,108 @@ function PlanTypeCard({
               </tr>
             </thead>
             <tbody>
-              {type.locomotive_models.map((row, rowIndex) => (
-                <tr key={row.locomotive_model?.id ?? `x-${rowIndex}`} className="hover:bg-muted/30 transition-colors">
-                  <td className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">
-                    {row.locomotive_model?.name ?? "—"}
-                  </td>
-                  {GRID_COLUMNS.map((col) =>
-                    col.kind === "month" ? (
-                      <td key={`m${col.month}`} className="border border-border px-1 py-2 text-center">
-                        {num(row.months[String(col.month)] ?? 0)}
-                      </td>
-                    ) : (
-                      <td key={`q${col.quarter}`} className={cn("border border-border px-1 py-2 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
-                        {row.quarters[String(col.quarter)] ?? 0}
-                      </td>
-                    )
-                  )}
-                  <td className={cn("border border-border px-2 py-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
-                    {row.yearly_count || 0}
-                  </td>
-                </tr>
-              ))}
+              {type.locomotive_models.map((row, rowIndex) => {
+                const modelName = row.locomotive_model?.name ?? "—";
+                const yearly = rowInspections(row);
+                return (
+                  <tr key={row.locomotive_model?.id ?? `x-${rowIndex}`} className="hover:bg-muted/30 transition-colors">
+                    <td className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">
+                      {modelName}
+                    </td>
+                    {GRID_COLUMNS.map((col) => {
+                      if (col.kind !== "month") {
+                        return (
+                          <td key={`q${col.quarter}`} className={cn("border border-border px-1 py-2 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
+                            {quarterCount(row, col.quarter)}
+                          </td>
+                        );
+                      }
+                      // Fakt cells carry the individual inspections — make those
+                      // clickable so the list can be opened; plan cells stay static.
+                      const inspections = monthInspections(row, col.month);
+                      return (
+                        <td key={`m${col.month}`} className="border border-border p-0 text-center">
+                          {inspections.length > 0 ? (
+                            <button
+                              type="button"
+                              title="Ko'riklar ro'yxati"
+                              onClick={() =>
+                                onShowInspections({
+                                  typeName: type.inspection_type.name,
+                                  modelName,
+                                  month: col.month,
+                                  inspections,
+                                })
+                              }
+                              className="w-full px-1 py-2 font-semibold tabular-nums underline decoration-dotted underline-offset-2 hover:bg-muted transition-colors"
+                            >
+                              {monthCount(row, col.month)}
+                            </button>
+                          ) : (
+                            <div className="px-1 py-2">{num(monthCount(row, col.month))}</div>
+                          )}
+                        </td>
+                      );
+                    })}
+                    <td className={cn("border border-border p-0 text-center font-bold tabular-nums", accent.soft, accent.text)}>
+                      {yearly.length > 0 ? (
+                        <button
+                          type="button"
+                          title="Yillik ko'riklar ro'yxati"
+                          onClick={() =>
+                            onShowInspections({
+                              typeName: type.inspection_type.name,
+                              modelName,
+                              month: null,
+                              inspections: yearly.map((y) => y.inspection),
+                            })
+                          }
+                          className="w-full px-2 py-2 underline decoration-dotted underline-offset-2 hover:brightness-95 transition-all"
+                        >
+                          {row.yearly_count || 0}
+                        </button>
+                      ) : (
+                        <div className="px-2 py-2">{row.yearly_count || 0}</div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       )}
     </div>
   );
-}
+});
 
 /** One organization: per-type stat cards (also a filter) + detail cards. */
 export function PlanReportGrid({ org }: { org: AnnualPlanReportOrganization }) {
-  const totals = computeOrgTotals(org);
-  const types = org.inspection_types.filter((t) => t.locomotive_models.length > 0);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [dialogData, setDialogData] = useState<InspectionsDialogData | null>(null);
 
-  const statItems = types.map((t) => {
-    const { yearly, quarters } = typeTotals(t);
-    return { id: t.inspection_type.id, name: t.inspection_type.name, yearly, quarters };
-  });
+  // All of these depend only on `org`, so they survive a dialog open/close.
+  const totals = useMemo(() => computeOrgTotals(org), [org]);
+  const types = useMemo(
+    () => org.inspection_types.filter((t) => t.locomotive_models.length > 0),
+    [org]
+  );
+  const statItems = useMemo(
+    () =>
+      types.map((t) => {
+        const { yearly, quarters } = typeTotals(t);
+        return { id: t.inspection_type.id, name: t.inspection_type.name, yearly, quarters };
+      }),
+    [types]
+  );
 
-  const visibleTypes =
-    selectedId == null ? types : types.filter((t) => t.inspection_type.id === selectedId);
+  const visibleTypes = useMemo(
+    () =>
+      selectedId == null ? types : types.filter((t) => t.inspection_type.id === selectedId),
+    [types, selectedId]
+  );
+
+  const closeDialog = useCallback(() => setDialogData(null), []);
 
   return (
     <section className="space-y-3">
@@ -179,10 +255,17 @@ export function PlanReportGrid({ org }: { org: AnnualPlanReportOrganization }) {
             (t) => t.inspection_type.id === type.inspection_type.id
           );
           return (
-            <PlanTypeCard key={type.inspection_type.id} type={type} index={originalIdx} />
+            <PlanTypeCard
+              key={type.inspection_type.id}
+              type={type}
+              index={originalIdx}
+              onShowInspections={setDialogData}
+            />
           );
         })
       )}
+
+      <PlanInspectionsDialog data={dialogData} onClose={closeDialog} />
     </section>
   );
 }

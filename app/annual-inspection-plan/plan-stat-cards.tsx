@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { QUARTER_LABELS, accentFor } from "./plan-grid-shared";
 
@@ -15,7 +16,7 @@ export interface StatItem {
  * selects that type (click again to clear); the selected id drives the filter
  * on the detail tables below.
  */
-export function PlanStatCards({
+export const PlanStatCards = memo(function PlanStatCards({
   items,
   selectedId,
   onSelect,
@@ -74,4 +75,4 @@ export function PlanStatCards({
       })}
     </div>
   );
-}
+});

@@ -9,6 +9,10 @@ import {
   AnnualPlanReportOrganization,
   AnnualPlanReportRow,
 } from "@/api/types/annual-inspection-plan";
+import {
+  monthCount,
+  quarterCount,
+} from "@/app/annual-inspection-plan/plan-grid-shared";
 
 const MONTHS_SHORT = [
   "Yan", "Fev", "Mar", "Apr", "May", "Iyn",
@@ -50,8 +54,8 @@ const COLS: Col[] = (() => {
   return cols;
 })();
 
-const mVal = (row: AnnualPlanReportRow | undefined, m: number) => row?.months[String(m)] ?? 0;
-const qVal = (row: AnnualPlanReportRow | undefined, q: number) => row?.quarters[String(q)] ?? 0;
+const mVal = monthCount;
+const qVal = quarterCount;
 const yVal = (row: AnnualPlanReportRow | undefined) => row?.yearly_count ?? 0;
 
 interface MergedType {

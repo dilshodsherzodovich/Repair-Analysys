@@ -4,7 +4,21 @@
 // @ts-ignore - use browser build of exceljs
 import ExcelJS from "exceljs/dist/exceljs.min.js";
 import { saveAs } from "file-saver";
-import { AnnualPlanReport } from "@/api/types/annual-inspection-plan";
+import {
+  AnnualPlanFactInspection,
+  AnnualPlanReport,
+} from "@/api/types/annual-inspection-plan";
+import {
+  cellCount,
+  formatInspectionValue,
+  inspectionFields,
+  monthInspections,
+} from "@/app/annual-inspection-plan/plan-grid-shared";
+
+const MONTHS_FULL = [
+  "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
+  "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr",
+];
 
 const MONTHS_SHORT = [
   "Yan", "Fev", "Mar", "Apr", "May", "Iyn",
@@ -39,6 +53,87 @@ const COLS: Col[] = (() => {
   }
   return cols;
 })();
+
+/** One flattened line of the detail sheet. */
+interface DetailRow {
+  typeName: string;
+  modelName: string;
+  month: number;
+  inspection: AnnualPlanFactInspection;
+}
+
+/** Every individual inspection the `fact` payload listed for one organization. */
+function collectDetail(org: AnnualPlanReport["organizations"][number]): DetailRow[] {
+  const rows: DetailRow[] = [];
+  org.inspection_types.forEach((type) => {
+    type.locomotive_models.forEach((row) => {
+      for (let m = 1; m <= 12; m++) {
+        monthInspections(row, m).forEach((inspection) =>
+          rows.push({
+            typeName: type.inspection_type.name,
+            modelName: row.locomotive_model?.name ?? "—",
+            month: m,
+            inspection,
+          })
+        );
+      }
+    });
+  });
+  return rows;
+}
+
+/**
+ * "Tafsilot" sheet: one line per performed inspection. Columns after the fixed
+ * four are derived from the payload, so new backend fields export themselves.
+ */
+function addDetailSheet(
+  wb: ExcelJS.Workbook,
+  baseName: string,
+  rows: DetailRow[]
+) {
+  const fields = inspectionFields(rows.map((r) => r.inspection));
+  if (fields.length === 0) return;
+
+  const name = `${baseName} tafsilot`.slice(0, 31);
+  const ws = wb.addWorksheet(name, { views: [{ state: "frozen", ySplit: 1 }] });
+
+  const headers = ["№", "Ta'mir turi", "Rusum", "Oy", ...fields.map((f) => f.label)];
+  headers.forEach((h, i) => {
+    const cell = ws.getCell(1, i + 1);
+    cell.value = h;
+    cell.font = { bold: true, size: 10, color: { argb: "FFFFFFFF" } };
+    cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+    cell.fill = solid(NAVY);
+    cell.border = border;
+  });
+  ws.getRow(1).height = 26;
+
+  rows.forEach((row, i) => {
+    const r = i + 2;
+    const values = [
+      i + 1,
+      row.typeName,
+      row.modelName,
+      MONTHS_FULL[row.month - 1],
+      ...fields.map((f) => formatInspectionValue(row.inspection?.[f.key])),
+    ];
+    values.forEach((v, ci) => {
+      const cell = ws.getCell(r, ci + 1);
+      cell.value = v;
+      cell.font = { size: 10 };
+      cell.border = border;
+      cell.alignment = { vertical: "middle", horizontal: ci === 0 ? "center" : "left" };
+    });
+    ws.getRow(r).height = 18;
+  });
+
+  ws.getColumn(1).width = 6;
+  ws.getColumn(2).width = 18;
+  ws.getColumn(3).width = 18;
+  ws.getColumn(4).width = 12;
+  fields.forEach((_, i) => (ws.getColumn(5 + i).width = 20));
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: headers.length } };
+}
 
 export async function exportAnnualPlanExcel(report: AnnualPlanReport) {
   const wb = new ExcelJS.Workbook();
@@ -97,8 +192,8 @@ export async function exportAnnualPlanExcel(report: AnnualPlanReport) {
         COLS.forEach((c, ci) => {
           const val =
             c.kind === "month"
-              ? row.months[String(c.i + 1)] || 0
-              : row.quarters[String(c.i + 1)] || 0;
+              ? cellCount(row.months[String(c.i + 1)])
+              : cellCount(row.quarters[String(c.i + 1)]);
           ws.getCell(r, 4 + ci).value = val;
           totals[`${c.kind}${c.i}`] += val;
         });
@@ -163,6 +258,10 @@ export async function exportAnnualPlanExcel(report: AnnualPlanReport) {
       ws.getColumn(4 + i).width = COLS[i].kind === "quarter" ? 9 : 8;
     }
     ws.getColumn(yearlyCol).width = 12;
+
+    // Fakt payloads carry the individual inspections behind each count — they
+    // get their own sheet so nothing is lost in the aggregate grid.
+    addDetailSheet(wb, sheetName.slice(0, 22) || `Org ${orgIdx + 1}`, collectDetail(org));
   });
 
   if (report.organizations.length === 0) {

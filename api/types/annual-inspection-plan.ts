@@ -42,12 +42,31 @@ export interface AnnualInspectionPlanWrite {
 
 // ── Report ("grafik raboti" grid) shapes ──────────────────────────────────
 
+/**
+ * One performed inspection listed inside a `fact` cell. The backend decides
+ * which fields it sends, so everything is optional and the UI renders whatever
+ * is actually present (see `inspectionFields` in plan-grid-shared).
+ */
+export interface AnnualPlanFactInspection {
+  id?: number;
+  [key: string]: unknown;
+}
+
+/**
+ * A month/quarter cell. The `report` (plan) endpoint returns a bare number;
+ * the `fact` endpoint returns `{ count, inspections }`. Read it through
+ * `cellCount` / `cellInspections` rather than touching it directly.
+ */
+export type AnnualPlanCell =
+  | number
+  | { count: number; inspections?: AnnualPlanFactInspection[] };
+
 export interface AnnualPlanReportRow {
   locomotive_model: LocomotiveModelRef;
   /** keys "1".."12" */
-  months: Record<string, number>;
+  months: Record<string, AnnualPlanCell>;
   /** keys "1".."4" (Q1 = Jan–Mar, …) */
-  quarters: Record<string, number>;
+  quarters: Record<string, AnnualPlanCell>;
   yearly_count: number;
 }
 

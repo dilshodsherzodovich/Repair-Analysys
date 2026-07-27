@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -8,10 +8,22 @@ import {
   AnnualPlanReportRow,
   AnnualPlanReportType,
 } from "@/api/types/annual-inspection-plan";
-import { GRID_COLUMNS, MONTHS_SHORT, QUARTER_LABELS, accentFor } from "./plan-grid-shared";
+import {
+  GRID_COLUMNS,
+  MONTHS_SHORT,
+  QUARTER_LABELS,
+  accentFor,
+  monthCount,
+  monthInspections,
+  quarterCount,
+} from "./plan-grid-shared";
+import {
+  InspectionsDialogData,
+  PlanInspectionsDialog,
+} from "./plan-inspections-dialog";
 
-const mVal = (row: AnnualPlanReportRow | undefined, m: number) => row?.months[String(m)] ?? 0;
-const qVal = (row: AnnualPlanReportRow | undefined, q: number) => row?.quarters[String(q)] ?? 0;
+const mVal = monthCount;
+const qVal = quarterCount;
 const yVal = (row: AnnualPlanReportRow | undefined) => row?.yearly_count ?? 0;
 
 /** plan/fact → status colour classes for a cell. */
@@ -24,19 +36,46 @@ function status(plan: number, fact: number) {
   return { bg: "bg-rose-50 dark:bg-rose-950/40", text: "text-rose-700 dark:text-rose-300" }; // bajarilmadi
 }
 
-function Cell({ plan, fact }: { plan: number; fact: number }) {
+function Cell({
+  plan,
+  fact,
+  onClick,
+}: {
+  plan: number;
+  fact: number;
+  /** Set only when the Fakt side carries an inspection list to drill into. */
+  onClick?: () => void;
+}) {
   const s = status(plan, fact);
-  return (
-    <div className={cn("h-full w-full flex items-center justify-center gap-0.5 py-2", s.bg)}>
-      {s.empty ? (
-        <span className="text-muted-foreground/25">·</span>
-      ) : (
-        <>
-          <span className={cn("font-bold tabular-nums", s.text)}>{fact}</span>
-          <span className="text-[9px] text-muted-foreground tabular-nums">/{plan}</span>
-        </>
-      )}
-    </div>
+  const body = s.empty ? (
+    <span className="text-muted-foreground/25">·</span>
+  ) : (
+    <>
+      <span
+        className={cn(
+          "font-bold tabular-nums",
+          s.text,
+          onClick && "underline decoration-dotted underline-offset-2"
+        )}
+      >
+        {fact}
+      </span>
+      <span className="text-[9px] text-muted-foreground tabular-nums">/{plan}</span>
+    </>
+  );
+
+  const className = cn(
+    "h-full w-full flex items-center justify-center gap-0.5 py-2",
+    s.bg,
+    onClick && "hover:brightness-95 transition-all"
+  );
+
+  return onClick ? (
+    <button type="button" title="Ko'riklar ro'yxati" onClick={onClick} className={className}>
+      {body}
+    </button>
+  ) : (
+    <div className={className}>{body}</div>
   );
 }
 
@@ -122,14 +161,18 @@ export function PlanCompareGrid({
 }) {
   const types = useMemo(() => buildTypes(planOrg, factOrg), [planOrg, factOrg]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [dialogData, setDialogData] = useState<InspectionsDialogData | null>(null);
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
-  const toggleCard = (id: number) =>
+  // Stable identities, so the memoised cards below actually stay memoised.
+  const toggleCard = useCallback((id: number) => {
     setCollapsed((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
+  }, []);
+  const closeDialog = useCallback(() => setDialogData(null), []);
 
   const org = planOrg ?? factOrg;
   const totalPlan = types.reduce((a, t) => a + t.planYearly, 0);
@@ -218,73 +261,119 @@ export function PlanCompareGrid({
       </div>
 
       {/* Compare detail cards */}
-      {visible.map((t) => {
-        const accent = accentFor(t.index);
-        const open = !collapsed.has(t.id);
-        const pct = t.planYearly > 0 ? Math.round((t.factYearly / t.planYearly) * 100) : t.factYearly > 0 ? 100 : 0;
-        return (
-          <div key={t.id} className={cn("rounded-xl border bg-card shadow-sm overflow-hidden", accent.ring)}>
-            <button
-              type="button"
-              onClick={() => toggleCard(t.id)}
-              className={cn("w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30", open && "border-b border-border")}
-            >
-              <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
-              <div className="min-w-0">
-                <div className="text-sm font-semibold text-foreground leading-tight">{t.name}</div>
-                <div className="text-[11px] text-muted-foreground">Fakt / Reja</div>
-              </div>
-              <div className="ml-auto flex items-center gap-3">
-                <span className="text-sm font-bold tabular-nums text-foreground">
-                  {t.factYearly}<span className="text-muted-foreground font-normal">/{t.planYearly}</span>
-                </span>
-                <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-md", accent.soft, accent.text)}>{pct}%</span>
-                <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")} />
-              </div>
-            </button>
+      {visible.map((t) => (
+        <CompareTypeCard
+          key={t.id}
+          t={t}
+          open={!collapsed.has(t.id)}
+          onToggle={toggleCard}
+          onShowInspections={setDialogData}
+        />
+      ))}
 
-            {open && (
-              <div className="overflow-x-auto">
-                <table className="w-full table-fixed min-w-[1080px] border-collapse text-xs">
-                  <colgroup>
-                    <col style={{ width: 150 }} />
-                    {GRID_COLUMNS.map((c, i) => <col key={i} />)}
-                    <col style={{ width: 84 }} />
-                  </colgroup>
-                  <thead>
-                    <tr className="text-muted-foreground bg-muted/40">
-                      <th className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</th>
-                      {GRID_COLUMNS.map((col) =>
-                        col.kind === "month" ? (
-                          <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">{MONTHS_SHORT[col.month - 1]}</th>
-                        ) : (
-                          <th key={`q${col.quarter}`} className="border border-border px-1 py-2.5 text-center font-semibold text-emerald-700 dark:text-emerald-300">{QUARTER_LABELS[col.quarter - 1]}</th>
-                        )
-                      )}
-                      <th className="border border-border px-2 py-2.5 text-center font-semibold text-foreground">Σ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {t.models.map((m) => (
-                      <tr key={m.id}>
-                        <td className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">{m.name}</td>
-                        {GRID_COLUMNS.map((col) =>
-                          col.kind === "month" ? (
-                            <td key={`m${col.month}`} className="border border-border p-0"><Cell plan={mVal(m.plan, col.month)} fact={mVal(m.fact, col.month)} /></td>
-                          ) : (
-                            <td key={`q${col.quarter}`} className="border border-border p-0"><Cell plan={qVal(m.plan, col.quarter)} fact={qVal(m.fact, col.quarter)} /></td>
-                          )
-                        )}
-                        <td className="border border-border p-0"><Cell plan={yVal(m.plan)} fact={yVal(m.fact)} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        );
-      })}
+      <PlanInspectionsDialog data={dialogData} onClose={closeDialog} />
     </section>
   );
 }
+
+/**
+ * One inspection type's plan-vs-fact table. Memoised because it is by far the
+ * heaviest node on the page (models × 17 columns); without this, opening the
+ * inspections dialog or collapsing one card re-renders every other card.
+ */
+const CompareTypeCard = memo(function CompareTypeCard({
+  t,
+  open,
+  onToggle,
+  onShowInspections,
+}: {
+  t: TypeAgg;
+  open: boolean;
+  onToggle: (id: number) => void;
+  onShowInspections: (data: InspectionsDialogData) => void;
+}) {
+  const accent = accentFor(t.index);
+  const pct = t.planYearly > 0 ? Math.round((t.factYearly / t.planYearly) * 100) : t.factYearly > 0 ? 100 : 0;
+
+  return (
+    <div className={cn("rounded-xl border bg-card shadow-sm overflow-hidden", accent.ring)}>
+      <button
+        type="button"
+        onClick={() => onToggle(t.id)}
+        className={cn("w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30", open && "border-b border-border")}
+      >
+        <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
+        <div className="min-w-0">
+          <div className="text-sm font-semibold text-foreground leading-tight">{t.name}</div>
+          <div className="text-[11px] text-muted-foreground">Fakt / Reja</div>
+        </div>
+        <div className="ml-auto flex items-center gap-3">
+          <span className="text-sm font-bold tabular-nums text-foreground">
+            {t.factYearly}<span className="text-muted-foreground font-normal">/{t.planYearly}</span>
+          </span>
+          <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-md", accent.soft, accent.text)}>{pct}%</span>
+          <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")} />
+        </div>
+      </button>
+
+      {open && (
+        <div className="overflow-x-auto">
+          <table className="w-full table-fixed min-w-[1080px] border-collapse text-xs">
+            <colgroup>
+              <col style={{ width: 150 }} />
+              {GRID_COLUMNS.map((c, i) => <col key={i} />)}
+              <col style={{ width: 84 }} />
+            </colgroup>
+            <thead>
+              <tr className="text-muted-foreground bg-muted/40">
+                <th className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</th>
+                {GRID_COLUMNS.map((col) =>
+                  col.kind === "month" ? (
+                    <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">{MONTHS_SHORT[col.month - 1]}</th>
+                  ) : (
+                    <th key={`q${col.quarter}`} className="border border-border px-1 py-2.5 text-center font-semibold text-emerald-700 dark:text-emerald-300">{QUARTER_LABELS[col.quarter - 1]}</th>
+                  )
+                )}
+                <th className="border border-border px-2 py-2.5 text-center font-semibold text-foreground">Σ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {t.models.map((m) => (
+                <tr key={m.id}>
+                  <td className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">{m.name}</td>
+                  {GRID_COLUMNS.map((col) => {
+                    if (col.kind !== "month")
+                      return (
+                        <td key={`q${col.quarter}`} className="border border-border p-0"><Cell plan={qVal(m.plan, col.quarter)} fact={qVal(m.fact, col.quarter)} /></td>
+                      );
+                    const inspections = monthInspections(m.fact, col.month);
+                    return (
+                      <td key={`m${col.month}`} className="border border-border p-0">
+                        <Cell
+                          plan={mVal(m.plan, col.month)}
+                          fact={mVal(m.fact, col.month)}
+                          onClick={
+                            inspections.length > 0
+                              ? () =>
+                                  onShowInspections({
+                                    typeName: t.name,
+                                    modelName: m.name,
+                                    month: col.month,
+                                    inspections,
+                                  })
+                              : undefined
+                          }
+                        />
+                      </td>
+                    );
+                  })}
+                  <td className="border border-border p-0"><Cell plan={yVal(m.plan)} fact={yVal(m.fact)} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+});
