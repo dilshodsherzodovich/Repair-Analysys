@@ -63,7 +63,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground text-left align-middle font-medium box-border",
+        "px-3 py-2 text-foreground text-left align-middle font-medium box-border",
         className
       )}
       {...props}
@@ -75,7 +75,10 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
       data-slot="table-cell"
-      className={cn("align-middle", className)}
+      // Default padding: without it a cell that passes none of its own renders
+      // flush against the table's edges. Any `px-*`/`py-*` on `className` still
+      // wins, since `cn` merges through tailwind-merge.
+      className={cn("px-3 py-2 align-middle", className)}
       {...props}
     />
   );

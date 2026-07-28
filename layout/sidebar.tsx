@@ -26,6 +26,7 @@ import {
   Wallet,
   Banknote,
   CalendarRange,
+  FileBarChart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
@@ -49,6 +50,22 @@ interface NavigationItem {
   href?: string;
   children?: NavChild[];
 }
+
+/**
+ * The role set most report pages share in dejurniy, expressed there as a list
+ * of exclusions. Kept as one predicate so the seven children below don't repeat
+ * a nine-term condition each.
+ */
+const REPORTS_GENERAL_ROLES = (role: string) =>
+  role !== "dispatcher" &&
+  role !== "teplo_texnik" &&
+  role !== "operator" &&
+  role !== "payroll" &&
+  role !== "repair_staff" &&
+  role !== "repair_engineer" &&
+  role !== "rb" &&
+  role !== "rb_admin" &&
+  role !== "hr";
 
 function formatOrgDisplayName(org: Organization): string {
   const name = org.name ?? "";
@@ -370,6 +387,70 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       });
     }
 
+    // Reports — role gating mirrors the dejurniy project, which owns the same
+    // endpoints. Roles it excludes that do not exist here (dispatcher, rb,
+    // tchzr, …) simply never match, so the checks stay a faithful copy.
+    const role = user?.role ?? "";
+    const reportsChildren: NavChild[] = [];
+    if (REPORTS_GENERAL_ROLES(role)) {
+      reportsChildren.push({ name: t("nav.reports"), href: "/reports" });
+    }
+    if (role === "admin" || role === "tchzr") {
+      reportsChildren.push({
+        name: t("nav.delayed_report"),
+        href: "/delayed-report",
+      });
+    }
+    if (REPORTS_GENERAL_ROLES(role)) {
+      reportsChildren.push({
+        name: t("nav.txk2_report"),
+        href: "/txk2-report",
+      });
+    }
+    if (
+      role === "admin" ||
+      role === "dispatcher" ||
+      role === "moderator" ||
+      role === "tchzr"
+    ) {
+      reportsChildren.push({
+        name: t("nav.inspection_report"),
+        href: "/inspection-report",
+      });
+    }
+    if (REPORTS_GENERAL_ROLES(role)) {
+      reportsChildren.push({
+        name: t("nav.delayed_repair_duration_report"),
+        href: "/delayed-repair-duration-report",
+      });
+      reportsChildren.push({
+        name: t("nav.locomotive_history"),
+        href: "/locomotive-history",
+      });
+    }
+    if (
+      role === "admin" ||
+      role === "dejurniy" ||
+      role === "moderator" ||
+      role === "dispatcher" ||
+      role === "tchzr"
+    ) {
+      reportsChildren.push({
+        name: t("nav.locomotive_gps_report"),
+        href: "/locomotive-gps-report",
+      });
+    }
+
+    if (user && reportsChildren.length > 0) {
+      items.push({
+        key: "reports",
+        name: t("nav.reports"),
+        icon: FileBarChart,
+        section: "reports",
+        children: reportsChildren,
+      });
+    }
+
     return items;
   }, [user, organizations, userBranchOrg, t]);
 
@@ -379,13 +460,15 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
 
   const isSectionActive = (item: NavigationItem) => {
     if (item.href) return pathname === item.href;
-    if (item.children?.length) {
-      const basePath = item.children[0].href.split("/")[1];
+    // Match against every child, not just the first: the Reports group's
+    // children each live at their own top-level path, unlike depo/tu-137 where
+    // they share one. Equivalent for those, since all their children agree.
+    return (item.children ?? []).some((child) => {
+      const basePath = child.href.split("/")[1];
       return (
         pathname === `/${basePath}` || pathname.startsWith(`/${basePath}/`)
       );
-    }
-    return false;
+    });
   };
 
   return (

@@ -73,3 +73,6 @@ export const useGetLocomotiveModels = (params: LocomotiveModelGetParams) => {
     refetchOnWindowFocus: false,
   });
 };
+
+/** Locomotive models under the name the ported report pages use. */
+export const useTrainTypes = useGetLocomotiveModels;
