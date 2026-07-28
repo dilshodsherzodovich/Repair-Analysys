@@ -25,3 +25,6 @@ export const useOrganizations = (
     },
   });
 };
+
+/** Name used by the ported report pages. */
+export const useOrganization = useOrganizations;

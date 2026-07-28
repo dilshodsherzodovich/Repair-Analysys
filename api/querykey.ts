@@ -65,9 +65,16 @@ export const queryKeys = {
       list: "locomotive-models-list",
     },
     detail: (id: string | number) => `locomotives-detail-${id}`,
+    fullDetail: (id: string | number) => `locomotives-full-detail-${id}`,
   },
   inspectionTypes: {
     list: "inspection-types-list",
+  },
+  revisionJournal: {
+    all: "revision-journal-all",
+    create: "revision-journal-create",
+    update: "revision-journal-update",
+    delete: "revision-journal-delete",
   },
   pantograph: {
     all: "pantograph-all",
@@ -171,5 +178,29 @@ export const queryKeys = {
     mpr: "statistics-mpr",
     revision: "statistics-revision",
     pantograph: "statistics-pantograph",
+  },
+  reports: {
+    categorized: "reports-categorized-locomotives",
+    inspectionTypes: "reports-inspection-type-locomotives",
+    txk2InspectionTypes: "reports-txk2-inspection-type-locomotives",
+    delayed: "reports-delayed-locomotives",
+    reserved: "reports-reserved-locomotives",
+  },
+  branches: {
+    list: "branches-list",
+  },
+  reportInspections: {
+    list: "report-inspections-list",
+    report: "report-inspections-report",
+    countStats: "report-inspection-count-stats",
+  },
+  txk2Report: {
+    get: "txk2-report",
+  },
+  locomotiveGpsReport: {
+    get: "locomotive-gps-report",
+  },
+  delayedRepairDurationReport: {
+    get: "delayed-repair-duration-report",
   },
 } as const;

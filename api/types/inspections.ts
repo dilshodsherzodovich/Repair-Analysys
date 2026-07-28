@@ -63,6 +63,9 @@ export interface Inspection {
   is_closed_time: string | null;
   is_cancelled_time: string | null;
   entry_time: string | null;
+  kanava_entry_time?: string | null;
+  duration?: number | null;
+  maneuver_time?: number | null;
   comment: string;
   section: string;
   command_number: string;
@@ -72,6 +75,7 @@ export interface Inspection {
 
 export interface InspectionsGetParams {
   organization?: number;
+  locomotive?: number;
   is_closed?: boolean;
   locomotive_type?: string;
   inspection_type?: number;

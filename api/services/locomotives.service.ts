@@ -2,6 +2,7 @@ import api from "../axios";
 import { PaginatedData } from "../types/general";
 import {
   LocomotiveData,
+  LocomotiveFullDetail,
   LocomotiveModelData,
   LocomotiveModelGetParams,
   LokomotiveDataGetParams,
@@ -49,6 +50,20 @@ export const locomotivesService = {
       return response.data;
     } catch (error) {
       console.error("Error fetching locomotive detail:", error);
+      throw error;
+    }
+  },
+
+  getLocomotiveFullDetail: async (
+    id: number | string
+  ): Promise<LocomotiveFullDetail> => {
+    try {
+      const response = await api.get<LocomotiveFullDetail>(
+        `/locomotives/${id}/`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching locomotive full detail:", error);
       throw error;
     }
   },

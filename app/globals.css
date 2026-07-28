@@ -224,3 +224,14 @@
     @apply font-medium bg-secondary text-secondary-foreground border hover:bg-secondary/80;
   }
 }
+
+@layer utilities {
+  /* Scrolls normally, but without painting a scrollbar. */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE / old Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome / Safari */
+  }
+}

@@ -144,7 +144,7 @@ export default function Tu137Page() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-12">
+    <div className="min-h-full bg-slate-50 pb-12">
       <PageHeader
         title={t("title")}
         description={""}
