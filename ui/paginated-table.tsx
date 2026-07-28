@@ -532,30 +532,30 @@ export function PaginatedTable<T extends Record<string, any>>({
         />
       )}
 
-      {shouldShowPagination && (
+      {/* Gated on the page count as well: `shouldShowPagination` is also true
+          for a single page whenever the table syncs to the URL, which left an
+          empty `pt-4` row occupying space under the table. */}
+      {shouldShowPagination && totalPages > 1 && (
         <div className="flex items-center justify-between pt-4 px-0">
-
-          {totalPages > 1 && (
-            <div className="flex items-center gap-4">
-              <PaginationControls
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-              {totalItems && (
-                <span className="text-sm text-gray-600 whitespace-nowrap">
-                  {t("showing", {
-                    from: Math.min(
-                      (currentPage - 1) * itemsPerPage + 1,
-                      totalItems
-                    ),
-                    to: Math.min(currentPage * itemsPerPage, totalItems),
-                    total: totalItems,
-                  })}
-                </span>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+            {totalItems && (
+              <span className="text-sm text-gray-600 whitespace-nowrap">
+                {t("showing", {
+                  from: Math.min(
+                    (currentPage - 1) * itemsPerPage + 1,
+                    totalItems
+                  ),
+                  to: Math.min(currentPage * itemsPerPage, totalItems),
+                  total: totalItems,
+                })}
+              </span>
+            )}
+          </div>
         </div>
       )}
     </div>

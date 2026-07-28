@@ -352,7 +352,7 @@ export default function PantografPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-full">
       <PageHeader
         title={t("title")}
         description={t("description")}

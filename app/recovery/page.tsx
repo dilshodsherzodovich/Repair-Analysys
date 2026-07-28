@@ -232,7 +232,7 @@ export default function RecoveryPage() {
   }, [locomotivesData, t]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-full">
       <PageHeader
         title={t("title")}
         description={t("description")}

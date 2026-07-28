@@ -378,7 +378,7 @@ export default function InspectionsPage() {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-full">
       <PageHeader
         title={t("title")}
 
