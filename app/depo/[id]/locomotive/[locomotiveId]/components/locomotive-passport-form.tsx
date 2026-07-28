@@ -285,21 +285,31 @@ export default function LocomotivePassportForm({
 
   const canEdit = hasPermission(user, "edit_locomotive_passport");
 
-  const openView = (next: PassportView) =>
-    router.push(`?view=${next}`, { scroll: false });
+  /**
+   * Every in-page navigation must carry `design=new`. These pushes rebuild the
+   * query string from scratch, so without it the page would fall back to the
+   * classic passport (see page.tsx) on the first drill-down.
+   */
+  const pushQuery = useCallback(
+    (query?: string) =>
+      router.push(`?design=new${query ? `&${query}` : ""}`, { scroll: false }),
+    [router]
+  );
+
+  const openView = (next: PassportView) => pushQuery(`view=${next}`);
   const backToDashboard = () => {
     setIsEditing(false);
-    router.push("?", { scroll: false });
+    pushQuery();
   };
 
   const handleEdit = () => {
     setIsEditing(true);
-    router.push(`?view=components&edit=true`, { scroll: false });
+    pushQuery("view=components&edit=true");
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    router.push("?view=components", { scroll: false });
+    pushQuery("view=components");
     syncComponentFormValues(componentList);
   };
 
@@ -376,7 +386,7 @@ export default function LocomotivePassportForm({
         description: t("toasts.savedDesc"),
       });
       setIsEditing(false);
-      router.push("?view=components", { scroll: false });
+      pushQuery("view=components");
     } catch (error) {
       console.error("Failed to save component values:", error);
       toast({
@@ -389,17 +399,8 @@ export default function LocomotivePassportForm({
 
   return (
     <div className="space-y-6 pb-4 max-w-full overflow-x-hidden">
-      {/* Toolbar */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <Button
-          variant="outline"
-          onClick={() => router.push(`/depo/${depotId}`)}
-          className="border-gray-300"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t("back")}
-        </Button>
-      </div>
+      {/* No toolbar: this view opens in its own page, so it is closed rather
+          than navigated away from. */}
 
       {/* Identity data page — the laminated passport band */}
       <PassportIdentity

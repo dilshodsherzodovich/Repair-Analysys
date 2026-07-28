@@ -1153,7 +1153,8 @@
     "toast_saved": "Ma'lumotlar saqlandi",
     "toast_saved_desc": "Uzел qiymatlari muvaffaqiyatli yangilandi.",
     "toast_save_error": "Saqlashda xatolik",
-    "toast_save_error_desc": "Server bilan aloqa muvaffaqiyatsiz bo'ldi. Qayta urinib ko'ring."
+    "toast_save_error_desc": "Server bilan aloqa muvaffaqiyatsiz bo'ldi. Qayta urinib ko'ring.",
+    "details": "Batafsil"
   },
   "DutyUzelPage": {
     "title": "Uzellarni almashitirish",
