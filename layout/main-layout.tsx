@@ -34,6 +34,41 @@ export function MainLayout({ children }: MainLayoutProps) {
     setIsMobileOpen(false);
   }, [pathname]);
 
+  /**
+   * The shell is `h-screen` and `<main>` below owns the scrolling, but that
+   * only constrains this tree — the document itself is still free to grow past
+   * the viewport, and anything that pushes it over produces a second scrollbar
+   * beside `<main>`'s. Pin the document to the viewport while the shell is
+   * mounted so there is exactly one scroll container.
+   *
+   * Scoped to this layout rather than set in CSS, so pages that render outside
+   * the shell (login, the public defect form) keep normal document scrolling.
+   */
+  useEffect(() => {
+    const root = document.documentElement;
+    const { body } = document;
+    const previous = {
+      rootOverflow: root.style.overflow,
+      rootHeight: root.style.height,
+      bodyOverflow: body.style.overflow,
+      bodyHeight: body.style.height,
+    };
+
+    // Both elements: `height: 100%` on body resolves against html, so html
+    // has to be sized too or the rule collapses to auto.
+    root.style.overflow = "hidden";
+    root.style.height = "100%";
+    body.style.overflow = "hidden";
+    body.style.height = "100%";
+
+    return () => {
+      root.style.overflow = previous.rootOverflow;
+      root.style.height = previous.rootHeight;
+      body.style.overflow = previous.bodyOverflow;
+      body.style.height = previous.bodyHeight;
+    };
+  }, []);
+
   return (
     <div className="h-screen flex bg-background overflow-hidden">
       {/* Desktop sidebar — animated collapse/expand */}

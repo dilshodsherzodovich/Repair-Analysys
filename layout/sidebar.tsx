@@ -498,7 +498,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
           </div>
         </div>
 
-        <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+        <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const hasChildren = item.children && item.children.length > 0;
