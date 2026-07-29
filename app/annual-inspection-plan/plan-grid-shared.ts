@@ -1,4 +1,7 @@
-import { AnnualPlanReportOrganization } from "@/api/types/annual-inspection-plan";
+import {
+  AnnualPlanReportOrganization,
+  cellCount,
+} from "@/api/types/annual-inspection-plan";
 
 /** Short Uzbek month labels, index 0 = January. */
 export const MONTHS_SHORT = [
@@ -65,9 +68,9 @@ export function computeOrgTotals(org: AnnualPlanReportOrganization): OrgTotals {
 
   org.inspection_types.forEach((type) => {
     type.locomotive_models.forEach((row) => {
-      for (let m = 1; m <= 12; m++) months[m] += row.months[String(m)] ?? 0;
-      for (let q = 1; q <= 4; q++) quarters[q] += row.quarters[String(q)] ?? 0;
-      yearly += row.yearly_count ?? 0;
+      for (let m = 1; m <= 12; m++) months[m] += cellCount(row.months[String(m)]);
+      for (let q = 1; q <= 4; q++) quarters[q] += cellCount(row.quarters[String(q)]);
+      yearly += cellCount(row.yearly_count);
     });
   });
 

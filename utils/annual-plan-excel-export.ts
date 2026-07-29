@@ -4,7 +4,7 @@
 // @ts-ignore - use browser build of exceljs
 import ExcelJS from "exceljs/dist/exceljs.min.js";
 import { saveAs } from "file-saver";
-import { AnnualPlanReport } from "@/api/types/annual-inspection-plan";
+import { AnnualPlanReport, cellCount } from "@/api/types/annual-inspection-plan";
 
 const MONTHS_SHORT = [
   "Yan", "Fev", "Mar", "Apr", "May", "Iyn",
@@ -97,13 +97,14 @@ export async function exportAnnualPlanExcel(report: AnnualPlanReport) {
         COLS.forEach((c, ci) => {
           const val =
             c.kind === "month"
-              ? row.months[String(c.i + 1)] || 0
-              : row.quarters[String(c.i + 1)] || 0;
+              ? cellCount(row.months[String(c.i + 1)])
+              : cellCount(row.quarters[String(c.i + 1)]);
           ws.getCell(r, 4 + ci).value = val;
           totals[`${c.kind}${c.i}`] += val;
         });
-        ws.getCell(r, yearlyCol).value = row.yearly_count || 0;
-        totals.yearly += row.yearly_count || 0;
+        const yearly = cellCount(row.yearly_count);
+        ws.getCell(r, yearlyCol).value = yearly;
+        totals.yearly += yearly;
 
         for (let col = 1; col <= totalCols; col++) {
           const cell = ws.getCell(r, col);

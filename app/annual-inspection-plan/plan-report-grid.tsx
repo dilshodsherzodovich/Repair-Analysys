@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   AnnualPlanReportOrganization,
   AnnualPlanReportType,
+  cellCount,
 } from "@/api/types/annual-inspection-plan";
 import {
   GRID_COLUMNS,
@@ -28,8 +29,8 @@ function typeTotals(type: AnnualPlanReportType) {
   const quarters: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 };
   let yearly = 0;
   type.locomotive_models.forEach((row) => {
-    for (let q = 1; q <= 4; q++) quarters[q] += row.quarters[String(q)] ?? 0;
-    yearly += row.yearly_count ?? 0;
+    for (let q = 1; q <= 4; q++) quarters[q] += cellCount(row.quarters[String(q)]);
+    yearly += cellCount(row.yearly_count);
   });
   return { quarters, yearly };
 }
@@ -121,16 +122,16 @@ function PlanTypeCard({
                   {GRID_COLUMNS.map((col) =>
                     col.kind === "month" ? (
                       <td key={`m${col.month}`} className="border border-border px-1 py-2 text-center">
-                        {num(row.months[String(col.month)] ?? 0)}
+                        {num(cellCount(row.months[String(col.month)]))}
                       </td>
                     ) : (
                       <td key={`q${col.quarter}`} className={cn("border border-border px-1 py-2 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
-                        {row.quarters[String(col.quarter)] ?? 0}
+                        {cellCount(row.quarters[String(col.quarter)])}
                       </td>
                     )
                   )}
                   <td className={cn("border border-border px-2 py-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
-                    {row.yearly_count || 0}
+                    {cellCount(row.yearly_count)}
                   </td>
                 </tr>
               ))}

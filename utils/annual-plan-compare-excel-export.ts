@@ -8,6 +8,7 @@ import {
   AnnualPlanReport,
   AnnualPlanReportOrganization,
   AnnualPlanReportRow,
+  cellCount,
 } from "@/api/types/annual-inspection-plan";
 
 const MONTHS_SHORT = [
@@ -50,9 +51,9 @@ const COLS: Col[] = (() => {
   return cols;
 })();
 
-const mVal = (row: AnnualPlanReportRow | undefined, m: number) => row?.months[String(m)] ?? 0;
-const qVal = (row: AnnualPlanReportRow | undefined, q: number) => row?.quarters[String(q)] ?? 0;
-const yVal = (row: AnnualPlanReportRow | undefined) => row?.yearly_count ?? 0;
+const mVal = (row: AnnualPlanReportRow | undefined, m: number) => cellCount(row?.months[String(m)]);
+const qVal = (row: AnnualPlanReportRow | undefined, q: number) => cellCount(row?.quarters[String(q)]);
+const yVal = (row: AnnualPlanReportRow | undefined) => cellCount(row?.yearly_count);
 
 interface MergedType {
   id: number;

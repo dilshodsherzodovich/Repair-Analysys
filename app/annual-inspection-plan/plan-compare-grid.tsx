@@ -7,12 +7,13 @@ import {
   AnnualPlanReportOrganization,
   AnnualPlanReportRow,
   AnnualPlanReportType,
+  cellCount,
 } from "@/api/types/annual-inspection-plan";
 import { GRID_COLUMNS, MONTHS_SHORT, QUARTER_LABELS, accentFor } from "./plan-grid-shared";
 
-const mVal = (row: AnnualPlanReportRow | undefined, m: number) => row?.months[String(m)] ?? 0;
-const qVal = (row: AnnualPlanReportRow | undefined, q: number) => row?.quarters[String(q)] ?? 0;
-const yVal = (row: AnnualPlanReportRow | undefined) => row?.yearly_count ?? 0;
+const mVal = (row: AnnualPlanReportRow | undefined, m: number) => cellCount(row?.months[String(m)]);
+const qVal = (row: AnnualPlanReportRow | undefined, q: number) => cellCount(row?.quarters[String(q)]);
+const yVal = (row: AnnualPlanReportRow | undefined) => cellCount(row?.yearly_count);
 
 /** plan/fact → status colour classes for a cell. */
 function status(plan: number, fact: number) {

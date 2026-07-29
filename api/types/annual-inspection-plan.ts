@@ -42,13 +42,27 @@ export interface AnnualInspectionPlanWrite {
 
 // ── Report ("grafik raboti" grid) shapes ──────────────────────────────────
 
+/**
+ * One grid cell. The plan endpoint returns a bare number; the fact endpoint
+ * returns `{ count, inspections }` — the count plus the inspections behind it.
+ * Always read it through `cellCount()`.
+ */
+export type PlanCell = number | { count: number; inspections?: unknown[] };
+
+/** Number behind a report cell, whichever shape the endpoint returned. */
+export function cellCount(cell: PlanCell | null | undefined): number {
+  if (typeof cell === "number") return cell;
+  if (cell && typeof cell === "object") return Number(cell.count) || 0;
+  return 0;
+}
+
 export interface AnnualPlanReportRow {
   locomotive_model: LocomotiveModelRef;
   /** keys "1".."12" */
-  months: Record<string, number>;
+  months: Record<string, PlanCell>;
   /** keys "1".."4" (Q1 = Jan–Mar, …) */
-  quarters: Record<string, number>;
-  yearly_count: number;
+  quarters: Record<string, PlanCell>;
+  yearly_count: PlanCell;
 }
 
 export interface AnnualPlanReportType {
