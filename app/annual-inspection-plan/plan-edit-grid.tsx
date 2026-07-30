@@ -5,6 +5,7 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
+  useAnnualPlanCache,
   useAnnualPlanEditRows,
   useCreateAnnualInspectionPlan,
   useDeleteAnnualInspectionPlan,
@@ -126,6 +127,7 @@ export function PlanEditGrid({
   const createPlan = useCreateAnnualInspectionPlan();
   const updatePlan = useUpdateAnnualInspectionPlan();
   const deletePlan = useDeleteAnnualInspectionPlan();
+  const planCache = useAnnualPlanCache({ year, organization });
 
   const models = useMemo(() => modelsData ?? [], [modelsData]);
 
@@ -153,6 +155,12 @@ export function PlanEditGrid({
   updateRef.current = updatePlan;
   const deleteRef = useRef(deletePlan);
   deleteRef.current = deletePlan;
+  const cacheRef = useRef(planCache);
+  cacheRef.current = planCache;
+
+  // Cells with a save in flight. Their local value is newer than anything the
+  // query cache holds, so reseeding must leave them alone.
+  const pendingRef = useRef<Set<string>>(new Set());
 
   const toggleCard = (typeId: number) =>
     setCollapsed((prev) => {
@@ -171,8 +179,16 @@ export function PlanEditGrid({
       nextCells[key] = { id: r.id, count: r.count };
       nextSaved[key] = r.count;
     });
-    setCells(nextCells);
     savedRef.current = nextSaved;
+    setCells((prev) => {
+      if (pendingRef.current.size === 0) return nextCells;
+      // Keep cells still being saved; adopt the cached value for the rest.
+      const merged = { ...nextCells };
+      pendingRef.current.forEach((key) => {
+        if (prev[key]) merged[key] = prev[key];
+      });
+      return merged;
+    });
   }, [data]);
 
   const countAt = (typeId: number, modelId: number, month: number) =>
@@ -190,6 +206,12 @@ export function PlanEditGrid({
 
       (async () => {
         setSaving((s) => s + 1);
+        pendingRef.current.add(key);
+        const cell = {
+          inspection_type: typeId,
+          locomotive_model: modelId,
+          month,
+        };
         try {
           if (next > 0 && id == null) {
             const created = await createRef.current.mutateAsync({
@@ -200,18 +222,26 @@ export function PlanEditGrid({
               locomotive_model: modelId,
               count: next,
             });
-            setCells((prev) => ({ ...prev, [key]: { id: created?.id ?? null, count: next } }));
+            const createdId = created?.id ?? null;
+            setCells((prev) => ({ ...prev, [key]: { id: createdId, count: next } }));
+            cacheRef.current.upsertRow({ ...cell, id: createdId, count: next });
           } else if (next > 0 && id != null) {
             await updateRef.current.mutateAsync({ id, data: { count: next } });
+            cacheRef.current.upsertRow({ ...cell, id, count: next });
           } else if (next === 0 && id != null) {
             await deleteRef.current.mutateAsync(id);
             setCells((prev) => ({ ...prev, [key]: { id: null, count: 0 } }));
+            cacheRef.current.removeRow(cell);
           }
           savedRef.current[key] = next;
+          // The reja / fakt grids read their own query; let them refetch when
+          // they next mount instead of refetching under the editor.
+          cacheRef.current.markReportsStale();
         } catch (e) {
           setCells((prev) => ({ ...prev, [key]: { id: prev[key]?.id ?? null, count: saved } }));
           toast.error(getErrorMessage(e));
         } finally {
+          pendingRef.current.delete(key);
           setSaving((s) => s - 1);
         }
       })();
