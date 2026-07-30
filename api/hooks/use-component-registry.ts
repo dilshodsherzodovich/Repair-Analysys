@@ -1,12 +1,8 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { componentRegistryService } from "../services/component-registry.service";
 import {
   ComponentGroupDetailsParams,
+  ComponentGroupOverviewParams,
   ComponentRegistryParams,
   CreateComponentRegistryPayload,
 } from "../types/component-registry";
@@ -30,31 +26,19 @@ export function useComponentRegistry(
   });
 }
 
-/** Paginated group list for the group picker: server-side search, page per scroll. */
-export function useComponentGroupsInfinite(
-  search = "",
-  enabled = true,
-  pageSize = 20
+/** Group + component counts for the group view's collapsed list. */
+export function useComponentGroupOverview(
+  params: ComponentGroupOverviewParams,
+  enabled = true
 ) {
-  return useInfiniteQuery({
-    queryKey: [queryKeys.componentRegistry.groups, "infinite", search, pageSize],
-    queryFn: ({ pageParam }) =>
-      componentRegistryService.getGroups({
-        page: pageParam as number,
-        page_size: pageSize,
-        search,
-      }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      if (!lastPage.next) return undefined;
-      return allPages.length + 1;
-    },
+  return useQuery({
+    queryKey: [queryKeys.componentRegistry.groupOverview, params],
+    queryFn: () => componentRegistryService.getGroupOverview(params),
     staleTime: 5 * 60 * 1000,
     enabled,
     retry: (failureCount, error: any) => {
-      if (error?.response?.status === 401 || error?.response?.status === 403) {
-        return false;
-      }
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) return false;
       return failureCount < 2;
     },
   });

@@ -39,10 +39,30 @@ export interface ComponentGroup {
   name: string;
 }
 
-export interface ComponentGroupParams {
-  page?: number;
-  page_size?: number;
-  search?: string;
+// ── Group overview (`by-group-date`): counts only, no registry rows ──────────
+
+export interface ComponentGroupOverviewComponent {
+  id: number;
+  name: string;
+  count: number;
+}
+
+export interface ComponentGroupOverviewGroup {
+  id: number;
+  name: string;
+  count: number;
+  components: ComponentGroupOverviewComponent[];
+}
+
+export interface ComponentGroupOverview {
+  /** Defects across every group. */
+  count: number;
+  groups: ComponentGroupOverviewGroup[];
+}
+
+export interface ComponentGroupOverviewParams {
+  start_date?: string;
+  end_date?: string;
 }
 
 /** One defect row as returned by `/component-registry/by-group-details/`. */

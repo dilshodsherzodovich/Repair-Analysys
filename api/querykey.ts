@@ -133,7 +133,7 @@ export const queryKeys = {
     create: "component-registry-create",
     update: "component-registry-update",
     delete: "component-registry-delete",
-    groups: "component-registry-groups",
+    groupOverview: "component-registry-group-overview",
     byGroupDetails: "component-registry-by-group-details",
   },
   locomotivePassportInspections: {

@@ -1,8 +1,8 @@
 import api from "../axios";
 import { PaginatedData } from "../types/general";
 import {
-  ComponentGroup,
-  ComponentGroupParams,
+  ComponentGroupOverview,
+  ComponentGroupOverviewParams,
   ComponentGroupDetails,
   ComponentGroupDetailsParams,
   ComponentRegistryEntry,
@@ -37,24 +37,23 @@ export const componentRegistryService = {
     }
   },
 
-  /** Component groups used by the "by group" view of the duty-uzel page. */
-  async getGroups(
-    params?: ComponentGroupParams
-  ): Promise<PaginatedData<ComponentGroup>> {
+  /** Every group with its components and defect counts — no registry rows. */
+  async getGroupOverview(
+    params?: ComponentGroupOverviewParams
+  ): Promise<ComponentGroupOverview> {
     try {
-      const response = await api.get<PaginatedData<ComponentGroup>>(
-        "/component-group-list/",
+      const response = await api.get<ComponentGroupOverview>(
+        "/component-registry/by-group-date",
         {
           params: {
-            page: params?.page,
-            page_size: params?.page_size,
-            search: params?.search || undefined,
+            start_date: params?.start_date || undefined,
+            end_date: params?.end_date || undefined,
           },
         }
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching component groups:", error);
+      console.error("Error fetching component group overview:", error);
       throw error;
     }
   },

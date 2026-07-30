@@ -3,8 +3,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import * as XLSX from "xlsx";
-import { format } from "date-fns";
 import PageFilters from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -14,7 +12,7 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
 import {
   useComponentRegistry,
-  useComponentRegistryByGroup,
+  useComponentGroupOverview,
   useCreateComponentRegistry,
   useUpdateComponentRegistry,
   useDeleteComponentRegistry,
@@ -22,8 +20,11 @@ import {
 import { ComponentRegistryEntry } from "@/api/types/component-registry";
 import { componentRegistryService } from "@/api/services/component-registry.service";
 import { ComponentRegistryModal } from "./components/component-registry-modal";
-import { ComponentGroupTable } from "./components/component-group-table";
-import { ComponentGroupSelect } from "./components/component-group-select";
+import { ComponentGroupAccordion } from "./components/component-group-accordion";
+import {
+  exportComponentGroupOverviewExcel,
+  exportComponentRegistryListExcel,
+} from "@/utils/duty-uzel-excel-export";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
@@ -53,8 +54,6 @@ export default function DutyUzelPage() {
 
   // "list" (classic table) vs "group" (grouped by component group)
   const isGroupView = searchParams.get("view") === "group";
-  const groupIdParam = searchParams.get("group_id") || "";
-  const groupId = groupIdParam ? Number(groupIdParam) : undefined;
 
   // State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -79,15 +78,11 @@ export default function DutyUzelPage() {
   }, !isGroupView);
 
   const {
-    data: groupDetails,
-    isLoading: isLoadingGroupDetails,
+    data: groupOverview,
+    isLoading: isLoadingGroupOverview,
     error: groupApiError,
-  } = useComponentRegistryByGroup(
-    {
-      group_id: groupId,
-      start_date: defectDateStart,
-      end_date: defectDateEnd,
-    },
+  } = useComponentGroupOverview(
+    { start_date: defectDateStart, end_date: defectDateEnd },
     isGroupView
   );
 
@@ -106,27 +101,16 @@ export default function DutyUzelPage() {
         )
     : null;
 
-  // `by-group-details` reports validation problems as { group_id: ["..."] }
   const groupError = useMemo(() => {
     if (!groupApiError) return null;
     const data = (groupApiError as any)?.response?.data;
-    const detail = Array.isArray(data?.group_id)
-      ? data.group_id.join(" ")
-      : data?.detail;
-    return detail || (groupApiError as Error)?.message || t("error_load");
+    return data?.detail || (groupApiError as Error)?.message || t("error_load");
   }, [groupApiError, t]);
 
   // Switch between the classic table and the by-group view
   const handleViewChange = useCallback(
     (value: string) => {
       updateQuery({ view: value === "group" ? "group" : null });
-    },
-    [updateQuery]
-  );
-
-  const handleGroupChange = useCallback(
-    (value: string) => {
-      updateQuery({ group_id: value || null });
     },
     [updateQuery]
   );
@@ -222,49 +206,16 @@ export default function DutyUzelPage() {
     }
   };
 
-  // Handle excel export for the grouped view (component name repeated per row)
+  // Excel export of the group view: the counts shown on screen, group by group
   const handleGroupExport = useCallback(async () => {
-    if (!groupDetails) return;
+    if (!groupOverview) return;
     setIsExporting(true);
     try {
-      const headers = [
-        t("columns.component"),
-        t("columns.defect_date"),
-        t("columns.locomotive"),
-        t("columns.section"),
-        t("columns.reason"),
-        t("columns.removed_manufacture_year"),
-        t("columns.removed_manufacture_factory"),
-        t("columns.installed_manufacture_year"),
-        t("columns.installed_manufacture_factory"),
-        t("columns.staff"),
-      ];
-      const sheetData = [
-        headers,
-        ...groupDetails.components.flatMap((component) =>
-          component.registries.map((registry) => [
-            component.name,
-            formatDate(registry.defect_date),
-            `${registry.locomotive}${
-              registry.locomotive_model ? `-${registry.locomotive_model}` : ""
-            }`,
-            registry.section || "—",
-            registry.reason,
-            registry.removed_manufacture_year,
-            registry.removed_manufacture_factory,
-            registry.installed_manufacture_year,
-            registry.installed_manufacture_factory,
-            registry.staff,
-          ])
-        ),
-      ];
-      const ws = XLSX.utils.aoa_to_sheet(sheetData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-      XLSX.writeFile(
-        wb,
-        `duty-uzel-group-${format(new Date(), "yyyy-MM-dd")}.xlsx`
-      );
+      await exportComponentGroupOverviewExcel(groupOverview, {
+        t,
+        startDate: defectDateStart,
+        endDate: defectDateEnd,
+      });
     } catch (err) {
       showError(
         t("error_title"),
@@ -273,7 +224,7 @@ export default function DutyUzelPage() {
     } finally {
       setIsExporting(false);
     }
-  }, [groupDetails, showError, t]);
+  }, [groupOverview, defectDateStart, defectDateEnd, showError, t]);
 
   // Handle excel export
   const handleExport = useCallback(async () => {
@@ -286,40 +237,13 @@ export default function DutyUzelPage() {
         defect_date_start: defectDateStart,
         defect_date_end: defectDateEnd,
       });
-      const rows = (allData as any).results ?? allData;
-      const headers = [
-        t("columns.defect_date"),
-        t("columns.organization"),
-        t("columns.inspection"),
-        t("columns.locomotive"),
-        t("columns.component"),
-        t("columns.section"),
-        t("columns.reason"),
-        t("columns.removed_manufacture_year"),
-        t("columns.removed_manufacture_factory"),
-        t("columns.installed_manufacture_year"),
-        t("columns.installed_manufacture_factory"),
-      ];
-      const sheetData = [
-        headers,
-        ...(rows as ComponentRegistryEntry[]).map((row) => [
-          formatDate(row.defect_date),
-          row.organization,
-          row.inspection,
-          `${row.locomotive}-${row.loc_model_name || ""}`,
-          row.component,
-          row.section || "—",
-          row.reason,
-          row.removed_manufacture_year,
-          row.removed_manufacture_factory,
-          row.installed_manufacture_year,
-          row.installed_manufacture_factory,
-        ]),
-      ];
-      const ws = XLSX.utils.aoa_to_sheet(sheetData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-      XLSX.writeFile(wb, `duty-uzel-${format(new Date(), "yyyy-MM-dd")}.xlsx`);
+      const rows = ((allData as any).results ??
+        allData) as ComponentRegistryEntry[];
+      await exportComponentRegistryListExcel(rows, {
+        t,
+        startDate: defectDateStart,
+        endDate: defectDateEnd,
+      });
     } catch (err) {
       showError(
         t("error_title"),
@@ -439,28 +363,17 @@ export default function DutyUzelPage() {
 
       {isGroupView ? (
         <>
-          <div className="mt-4 flex flex-wrap items-start gap-3 md:gap-4">
-            <div className="w-full sm:w-[380px] lg:w-[440px] shrink-0">
-              <ComponentGroupSelect
-                value={groupIdParam}
-                onValueChange={handleGroupChange}
-                selectedLabelFallback={groupDetails?.group?.name}
-                placeholder={t("group_filter_placeholder")}
-              />
-            </div>
-            <div className="flex-1 min-w-[300px]">
-              <PageFilters
-                filters={[]}
-                hasSearch={false}
-                hasDateRangePicker={true}
-                dateRangeStartKey="defect_date_start"
-                dateRangeEndKey="defect_date_end"
-                dateRangePickerLabel={t("columns.defect_date")}
-                onExport={groupDetails ? handleGroupExport : undefined}
-                exportLoading={isExporting}
-                className="mb-0"
-              />
-            </div>
+          <div className="mt-4">
+            <PageFilters
+              filters={[]}
+              hasSearch={false}
+              hasDateRangePicker={true}
+              dateRangeStartKey="defect_date_start"
+              dateRangeEndKey="defect_date_end"
+              dateRangePickerLabel={t("columns.defect_date")}
+              onExport={groupOverview ? handleGroupExport : undefined}
+              exportLoading={isExporting}
+            />
           </div>
 
           {groupError && (
@@ -470,11 +383,12 @@ export default function DutyUzelPage() {
           )}
 
           <div className="mt-6">
-            <ComponentGroupTable
-              data={groupDetails}
-              isLoading={isLoadingGroupDetails}
-              hasGroup={!!groupId}
-              formatDate={formatDate}
+            <ComponentGroupAccordion
+              data={groupOverview}
+              isLoading={isLoadingGroupOverview}
+              depoId={depoId}
+              startDate={defectDateStart}
+              endDate={defectDateEnd}
             />
           </div>
         </>
