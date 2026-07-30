@@ -133,12 +133,30 @@ export function SpecialComponentsModal({
     );
   };
 
-  // Get field names from the component (excluding excluded fields)
+  // Trailing number of a field ("koren_12" -> 12); unnumbered fields sort last
+  const getFieldNumber = (fieldName: string): number => {
+    const match = fieldName.match(/(\d+)$/);
+    return match ? Number(match[1]) : Number.POSITIVE_INFINITY;
+  };
+
+  // Field name without its trailing number ("koren_12" -> "koren")
+  const getFieldPrefix = (fieldName: string): string =>
+    fieldName.replace(/[_-]?\d+$/, "");
+
+  // Get field names from the component (excluding excluded fields).
+  // Sorted by number, not alphabetically — a plain `.sort()` puts koren_10
+  // before koren_2.
   const getFieldNames = (): string[] => {
     if (!specialComponent) return [];
     return Object.keys(specialComponent)
       .filter((key) => !excludedFields.includes(key))
-      .sort();
+      .sort((a, b) => {
+        const prefixDiff = getFieldPrefix(a).localeCompare(getFieldPrefix(b));
+        if (prefixDiff !== 0) return prefixDiff;
+        const numberDiff = getFieldNumber(a) - getFieldNumber(b);
+        if (numberDiff) return numberDiff;
+        return a.localeCompare(b);
+      });
   };
 
   const fieldNames = getFieldNames();
@@ -220,7 +238,7 @@ export function SpecialComponentsModal({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="col-span-1">
+              <div className="col-span-1 space-y-4">
                 {fieldNames.filter((fieldName) => fieldName.includes("koren")).map((fieldName) => {
                   const value = formValues[fieldName] ?? specialComponent[fieldName] ?? "";
                 const inputType = getInputType(value);
@@ -244,7 +262,7 @@ export function SpecialComponentsModal({
                 );
                 })}
               </div>
-              <div className="col-span-1">
+              <div className="col-span-1 space-y-4">
                 {fieldNames.filter((fieldName) => fieldName.includes("shatun")).map((fieldName) => {
                   const value = formValues[fieldName] ?? specialComponent[fieldName] ?? "";
                 const inputType = getInputType(value);
