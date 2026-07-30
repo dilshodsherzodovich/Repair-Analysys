@@ -5,7 +5,7 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
-  useAllAnnualInspectionPlans,
+  useAnnualPlanEditRows,
   useCreateAnnualInspectionPlan,
   useDeleteAnnualInspectionPlan,
   useUpdateAnnualInspectionPlan,
@@ -119,7 +119,7 @@ export function PlanEditGrid({
   year: number;
   organization: number;
 }) {
-  const { data, isLoading } = useAllAnnualInspectionPlans({ year, organization });
+  const { data, isLoading } = useAnnualPlanEditRows({ year, organization });
   const { data: inspectionTypes, isLoading: typesLoading } = useGetInspectionTypes();
   const { data: modelsData, isLoading: modelsLoading } = useLocomotiveModels();
 

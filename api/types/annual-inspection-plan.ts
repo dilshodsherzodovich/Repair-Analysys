@@ -43,17 +43,43 @@ export interface AnnualInspectionPlanWrite {
 // ── Report ("grafik raboti" grid) shapes ──────────────────────────────────
 
 /**
- * One grid cell. The plan endpoint returns a bare number; the fact endpoint
- * returns `{ count, inspections }` — the count plus the inspections behind it.
- * Always read it through `cellCount()`.
+ * One grid cell. Cells may arrive as a bare number, or as an object carrying
+ * the count plus extras: `id` (the plan row, so the edit grid can PATCH/DELETE
+ * it) and `inspections` (what the fact endpoint counted). Always read them
+ * through `cellCount()` / `cellId()`.
  */
-export type PlanCell = number | { count: number; inspections?: unknown[] };
+export type PlanCell =
+  | number
+  | {
+      id?: number | null;
+      plan_id?: number | null;
+      count: number;
+      inspections?: unknown[];
+    };
 
 /** Number behind a report cell, whichever shape the endpoint returned. */
 export function cellCount(cell: PlanCell | null | undefined): number {
   if (typeof cell === "number") return cell;
   if (cell && typeof cell === "object") return Number(cell.count) || 0;
   return 0;
+}
+
+/** Plan row id behind a report cell, or null when the cell is just a number. */
+export function cellId(cell: PlanCell | null | undefined): number | null {
+  if (cell && typeof cell === "object") {
+    const raw = cell.id ?? cell.plan_id;
+    return typeof raw === "number" ? raw : null;
+  }
+  return null;
+}
+
+/** One report cell flattened for the edit grid: a (type, model, month) count. */
+export interface AnnualPlanEditRow {
+  id: number | null;
+  month: number;
+  inspection_type: number;
+  locomotive_model: number;
+  count: number;
 }
 
 export interface AnnualPlanReportRow {

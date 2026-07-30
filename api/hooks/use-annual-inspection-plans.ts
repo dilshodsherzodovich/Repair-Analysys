@@ -47,8 +47,11 @@ export const useAnnualInspectionPlanReport = ({
     placeholderData: keepPreviousData,
   });
 
-/** Every plan row for a (year, organization) — seeds the edit grid. */
-export const useAllAnnualInspectionPlans = ({
+/**
+ * Editable cells for a (year, organization), read off the `report/` endpoint in
+ * one request — seeds the edit grid.
+ */
+export const useAnnualPlanEditRows = ({
   year,
   organization,
   enabled = true,
@@ -59,7 +62,8 @@ export const useAllAnnualInspectionPlans = ({
 }) =>
   useQuery({
     queryKey: [queryKeys.annualInspectionPlans.all, { year, organization }],
-    queryFn: () => annualInspectionPlanService.getAll({ year, organization }),
+    queryFn: () =>
+      annualInspectionPlanService.getEditRows({ year, organization }),
     enabled: enabled && !!year && !!organization,
     staleTime: 5 * 60 * 1000,
     retry: false,
