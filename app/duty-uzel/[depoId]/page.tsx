@@ -8,10 +8,13 @@ import { format } from "date-fns";
 import PageFilters from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
+import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
+import { List, LayoutList } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
 import {
   useComponentRegistry,
+  useComponentRegistryByGroup,
   useCreateComponentRegistry,
   useUpdateComponentRegistry,
   useDeleteComponentRegistry,
@@ -19,6 +22,8 @@ import {
 import { ComponentRegistryEntry } from "@/api/types/component-registry";
 import { componentRegistryService } from "@/api/services/component-registry.service";
 import { ComponentRegistryModal } from "./components/component-registry-modal";
+import { ComponentGroupTable } from "./components/component-group-table";
+import { ComponentGroupSelect } from "./components/component-group-select";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
@@ -46,6 +51,11 @@ export default function DutyUzelPage() {
   const defectDateStart = searchParams.get("defect_date_start") || undefined;
   const defectDateEnd = searchParams.get("defect_date_end") || undefined;
 
+  // "list" (classic table) vs "group" (grouped by component group)
+  const isGroupView = searchParams.get("view") === "group";
+  const groupIdParam = searchParams.get("group_id") || "";
+  const groupId = groupIdParam ? Number(groupIdParam) : undefined;
+
   // State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editEntry, setEditEntry] = useState<ComponentRegistryEntry | undefined>(undefined);
@@ -66,7 +76,20 @@ export default function DutyUzelPage() {
     organization: organizationId,
     defect_date_start: defectDateStart,
     defect_date_end: defectDateEnd,
-  });
+  }, !isGroupView);
+
+  const {
+    data: groupDetails,
+    isLoading: isLoadingGroupDetails,
+    error: groupApiError,
+  } = useComponentRegistryByGroup(
+    {
+      group_id: groupId,
+      start_date: defectDateStart,
+      end_date: defectDateEnd,
+    },
+    isGroupView
+  );
 
   const createEntryMutation = useCreateComponentRegistry();
   const updateEntryMutation = useUpdateComponentRegistry();
@@ -82,6 +105,31 @@ export default function DutyUzelPage() {
           (apiError as any)?.message || t("error_load")
         )
     : null;
+
+  // `by-group-details` reports validation problems as { group_id: ["..."] }
+  const groupError = useMemo(() => {
+    if (!groupApiError) return null;
+    const data = (groupApiError as any)?.response?.data;
+    const detail = Array.isArray(data?.group_id)
+      ? data.group_id.join(" ")
+      : data?.detail;
+    return detail || (groupApiError as Error)?.message || t("error_load");
+  }, [groupApiError, t]);
+
+  // Switch between the classic table and the by-group view
+  const handleViewChange = useCallback(
+    (value: string) => {
+      updateQuery({ view: value === "group" ? "group" : null });
+    },
+    [updateQuery]
+  );
+
+  const handleGroupChange = useCallback(
+    (value: string) => {
+      updateQuery({ group_id: value || null });
+    },
+    [updateQuery]
+  );
 
   // Handle create
   const handleCreate = useCallback(() => {
@@ -173,6 +221,59 @@ export default function DutyUzelPage() {
       return dateString;
     }
   };
+
+  // Handle excel export for the grouped view (component name repeated per row)
+  const handleGroupExport = useCallback(async () => {
+    if (!groupDetails) return;
+    setIsExporting(true);
+    try {
+      const headers = [
+        t("columns.component"),
+        t("columns.defect_date"),
+        t("columns.locomotive"),
+        t("columns.section"),
+        t("columns.reason"),
+        t("columns.removed_manufacture_year"),
+        t("columns.removed_manufacture_factory"),
+        t("columns.installed_manufacture_year"),
+        t("columns.installed_manufacture_factory"),
+        t("columns.staff"),
+      ];
+      const sheetData = [
+        headers,
+        ...groupDetails.components.flatMap((component) =>
+          component.registries.map((registry) => [
+            component.name,
+            formatDate(registry.defect_date),
+            `${registry.locomotive}${
+              registry.locomotive_model ? `-${registry.locomotive_model}` : ""
+            }`,
+            registry.section || "—",
+            registry.reason,
+            registry.removed_manufacture_year,
+            registry.removed_manufacture_factory,
+            registry.installed_manufacture_year,
+            registry.installed_manufacture_factory,
+            registry.staff,
+          ])
+        ),
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(sheetData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+      XLSX.writeFile(
+        wb,
+        `duty-uzel-group-${format(new Date(), "yyyy-MM-dd")}.xlsx`
+      );
+    } catch (err) {
+      showError(
+        t("error_title"),
+        err instanceof Error ? err.message : t("error_load")
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  }, [groupDetails, showError, t]);
 
   // Handle excel export
   const handleExport = useCallback(async () => {
@@ -310,43 +411,112 @@ export default function DutyUzelPage() {
       <PageHeader
         title={t("title")}
         description={t("description")}
+        actions={
+          <Tabs
+            value={isGroupView ? "group" : "list"}
+            onValueChange={handleViewChange}
+            className="w-auto"
+          >
+            <TabsList className="bg-white border border-[#CAD5E2] p-1 rounded-lg">
+              <TabsTrigger
+                value="list"
+                className="px-3 py-1.5 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+              >
+                <List className="h-4 w-4" />
+                {t("view_list")}
+              </TabsTrigger>
+              <TabsTrigger
+                value="group"
+                className="px-3 py-1.5 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+              >
+                <LayoutList className="h-4 w-4" />
+                {t("view_group")}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        }
       />
 
-      <div className="mt-4">
-        <PageFilters
-          filters={[]}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-          hasDateRangePicker={true}
-          dateRangeStartKey="defect_date_start"
-          dateRangeEndKey="defect_date_end"
-          dateRangePickerLabel={t("columns.defect_date")}
-          addButtonText={t("add_button")}
-          addButtonPermittion="create_duty_uzel_report"
-          onAdd={handleCreate}
-          onExport={handleExport}
-          exportLoading={isExporting}
-        />
-      </div>
+      {isGroupView ? (
+        <>
+          <div className="mt-4 flex flex-wrap items-start gap-3 md:gap-4">
+            <div className="w-full sm:w-[380px] lg:w-[440px] shrink-0">
+              <ComponentGroupSelect
+                value={groupIdParam}
+                onValueChange={handleGroupChange}
+                selectedLabelFallback={groupDetails?.group?.name}
+                placeholder={t("group_filter_placeholder")}
+              />
+            </div>
+            <div className="flex-1 min-w-[300px]">
+              <PageFilters
+                filters={[]}
+                hasSearch={false}
+                hasDateRangePicker={true}
+                dateRangeStartKey="defect_date_start"
+                dateRangeEndKey="defect_date_end"
+                dateRangePickerLabel={t("columns.defect_date")}
+                onExport={groupDetails ? handleGroupExport : undefined}
+                exportLoading={isExporting}
+                className="mb-0"
+              />
+            </div>
+          </div>
 
-      <div className="mt-6">
-        <PaginatedTable
-          columns={columns}
-          data={paginatedData}
-          getRowId={(row) => row.id}
-          isLoading={isLoading}
-          error={error}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          updateQueryParams={true}
-          showActions={true}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          isDeleting={deleteEntryMutation.isPending}
-          emptyTitle={t("empty_title")}
-          emptyDescription={t("empty_description")}
-        />
-      </div>
+          {groupError && (
+            <div className="mt-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {groupError}
+            </div>
+          )}
+
+          <div className="mt-6">
+            <ComponentGroupTable
+              data={groupDetails}
+              isLoading={isLoadingGroupDetails}
+              hasGroup={!!groupId}
+              formatDate={formatDate}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="mt-4">
+            <PageFilters
+              filters={[]}
+              hasSearch={true}
+              searchPlaceholder={t("search_placeholder")}
+              hasDateRangePicker={true}
+              dateRangeStartKey="defect_date_start"
+              dateRangeEndKey="defect_date_end"
+              dateRangePickerLabel={t("columns.defect_date")}
+              addButtonText={t("add_button")}
+              addButtonPermittion="create_duty_uzel_report"
+              onAdd={handleCreate}
+              onExport={handleExport}
+              exportLoading={isExporting}
+            />
+          </div>
+
+          <div className="mt-6">
+            <PaginatedTable
+              columns={columns}
+              data={paginatedData}
+              getRowId={(row) => row.id}
+              isLoading={isLoading}
+              error={error}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              updateQueryParams={true}
+              showActions={true}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              isDeleting={deleteEntryMutation.isPending}
+              emptyTitle={t("empty_title")}
+              emptyDescription={t("empty_description")}
+            />
+          </div>
+        </>
+      )}
 
       <ComponentRegistryModal
         isOpen={isModalOpen}

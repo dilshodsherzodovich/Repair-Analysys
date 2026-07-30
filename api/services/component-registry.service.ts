@@ -1,6 +1,10 @@
 import api from "../axios";
 import { PaginatedData } from "../types/general";
 import {
+  ComponentGroup,
+  ComponentGroupParams,
+  ComponentGroupDetails,
+  ComponentGroupDetailsParams,
   ComponentRegistryEntry,
   ComponentRegistryParams,
   CreateComponentRegistryPayload,
@@ -29,6 +33,50 @@ export const componentRegistryService = {
       return response.data;
     } catch (error) {
       console.error("Error fetching component registry:", error);
+      throw error;
+    }
+  },
+
+  /** Component groups used by the "by group" view of the duty-uzel page. */
+  async getGroups(
+    params?: ComponentGroupParams
+  ): Promise<PaginatedData<ComponentGroup>> {
+    try {
+      const response = await api.get<PaginatedData<ComponentGroup>>(
+        "/component-group-list/",
+        {
+          params: {
+            page: params?.page,
+            page_size: params?.page_size,
+            search: params?.search || undefined,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching component groups:", error);
+      throw error;
+    }
+  },
+
+  /** Registries of one group, split per component. Not paginated. */
+  async getByGroupDetails(
+    params: ComponentGroupDetailsParams
+  ): Promise<ComponentGroupDetails> {
+    try {
+      const response = await api.get<ComponentGroupDetails>(
+        "/component-registry/by-group-details/",
+        {
+          params: {
+            group_id: params.group_id,
+            start_date: params.start_date || undefined,
+            end_date: params.end_date || undefined,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching component registry by group:", error);
       throw error;
     }
   },

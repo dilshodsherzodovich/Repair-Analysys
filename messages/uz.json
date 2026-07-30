@@ -1205,7 +1205,16 @@
     "add_button": "Qo'shish",
     "empty_title": "Ma'lumot topilmadi",
     "empty_description": "Navbatchi uzel ma'lumotlari topilmadi",
+    "view_list": "Ro'yxat",
+    "view_group": "Guruh bo'yicha",
+    "group_filter_label": "Uzellar guruhi",
+    "group_filter_placeholder": "Uzellar guruhini tanlang",
+    "group_select_title": "Uzellar guruhini tanlang",
+    "group_select_description": "Ma'lumotlarni ko'rish uchun yuqoridan uzellar guruhini tanlang",
+    "group_total": "Jami: {count}",
     "columns": {
+      "no": "№",
+      "staff": "Mas'ul xodim",
       "created_time": "Yaratilgan sana",
       "organization": "Tashkilot",
       "inspection": "Tekshiruv",
@@ -1217,8 +1226,8 @@
       "defect_date": "Almashtirish sanasi",
       "removed_manufacture_year": "Olib tashlangan uzel i.ch yili",
       "installed_manufacture_year": "O'rnatilgan uzel i.ch yili",
-      "installed_manufacture_factory": "O'rnatilgan uzel zavod raqami",
-      "removed_manufacture_factory": "Olib tashlangan uzel zavod raqami"
+      "installed_manufacture_factory": "O'rnatilgan zavod raqami",
+      "removed_manufacture_factory": "Yechilgan zavod raqami"
     }
   },
   "ComponentRegistryModal": {
@@ -1233,8 +1242,8 @@
     "defect_date": "Almashtirish sanasi",
     "removed_manufacture_year": "Olib tashlangan uzel i.ch yili",
     "installed_manufacture_year": "O'rnatilgan uzel i.ch yili",
-    "installed_manufacture_factory": "O'rnatilgan uzel zavod raqami",
-    "removed_manufacture_factory": "Olib tashlangan uzel zavod raqami",
+    "installed_manufacture_factory": "O'rnatilgan zavod raqami",
+    "removed_manufacture_factory": "Yechilgan zavod raqami",
     "placeholder_loading": "Yuklanmoqda...",
     "placeholder_locomotive": "Lokomotivni tanlang",
     "placeholder_locomotive_first": "Avval lokomotivni tanlang",
