@@ -63,6 +63,7 @@ export interface ComponentGroupOverview {
 export interface ComponentGroupOverviewParams {
   start_date?: string;
   end_date?: string;
+  locomotive_id?: number;
 }
 
 /** One defect row as returned by `/component-registry/by-group-details/`. */
@@ -99,6 +100,7 @@ export interface ComponentGroupDetailsParams {
   group_id: number;
   start_date?: string;
   end_date?: string;
+  locomotive_id?: number;
 }
 
 export interface CreateComponentRegistryPayload {

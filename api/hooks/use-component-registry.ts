@@ -55,6 +55,7 @@ export function useComponentRegistryByGroup(
         group_id: params.group_id!,
         start_date: params.start_date,
         end_date: params.end_date,
+        locomotive_id: params.locomotive_id,
       }),
     staleTime: 5 * 60 * 1000,
     enabled: enabled && !!params.group_id,

@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import PageFilters from "@/ui/filters";
+import PageFilters, { FiltersQuery } from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
 import { Skeleton } from "@/ui/skeleton";
 import { useComponentRegistryByGroup } from "@/api/hooks/use-component-registry";
+import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
@@ -34,6 +35,7 @@ export default function DutyUzelGroupPage() {
 
   const startDate = searchParams.get("defect_date_start") || undefined;
   const endDate = searchParams.get("defect_date_end") || undefined;
+  const locomotiveIdParam = searchParams.get("locomotive_id") || "";
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -41,7 +43,36 @@ export default function DutyUzelGroupPage() {
     group_id: groupId,
     start_date: startDate,
     end_date: endDate,
+    locomotive_id: locomotiveIdParam ? Number(locomotiveIdParam) : undefined,
   });
+
+  const { data: locomotivesData, isLoading: isLoadingLocomotives } =
+    useGetLocomotives(true, undefined, {
+      no_page: true,
+      organization: depoId ? Number(depoId) : undefined,
+    });
+
+  const filters: FiltersQuery[] = useMemo(
+    () => [
+      {
+        name: "locomotive_id",
+        label: t("locomotive_filter_label"),
+        isSelect: true,
+        placeholder: t("locomotive_filter_label"),
+        loading: isLoadingLocomotives,
+        options: [
+          { value: "", label: t("filter_all_locomotives") },
+          ...(locomotivesData?.results ?? []).map((locomotive) => ({
+            value: String(locomotive.id),
+            label: `${locomotive.name}${
+              locomotive.model_name ? ` - ${locomotive.model_name}` : ""
+            }`,
+          })),
+        ],
+      },
+    ],
+    [locomotivesData, isLoadingLocomotives, t]
+  );
 
   const errorMessage = (() => {
     if (!error) return null;
@@ -94,7 +125,7 @@ export default function DutyUzelGroupPage() {
 
       <div className="mt-4">
         <PageFilters
-          filters={[]}
+          filters={filters}
           hasSearch={false}
           hasDateRangePicker={true}
           dateRangeStartKey="defect_date_start"

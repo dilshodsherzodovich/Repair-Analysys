@@ -21,9 +21,10 @@ interface ComponentGroupAccordionProps {
   isLoading?: boolean;
   /** Depo in the URL — needed to build the standalone group link. */
   depoId: string;
-  /** Date range passed on to the per-group details request and link. */
+  /** Filters passed on to the per-group details request and link. */
   startDate?: string;
   endDate?: string;
+  locomotiveId?: string;
 }
 
 /**
@@ -34,10 +35,12 @@ function GroupPanel({
   group,
   startDate,
   endDate,
+  locomotiveId,
 }: {
   group: ComponentGroupOverviewGroup;
   startDate?: string;
   endDate?: string;
+  locomotiveId?: string;
 }) {
   const t = useTranslations("DutyUzelPage");
 
@@ -45,6 +48,7 @@ function GroupPanel({
     group_id: group.id,
     start_date: startDate,
     end_date: endDate,
+    locomotive_id: locomotiveId ? Number(locomotiveId) : undefined,
   });
 
   if (isLoading) {
@@ -85,6 +89,7 @@ export function ComponentGroupAccordion({
   depoId,
   startDate,
   endDate,
+  locomotiveId,
 }: ComponentGroupAccordionProps) {
   const t = useTranslations("DutyUzelPage");
   const [openGroups, setOpenGroups] = useState<Set<number>>(new Set());
@@ -101,6 +106,7 @@ export function ComponentGroupAccordion({
     const params = new URLSearchParams();
     if (startDate) params.set("defect_date_start", startDate);
     if (endDate) params.set("defect_date_end", endDate);
+    if (locomotiveId) params.set("locomotive_id", locomotiveId);
     const query = params.toString();
     return `/duty-uzel/${depoId}/group/${groupId}${query ? `?${query}` : ""}`;
   };
@@ -218,6 +224,7 @@ export function ComponentGroupAccordion({
                   group={group}
                   startDate={startDate}
                   endDate={endDate}
+                  locomotiveId={locomotiveId}
                 />
               )}
             </div>

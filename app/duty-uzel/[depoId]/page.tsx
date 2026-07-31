@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import PageFilters from "@/ui/filters";
+import PageFilters, { FiltersQuery } from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
@@ -19,6 +19,7 @@ import {
 } from "@/api/hooks/use-component-registry";
 import { ComponentRegistryEntry } from "@/api/types/component-registry";
 import { componentRegistryService } from "@/api/services/component-registry.service";
+import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { ComponentRegistryModal } from "./components/component-registry-modal";
 import { ComponentGroupAccordion } from "./components/component-group-accordion";
 import {
@@ -54,6 +55,9 @@ export default function DutyUzelPage() {
 
   // "list" (classic table) vs "group" (grouped by component group)
   const isGroupView = searchParams.get("view") === "group";
+  // Group view filters: group is narrowed on the loaded list, locomotive on the API
+  const groupIdParam = searchParams.get("group_id") || "";
+  const locomotiveIdParam = searchParams.get("locomotive_id") || "";
 
   // State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,8 +86,67 @@ export default function DutyUzelPage() {
     isLoading: isLoadingGroupOverview,
     error: groupApiError,
   } = useComponentGroupOverview(
-    { start_date: defectDateStart, end_date: defectDateEnd },
+    {
+      start_date: defectDateStart,
+      end_date: defectDateEnd,
+      locomotive_id: locomotiveIdParam ? Number(locomotiveIdParam) : undefined,
+    },
     isGroupView
+  );
+
+  const { data: locomotivesData, isLoading: isLoadingLocomotives } =
+    useGetLocomotives(isGroupView, undefined, {
+      no_page: true,
+      organization: organizationId,
+    });
+
+  // Selecting a group narrows the list to it; the overview already holds them all
+  const visibleOverview = useMemo(() => {
+    if (!groupOverview) return undefined;
+    if (!groupIdParam) return groupOverview;
+    const groups = groupOverview.groups.filter(
+      (group) => String(group.id) === groupIdParam
+    );
+    return {
+      ...groupOverview,
+      groups,
+      count: groups.reduce((sum, group) => sum + (group.count ?? 0), 0),
+    };
+  }, [groupOverview, groupIdParam]);
+
+  const groupViewFilters: FiltersQuery[] = useMemo(
+    () => [
+      {
+        name: "group_id",
+        label: t("group_filter_label"),
+        isSelect: true,
+        placeholder: t("group_filter_label"),
+        options: [
+          { value: "", label: t("filter_all_groups") },
+          ...(groupOverview?.groups ?? []).map((group) => ({
+            value: String(group.id),
+            label: group.name,
+          })),
+        ],
+      },
+      {
+        name: "locomotive_id",
+        label: t("locomotive_filter_label"),
+        isSelect: true,
+        placeholder: t("locomotive_filter_label"),
+        loading: isLoadingLocomotives,
+        options: [
+          { value: "", label: t("filter_all_locomotives") },
+          ...(locomotivesData?.results ?? []).map((locomotive) => ({
+            value: String(locomotive.id),
+            label: `${locomotive.name}${
+              locomotive.model_name ? ` - ${locomotive.model_name}` : ""
+            }`,
+          })),
+        ],
+      },
+    ],
+    [groupOverview, locomotivesData, isLoadingLocomotives, t]
   );
 
   const createEntryMutation = useCreateComponentRegistry();
@@ -208,10 +271,10 @@ export default function DutyUzelPage() {
 
   // Excel export of the group view: the counts shown on screen, group by group
   const handleGroupExport = useCallback(async () => {
-    if (!groupOverview) return;
+    if (!visibleOverview) return;
     setIsExporting(true);
     try {
-      await exportComponentGroupOverviewExcel(groupOverview, {
+      await exportComponentGroupOverviewExcel(visibleOverview, {
         t,
         startDate: defectDateStart,
         endDate: defectDateEnd,
@@ -224,7 +287,7 @@ export default function DutyUzelPage() {
     } finally {
       setIsExporting(false);
     }
-  }, [groupOverview, defectDateStart, defectDateEnd, showError, t]);
+  }, [visibleOverview, defectDateStart, defectDateEnd, showError, t]);
 
   // Handle excel export
   const handleExport = useCallback(async () => {
@@ -365,13 +428,13 @@ export default function DutyUzelPage() {
         <>
           <div className="mt-4">
             <PageFilters
-              filters={[]}
+              filters={groupViewFilters}
               hasSearch={false}
               hasDateRangePicker={true}
               dateRangeStartKey="defect_date_start"
               dateRangeEndKey="defect_date_end"
               dateRangePickerLabel={t("columns.defect_date")}
-              onExport={groupOverview ? handleGroupExport : undefined}
+              onExport={visibleOverview ? handleGroupExport : undefined}
               exportLoading={isExporting}
             />
           </div>
@@ -384,11 +447,12 @@ export default function DutyUzelPage() {
 
           <div className="mt-6">
             <ComponentGroupAccordion
-              data={groupOverview}
+              data={visibleOverview}
               isLoading={isLoadingGroupOverview}
               depoId={depoId}
               startDate={defectDateStart}
               endDate={defectDateEnd}
+              locomotiveId={locomotiveIdParam || undefined}
             />
           </div>
         </>

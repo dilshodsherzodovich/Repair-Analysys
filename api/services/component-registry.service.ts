@@ -48,6 +48,7 @@ export const componentRegistryService = {
           params: {
             start_date: params?.start_date || undefined,
             end_date: params?.end_date || undefined,
+            locomotive_id: params?.locomotive_id || undefined,
           },
         }
       );
@@ -70,6 +71,7 @@ export const componentRegistryService = {
             group_id: params.group_id,
             start_date: params.start_date || undefined,
             end_date: params.end_date || undefined,
+            locomotive_id: params.locomotive_id || undefined,
           },
         }
       );
