@@ -10,11 +10,17 @@ export interface LocomotiveInfo {
   locomotive_model: string;
 }
 
+export interface SpecialComponentSection {
+  id: number;
+  name: string;
+}
+
 export type SpecialComponent = {
   id: number;
   year_of_manufacture: string;
   factory_number: string;
-} & Record<string, string | number | null>;
+  section?: SpecialComponentSection | null;
+} & Record<string, string | number | SpecialComponentSection | null | undefined>;
 
 export interface SortedLocomotiveData {
   id: number;

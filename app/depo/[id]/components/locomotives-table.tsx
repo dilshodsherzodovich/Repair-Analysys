@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { SpecialComponentsModal } from "./special-components-modal";
-import { LocomotiveModelData } from "@/api/types/locomotive";
+import { LocomotiveModelData, SpecialComponent } from "@/api/types/locomotive";
 
 const actionButtons = [
   {
@@ -64,7 +64,7 @@ export default function LocomotivesTable() {
     id: number;
     name: string;
     model_name: string;
-    special_component: any | null;
+    special_components: SpecialComponent[];
   } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -104,7 +104,7 @@ export default function LocomotivesTable() {
       id: locomotive.id,
       name: locomotive.name,
       model_name: locomotive.model_name,
-      special_component: locomotive.special_components?.[0] || null,
+      special_components: locomotive.special_components ?? [],
     });
     setIsModalOpen(true);
   };
@@ -233,7 +233,7 @@ export default function LocomotivesTable() {
           onClose={handleCloseModal}
           locomotiveName={selectedLocomotive.name}
           locomotiveModel={selectedLocomotive.model_name}
-          specialComponent={selectedLocomotive.special_component}
+          specialComponents={selectedLocomotive.special_components}
         />
       )}
     </section>

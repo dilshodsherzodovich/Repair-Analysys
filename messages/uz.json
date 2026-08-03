@@ -1143,7 +1143,8 @@
     "saving": "Saqlanmoqda...",
     "save": "Saqlash",
     "koren_prefix": "Коренной",
-    "shatun_prefix": "Шатунный"
+    "shatun_prefix": "Шатунный",
+    "section": "Sektsiya"
   },
   "LocomotivePassportPage": {
     "title": "Lokomotiv pasporti",
@@ -1170,7 +1171,7 @@
     "year_manufactured": "chiqarilgan yili",
     "year_placeholder": "Chiqarilgan yil",
     "toast_components_loaded": "Uzellar yuklandi",
-    "toast_components_found": "ta uzел topildi.",
+    "toast_components_found": "ta uzel topildi.",
     "toast_components_error": "Uzellarini yuklashda xatolik",
     "toast_components_error_desc": "Uzellarini yuklashda xatolik yuz berdi.",
     "toast_export_error": "PDF eksport qilish mumkin emas",
@@ -1182,7 +1183,7 @@
     "toast_no_components": "Uzellar topilmadi",
     "toast_no_components_desc": "Saqlashdan oldin uzellar ro'yxatini yuklab oling.",
     "toast_invalid_data": "Yaroqli ma'lumot topilmadi",
-    "toast_invalid_data_desc": "Iltimos, kamida bitta uzел qiymatini kiriting.",
+    "toast_invalid_data_desc": "Iltimos, kamida bitta uzel qiymatini kiriting.",
     "toast_saved": "Ma'lumotlar saqlandi",
     "toast_saved_desc": "Uzел qiymatlari muvaffaqiyatli yangilandi.",
     "toast_save_error": "Saqlashda xatolik",

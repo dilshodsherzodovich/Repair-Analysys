@@ -32,7 +32,7 @@ import {
 import { toast } from "@/ui/use-toast";
 import { ComponentValue } from "@/api/types/component";
 import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 
 interface LocomotivePassportClassicProps {
   depotId: string;
@@ -448,7 +448,7 @@ export default function LocomotivePassportClassic({
               <Tabs
                 value={activeSectionId?.toString() ?? ""}
                 onValueChange={(value) => setActiveSectionId(Number(value))}
-                className="w-full"
+                className="flex w-full flex-col"
               >
                 <TabsList className="bg-[#F1F5F9] p-2 gap-0 border-0 rounded-lg w-full flex">
                   {locomotiveDetail.sections.map((section) => (

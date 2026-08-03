@@ -1143,7 +1143,8 @@
     "saving": "Сохранение...",
     "save": "Сохранить",
     "koren_prefix": "Коренной",
-    "shatun_prefix": "Шатунный"
+    "shatun_prefix": "Шатунный",
+    "section": "Секция"
   },
   "LocomotivePassportPage": {
     "title": "Паспорт локомотива",

@@ -4,7 +4,7 @@ import { SpecialComponent } from "../types/locomotive";
 export const specialComponentsService = {
   async updateSpecialComponent(
     id: number,
-    payload: Partial<Omit<SpecialComponent, "id" | "year_of_manufacture" | "factory_number">>
+    payload: Record<string, string | number | null>
   ): Promise<SpecialComponent> {
     try {
       const response = await api.patch<SpecialComponent>(
