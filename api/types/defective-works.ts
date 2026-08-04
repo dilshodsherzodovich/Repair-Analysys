@@ -7,7 +7,7 @@ export interface RevisionRemark {
   id: number;
   group: number;
   name: string;
-  code: string;
+  code?: string;
   order: number;
   is_active: boolean;
 }
@@ -16,8 +16,11 @@ export interface RevisionRemarkGroup {
   id: number;
   locomotive_type: string;
   locomotive_type_display?: string;
+  /** id of the model, or null for a group shared across the whole type */
+  locomotive_model?: number | null;
+  locomotive_model_name?: string | null;
   name: string;
-  code: string;
+  code?: string;
   order: number;
   is_active: boolean;
   remarks: RevisionRemark[];
@@ -28,6 +31,7 @@ export interface RevisionRemarkGroup {
 export interface RevisionRemarkGroupParams {
   locomotive?: number | string;
   locomotive_id?: number | string;
+  locomotive_model?: number | string;
   locomotive_type?: string;
   is_active?: boolean;
   only_active?: boolean;
@@ -105,6 +109,7 @@ export interface DefectiveWorkListParams {
   organization_id?: number | string;
   inspection_type?: number | string;
   locomotive?: number | string;
+  locomotive_model?: number | string;
   locomotive_type?: string;
   remark_group?: number | string;
   remark?: number | string;

@@ -19,6 +19,7 @@ export const defectiveWorksService = {
       params: {
         locomotive: params?.locomotive,
         locomotive_id: params?.locomotive_id,
+        locomotive_model: params?.locomotive_model,
         locomotive_type: params?.locomotive_type,
         is_active: params?.is_active,
         only_active: params?.only_active,
@@ -45,6 +46,7 @@ export const defectiveWorksService = {
           organization: params?.organization_id,
           inspection_type: params?.inspection_type,
           locomotive: params?.locomotive,
+          locomotive_model: params?.locomotive_model,
           locomotive_type: params?.locomotive_type,
           remark_group: params?.remark_group,
           remark: params?.remark,

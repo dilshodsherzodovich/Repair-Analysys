@@ -23,6 +23,7 @@ import {
 import { DefectiveWorkModal } from "@/components/defective-works/defective-work-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
+import { useLocomotiveModels } from "@/api/hooks/use-locomotive-models";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useRevisionStatistics } from "@/api/hooks/use-statistics";
@@ -42,6 +43,7 @@ export function NosozliklarTab() {
     inspection_type,
     locomotive,
     locomotive_type,
+    locomotive_model,
     remark_group,
     remark,
     start_date,
@@ -91,6 +93,10 @@ export function NosozliklarTab() {
     useOrganizations();
   const { data: remarkGroupsData, isLoading: isLoadingRemarkGroups } =
     useRevisionRemarkGroups({ only_active: true, no_page: true });
+  const { data: locomotiveModelsData, isLoading: isLoadingModels } =
+    useLocomotiveModels(true, {
+      locomotive_type: locomotive_type || undefined,
+    });
 
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
@@ -107,6 +113,7 @@ export function NosozliklarTab() {
     organization_id: organization_id || undefined,
     inspection_type: inspection_type || undefined,
     locomotive_type: locomotive_type || undefined,
+    locomotive_model: locomotive_model || undefined,
     remark_group: remark_group || undefined,
     remark: remark || undefined,
     fromDate: start_date || undefined,
@@ -402,10 +409,25 @@ export function NosozliklarTab() {
     [t],
   );
 
+  const locomotiveModelOptions = useMemo(() => {
+    const options = [{ value: "", label: t("filters.locomotive_model_all") }];
+    (locomotiveModelsData ?? []).forEach((m) =>
+      options.push({ value: String(m.id), label: m.name }),
+    );
+    return options;
+  }, [locomotiveModelsData, t]);
+
   const remarkGroupOptions = useMemo(() => {
     const options = [{ value: "", label: t("filters.remark_group_all") }];
     (remarkGroupsData ?? [])
       .filter((g) => !locomotive_type || g.locomotive_type === locomotive_type)
+      // model chosen: model-specific groups + common (locomotive_model null) ones
+      .filter(
+        (g) =>
+          !locomotive_model ||
+          g.locomotive_model == null ||
+          String(g.locomotive_model) === locomotive_model,
+      )
       .forEach((g) =>
         options.push({
           value: String(g.id),
@@ -413,7 +435,7 @@ export function NosozliklarTab() {
         }),
       );
     return options;
-  }, [remarkGroupsData, locomotive_type, t]);
+  }, [remarkGroupsData, locomotive_type, locomotive_model, t]);
 
   const remarkOptions = useMemo(() => {
     const options = [{ value: "", label: t("filters.remark_all") }];
@@ -477,6 +499,15 @@ export function NosozliklarTab() {
               options: locomotiveTypeOptions,
               placeholder: t("filters.locomotive_type_placeholder"),
               searchable: false,
+            },
+            {
+              name: "locomotive_model",
+              label: t("filters.locomotive_model"),
+              isSelect: true,
+              options: locomotiveModelOptions,
+              placeholder: t("filters.locomotive_model_placeholder"),
+              searchable: true,
+              loading: isLoadingModels,
             },
             {
               name: "remark_group",
