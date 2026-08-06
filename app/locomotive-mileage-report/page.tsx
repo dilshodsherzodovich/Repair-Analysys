@@ -265,7 +265,9 @@ export default function LocomotiveMileageReportPage() {
     [inspectionTypes, selectedInspectionIds]
   );
 
-  const totalColCount = FIXED_COL_COUNT + selectedInspectionTypes.length * INSP_SUB_COUNT;
+  // actual-sana sub-column is hidden in the UI, so one fewer visible per type
+  const totalColCount =
+    FIXED_COL_COUNT + selectedInspectionTypes.length * (INSP_SUB_COUNT - 1);
 
   const toggleInspection = (typeId: number) => {
     setSelectedInspectionIds((prev) =>
@@ -320,7 +322,7 @@ export default function LocomotiveMileageReportPage() {
               {selectedInspectionTypes.map((insp, idx) => (
                 <TableHead
                   key={insp.type_id}
-                  colSpan={INSP_SUB_COUNT}
+                  colSpan={INSP_SUB_COUNT - 1}
                   className={`sticky top-0 z-20 py-2 px-2 text-[#475569] font-semibold text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
                 >
                   {insp.type}
@@ -333,7 +335,7 @@ export default function LocomotiveMileageReportPage() {
                 <TableHead key={`${insp.type_id}-sana`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                   {t("columns.sana")}
                 </TableHead>,
-                <TableHead key={`${insp.type_id}-actual-sana`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                <TableHead key={`${insp.type_id}-actual-sana`} className={`hidden sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                   {t("columns.actual_sana")}
                 </TableHead>,
                 <TableHead key={`${insp.type_id}-tamirdan`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
@@ -460,7 +462,7 @@ export default function LocomotiveMileageReportPage() {
 
                           if (!showKm && !showHours) {
                             return [
-                              ...Array.from({ length: INSP_SUB_COUNT - 1 }, (_, i) => (
+                              ...Array.from({ length: INSP_SUB_COUNT - 2 }, (_, i) => (
                                 <TableCell
                                   key={`${loco.index}-${inspType.type_id}-empty-${i}`}
                                   className={`py-2 px-2 text-[#CBD5E1] text-center border-r border-[#E2E8F0] ${inspBg(idx)}`}
@@ -480,7 +482,7 @@ export default function LocomotiveMileageReportPage() {
                             <TableCell key={`${loco.index}-${inspType.type_id}-sana`} className={`py-1 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                               {insp!.last_date === "-" ? "—" : insp!.last_date}
                             </TableCell>,
-                            <TableCell key={`${loco.index}-${inspType.type_id}-actual-sana`} className={`py-1 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
+                            <TableCell key={`${loco.index}-${inspType.type_id}-actual-sana`} className={`hidden py-1 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
                               {insp!.actual_last_date === "-" ? "—" : (insp!.actual_last_date || "—")}
                             </TableCell>,
                             <TableCell key={`${loco.index}-${inspType.type_id}-tamirdan`} className={`py-1 px-2 text-right border-r border-[#E2E8F0] ${inspBg(idx)}`}>

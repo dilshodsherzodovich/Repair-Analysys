@@ -176,16 +176,19 @@ export function BaselineModal({
           </div>
         ) : (
           <div className="space-y-4 py-2">
-            <DatePicker
-              label={t("actual_inspection_date_label")}
-              value={actualInspectionDate}
-              onValueChange={setActualInspectionDate}
-              disabled={isPending}
-              placeholder={t("actual_inspection_date_placeholder")}
-              captionLayout="dropdown"
-              fromYear={2000}
-              toYear={new Date().getFullYear()}
-            />
+            {/* Hidden per request — kept mounted so its logic/state stays intact */}
+            <div className="hidden">
+              <DatePicker
+                label={t("actual_inspection_date_label")}
+                value={actualInspectionDate}
+                onValueChange={setActualInspectionDate}
+                disabled={isPending}
+                placeholder={t("actual_inspection_date_placeholder")}
+                captionLayout="dropdown"
+                fromYear={2000}
+                toYear={new Date().getFullYear()}
+              />
+            </div>
 
             <DatePicker
               label={t("last_inspection_date_label")}
