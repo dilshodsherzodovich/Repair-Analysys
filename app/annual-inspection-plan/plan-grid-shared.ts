@@ -52,6 +52,13 @@ export const accentFor = (idx: number) => TYPE_ACCENTS[idx % TYPE_ACCENTS.length
 
 export const quarterOfMonth = (month: number) => Math.floor((month - 1) / 3) + 1;
 
+/**
+ * Counts may be fractional (the backend stores them as decimals), so sums pick
+ * up binary-float noise — 3.5 + 1.2 lands on 4.699999999999999. Round to two
+ * decimals and drop the trailing zeros.
+ */
+export const roundCount = (n: number) => Math.round(n * 100) / 100;
+
 export interface OrgTotals {
   months: Record<number, number>;
   quarters: Record<number, number>;
@@ -74,5 +81,8 @@ export function computeOrgTotals(org: AnnualPlanReportOrganization): OrgTotals {
     });
   });
 
-  return { months, quarters, yearly };
+  for (let m = 1; m <= 12; m++) months[m] = roundCount(months[m]);
+  for (let q = 1; q <= 4; q++) quarters[q] = roundCount(quarters[q]);
+
+  return { months, quarters, yearly: roundCount(yearly) };
 }

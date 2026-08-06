@@ -18,6 +18,7 @@ import {
   MONTHS_SHORT,
   QUARTER_LABELS,
   accentFor,
+  roundCount,
 } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
 
@@ -71,7 +72,8 @@ const EditableCell = memo(function EditableCell({
 
   const finish = () => {
     setEditing(false);
-    const n = Math.max(0, Math.floor(Number(draft) || 0));
+    // Fractional counts are allowed (3.5 stays 3.5) — only clamp the sign.
+    const n = roundCount(Math.max(0, Number(draft.replace(",", ".")) || 0));
     if (n !== value) onCommit(typeId, modelId, month, n);
   };
 
@@ -81,7 +83,8 @@ const EditableCell = memo(function EditableCell({
         ref={inputRef}
         type="number"
         min={0}
-        inputMode="numeric"
+        step="any"
+        inputMode="decimal"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         onBlur={finish}
@@ -252,17 +255,17 @@ export function PlanEditGrid({
   const rowQuarter = (typeId: number, modelId: number, quarter: number) => {
     let sum = 0;
     for (let m = (quarter - 1) * 3 + 1; m <= quarter * 3; m++) sum += countAt(typeId, modelId, m);
-    return sum;
+    return roundCount(sum);
   };
   const rowYearly = (typeId: number, modelId: number) => {
     let sum = 0;
     for (let m = 1; m <= 12; m++) sum += countAt(typeId, modelId, m);
-    return sum;
+    return roundCount(sum);
   };
   const typeQuarter = (g: (typeof groups)[number], q: number) =>
-    g.models.reduce((acc, m) => acc + rowQuarter(g.type.id, m.id, q), 0);
+    roundCount(g.models.reduce((acc, m) => acc + rowQuarter(g.type.id, m.id, q), 0));
   const typeYearly = (g: (typeof groups)[number]) =>
-    g.models.reduce((acc, m) => acc + rowYearly(g.type.id, m.id), 0);
+    roundCount(g.models.reduce((acc, m) => acc + rowYearly(g.type.id, m.id), 0));
 
   const statItems = useMemo(
     () =>
