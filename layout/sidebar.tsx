@@ -395,6 +395,13 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
     if (REPORTS_GENERAL_ROLES(role)) {
       reportsChildren.push({ name: t("nav.reports"), href: "/reports" });
     }
+    // The unified report summarises the three below it, so it leads the menu.
+    if (role === "admin") {
+      reportsChildren.push({
+        name: t("nav.unified_inspection_report"),
+        href: "/unified-inspection-report",
+      });
+    }
     if (role === "admin" || role === "tchzr") {
       reportsChildren.push({
         name: t("nav.delayed_report"),
