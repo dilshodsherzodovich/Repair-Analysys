@@ -66,6 +66,8 @@ export interface ReservedLocomotivesResponse {
 /** Shared query window used by every reports endpoint. */
 export interface ReportDateRangeParams {
   organization?: number;
+  /** Accepted by every reports endpoint alongside `organization`. */
+  branch?: number;
   fromDate?: string;
   toDate?: string;
 }

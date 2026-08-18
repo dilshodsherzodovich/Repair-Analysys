@@ -59,10 +59,9 @@ export default function ReportDashboard() {
     });
 
   const { data: delayedData, isLoading: isDelayedLoading, isError: isDelayedError } =
+    // Snapshot endpoint — no date window applies.
     useDelayedLocomotives({
       organization: organizationId,
-      fromDate: filters.fromDate,
-      toDate: filters.toDate,
     });
 
   const { data: txk2InspectionData, isLoading: isTxk2InspectionLoading, isError: isTxk2InspectionError } =

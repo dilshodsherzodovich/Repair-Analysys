@@ -41,11 +41,25 @@ export const useTxk2InspectionTypeLocomotives = (
     ...reportQueryOptions(params),
   });
 
-export const useDelayedLocomotives = (params: ReportDateRangeParams) =>
+/**
+ * Locomotives overdue to *enter* an inspection.
+ *
+ * A current-state snapshot rather than a period aggregate: it answers "which
+ * locomotives are overdue right now?", so there is no date window to scope it
+ * by. Unlike the other reports queries it is therefore enabled as soon as an
+ * organization is known, not once a date range is picked.
+ */
+export const useDelayedLocomotives = (
+  params: Omit<ReportDateRangeParams, "fromDate" | "toDate">,
+) =>
   useQuery({
     queryKey: [queryKeys.reports.delayed, params],
     queryFn: () => reportsService.getDelayedLocomotives(params),
-    ...reportQueryOptions(params),
+    enabled: !!params.organization,
+    retry: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 
 export const useReservedLocomotives = (params: ReportDateRangeParams) =>

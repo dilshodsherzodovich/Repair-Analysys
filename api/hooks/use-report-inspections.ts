@@ -5,6 +5,7 @@ import { reportInspectionsService } from "../services/report-inspections.service
 interface InspectionsArgs {
   page?: number;
   organization?: number;
+  branch?: number;
   is_closed?: boolean;
   is_cancelled?: boolean;
   locomotive_type?: string;
