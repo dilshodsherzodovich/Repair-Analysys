@@ -2,23 +2,11 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useEffect, useMemo, useState } from "react";
-import { useReportFilters } from "@/lib/hooks/useReportFilters";
-import DelayedReportFilters, {
-  getTashkentDateString,
-} from "@/components/reports/delayed-report-filters";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { useState } from "react";
+import DelayedReportFilters from "@/components/reports/delayed-report-filters";
 import { useDelayedLocomotives } from "@/api/hooks/use-reports";
 import type { DelayedLocomotivesResponse, DelayedLocomotive } from "@/api/types/reports";
 import PageLoading from "@/components/page-loading";
-import { defineGridColsCount } from "@/lib/utils";
 import { FileDown, Loader2 } from "lucide-react";
 import { generateDelayedReportPDF } from "@/utils/delayed-report-pdf-export";
 import type { DelayedReportPDFData } from "@/utils/delayed-report-pdf-export";
@@ -41,17 +29,6 @@ export default function DelayedReportPage() {
 
   if (role !== "admin" && role !== "tchzr") return null;
 
-  const { filters, setFilters } = useReportFilters();
-
-  const today = useMemo(() => new Date(), []);
-  const yesterday = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
-    return d;
-  }, []);
-
-  const [fromDate, setFromDate] = useState<string>(getTashkentDateString(yesterday));
-  const [toDate, setToDate] = useState<string>(getTashkentDateString(today));
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
 
@@ -69,13 +46,24 @@ export default function DelayedReportPage() {
         )?.name
       : user?.branch?.organization?.name) ?? "";
 
-  const { data, isPending, isFetching, refetch } = useDelayedLocomotives({
-    organization: organizationId,
-    fromDate,
-    toDate,
-  });
+  // Snapshot of what is overdue right now — no date window.
+  const { data, isPending, isFetching, refetch, dataUpdatedAt } =
+    useDelayedLocomotives({
+      organization: organizationId,
+    });
 
   const rows = (data as DelayedLocomotivesResponse[] | undefined) ?? [];
+
+  const countOf = (trainType: DelayedLocomotivesResponse) =>
+    trainType.inspection_types.reduce((s, it) => s + it.locomotives.length, 0);
+
+  const totalDelayed = rows.reduce((sum, tt) => sum + countOf(tt), 0);
+
+  // When the data was actually fetched — not "now", which would drift on every
+  // re-render and overstate how fresh the snapshot is.
+  const snapshotAt = dataUpdatedAt
+    ? format(new Date(dataUpdatedAt), "dd.MM.yyyy HH:mm")
+    : "—";
 
 
   const trainTypeName = (name: string) =>
@@ -148,11 +136,11 @@ export default function DelayedReportPage() {
 
   return (
     <div className="space-y-4">
-      {/* ─── Header Card ─── */}
+      {/* ─── Header ─── */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
+        <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-gray-100">
+          <div className="flex items-start gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shrink-0 shadow-sm">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -161,10 +149,17 @@ export default function DelayedReportPage() {
               <h1 className="text-gray-900 font-semibold text-base leading-tight">
                 {t("delayedReportTitle")}
               </h1>
-              <p className="text-gray-400 text-xs mt-0.5">
-                {new Date().toLocaleDateString(
-                  locale === "ru" ? "ru-RU" : "uz-UZ",
-                  { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+              {/* The report has no date range — it always shows what is overdue
+                  right now, so the description says so rather than leaving the
+                  timestamp to be misread as "generated on". */}
+              <p className="text-gray-500 text-xs mt-1">
+                {t("delayedReportDescription")}
+                <span className="text-gray-400">
+                  {" · "}
+                  {snapshotAt} {t("asOf")}
+                </span>
+                {isFetching && (
+                  <Loader2 className="inline w-3 h-3 ml-1.5 animate-spin text-gray-300 align-[-1px]" />
                 )}
               </p>
             </div>
@@ -198,12 +193,6 @@ export default function DelayedReportPage() {
         </div>
         <div className="px-5 py-3 bg-gray-50/60">
           <DelayedReportFilters
-            fromDate={fromDate}
-            toDate={toDate}
-            onChange={({ fromDate, toDate }) => {
-              if (fromDate !== undefined) setFromDate(fromDate);
-              if (toDate !== undefined) setToDate(toDate);
-            }}
             onRefresh={() => refetch()}
             leading={
               <ReportOrganizationSelect
@@ -216,97 +205,102 @@ export default function DelayedReportPage() {
         </div>
       </div>
 
-      <div className="space-y-4 border p-5 rounded-xl shadow-md">
-        {/* ─── Stat card ─── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {rows.map((trainType) => {
-            const count = trainType.inspection_types.reduce(
-              (s, it) => s + it.locomotives.length,
-              0
-            );
-            return (
-              <div
-                key={trainType.name}
-                className="bg-indigo-50 border border-t-4 border-t-indigo-400 rounded-xl px-3 py-3 text-center"
-              >
-                <p className="text-2xl font-bold text-indigo-600">{count}</p>
-                <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mt-0.5 leading-tight">
-                  {trainTypeName(trainType.name)}
-                </p>
-              </div>
-            );
-          })}
+      {/* ─── Summary: the total leads, the breakdown follows ─── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="bg-gray-900 rounded-xl px-4 py-3 shadow-sm">
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+            {t("total")}
+          </p>
+          <p className="text-3xl font-bold text-white tabular-nums leading-none mt-2">
+            {totalDelayed}
+          </p>
         </div>
-
-        {/* ─── Sections per train type ─── */}
-        {!rows.length ? (
-          <EmptyState label={t("noData")} />
-        ) : (
-          rows.map((trainType, idx) => {
-            const filtered = trainType.inspection_types.filter(
-              (type) => type.locomotives.length > 0
-            );
-            if (!filtered.length) return null;
-            const count = filtered.reduce((s, it) => s + it.locomotives.length, 0);
-            return (
-              <SectionCard
-                key={`delayed-${idx}`}
-                title={trainTypeName(trainType.name)}
-                count={count}
-              >
-                <div className="divide-y divide-gray-100">
-                  <div
-                    className={`grid divide-x-2 divide-indigo-100 [&>*:nth-child(6n+1)]:border-l-0 ${defineGridColsCount(filtered.length, 6)}`}
-                  >
-                    {filtered.map((type) => (
-                      <div key={type.name} className="overflow-hidden">
-                        <div className="bg-indigo-50 px-3 py-1.5 border-b border-indigo-100">
-                          <p className="text-[11px] font-semibold text-indigo-600 uppercase tracking-wide text-center">
-                            {type.name}
-                          </p>
-                        </div>
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="bg-gray-50 border-b border-gray-200">
-                              <TableHead className="h-8 text-[12px] text-gray-400 font-semibold border-r border-gray-200">
-                                {t("locomotive")}
-                              </TableHead>
-                              <TableHead className="h-8 text-[12px] text-gray-400 font-semibold">
-                                {t("hourKm")}
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {type.locomotives.map((loc: DelayedLocomotive) => (
-                              <TableRow
-                                key={loc.name}
-                                className="border-b border-gray-200 hover:bg-gray-50/60"
-                              >
-                                <TableCell className="font-semibold text-gray-800 text-sm border-r border-gray-200 py-1.5">
-                                  {loc.name}
-                                </TableCell>
-                                <TableCell className="text-gray-600 text-sm py-1.5">
-                                  {loc.hour
-                                    ? `${loc.hour} ${globalT("hour").toLowerCase()}`
-                                    : ""}
-                                  {loc.hour && loc.mileage ? " / " : ""}
-                                  {loc.mileage
-                                    ? `${loc.mileage} ${globalT("Km").toLowerCase()}`
-                                    : ""}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </SectionCard>
-            );
-          })
-        )}
+        {rows.map((trainType) => (
+          <div
+            key={trainType.name}
+            className="bg-white rounded-xl border border-gray-200 border-t-4 border-t-amber-400 px-4 py-3 shadow-sm"
+          >
+            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-tight min-h-[24px]">
+              {trainTypeName(trainType.name)}
+            </p>
+            <p className="text-3xl font-bold text-gray-900 tabular-nums leading-none mt-2">
+              {countOf(trainType)}
+            </p>
+          </div>
+        ))}
       </div>
+
+      {/* ─── Detail per train type ─── */}
+      {totalDelayed === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm py-16 text-center">
+          <p className="text-sm text-gray-400">{t("noData")}</p>
+        </div>
+      ) : (
+        rows.map((trainType) => {
+          const filtered = trainType.inspection_types.filter(
+            (type) => type.locomotives.length > 0,
+          );
+          if (!filtered.length) return null;
+          return (
+            <SectionCard
+              key={trainType.name}
+              title={trainTypeName(trainType.name)}
+              count={countOf(trainType)}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 p-4">
+                {filtered.map((type) => (
+                  <div
+                    key={type.name}
+                    className="border border-gray-200 rounded-lg overflow-hidden"
+                  >
+                    <div className="flex items-center justify-between gap-2 bg-gray-50 px-3 py-1.5 border-b border-gray-200">
+                      <p className="text-[11px] font-semibold text-gray-600 uppercase tracking-wide truncate">
+                        {type.name}
+                      </p>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white border border-gray-200 text-gray-600 tabular-nums shrink-0">
+                        {type.locomotives.length}
+                      </span>
+                    </div>
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                          <th className="text-left px-3 py-1.5 font-semibold">
+                            {t("locomotive")}
+                          </th>
+                          <th className="text-right px-3 py-1.5 font-semibold">
+                            {t("hourKm")}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {type.locomotives.map((loc: DelayedLocomotive) => (
+                          <tr
+                            key={loc.id}
+                            className="border-t border-gray-100 hover:bg-gray-50/60"
+                          >
+                            <td className="px-3 py-1.5 font-medium text-gray-800">
+                              {loc.name}
+                            </td>
+                            <td className="px-3 py-1.5 text-right text-gray-500 tabular-nums whitespace-nowrap">
+                              {loc.hour
+                                ? `${loc.hour} ${globalT("hour").toLowerCase()}`
+                                : ""}
+                              {loc.hour && loc.mileage ? " / " : ""}
+                              {loc.mileage
+                                ? `${loc.mileage} ${globalT("Km").toLowerCase()}`
+                                : ""}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          );
+        })
+      )}
     </div>
   );
 }
@@ -325,25 +319,18 @@ function SectionCard({
   const locale = useLocale();
   const suffix = locale === "ru" ? " шт." : " ta";
   return (
-    <div className="bg-white rounded-xl shadow-sm border-l-4 border-l-indigo-400 border border-gray-200 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-indigo-400" />
-          <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
+    <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <header className="flex items-center justify-between gap-2 px-5 py-3 border-b border-gray-100">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+          <h2 className="text-sm font-semibold text-gray-800 truncate">{title}</h2>
         </div>
-        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
-          {count}{suffix}
+        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 shrink-0 tabular-nums">
+          {count}
+          {suffix}
         </span>
-      </div>
-      <div className="py-2">{children}</div>
-    </div>
-  );
-}
-
-function EmptyState({ label }: { label: string }) {
-  return (
-    <div className="flex items-center justify-center h-16">
-      <p className="text-sm text-gray-400">{label}</p>
-    </div>
+      </header>
+      {children}
+    </section>
   );
 }
