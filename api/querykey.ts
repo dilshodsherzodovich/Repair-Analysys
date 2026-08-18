@@ -205,4 +205,7 @@ export const queryKeys = {
   delayedRepairDurationReport: {
     get: "delayed-repair-duration-report",
   },
+  delayedInspectionsReport: {
+    get: "delayed-inspections-report",
+  },
 } as const;
