@@ -1,6 +1,6 @@
 import api from "../axios";
 import { LoginCredentials, LoginResponse, UserData } from "../types/auth";
-import { config } from "@/lib/config";
+import { config, getSmartDepoUrl } from "@/lib/config";
 
 const ORG_TO_EMM_ID: Record<number, number> = {
   1: 1,
@@ -41,8 +41,9 @@ export const authService = {
   logout: (): void => {
     authService.clearStorage();
     if (typeof window !== "undefined") {
-      const next = encodeURIComponent(`${window.location.origin}/auth/callback`);
-      window.location.href = `${config.ssoLogoutUrl}?next=${next}`;
+      window.location.href = `${getSmartDepoUrl()}/?redirect_uri=${encodeURIComponent(
+        window.location.origin,
+      )}&clear_session=true`
     }
   },
 
