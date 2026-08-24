@@ -12,10 +12,14 @@ import {
 export const defectiveWorksService = {
   async getRevisionRemarkGroups(
     params?: RevisionRemarkGroupParams,
+    temporaryToken?: string,
   ): Promise<RevisionRemarkGroup[]> {
     const response = await api.get<
       RevisionRemarkGroup[] | PaginatedData<RevisionRemarkGroup>
     >("/revision-remark-groups/", {
+      ...(temporaryToken && {
+        headers: { Authorization: `Bearer ${temporaryToken}` },
+      }),
       params: {
         locomotive: params?.locomotive,
         locomotive_id: params?.locomotive_id,

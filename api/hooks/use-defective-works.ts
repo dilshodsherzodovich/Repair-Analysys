@@ -12,11 +12,16 @@ import { queryKeys } from "../querykey";
 
 export function useRevisionRemarkGroups(
   params?: RevisionRemarkGroupParams,
-  options?: { enabled?: boolean },
+  options?: { enabled?: boolean; token?: string },
 ) {
   return useQuery({
-    queryKey: [queryKeys.defectiveWorks.remarkGroups, params],
-    queryFn: () => defectiveWorksService.getRevisionRemarkGroups(params),
+    queryKey: [
+      queryKeys.defectiveWorks.remarkGroups,
+      params,
+      options?.token ? "temp-token" : "session",
+    ],
+    queryFn: () =>
+      defectiveWorksService.getRevisionRemarkGroups(params, options?.token),
     staleTime: 5 * 60 * 1000,
     enabled: options?.enabled ?? true,
     retry: (failureCount, error: any) => {

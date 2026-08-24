@@ -843,6 +843,15 @@
     "switch_account": "Войти в другой аккаунт"
   },
   "DefectiveWorksCreatePage": {
+    "remark_group": "Группа неисправностей",
+    "remark_group_placeholder": "Выберите группу",
+    "remark_group_pick_locomotive": "Сначала выберите локомотив",
+    "remark_group_empty": "Для этого локомотива групп нет",
+    "remark_loading": "Загрузка...",
+    "remark": "Неисправность",
+    "remark_placeholder": "Выберите неисправность",
+    "remark_pick_group": "Сначала выберите группу",
+    "remark_empty": "В группе нет неисправностей",
     "title": "Сообщить о неисправности",
     "subtitle": "Заполните форму и отправьте сведения о неисправности локомотива в систему. Эта страница не требует входа.",
     "has_account": "Есть аккаунт?",

@@ -19,6 +19,7 @@ import { authService } from "@/api/services/auth.service";
 import type { LoginCredentials } from "@/api/types/auth";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
+import { useRevisionRemarkGroups } from "@/api/hooks/use-defective-works";
 import { defectiveWorksService } from "@/api/services/defective-works.service";
 import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
 import { XIcon, ChevronsUpDown, Search } from "lucide-react";
@@ -28,6 +29,9 @@ import { cn } from "@/lib/utils";
 interface IssueWithDate {
   text: string;
   date: Date | undefined;
+  remark?: number;
+  remarkGroup?: number;
+  remarkLabel?: string;
 }
 
 /** Single-select with search, same pattern as multi-select */
@@ -198,6 +202,8 @@ export default function PublicDefectiveWorkCreatePage() {
   );
   const [selectedLocomotive, setSelectedLocomotive] = useState("");
   const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedRemark, setSelectedRemark] = useState("");
   const formRef = useRef<HTMLFormElement | null>(null);
   const locomotiveInputRef = useRef<HTMLInputElement | null>(null);
   const { showSuccess, showError } = useSnackbar();
@@ -255,6 +261,20 @@ export default function PublicDefectiveWorkCreatePage() {
   const { data: organizations = [], isPending: isLoadingOrganizations } =
     useOrganizations(temporaryToken);
 
+  // TU-152 defect groups for the picked locomotive (backend resolves the type).
+  const { data: remarkGroups, isFetching: isLoadingRemarkGroups } =
+    useRevisionRemarkGroups(
+      {
+        locomotive: selectedLocomotive || undefined,
+        only_active: true,
+        no_page: true,
+      },
+      { enabled: !!temporaryToken && !!selectedLocomotive, token: temporaryToken },
+    );
+  const groups = remarkGroups ?? [];
+  const activeGroup = groups.find((g) => String(g.id) === selectedGroup);
+  const remarkOptions = activeGroup?.remarks ?? [];
+
   const resetForm = () => {
     formRef.current?.reset();
     if (locomotiveInputRef.current) {
@@ -262,6 +282,8 @@ export default function PublicDefectiveWorkCreatePage() {
     }
     setSelectedLocomotive("");
     if (!organizationFromUrl) setSelectedOrganization("");
+    setSelectedGroup("");
+    setSelectedRemark("");
     setIssues([]);
     setCurrentIssueDate(undefined);
     if (formRef.current) {
@@ -283,9 +305,23 @@ export default function PublicDefectiveWorkCreatePage() {
     const value = rawValue.trim();
     if (!value) return;
 
+    const remarkName = remarkOptions.find(
+      (r) => String(r.id) === selectedRemark,
+    )?.name;
+    const remarkLabel =
+      activeGroup && remarkName
+        ? `${activeGroup.name} / ${remarkName}`
+        : undefined;
+
     setIssues((prev) => [
       ...prev,
-      { text: value, date: currentIssueDate || new Date() },
+      {
+        text: value,
+        date: currentIssueDate || new Date(),
+        remark: selectedRemark ? Number(selectedRemark) : undefined,
+        remarkGroup: selectedGroup ? Number(selectedGroup) : undefined,
+        remarkLabel,
+      },
     ]);
 
     const issueTextarea = formRef.current.querySelector<HTMLTextAreaElement>(
@@ -326,7 +362,12 @@ export default function PublicDefectiveWorkCreatePage() {
     const allIssues: IssueWithDate[] = trimmedCurrent
       ? [
           ...issues,
-          { text: trimmedCurrent, date: currentIssueDate || new Date() },
+          {
+            text: trimmedCurrent,
+            date: currentIssueDate || new Date(),
+            remark: selectedRemark ? Number(selectedRemark) : undefined,
+            remarkGroup: selectedGroup ? Number(selectedGroup) : undefined,
+          },
         ]
       : [...issues];
 
@@ -364,6 +405,8 @@ export default function PublicDefectiveWorkCreatePage() {
         train_driver: trainDriver.trim(),
         issue: issue.text,
         date: issue.date!.toISOString(),
+        ...(issue.remark ? { remark: issue.remark } : {}),
+        ...(issue.remarkGroup ? { remark_group: issue.remarkGroup } : {}),
       }));
 
       // Make bulk create request with token from state (not stored in localStorage)
@@ -468,7 +511,11 @@ export default function PublicDefectiveWorkCreatePage() {
                       : []
                   }
                   value={selectedLocomotive}
-                  onValueChange={setSelectedLocomotive}
+                  onValueChange={(v) => {
+                    setSelectedLocomotive(v);
+                    setSelectedGroup("");
+                    setSelectedRemark("");
+                  }}
                   placeholder={t("locomotive_placeholder")}
                   disabled={isLoadingLocomotives}
                   loading={isLoadingLocomotives}
@@ -539,6 +586,73 @@ export default function PublicDefectiveWorkCreatePage() {
                   placeholder="DD/MM/YYYY HH:mm"
                 />
               </div>
+
+              {/* TU-152 defect group */}
+              <div>
+                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                  {t("remark_group")}
+                </Label>
+                <Select
+                  value={selectedGroup}
+                  onValueChange={(v) => {
+                    setSelectedGroup(v);
+                    setSelectedRemark("");
+                  }}
+                  disabled={!selectedLocomotive || isLoadingRemarkGroups}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue
+                      placeholder={
+                        !selectedLocomotive
+                          ? t("remark_group_pick_locomotive")
+                          : isLoadingRemarkGroups
+                            ? t("remark_loading")
+                            : groups.length === 0
+                              ? t("remark_group_empty")
+                              : t("remark_group_placeholder")
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {groups.map((g) => (
+                      <SelectItem key={g.id} value={String(g.id)}>
+                        {g.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* TU-152 defect */}
+              <div>
+                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                  {t("remark")}
+                </Label>
+                <Select
+                  value={selectedRemark}
+                  onValueChange={setSelectedRemark}
+                  disabled={!selectedGroup || remarkOptions.length === 0}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue
+                      placeholder={
+                        !selectedGroup
+                          ? t("remark_pick_group")
+                          : remarkOptions.length === 0
+                            ? t("remark_empty")
+                            : t("remark_placeholder")
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {remarkOptions.map((r) => (
+                      <SelectItem key={r.id} value={String(r.id)}>
+                        {r.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -581,6 +695,11 @@ export default function PublicDefectiveWorkCreatePage() {
                         <div className="flex items-center gap-2">
                           <span className="flex-1">
                             {index + 1}. {issue.text}
+                            {issue.remarkLabel && (
+                              <span className="ml-2 inline-flex items-center rounded bg-[#EEF2FF] px-1.5 py-0.5 text-[10px] font-medium text-[#4338CA]">
+                                {issue.remarkLabel}
+                              </span>
+                            )}
                           </span>
 
                           <DateTimePicker

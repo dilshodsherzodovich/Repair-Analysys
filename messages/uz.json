@@ -843,6 +843,15 @@
     "switch_account": "Boshqa hisobga kirish"
   },
   "DefectiveWorksCreatePage": {
+    "remark_group": "Nosozlik guruhi",
+    "remark_group_placeholder": "Guruhni tanlang",
+    "remark_group_pick_locomotive": "Avval lokomotivni tanlang",
+    "remark_group_empty": "Bu lokomotiv uchun guruh yo'q",
+    "remark_loading": "Yuklanmoqda...",
+    "remark": "Nosozlik",
+    "remark_placeholder": "Nosozlikni tanlang",
+    "remark_pick_group": "Avval guruhni tanlang",
+    "remark_empty": "Guruhda nosozlik yo'q",
     "title": "Nosoz ish haqida xabar berish",
     "subtitle": "Formani to'ldiring va lokomotivdagi nosozlikni tizimga yuboring. Ushbu sahifa login talab qilmaydi.",
     "has_account": "Hisobingiz bormi?",
