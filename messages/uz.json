@@ -1530,6 +1530,9 @@
   "LocomotiveMileageReportPage": {
     "title": "Lokomotiv masofa hisoboti",
     "description": "Lokomotivlar boʻyicha texnik koʻrik sanalari va masofalari",
+    "export_button": "Excelga eksport",
+    "exporting": "Eksport...",
+    "export_error": "Faylni yuklab bo'lmadi",
     "tab_km": "km",
     "tab_kun": "Kun",
     "loc_number_placeholder": "Lokomotiv raqami",

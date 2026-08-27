@@ -2,8 +2,9 @@
 
 import React, { useMemo, useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Settings2, Loader2 } from "lucide-react";
+import { Settings2, Loader2, FileSpreadsheet } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
+import { Button } from "@/ui/button";
 import { PermissionGuard } from "@/components/permission-guard";
 import {
   TableBody,
@@ -223,6 +224,49 @@ export default function LocomotiveMileageReportPage() {
 
   const { data: reportData, isLoading: isLoadingReport } = useTxk13Report(reportParams);
 
+  const [isExporting, setIsExporting] = useState(false);
+  const handleExport = async () => {
+    const data = reportData?.data ?? [];
+    if (data.length === 0 || selectedInspectionTypes.length === 0) return;
+    setIsExporting(true);
+    try {
+      const { exportMileageReportToExcel } = await import(
+        "@/utils/export-mileage-report"
+      );
+      await exportMileageReportToExcel({
+        orgs: data,
+        inspectionTypes: selectedInspectionTypes.map((i) => ({
+          type_id: i.type_id,
+          type: i.type,
+        })),
+        activeUnit,
+        labels: {
+          sheetTitle: t("title"),
+          no: t("columns.no"),
+          series: t("columns.series"),
+          number: t("columns.number"),
+          manufactured_date: t("columns.manufactured_date"),
+          bandaj: t("columns.bandaj_mm"),
+          total_mileage: t("columns.total_mileage"),
+          avg: t("columns.avg_monthly_mileage"),
+          sana: t("columns.sana"),
+          tamirdan: t("columns.tamirdan_km"),
+          norma: t("columns.norma"),
+          qoldiq: t("columns.qoldiq"),
+          keyingi: t("columns.keyingi_sana"),
+        },
+        fileName: `locomotive-mileage-report-${new Date()
+          .toISOString()
+          .slice(0, 10)}.xlsx`,
+      });
+    } catch {
+      // non-fatal; page has no snackbar wired
+      alert(t("export_error"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   // Non-admin: auto-set org
   useEffect(() => {
     if (!currentUser || currentUser.role === "admin") return;
@@ -280,7 +324,26 @@ export default function LocomotiveMileageReportPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t("title")} description={t("description")} />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader title={t("title")} description={t("description")} />
+        <Button
+          onClick={handleExport}
+          disabled={
+            !reportData?.data?.length ||
+            selectedInspectionTypes.length === 0 ||
+            isExporting ||
+            isLoadingReport
+          }
+          className="shrink-0 gap-2"
+        >
+          {isExporting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <FileSpreadsheet className="size-4" />
+          )}
+          {isExporting ? t("exporting") : t("export_button")}
+        </Button>
+      </div>
 
       <Txk13Filters
         organizations={organizations}

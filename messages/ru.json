@@ -1530,6 +1530,9 @@
   "LocomotiveMileageReportPage": {
     "title": "Отчёт по пробегу локомотивов",
     "description": "Даты и пробеги технических осмотров по локомотивам",
+    "export_button": "Экспорт в Excel",
+    "exporting": "Экспорт...",
+    "export_error": "Не удалось скачать файл",
     "tab_km": "км",
     "tab_kun": "День",
     "loc_number_placeholder": "Номер локомотива",
