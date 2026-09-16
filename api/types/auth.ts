@@ -12,6 +12,7 @@ export interface UserData {
   first_name: string;
   last_name: string;
   role: string;
+  is_ech_user?: boolean;
   phone_number: string;
   tabel: number;
   email: string;

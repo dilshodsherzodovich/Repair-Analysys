@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
-import { canAccessSection } from "@/lib/permissions";
+import { canAccessSection, isEchAccount } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { NosozliklarTab } from "@/components/defective-works/nosozliklar-tab";
 import { TU152Tab } from "@/components/defective-works/tu152-tab";
@@ -23,16 +23,19 @@ export default function DefectiveWorksPage() {
     return <UnauthorizedPage />;
   }
 
+  const isEchUser = isEchAccount(currentUser);
+
   const [currentMainTab, setCurrentMainTab] = useState<string>(
-    mainTab || "nosozliklar",
+    isEchUser ? "nosozliklar" : mainTab || "nosozliklar",
   );
 
   const handleMainTabChange = useCallback(
     (value: string) => {
+      if (isEchUser && value !== "nosozliklar") return;
       setCurrentMainTab(value);
       updateQuery({ mainTab: value, page: "1" });
     },
-    [updateQuery],
+    [isEchUser, updateQuery],
   );
 
   const breadcrumbs = [
@@ -54,13 +57,15 @@ export default function DefectiveWorksPage() {
             <TabsTrigger value="nosozliklar">
               {t("tab_nosozliklar")}
             </TabsTrigger>
-            <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
+            {!isEchUser && (
+              <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
+            )}
           </TabsList>
         </Tabs>
       </div>
 
       {currentMainTab === "nosozliklar" && <NosozliklarTab />}
-      {currentMainTab === "tu152" && <TU152Tab />}
+      {!isEchUser && currentMainTab === "tu152" && <TU152Tab />}
     </div>
   );
 }

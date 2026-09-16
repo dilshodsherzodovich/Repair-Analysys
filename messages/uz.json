@@ -843,6 +843,10 @@
     "switch_account": "Boshqa hisobga kirish"
   },
   "DefectiveWorksCreatePage": {
+    "group_ech": "ECH guruhi",
+    "group_ech_placeholder": "ECH guruhini tanlang",
+    "group_ech_loading": "ECH guruhlari yuklanmoqda...",
+    "group_ech_empty": "ECH guruhlari topilmadi",
     "remark_group": "Nosozlik guruhi",
     "remark_group_placeholder": "Guruhni tanlang",
     "remark_group_pick_locomotive": "Avval lokomotivni tanlang",
@@ -908,6 +912,7 @@
       "without_table_number": "Bajarilmagan"
     },
     "columns": {
+      "group_ech": "ECH guruhi",
       "date": "Sana",
       "organization": "Tashkilot",
       "locomotive": "Lokomotiv",
@@ -923,6 +928,9 @@
     "status_done": "Bajarilgan",
     "status_not_done": "Bajarilmagan",
     "filters": {
+      "group_ech": "ECH guruhi",
+      "group_ech_placeholder": "ECH guruhini tanlang",
+      "group_ech_all": "Barcha ECH guruhlari",
       "status": "Holat",
       "status_placeholder": "Holatni tanlang",
       "organization": "Tashkilot",
@@ -974,6 +982,10 @@
     }
   },
   "DefectiveWorkModal": {
+    "group_ech": "ECH guruhi",
+    "group_ech_placeholder": "ECH guruhini tanlang",
+    "group_ech_loading": "ECH guruhlari yuklanmoqda...",
+    "group_ech_empty": "ECH guruhlari topilmadi",
     "title_create": "Nosoz ishni qo'shish",
     "title_edit": "Nosoz ishni tahrirlash",
     "remark_group": "Nosozlik guruhi",
@@ -1006,7 +1018,8 @@
     "date": "Sana",
     "issue": "Nosozlik tavsifi",
     "issue_placeholder": "Nosozlikni tavsiflang",
-    "error_loco_inspection": "Lokomotiv yoki texnik ko'rik turi tanlanmagan"
+    "error_loco_inspection": "Lokomotiv yoki texnik ko'rik turi tanlanmagan",
+    "error_group_ech_required": "ECH foydalanuvchisi uchun ECH guruhini tanlang"
   },
   "TU152Tab": {
     "columns": {

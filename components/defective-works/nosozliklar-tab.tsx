@@ -19,6 +19,9 @@ import {
   useDeleteDefectiveWork,
   useUpdateDefectiveWork,
   useRevisionRemarkGroups,
+  useEchRemarkGroups,
+  useEchDefectiveWorks,
+  useCreateEchDefectiveWork,
 } from "@/api/hooks/use-defective-works";
 import { DefectiveWorkModal } from "@/components/defective-works/defective-work-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
@@ -30,6 +33,8 @@ import { useRevisionStatistics } from "@/api/hooks/use-statistics";
 import { StatsPanel } from "@/components/statistics/stats-panel";
 import type { StatMetric, StatsHook } from "@/components/statistics/stats-panel";
 import { ClipboardCheck, ClipboardX } from "lucide-react";
+import { authService } from "@/api/services/auth.service";
+import { isEchAccount } from "@/lib/permissions";
 
 export function NosozliklarTab() {
   const t = useTranslations("NosozliklarTab");
@@ -46,10 +51,13 @@ export function NosozliklarTab() {
     locomotive_model,
     remark_group,
     remark,
+    ech_remark_group,
     start_date,
     end_date,
   } = getAllQueryValues();
   const { showSuccess, showError } = useSnackbar();
+  const currentUser = authService.getUser();
+  const isEchUser = isEchAccount(currentUser);
   const [isExporting, setIsExporting] = useState(false);
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
@@ -60,6 +68,7 @@ export function NosozliklarTab() {
   );
 
   const createMutation = useCreateDefectiveWork();
+  const createEchMutation = useCreateEchDefectiveWork();
   const updateMutation = useUpdateDefectiveWork();
   const deleteMutation = useDeleteDefectiveWork();
 
@@ -93,6 +102,12 @@ export function NosozliklarTab() {
     useOrganizations();
   const { data: remarkGroupsData, isLoading: isLoadingRemarkGroups } =
     useRevisionRemarkGroups({ only_active: true, no_page: true });
+  const canLoadEchGroups = isEchUser || currentUser?.role === "admin";
+  const { data: echGroupsData, isLoading: isLoadingEchGroups } =
+    useEchRemarkGroups(
+      { only_active: true, no_page: true, ordering: "order" },
+      { enabled: canLoadEchGroups },
+    );
   const { data: locomotiveModelsData, isLoading: isLoadingModels } =
     useLocomotiveModels(true, {
       locomotive_type: locomotive_type || undefined,
@@ -101,11 +116,7 @@ export function NosozliklarTab() {
   const currentPage = page ? parseInt(page) : 1;
   const itemsPerPage = pageSize ? parseInt(pageSize) : 25;
 
-  const {
-    data: apiResponse,
-    isLoading,
-    error: apiError,
-  } = useDefectiveWorks({
+  const journalParams = {
     page: currentPage,
     page_size: itemsPerPage,
     search: q || locomotive,
@@ -116,9 +127,21 @@ export function NosozliklarTab() {
     locomotive_model: locomotive_model || undefined,
     remark_group: remark_group || undefined,
     remark: remark || undefined,
+    ech_remark_group: ech_remark_group || undefined,
     fromDate: start_date || undefined,
     toDate: end_date || undefined,
+  };
+  const commonJournal = useDefectiveWorks(journalParams, {
+    enabled: !isEchUser,
   });
+  const echJournal = useEchDefectiveWorks(journalParams, {
+    enabled: isEchUser,
+  });
+  const {
+    data: apiResponse,
+    isLoading,
+    error: apiError,
+  } = isEchUser ? echJournal : commonJournal;
 
   const paginatedData = apiResponse?.results ?? [];
   const totalItems = apiResponse?.count ?? 0;
@@ -164,7 +187,8 @@ export function NosozliklarTab() {
   const handleSave = useCallback(
     (payload: DefectiveWorkCreatePayload | DefectiveWorkUpdatePayload) => {
       if (modalMode === "create") {
-        createMutation.mutate(payload as DefectiveWorkCreatePayload, {
+        const mutation = isEchUser ? createEchMutation : createMutation;
+        mutation.mutate(payload as DefectiveWorkCreatePayload, {
           onSuccess: () => {
             showSuccess(t("messages.create_success"));
             setIsModalOpen(false);
@@ -207,6 +231,8 @@ export function NosozliklarTab() {
       modalMode,
       selectedEntry,
       createMutation,
+      createEchMutation,
+      isEchUser,
       updateMutation,
       showSuccess,
       showError,
@@ -261,12 +287,20 @@ export function NosozliklarTab() {
     {
       key: "remark_group_info",
       header: t("columns.remark_group"),
-      accessor: (row) => row?.remark_group_info?.name || "-",
+      accessor: (row) =>
+        row?.remark_group_info?.name ||
+        row?.ech_remark_group_info?.name ||
+        "-",
     },
     {
       key: "remark_info",
       header: t("columns.remark"),
       accessor: (row) => row?.remark_info?.name || "-",
+    },
+    {
+      key: "group_ech_info",
+      header: t("columns.group_ech"),
+      accessor: (row) => row.ech_remark_group_info?.name || "-",
     },
     {
       key: "train_driver",
@@ -397,6 +431,17 @@ export function NosozliklarTab() {
     ];
   }, [t]);
 
+  const echGroupOptions = useMemo(
+    () => [
+      { value: "", label: t("filters.group_ech_all") },
+      ...(echGroupsData ?? []).map((group) => ({
+        value: String(group.id),
+        label: group.name,
+      })),
+    ],
+    [echGroupsData, t],
+  );
+
   const locomotiveTypeOptions = useMemo(
     () => [
       { value: "", label: t("filters.locomotive_type_all") },
@@ -453,13 +498,15 @@ export function NosozliklarTab() {
 
   return (
     <>
-      <StatsPanel
-        title={t("statistics.title")}
-        metrics={revisionMetrics}
-        useStats={useRevisionStatistics as unknown as StatsHook}
-        locomotiveOptions={statLocomotiveOptions}
-        inspectionTypeOptions={statInspectionTypeOptions}
-      />
+      {!isEchUser && (
+        <StatsPanel
+          title={t("statistics.title")}
+          metrics={revisionMetrics}
+          useStats={useRevisionStatistics as unknown as StatsHook}
+          locomotiveOptions={statLocomotiveOptions}
+          inspectionTypeOptions={statInspectionTypeOptions}
+        />
+      )}
 
       <div className="px-6 py-4">
         <PageFilters
@@ -509,22 +556,35 @@ export function NosozliklarTab() {
               searchable: true,
               loading: isLoadingModels,
             },
+            ...(!isEchUser
+              ? [
+                  {
+                    name: "remark_group",
+                    label: t("filters.remark_group"),
+                    isSelect: true,
+                    options: remarkGroupOptions,
+                    placeholder: t("filters.remark_group_placeholder"),
+                    searchable: true,
+                    loading: isLoadingRemarkGroups,
+                  },
+                  {
+                    name: "remark",
+                    label: t("filters.remark"),
+                    isSelect: true,
+                    options: remarkOptions,
+                    placeholder: t("filters.remark_placeholder"),
+                    searchable: true,
+                  },
+                ]
+              : []),
             {
-              name: "remark_group",
-              label: t("filters.remark_group"),
+              name: "ech_remark_group",
+              label: t("filters.group_ech"),
               isSelect: true,
-              options: remarkGroupOptions,
-              placeholder: t("filters.remark_group_placeholder"),
+              options: echGroupOptions,
+              placeholder: t("filters.group_ech_placeholder"),
               searchable: true,
-              loading: isLoadingRemarkGroups,
-            },
-            {
-              name: "remark",
-              label: t("filters.remark"),
-              isSelect: true,
-              options: remarkOptions,
-              placeholder: t("filters.remark_placeholder"),
-              searchable: true,
+              loading: isLoadingEchGroups,
             },
             {
               name: "tab",
@@ -588,7 +648,11 @@ export function NosozliklarTab() {
         onSave={handleSave}
         entry={selectedEntry}
         mode={modalMode}
-        isPending={createMutation.isPending || updateMutation.isPending}
+        isPending={
+          createMutation.isPending ||
+          createEchMutation.isPending ||
+          updateMutation.isPending
+        }
       />
     </>
   );

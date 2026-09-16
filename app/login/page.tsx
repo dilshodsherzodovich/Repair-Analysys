@@ -8,7 +8,7 @@ import { Input } from "@/ui/input";
 import { getSmartDepoUrl } from "@/lib/config";
 import { ArrowRight, Loader2, Shield, Zap, Users } from "lucide-react";
 import { config } from "@/lib/config";
-import { useLogin } from "@/api/hooks/use-auth";
+import { useEchLogin, useLogin } from "@/api/hooks/use-auth";
 
 // Dev-only credentials form is compiled away in production builds.
 const IS_DEV = process.env.NODE_ENV === "development";
@@ -17,7 +17,11 @@ export default function LoginPage() {
   const [smartDepoUrl, setSmartDepoUrl] = useState("https://mydepo.uz/");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showEchLogin, setShowEchLogin] = useState(false);
+  const [echUsername, setEchUsername] = useState("");
+  const [echPassword, setEchPassword] = useState("");
   const { mutate: login, isPending, isError, error } = useLogin();
+  const echLogin = useEchLogin();
 
   useEffect(() => {
     const redirectUri = encodeURIComponent(window.location.origin);
@@ -32,6 +36,12 @@ export default function LoginPage() {
     e.preventDefault();
     if (!username || !password || isPending) return;
     login({ username, password });
+  };
+
+  const handleEchLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!echUsername || !echPassword || echLogin.isPending) return;
+    echLogin.mutate({ username: echUsername, password: echPassword });
   };
 
   return (
@@ -159,18 +169,28 @@ export default function LoginPage() {
             >
               {!IS_DEV && (
                 <>
-                  <Button
-                    asChild
-                    className="w-full h-14 text-base font-semibold bg-gradient-to-r from-[#2354bf] via-[#4978ce] to-[#644ac4] hover:from-[#1e47a8] hover:via-[#3d6bc4] hover:to-[#5538a8] text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
-                  >
-                    <Link
-                      href={smartDepoUrl}
-                      className="flex items-center justify-center gap-2"
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Button
+                      asChild
+                      className="h-14 text-sm font-semibold bg-gradient-to-r from-[#2354bf] via-[#4978ce] to-[#644ac4] text-white shadow-lg group"
                     >
-                      <span>Smart Depo tizimi orqali kirish</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
+                      <Link
+                        href={smartDepoUrl}
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <span>MyDepo orqali kirish</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowEchLogin((value) => !value)}
+                      className="h-14 text-sm font-semibold border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                    >
+                      ECH foydalanuvchisi
+                    </Button>
+                  </div>
 
                   <Button
                     onClick={handleSsoLogin}
@@ -224,6 +244,59 @@ export default function LoginPage() {
                   <p className="text-center text-xs text-[#94a3b8]">
                     Dev rejimi — login/parol orqali kirish
                   </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowEchLogin((value) => !value)}
+                    className="h-12 border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                  >
+                    ECH foydalanuvchisi sifatida kirish
+                  </Button>
+                </form>
+              )}
+
+              {showEchLogin && (
+                <form
+                  onSubmit={handleEchLogin}
+                  className="mt-2 flex flex-col gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4"
+                >
+                  <p className="text-sm font-semibold text-emerald-800">
+                    ECH foydalanuvchisi kirishi
+                  </p>
+                  <Input
+                    value={echUsername}
+                    onChange={(event) => setEchUsername(event.target.value)}
+                    placeholder="Login"
+                    autoComplete="username"
+                    className="h-12 bg-white"
+                  />
+                  <Input
+                    type="password"
+                    value={echPassword}
+                    onChange={(event) => setEchPassword(event.target.value)}
+                    placeholder="Parol"
+                    autoComplete="current-password"
+                    className="h-12 bg-white"
+                  />
+                  {echLogin.isError && (
+                    <p className="text-sm text-red-600">
+                      {(echLogin.error as any)?.response?.data?.detail ||
+                        echLogin.error?.message ||
+                        "Login yoki parol noto'g'ri"}
+                    </p>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={
+                      echLogin.isPending || !echUsername || !echPassword
+                    }
+                    className="h-12 bg-emerald-600 text-white hover:bg-emerald-700"
+                  >
+                    {echLogin.isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    ECH tizimiga kirish
+                  </Button>
                 </form>
               )}
             </motion.div>

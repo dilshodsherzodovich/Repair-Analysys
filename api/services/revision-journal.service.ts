@@ -21,6 +21,8 @@ export const revisionJournalService = {
             search: params?.search,
             organization: params?.organization,
             locomotive: params?.locomotive,
+            group_ech: params?.group_ech,
+            ech_remark_group: params?.ech_remark_group,
             no_page: params?.no_page,
             fromDate: params?.fromDate,
             toDate: params?.toDate

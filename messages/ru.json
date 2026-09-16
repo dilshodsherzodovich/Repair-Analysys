@@ -843,6 +843,10 @@
     "switch_account": "Войти в другой аккаунт"
   },
   "DefectiveWorksCreatePage": {
+    "group_ech": "Группа ЭЧ",
+    "group_ech_placeholder": "Выберите группу ЭЧ",
+    "group_ech_loading": "Загрузка групп ЭЧ...",
+    "group_ech_empty": "Группы ЭЧ не найдены",
     "remark_group": "Группа неисправностей",
     "remark_group_placeholder": "Выберите группу",
     "remark_group_pick_locomotive": "Сначала выберите локомотив",
@@ -908,6 +912,7 @@
       "without_table_number": "Не выполнено"
     },
     "columns": {
+      "group_ech": "Группа ЭЧ",
       "date": "Дата",
       "organization": "Организация",
       "locomotive": "Локомотив",
@@ -923,6 +928,9 @@
     "status_done": "Выполнено",
     "status_not_done": "Не выполнено",
     "filters": {
+      "group_ech": "Группа ЭЧ",
+      "group_ech_placeholder": "Выберите группу ЭЧ",
+      "group_ech_all": "Все группы ЭЧ",
       "status": "Статус",
       "status_placeholder": "Выберите статус",
       "organization": "Организация",
@@ -974,6 +982,10 @@
     }
   },
   "DefectiveWorkModal": {
+    "group_ech": "Группа ЭЧ",
+    "group_ech_placeholder": "Выберите группу ЭЧ",
+    "group_ech_loading": "Загрузка групп ЭЧ...",
+    "group_ech_empty": "Группы ЭЧ не найдены",
     "title_create": "Добавить неисправность",
     "title_edit": "Редактировать неисправность",
     "remark_group": "Группа неисправностей",
@@ -1006,7 +1018,8 @@
     "date": "Дата",
     "issue": "Описание неисправности",
     "issue_placeholder": "Опишите неисправность",
-    "error_loco_inspection": "Не выбраны локомотив или вид осмотра"
+    "error_loco_inspection": "Не выбраны локомотив или вид осмотра",
+    "error_group_ech_required": "Для пользователя ЭЧ выберите группу ЭЧ"
   },
   "TU152Tab": {
     "columns": {

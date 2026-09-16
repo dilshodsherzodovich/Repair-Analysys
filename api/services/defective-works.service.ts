@@ -7,9 +7,82 @@ import {
   DefectiveWorkListParams,
   RevisionRemarkGroup,
   RevisionRemarkGroupParams,
+  RevisionJournalGroup,
+  RevisionJournalGroupParams,
+  EchRemarkGroup,
+  EchRemarkGroupParams,
 } from "../types/defective-works";
 
 export const defectiveWorksService = {
+  async getEchRemarkGroups(
+    params?: EchRemarkGroupParams,
+  ): Promise<EchRemarkGroup[]> {
+    const response = await api.get<EchRemarkGroup[] | PaginatedData<EchRemarkGroup>>(
+      "/ech-remark-groups/",
+      { params },
+    );
+    const data = response.data;
+    return Array.isArray(data) ? data : (data?.results ?? []);
+  },
+
+  async getEchDefectiveWorks(
+    params?: DefectiveWorkListParams,
+  ): Promise<PaginatedData<DefectiveWorkEntry>> {
+    const response = await api.get<PaginatedData<DefectiveWorkEntry>>(
+      "/ech-revision-journal/",
+      {
+        params: {
+          page: params?.page,
+          page_size: params?.page_size,
+          search: params?.search,
+          ech_remark_group: params?.ech_remark_group,
+          locomotive: params?.locomotive,
+          locomotive_model: params?.locomotive_model,
+          locomotive_type: params?.locomotive_type,
+          inspection_type: params?.inspection_type,
+          organization: params?.organization_id,
+          is_competed: params?.tab,
+          fromDate: params?.fromDate,
+          toDate: params?.toDate,
+          createdFrom: params?.createdFrom,
+          createdTo: params?.createdTo,
+          ordering: params?.ordering,
+          no_page: params?.no_page,
+        },
+      },
+    );
+    return response.data;
+  },
+
+  async createEchDefectiveWork(
+    payload: DefectiveWorkCreatePayload,
+  ): Promise<DefectiveWorkEntry> {
+    const response = await api.post<DefectiveWorkEntry>(
+      "/ech-revision-journal/",
+      payload,
+    );
+    return response.data;
+  },
+  async getRevisionJournalGroups(
+    params?: RevisionJournalGroupParams,
+    temporaryToken?: string,
+  ): Promise<RevisionJournalGroup[]> {
+    const response = await api.get<
+      RevisionJournalGroup[] | PaginatedData<RevisionJournalGroup>
+    >("/revision-journal-groups/", {
+      ...(temporaryToken && {
+        headers: { Authorization: `Bearer ${temporaryToken}` },
+      }),
+      params: {
+        search: params?.search,
+        ordering: params?.ordering,
+        page: params?.page,
+        no_page: params?.no_page,
+      },
+    });
+    const data = response.data;
+    return Array.isArray(data) ? data : (data?.results ?? []);
+  },
   async getRevisionRemarkGroups(
     params?: RevisionRemarkGroupParams,
     temporaryToken?: string,
@@ -45,7 +118,7 @@ export const defectiveWorksService = {
           page: params?.page,
           page_size: params?.page_size,
           search: params?.search,
-          is_completed: params?.tab,
+          is_competed: params?.tab,
           no_page: params?.no_page,
           organization: params?.organization_id,
           inspection_type: params?.inspection_type,
@@ -54,6 +127,8 @@ export const defectiveWorksService = {
           locomotive_type: params?.locomotive_type,
           remark_group: params?.remark_group,
           remark: params?.remark,
+          group_ech: params?.group_ech,
+          ech_remark_group: params?.ech_remark_group,
           fromDate: params?.fromDate,
           toDate: params?.toDate,
         },

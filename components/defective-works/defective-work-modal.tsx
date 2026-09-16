@@ -25,10 +25,15 @@ import {
 } from "@/api/types/defective-works";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
-import { useRevisionRemarkGroups } from "@/api/hooks/use-defective-works";
+import {
+  useEchRemarkGroups,
+  useRevisionRemarkGroups,
+} from "@/api/hooks/use-defective-works";
 import { LocomotiveData } from "@/api/types/locomotive";
 import { InspectionType } from "@/api/types/inspectionTypes";
 import { useSnackbar } from "@/providers/snackbar-provider";
+import { authService } from "@/api/services/auth.service";
+import { isEchAccount } from "@/lib/permissions";
 
 type LocomotiveOption = {
   id: number;
@@ -320,9 +325,11 @@ export function DefectiveWorkModal({
   const formRef = useRef<HTMLFormElement | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedLocomotive, setSelectedLocomotive] = useState("");
+  const [selectedEchGroup, setSelectedEchGroup] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedRemark, setSelectedRemark] = useState("");
   const { showError } = useSnackbar();
+  const isEchUser = isEchAccount(authService.getUser());
 
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
     useGetLocomotives(isOpen);
@@ -330,20 +337,24 @@ export function DefectiveWorkModal({
   const { data: inspectionTypes, isPending: isLoadingInspectionTypes } =
     useGetInspectionTypes(isOpen);
 
-  // TU-152 remark groups for the picked locomotive (backend derives the type).
-  const { data: remarkGroups, isFetching: isLoadingRemarkGroups } =
+  const { data: echGroups = [], isFetching: isLoadingEchGroups } =
+    useEchRemarkGroups(
+      { only_active: true, no_page: true, ordering: "order" },
+      { enabled: isOpen && isEchUser },
+    );
+  const { data: remarkGroups = [], isFetching: isLoadingRemarkGroups } =
     useRevisionRemarkGroups(
       {
         locomotive: selectedLocomotive || undefined,
         only_active: true,
         no_page: true,
       },
-      { enabled: isOpen && !!selectedLocomotive },
+      { enabled: isOpen && !isEchUser && !!selectedLocomotive },
     );
-
-  const groups = remarkGroups ?? [];
-  const activeGroup = groups.find((g) => String(g.id) === selectedGroup);
-  const remarkOptions = activeGroup?.remarks ?? [];
+  const activeRemarkGroup = remarkGroups.find(
+    (group) => String(group.id) === selectedGroup,
+  );
+  const remarkOptions = activeRemarkGroup?.remarks ?? [];
 
   useEffect(() => {
     if (!isOpen) return;
@@ -362,12 +373,16 @@ export function DefectiveWorkModal({
       setFormDefaults(defaults);
       setSelectedDate(entry.date ? new Date(entry.date) : undefined);
       setSelectedLocomotive(entry.locomotive ? String(entry.locomotive) : "");
+      setSelectedEchGroup(
+        entry.ech_remark_group ? String(entry.ech_remark_group) : "",
+      );
       setSelectedGroup(entry.remark_group ? String(entry.remark_group) : "");
       setSelectedRemark(entry.remark ? String(entry.remark) : "");
     } else {
       setFormDefaults(INITIAL_FORM_DATA);
       setSelectedDate(undefined);
       setSelectedLocomotive("");
+      setSelectedEchGroup("");
       setSelectedGroup("");
       setSelectedRemark("");
     }
@@ -388,6 +403,10 @@ export function DefectiveWorkModal({
       showError(t("error_loco_inspection"));
       return;
     }
+    if (isEchUser && !selectedEchGroup) {
+      showError(t("error_group_ech_required"));
+      return;
+    }
 
     const payload = {
       locomotive: Number(locomotive),
@@ -397,8 +416,15 @@ export function DefectiveWorkModal({
       issue: issue.trim(),
       code: code.trim(),
       date: selectedDate?.toISOString() || "",
-      ...(selectedRemark ? { remark: Number(selectedRemark) } : {}),
-      ...(selectedGroup ? { remark_group: Number(selectedGroup) } : {}),
+      ...(selectedEchGroup
+        ? { ech_remark_group: Number(selectedEchGroup) }
+        : {}),
+      ...(!isEchUser && selectedGroup
+        ? { remark_group: Number(selectedGroup) }
+        : {}),
+      ...(!isEchUser && selectedRemark
+        ? { remark: Number(selectedRemark) }
+        : {}),
     };
 
     onSave(payload);
@@ -408,6 +434,7 @@ export function DefectiveWorkModal({
     setFormDefaults(INITIAL_FORM_DATA);
     setSelectedDate(undefined);
     setSelectedLocomotive("");
+    setSelectedEchGroup("");
     setSelectedGroup("");
     setSelectedRemark("");
     setFormKey((prev) => prev + 1);
@@ -423,6 +450,57 @@ export function DefectiveWorkModal({
     }),
     [mode, t]
   );
+
+  // ECH accounts do not create or alter report details. Their only mutation
+  // is resolving an assigned problem by supplying its table number.
+  if (isEchUser && mode === "edit") {
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        title={modalTexts.title}
+        size="sm"
+        ariaDescribedBy="defective-works-resolution-modal"
+      >
+        <Card className="border-none p-0 mt-4">
+          <form
+            key={formKey}
+            onSubmit={(event) => {
+              event.preventDefault();
+              const data = new FormData(event.currentTarget);
+              const tableNumber = String(data.get("table_number") ?? "").trim();
+              if (!tableNumber) return;
+              onSave({ table_number: tableNumber });
+            }}
+            className="space-y-5"
+          >
+            <FormField
+              id="table_number"
+              name="table_number"
+              label={t("table_number")}
+              defaultValue={formDefaults.table_number}
+              placeholder={t("table_number_placeholder")}
+              required
+            />
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={isPending}
+              >
+                {t("cancel")}
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? modalTexts.pending : modalTexts.submit}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </Modal>
+    );
+  }
 
   return (
     <Modal
@@ -467,68 +545,103 @@ export function DefectiveWorkModal({
               emptyText={t("inspection_type_empty")}
             />
 
-            {/* TU-152 remark group */}
-            <div className="mb-4">
-              <Label htmlFor="remark_group">{t("remark_group")}</Label>
+            {/* ECH group */}
+            {isEchUser && <div className="mb-4">
+              <Label htmlFor="group_ech">{t("group_ech")}</Label>
               <Select
-                value={selectedGroup}
-                onValueChange={(v) => {
-                  setSelectedGroup(v);
-                  setSelectedRemark("");
-                }}
-                disabled={!selectedLocomotive || isLoadingRemarkGroups}
+                value={selectedEchGroup}
+                onValueChange={setSelectedEchGroup}
+                disabled={isLoadingEchGroups}
               >
-                <SelectTrigger id="remark_group">
+                <SelectTrigger id="group_ech">
                   <SelectValue
                     placeholder={
-                      !selectedLocomotive
-                        ? t("remark_group_pick_locomotive")
-                        : isLoadingRemarkGroups
-                          ? t("locomotive_loading")
-                          : groups.length === 0
-                            ? t("remark_group_empty")
-                            : t("remark_group_placeholder")
+                      isLoadingEchGroups
+                        ? t("group_ech_loading")
+                        : echGroups.length === 0
+                          ? t("group_ech_empty")
+                          : t("group_ech_placeholder")
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  {groups.map((g) => (
+                  {echGroups.map((g) => (
                     <SelectItem key={g.id} value={String(g.id)}>
-                      {g.code ? `${g.code} — ${g.name}` : g.name}
+                      {g.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </div>}
 
-            {/* TU-152 remark (child of the selected group) */}
-            <div className="mb-4">
-              <Label htmlFor="remark">{t("remark")}</Label>
-              <Select
-                value={selectedRemark}
-                onValueChange={setSelectedRemark}
-                disabled={!selectedGroup || remarkOptions.length === 0}
-              >
-                <SelectTrigger id="remark">
-                  <SelectValue
-                    placeholder={
-                      !selectedGroup
-                        ? t("remark_pick_group")
-                        : remarkOptions.length === 0
-                          ? t("remark_empty")
-                          : t("remark_placeholder")
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {remarkOptions.map((r) => (
-                    <SelectItem key={r.id} value={String(r.id)}>
-                      {r.code ? `${r.code} — ${r.name}` : r.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {!isEchUser && (
+              <>
+                <div className="mb-4">
+                  <Label htmlFor="remark_group">{t("remark_group")}</Label>
+                  <Select
+                    value={selectedGroup}
+                    onValueChange={(value) => {
+                      setSelectedGroup(value);
+                      setSelectedRemark("");
+                    }}
+                    disabled={!selectedLocomotive || isLoadingRemarkGroups}
+                  >
+                    <SelectTrigger id="remark_group">
+                      <SelectValue
+                        placeholder={
+                          !selectedLocomotive
+                            ? t("remark_group_pick_locomotive")
+                            : isLoadingRemarkGroups
+                              ? t("locomotive_loading")
+                              : remarkGroups.length === 0
+                                ? t("remark_group_empty")
+                                : t("remark_group_placeholder")
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {remarkGroups.map((group) => (
+                        <SelectItem key={group.id} value={String(group.id)}>
+                          {group.code
+                            ? `${group.code} — ${group.name}`
+                            : group.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="mb-4">
+                  <Label htmlFor="remark">{t("remark")}</Label>
+                  <Select
+                    value={selectedRemark}
+                    onValueChange={setSelectedRemark}
+                    disabled={!selectedGroup || remarkOptions.length === 0}
+                  >
+                    <SelectTrigger id="remark">
+                      <SelectValue
+                        placeholder={
+                          !selectedGroup
+                            ? t("remark_pick_group")
+                            : remarkOptions.length === 0
+                              ? t("remark_empty")
+                              : t("remark_placeholder")
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {remarkOptions.map((remark) => (
+                        <SelectItem key={remark.id} value={String(remark.id)}>
+                          {remark.code
+                            ? `${remark.code} — ${remark.name}`
+                            : remark.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
 
             <FormField
               id="train_driver"

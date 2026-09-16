@@ -7,6 +7,8 @@ import {
   DefectiveWorkCreatePayload,
   DefectiveWorkUpdatePayload,
   RevisionRemarkGroupParams,
+  RevisionJournalGroupParams,
+  EchRemarkGroupParams,
 } from "../types/defective-works";
 import { queryKeys } from "../querykey";
 
@@ -29,6 +31,70 @@ export function useRevisionRemarkGroups(
         return false;
       }
       return failureCount < 2;
+    },
+  });
+}
+
+export function useRevisionJournalGroups(
+  params?: RevisionJournalGroupParams,
+  options?: { enabled?: boolean; token?: string },
+) {
+  return useQuery({
+    queryKey: [
+      queryKeys.defectiveWorks.journalGroups,
+      params,
+      options?.token ? "temp-token" : "session",
+    ],
+    queryFn: () =>
+      defectiveWorksService.getRevisionJournalGroups(params, options?.token),
+    staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled ?? true,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+}
+
+export function useEchRemarkGroups(
+  params?: EchRemarkGroupParams,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: [queryKeys.defectiveWorks.echRemarkGroups, params],
+    queryFn: () => defectiveWorksService.getEchRemarkGroups(params),
+    staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled ?? true,
+  });
+}
+
+export function useEchDefectiveWorks(
+  params?: DefectiveWorkListParams,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: [queryKeys.defectiveWorks.echJournal, params],
+    queryFn: () => defectiveWorksService.getEchDefectiveWorks(params),
+    staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled ?? true,
+  });
+}
+
+export function useCreateEchDefectiveWork() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: DefectiveWorkCreatePayload) =>
+      defectiveWorksService.createEchDefectiveWork(payload),
+    mutationKey: [queryKeys.defectiveWorks.echJournal, "create"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.defectiveWorks.echJournal],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.defectiveWorks.all],
+      });
     },
   });
 }
@@ -58,6 +124,9 @@ export function useCreateDefectiveWork() {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.defectiveWorks.all],
       });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.defectiveWorks.echJournal],
+      });
     },
   });
 }
@@ -76,6 +145,9 @@ export function useUpdateDefectiveWork() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.defectiveWorks.all],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.defectiveWorks.echJournal],
       });
     },
   });

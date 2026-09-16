@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { authService } from "@/api/services/auth.service";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import type { UserData } from "@/api/types/auth";
+import { isEchAccount } from "@/lib/permissions";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -11,9 +12,20 @@ interface AuthGuardProps {
 }
 
 const DEFAULT_PUBLIC_ROUTES = ["/login", "/auth/callback"];
+const ECH_DEFAULT_ROUTE = "/defective-works";
+const PUBLIC_DEFECT_CREATE_ROUTE = "/defective-works/create";
+
+function isEchAllowedRoute(pathname: string): boolean {
+  return (
+    pathname === ECH_DEFAULT_ROUTE ||
+    pathname.startsWith(`${ECH_DEFAULT_ROUTE}/`)
+  );
+}
 
 function getDefaultRouteForRole(user: UserData | null): string {
   if (!user || !user.role) return "/";
+
+  if (isEchAccount(user)) return ECH_DEFAULT_ROUTE;
 
   const role = user.role.toLowerCase();
 
@@ -93,7 +105,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
           expiryDate,
         );
 
-        const defaultRoute = page || getDefaultRouteForRole(parsedUser);
+        const defaultRoute =
+          isEchAccount(parsedUser)
+            ? ECH_DEFAULT_ROUTE
+            : page || getDefaultRouteForRole(parsedUser);
         router.replace(defaultRoute);
         return;
       } catch (error) {
@@ -111,6 +126,25 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     if (isAuthenticated) {
       const storedUser = authService.getUser();
       const defaultRoute = getDefaultRouteForRole(storedUser);
+
+      if (
+        isEchAccount(storedUser) &&
+        pathname === PUBLIC_DEFECT_CREATE_ROUTE
+      ) {
+        router.replace(ECH_DEFAULT_ROUTE);
+        return;
+      }
+
+      // ECH is a stricter account scope than role. Even an admin ECH account
+      // cannot navigate to non-revision pages by entering their URL directly.
+      if (
+        isEchAccount(storedUser) &&
+        !isPublicRoute &&
+        !isEchAllowedRoute(pathname)
+      ) {
+        router.replace(ECH_DEFAULT_ROUTE);
+        return;
+      }
 
       // If on login page, redirect to default route
       if (isLoginPage) {
@@ -155,6 +189,40 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
           <p className="text-gray-600">
             Avtorizatsiya sahifasiga yo'naltirilmoqda...
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isPublicRoute && authService.isAuthenticated()) {
+    const storedUser = authService.getUser();
+    if (
+      isEchAccount(storedUser) &&
+      !isEchAllowedRoute(pathname)
+    ) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Yo'naltirilmoqda...</p>
+          </div>
+        </div>
+      );
+    }
+  }
+
+
+  if (
+    isPublicRoute &&
+    pathname === PUBLIC_DEFECT_CREATE_ROUTE &&
+    authService.isAuthenticated() &&
+    isEchAccount(authService.getUser())
+  ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Yo'naltirilmoqda...</p>
         </div>
       </div>
     );

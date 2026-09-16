@@ -89,6 +89,9 @@ export const queryKeys = {
     delete: "defective-works-delete",
     bulkCreate: "defective-works-bulk-create",
     remarkGroups: "revision-remark-groups",
+    journalGroups: "revision-journal-groups",
+    echRemarkGroups: "ech-remark-groups",
+    echJournal: "ech-revision-journal",
   },
   delays: {
     all: "delays-all",

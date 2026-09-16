@@ -78,6 +78,8 @@ export type Permission =
   | "delete_tu152_journal";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
+  ech_staff: [],
+  observer: [],
   admin: [
     "view_dashboard",
     "view_reports",
@@ -240,11 +242,31 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   accountant: ["view_recovery", "confirm_recovery"],
 };
 
+/**
+ * ECH access is an account-level scope and takes precedence over role access.
+ * An ECH user may have a broad role (including admin), but must only work with
+ * the revision journal.
+ */
+const ECH_PERMISSIONS: Permission[] = [
+  "view_defective_works",
+  "create_defective_work",
+  "edit_defective_work",
+];
+
+export function isEchAccount(user: UserData | null): boolean {
+  return (
+    user?.is_ech_user === true || user?.role?.toLowerCase() === "ech_staff"
+  );
+}
+
 export function hasPermission(
   user: UserData | null,
   permission: Permission,
 ): boolean {
   if (!user) return false;
+  if (isEchAccount(user)) {
+    return ECH_PERMISSIONS.includes(permission);
+  }
   const role = user?.role as UserRole;
   const userPermissions = ROLE_PERMISSIONS[role] || [];
   return userPermissions.includes(permission);
