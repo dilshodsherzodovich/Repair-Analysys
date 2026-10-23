@@ -131,6 +131,9 @@ export const queryKeys = {
   components: {
     list: "components-list",
   },
+  bandages: {
+    list: "bandages-list",
+  },
   componentRegistry: {
     all: "component-registry-all",
     create: "component-registry-create",

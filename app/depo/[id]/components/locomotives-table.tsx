@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Pencil, Eye } from "lucide-react";
 import {
   useGetLocomotiveModels,
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { SpecialComponentsModal } from "./special-components-modal";
+import { BandagesModal } from "./bandages-modal";
 import { LocomotiveModelData, SpecialComponent } from "@/api/types/locomotive";
 
 const actionButtons = [
@@ -31,6 +33,7 @@ export default function LocomotivesTable() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const tBandages = useTranslations("BandagesModal");
   const depotId = params.id as string;
 
   const { q, locModel } = Object.fromEntries(searchParams.entries());
@@ -67,6 +70,11 @@ export default function LocomotivesTable() {
     special_components: SpecialComponent[];
   } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bandageLocomotive, setBandageLocomotive] = useState<{
+    id: number;
+    name: string;
+    model_name: string;
+  } | null>(null);
 
   const locomotives = data?.results ?? [];
   const showEmpty = !isPending && locomotives.length === 0;
@@ -84,6 +92,7 @@ export default function LocomotivesTable() {
 
   const canViewPassport = hasPermission(user, "view_locomotive_passport");
   const canEditPassport = hasPermission(user, "edit_locomotive_passport");
+  const canEditBandage = hasPermission(user, "edit_bandage");
 
   const handleViewClick = (locomotiveId: number) => {
     if (canViewPassport) {
@@ -209,6 +218,26 @@ export default function LocomotivesTable() {
                         </p>
                       </button>
                     )}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setBandageLocomotive({
+                        id: locomotive.id,
+                        name: locomotive.name,
+                        model_name: locomotive.model_name,
+                      })
+                    }
+                    className={cn(
+                      "flex h-8 w-full mt-[5px] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
+                      "bg-[#F3EEFD] text-[#6D3FC0] border border-[#6D3FC0]",
+                    )}
+                    aria-label={tBandages("button")}
+                    title={tBandages("button")}
+                  >
+                    <p className="text-sm font-semibold text-[#6D3FC0]">
+                      {tBandages("button")}
+                    </p>
+                  </button>
                 </div>
               </div>
             </article>
@@ -234,6 +263,17 @@ export default function LocomotivesTable() {
           locomotiveName={selectedLocomotive.name}
           locomotiveModel={selectedLocomotive.model_name}
           specialComponents={selectedLocomotive.special_components}
+        />
+      )}
+
+      {bandageLocomotive && (
+        <BandagesModal
+          isOpen={!!bandageLocomotive}
+          onClose={() => setBandageLocomotive(null)}
+          locomotiveId={bandageLocomotive.id}
+          locomotiveName={bandageLocomotive.name}
+          locomotiveModel={bandageLocomotive.model_name}
+          canEdit={canEditBandage}
         />
       )}
     </section>

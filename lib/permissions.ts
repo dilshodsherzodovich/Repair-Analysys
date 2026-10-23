@@ -45,6 +45,7 @@ export type Permission =
   | "create_duty_uzel_report"
   | "view_locomotive_passport"
   | "edit_locomotive_passport"
+  | "edit_bandage"
   | "view_locomotive_passport_inspections"
   | "create_locomotive_passport_inspection"
   | "edit_locomotive_passport_inspection"
@@ -81,6 +82,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   ech_staff: [],
   observer: [],
   admin: [
+    "edit_bandage",
     "view_dashboard",
     "view_reports",
     "view_defects",
@@ -164,6 +166,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_depo",
     "view_locomotive_passport",
     "edit_locomotive_passport",
+    "edit_bandage",
     "view_duty_uzel",
   ],
   repair_staff: [

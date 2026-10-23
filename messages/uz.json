@@ -1224,6 +1224,22 @@
     "shatun_prefix": "Шатунный",
     "section": "Sektsiya"
   },
+  "BandagesModal": {
+    "title": "Бандаж",
+    "button": "Бандаж",
+    "not_found": "Bandaj ma'lumotlari topilmadi",
+    "error": "Ma'lumotlarni yuklashda xatolik yuz berdi.",
+    "close": "Yopish",
+    "wheel_pair": "G'ildirak jufti",
+    "left": "Chap",
+    "right": "O'ng",
+    "no_section": "Sektsiyasiz",
+    "save": "Saqlash",
+    "saving": "Saqlanmoqda...",
+    "no_changes": "O'zgarishlar yo'q",
+    "success_updated": "Muvaffaqiyatli saqlandi",
+    "error_save": "Saqlashda xatolik yuz berdi"
+  },
   "LocomotivePassportPage": {
     "title": "Lokomotiv pasporti",
     "description": "Sizda bu sahifani ko'rish uchun ruxsat yo'q"
