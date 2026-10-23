@@ -87,6 +87,7 @@ export default function DutyUzelPage() {
     error: groupApiError,
   } = useComponentGroupOverview(
     {
+      organization: organizationId,
       start_date: defectDateStart,
       end_date: defectDateEnd,
       locomotive_id: locomotiveIdParam ? Number(locomotiveIdParam) : undefined,

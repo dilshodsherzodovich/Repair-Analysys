@@ -46,6 +46,7 @@ export const componentRegistryService = {
         "/component-registry/by-group-date",
         {
           params: {
+            organization: params?.organization || undefined,
             start_date: params?.start_date || undefined,
             end_date: params?.end_date || undefined,
             locomotive_id: params?.locomotive_id || undefined,
@@ -69,6 +70,7 @@ export const componentRegistryService = {
         {
           params: {
             group_id: params.group_id,
+            organization: params.organization || undefined,
             start_date: params.start_date || undefined,
             end_date: params.end_date || undefined,
             locomotive_id: params.locomotive_id || undefined,

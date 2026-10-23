@@ -53,6 +53,7 @@ export function useComponentRegistryByGroup(
     queryFn: () =>
       componentRegistryService.getByGroupDetails({
         group_id: params.group_id!,
+        organization: params.organization,
         start_date: params.start_date,
         end_date: params.end_date,
         locomotive_id: params.locomotive_id,

@@ -41,6 +41,7 @@ export default function DutyUzelGroupPage() {
 
   const { data, isLoading, error } = useComponentRegistryByGroup({
     group_id: groupId,
+    organization: depoId ? Number(depoId) : undefined,
     start_date: startDate,
     end_date: endDate,
     locomotive_id: locomotiveIdParam ? Number(locomotiveIdParam) : undefined,

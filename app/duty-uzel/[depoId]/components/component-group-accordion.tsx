@@ -33,11 +33,13 @@ interface ComponentGroupAccordionProps {
  */
 function GroupPanel({
   group,
+  depoId,
   startDate,
   endDate,
   locomotiveId,
 }: {
   group: ComponentGroupOverviewGroup;
+  depoId: string;
   startDate?: string;
   endDate?: string;
   locomotiveId?: string;
@@ -46,6 +48,7 @@ function GroupPanel({
 
   const { data, isLoading, error } = useComponentRegistryByGroup({
     group_id: group.id,
+    organization: depoId ? Number(depoId) : undefined,
     start_date: startDate,
     end_date: endDate,
     locomotive_id: locomotiveId ? Number(locomotiveId) : undefined,
@@ -222,6 +225,7 @@ export function ComponentGroupAccordion({
               {isOpen && (
                 <GroupPanel
                   group={group}
+                  depoId={depoId}
                   startDate={startDate}
                   endDate={endDate}
                   locomotiveId={locomotiveId}

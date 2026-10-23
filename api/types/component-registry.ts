@@ -61,6 +61,7 @@ export interface ComponentGroupOverview {
 }
 
 export interface ComponentGroupOverviewParams {
+  organization?: number;
   start_date?: string;
   end_date?: string;
   locomotive_id?: number;
@@ -98,6 +99,7 @@ export interface ComponentGroupDetails {
 
 export interface ComponentGroupDetailsParams {
   group_id: number;
+  organization?: number;
   start_date?: string;
   end_date?: string;
   locomotive_id?: number;
