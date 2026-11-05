@@ -553,6 +553,8 @@
     "brand_subtitle": "Raqamli tahlil",
     "nav": {
       "depot": "Lokomotiv passporti",
+      "bandages": "Bandajlar",
+      "crankshaft": "Коленчатый вал",
       "duty_uzel": "Uzellarni almashitirish",
       "revision_journal": "Nuqson jurnali",
       "locomotive_passport_inspections": "Profilaktik grafik",
@@ -1223,6 +1225,52 @@
     "koren_prefix": "Коренной",
     "shatun_prefix": "Шатунный",
     "section": "Sektsiya"
+  },
+  "BandagesPage": {
+    "title": "Bandajlar",
+    "description": "Lokomotivlar bo'yicha bandaj qiymatlari",
+    "organization_label": "Depo",
+    "all": "Barchasi",
+    "locModel_label": "Lokomotiv rusumi",
+    "locModel_placeholder": "Lokomotiv rusumini tanlang",
+    "search_placeholder": "Qidiruv",
+    "error_load": "Maʼlumotlarni yuklashda xatolik yuz berdi.",
+    "empty": "Lokomotivlar topilmadi",
+    "edit": "Tahrirlash",
+    "view": "Ko'rish",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "success_updated": "Muvaffaqiyatli saqlandi",
+    "error_save": "Saqlashda xatolik yuz berdi",
+    "columns": {
+      "no": "№",
+      "locomotive": "Lokomotiv",
+      "section": "Sektsiya",
+      "actions": "Amallar"
+    }
+  },
+  "CrankshaftPage": {
+    "title": "Коленчатый вал",
+    "description": "Lokomotivlar bo'yicha коленчатый вал qiymatlari",
+    "organization_label": "Depo",
+    "all": "Barchasi",
+    "locModel_label": "Lokomotiv rusumi",
+    "locModel_placeholder": "Lokomotiv rusumini tanlang",
+    "search_placeholder": "Qidiruv",
+    "error_load": "Maʼlumotlarni yuklashda xatolik yuz berdi.",
+    "empty": "Lokomotivlar topilmadi",
+    "edit": "Tahrirlash",
+    "view": "Ko'rish",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "success_updated": "Muvaffaqiyatli saqlandi",
+    "error_save": "Saqlashda xatolik yuz berdi",
+    "columns": {
+      "no": "№",
+      "locomotive": "Lokomotiv",
+      "section": "Sektsiya",
+      "actions": "Amallar"
+    }
   },
   "BandagesModal": {
     "title": "Бандаж",

@@ -27,6 +27,8 @@ import {
   Banknote,
   CalendarRange,
   FileBarChart,
+  Disc,
+  Cog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
@@ -173,6 +175,23 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         icon: FormInput,
         section: "depo",
         children: depoChildren,
+      });
+    }
+
+    if (user && canAccessSection(user, "depo")) {
+      items.push({
+        key: "bandages",
+        name: t("nav.bandages"),
+        icon: Disc,
+        section: "depo",
+        href: "/bandages",
+      });
+      items.push({
+        key: "crankshaft",
+        name: t("nav.crankshaft"),
+        icon: Cog,
+        section: "depo",
+        href: "/crankshaft",
       });
     }
 

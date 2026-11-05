@@ -553,6 +553,8 @@
     "brand_subtitle": "Цифровая аналитика",
     "nav": {
       "depot": "Паспорт локомотива",
+      "bandages": "Бандажи",
+      "crankshaft": "Коленчатый вал",
       "duty_uzel": "Смена узлов",
       "revision_journal": "Журнал неисправностей",
       "locomotive_passport_inspections": "Профилактический график",
@@ -1223,6 +1225,52 @@
     "koren_prefix": "Коренной",
     "shatun_prefix": "Шатунный",
     "section": "Секция"
+  },
+  "BandagesPage": {
+    "title": "Бандажи",
+    "description": "Значения бандажей по локомотивам",
+    "organization_label": "Депо",
+    "all": "Все",
+    "locModel_label": "Серия локомотива",
+    "locModel_placeholder": "Выберите серию локомотива",
+    "search_placeholder": "Поиск",
+    "error_load": "Произошла ошибка при загрузке данных.",
+    "empty": "Локомотивы не найдены",
+    "edit": "Редактировать",
+    "view": "Просмотр",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "success_updated": "Успешно сохранено",
+    "error_save": "Ошибка при сохранении",
+    "columns": {
+      "no": "№",
+      "locomotive": "Локомотив",
+      "section": "Секция",
+      "actions": "Действия"
+    }
+  },
+  "CrankshaftPage": {
+    "title": "Коленчатый вал",
+    "description": "Значения коленчатого вала по локомотивам",
+    "organization_label": "Депо",
+    "all": "Все",
+    "locModel_label": "Серия локомотива",
+    "locModel_placeholder": "Выберите серию локомотива",
+    "search_placeholder": "Поиск",
+    "error_load": "Произошла ошибка при загрузке данных.",
+    "empty": "Локомотивы не найдены",
+    "edit": "Редактировать",
+    "view": "Просмотр",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "success_updated": "Успешно сохранено",
+    "error_save": "Ошибка при сохранении",
+    "columns": {
+      "no": "№",
+      "locomotive": "Локомотив",
+      "section": "Секция",
+      "actions": "Действия"
+    }
   },
   "BandagesModal": {
     "title": "Бандаж",
