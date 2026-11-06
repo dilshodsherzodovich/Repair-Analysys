@@ -2,7 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import type { UnifiedKpis } from "./use-unified-report-data";
+import type {
+  ExcludedTypeCount,
+  UnifiedKpis,
+} from "./use-unified-report-data";
 
 /** Which detail section a tile drills into. `null` = show every section. */
 export type UnifiedSection = "inspections" | "duration" | "entry";
@@ -71,10 +74,13 @@ function Tile({
 
 export function KpiStrip({
   kpis,
+  excludedTypes = [],
   activeSection,
   onSelectSection,
 }: {
   kpis: UnifiedKpis;
+  /** Types left out of `kpis.total`, listed under it with their counts. */
+  excludedTypes?: ExcludedTypeCount[];
   activeSection: UnifiedSection | null;
   /** Receives the tile's section, or `null` when the selection is cleared. */
   onSelectSection: (section: UnifiedSection | null) => void;
@@ -92,6 +98,14 @@ export function KpiStrip({
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <Tile label={t("kpiTotal")} tone="neutral" {...state("inspections")}>
         <Value value={kpis.total} />
+        {kpis.total != null && excludedTypes.length > 0 && (
+          <p className="text-[11px] text-gray-400 mt-1.5">
+            {t("excludedNote")}:{" "}
+            {excludedTypes
+              .map((type) => `${type.name} · ${type.total.toLocaleString()}`)
+              .join(", ")}
+          </p>
+        )}
       </Tile>
 
       <Tile label={t("kpiDelayedEntry")} tone="danger" {...state("entry")}>

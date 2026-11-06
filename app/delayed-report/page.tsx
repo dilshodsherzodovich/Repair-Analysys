@@ -12,6 +12,10 @@ import { generateDelayedReportPDF } from "@/utils/delayed-report-pdf-export";
 import type { DelayedReportPDFData } from "@/utils/delayed-report-pdf-export";
 import { generateDelayedReportExcel } from "@/utils/delayed-report-excel-export";
 import { useOrganization } from "@/api/hooks/use-organizations";
+import {
+  delayedTrainTypeCount,
+  delayedTrainTypeName,
+} from "@/utils/delayed-report-train-types";
 import { format } from "date-fns";
 import {
   ReportOrganizationSelect,
@@ -54,8 +58,7 @@ export default function DelayedReportPage() {
 
   const rows = (data as DelayedLocomotivesResponse[] | undefined) ?? [];
 
-  const countOf = (trainType: DelayedLocomotivesResponse) =>
-    trainType.inspection_types.reduce((s, it) => s + it.locomotives.length, 0);
+  const countOf = delayedTrainTypeCount;
 
   const totalDelayed = rows.reduce((sum, tt) => sum + countOf(tt), 0);
 
@@ -66,14 +69,16 @@ export default function DelayedReportPage() {
     : "—";
 
 
+  const trainTypeLabels = {
+    electricLocs: t("electric_locs"),
+    dieselLocs: t("diesel_locs"),
+    electricTrains: t("electric_trains"),
+    freightLocos: t("freightElectric"),
+    switcherLocos: t("switcherLocos"),
+    passengerLocs: t("passenger_locs"),
+  };
   const trainTypeName = (name: string) =>
-    name === "electric_freight_locos"
-      ? t("freightElectric")
-      : name === "electric_switches_locos"
-      ? t("switcherLocos")
-      : name === "passenger_locos"
-      ? t("passenger_locs")
-      : t("diesel_locs");
+    delayedTrainTypeName(name, trainTypeLabels);
 
   const handleExportPDF = async () => {
     setIsExporting(true);
@@ -95,6 +100,8 @@ export default function DelayedReportPage() {
           switcherLocos: t("switcherLocos"),
           passengerLocs: t("passenger_locs"),
           dieselLocs: t("diesel_locs"),
+          electricLocs: t("electric_locs"),
+          electricTrains: t("electric_trains"),
           organization: globalT("UserDialog.organization")
         },
       };
@@ -124,6 +131,8 @@ export default function DelayedReportPage() {
           switcherLocos: t("switcherLocos"),
           passengerLocs: t("passenger_locs"),
           dieselLocs: t("diesel_locs"),
+          electricLocs: t("electric_locs"),
+          electricTrains: t("electric_trains"),
           organization: globalT("UserDialog.organization"),
         },
       });

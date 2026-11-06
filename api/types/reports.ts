@@ -48,6 +48,8 @@ export interface DelayedInspectionType {
 
 export interface DelayedLocomotivesResponse {
   name: string;
+  /** Distinct delayed locomotives in the group (one may be in several types). */
+  count?: number;
   inspection_types: DelayedInspectionType[];
 }
 

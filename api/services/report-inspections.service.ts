@@ -1,5 +1,8 @@
 import api from "../axios";
-import { InspectionResponse } from "../types/report-inspection";
+import {
+  InspectionResponse,
+  InspectionsReportResponse,
+} from "../types/report-inspection";
 
 /** Count of inspections keyed by inspection-type name. */
 export interface InspectionCountStatsResponse {
@@ -20,12 +23,21 @@ export const reportInspectionsService = {
   ): Promise<InspectionResponse> =>
     (await api.get("/inspections/", { params, timeout })).data,
 
-  /** Report projection of the same resource. */
+  /**
+   * Report projection of the same resource. The endpoint wraps the report in
+   * an outer `results` — `{ results: { total, counts, results } }` — so the
+   * inner object is what callers get.
+   */
   getInspectionsReport: async (
     params: Record<string, string | number | boolean | undefined>,
     timeout?: number,
-  ): Promise<InspectionResponse> =>
-    (await api.get("/inspections/report/", { params, timeout })).data,
+  ): Promise<InspectionsReportResponse> =>
+    (
+      await api.get<{ results: InspectionsReportResponse }>(
+        "/inspections/report/",
+        { params, timeout },
+      )
+    ).data.results,
 
   getInspectionCountStats: async (
     params: Record<string, string | number | undefined>,

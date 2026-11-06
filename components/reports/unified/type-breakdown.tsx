@@ -2,7 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import type { TypeBreakdownRow } from "./use-unified-report-data";
+import type {
+  ExcludedTypeCount,
+  TypeBreakdownRow,
+} from "./use-unified-report-data";
 
 /** Share of a type's inspections, as a whole percentage. 0 when the type is empty. */
 const share = (part: number, total: number) =>
@@ -54,10 +57,13 @@ function DelayStat({
 
 export function TypeBreakdown({
   rows,
+  excludedTypes = [],
   activeType,
   onSelectType,
 }: {
   rows: TypeBreakdownRow[];
+  /** Shown after the regular cards, marked as not part of the total. */
+  excludedTypes?: ExcludedTypeCount[];
   /** Inspection-type *name* currently filtered on, or null for all types. */
   activeType: string | null;
   onSelectType: (name: string | null) => void;
@@ -68,7 +74,7 @@ export function TypeBreakdown({
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
       <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("byType")}</h2>
 
-      {rows.length === 0 ? (
+      {rows.length === 0 && excludedTypes.length === 0 ? (
         <p className="text-sm text-gray-400 py-6 text-center">{t("noData")}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -118,6 +124,31 @@ export function TypeBreakdown({
             </button>
             );
           })}
+
+          {/* Not selectable: these types are filtered out of every section, so
+              picking one would only ever show an empty report. */}
+          {excludedTypes.map((type) => (
+            <div
+              key={type.id}
+              className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-3.5"
+              title={t("excludedNote")}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <h3
+                  className="text-xs font-semibold text-gray-500 truncate"
+                  title={type.name}
+                >
+                  {type.name}
+                </h3>
+                <span className="shrink-0 rounded-full border border-gray-300 bg-white px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
+                  {t("excludedNote")}
+                </span>
+              </div>
+              <p className="text-2xl font-bold text-gray-400 tabular-nums leading-none mt-1.5">
+                {type.total}
+              </p>
+            </div>
+          ))}
         </div>
       )}
     </div>

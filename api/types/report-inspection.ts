@@ -54,6 +54,19 @@ export interface InspectionResponse {
   results: Inspection[];
 }
 
+/** `/inspections/report/` — the whole filtered set plus per-type counts. */
+export interface InspectionsReportResponse {
+  /** Every inspection matching the filters, all types included. */
+  total: number;
+  counts: InspectionTypeCount[];
+  results: Inspection[];
+}
+
+export interface InspectionTypeCount {
+  inspection_type: { id: number; name: string };
+  count: number;
+}
+
 export interface InspectionAcceptance {
   id: number;
   factory_id: number;

@@ -13,6 +13,7 @@ import {
   pdf,
 } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
+import { delayedTrainTypeName } from "@/utils/delayed-report-train-types";
 
 Font.register({
   family: "Roboto",
@@ -108,12 +109,7 @@ export interface DelayedReportPDFData {
 function DelayedDocument({ data }: { data: DelayedReportPDFData }) {
   const tr = data.translations;
 
-  const trainTypeName = (name: string) => {
-    if (name === "electric_freight_locos") return tr.freightLocos ?? "Elektrovoz-yuk";
-    if (name === "electric_switches_locos") return tr.switcherLocos ?? "Elektrovoz-manyovr";
-    if (name === "passenger_locos") return tr.passengerLocs ?? "Yo'lovchi";
-    return tr.dieselLocs ?? "Teplovoz";
-  };
+  const trainTypeName = (name: string) => delayedTrainTypeName(name, tr);
 
   return (
     <Document>

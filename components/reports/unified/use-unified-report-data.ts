@@ -1,13 +1,9 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import {
-  useInspectionCountStats,
-  useInspectionsReport,
-} from "@/api/hooks/use-report-inspections";
+import { useInspectionsReport } from "@/api/hooks/use-report-inspections";
 import { useDelayedInspectionsReport } from "@/api/hooks/use-delayed-inspections-report";
 import { useDelayedRepairDurationReport } from "@/api/hooks/use-delayed-repair-duration-report";
-import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import type { Inspection } from "@/api/types/report-inspection";
 import type {
   DelayedInspectionsLocomotive,
@@ -36,12 +32,20 @@ export interface UnifiedFilters {
 }
 
 export interface TypeBreakdownRow {
+  id: number;
   name: string;
   total: number;
   /** Inspections of this type that were entered late. */
   delayedEntry: number;
   /** Inspections of this type that ran past their repair norm. */
   delayedDuration: number;
+}
+
+/** An excluded type's size, shown so the user can see what the total leaves out. */
+export interface ExcludedTypeCount {
+  id: number;
+  name: string;
+  total: number;
 }
 
 export interface UnifiedKpis {
@@ -113,34 +117,6 @@ function narrowEntryReport(
  * and does not change any query key.
  */
 export function useUnifiedReportData(f: UnifiedFilters) {
-  // The stats endpoint is keyed by type *name* while ids are what we filter on,
-  // so names are resolved here. Every variant is collected because the key the
-  // aggregate uses is not guaranteed to be the canonical `name`.
-  const { data: inspectionTypes } = useGetInspectionTypes();
-
-  const namesOf = useCallback(
-    (predicate: (id: number) => boolean) => {
-      const names = new Set<string>();
-      for (const it of inspectionTypes ?? []) {
-        if (!predicate(it.id)) continue;
-        for (const n of [it.name, it.name_uz, it.name_ru]) if (n) names.add(n);
-      }
-      return names;
-    },
-    [inspectionTypes],
-  );
-
-  const excludedNames = useMemo(
-    () => namesOf((id) => EXCLUDED_INSPECTION_TYPE_IDS.includes(id)),
-    [namesOf],
-  );
-
-  /** Names of the picked type, or null when no type is picked. */
-  const selectedNames = useMemo(
-    () => (f.inspectionType ? namesOf((id) => id === f.inspectionType) : null),
-    [namesOf, f.inspectionType],
-  );
-
   const keepType = useCallback(
     (typeId: number) =>
       !EXCLUDED_INSPECTION_TYPE_IDS.includes(typeId) &&
@@ -148,30 +124,10 @@ export function useUnifiedReportData(f: UnifiedFilters) {
     [f.inspectionType],
   );
 
-  /** Sums the aggregate, honouring both the exclusion list and the picked type. */
-  const statsTotal = useCallback(
-    (stats?: Record<string, number>) =>
-      stats
-        ? Object.entries(stats)
-            .filter(([name]) => !excludedNames.has(name))
-            .filter(([name]) => !selectedNames || selectedNames.has(name))
-            .reduce((sum, [, n]) => sum + n, 0)
-        : null,
-    [excludedNames, selectedNames],
-  );
-
-  // ── Queries. None of them take `inspection_type`: see the note above. ───────
-
-  // Fast aggregate — the KPI denominator, independent of the heavy row list.
-  const { data: stats } = useInspectionCountStats({
-    organization: f.organization,
-    branch: f.branch,
-    fromDate: f.fromDate,
-    toDate: f.toDate,
-  });
-
-  // Row data for section 1. A full month of one organization is a large
-  // payload — give it room over the 60s default.
+  // Row data for section 1, and — through `counts` — the KPI total and the
+  // per-type breakdown, so all three describe the same set of inspections.
+  // A full month of one organization is a large payload — give it room over
+  // the 60s default.
   const { data: inspectionsData, isFetching: inspectionsLoading } =
     useInspectionsReport({
       organization: f.organization,
@@ -227,13 +183,17 @@ export function useUnifiedReportData(f: UnifiedFilters) {
 
   const kpis = useMemo<UnifiedKpis>(
     () => ({
-      total: statsTotal(stats),
+      total: inspectionsData
+        ? inspectionsData.counts
+            .filter((c) => keepType(c.inspection_type.id))
+            .reduce((sum, c) => sum + c.count, 0)
+        : null,
       delayedEntry: delayedEntry.summary?.delayed_inspections_count ?? null,
       delayedEntryLocomotives:
         delayedEntry.summary?.delayed_locomotives_count ?? null,
       delayedDuration: durationData ? durationRows.length : null,
     }),
-    [statsTotal, stats, delayedEntry, durationData, durationRows],
+    [inspectionsData, keepType, delayedEntry, durationData, durationRows],
   );
 
   /**
@@ -242,39 +202,57 @@ export function useUnifiedReportData(f: UnifiedFilters) {
    * Its delay tallies are therefore counted from the unnarrowed responses.
    */
   const breakdown = useMemo<TypeBreakdownRow[]>(() => {
-    if (!stats) return [];
+    if (!inspectionsData) return [];
     const allowed = (id: number) => !EXCLUDED_INSPECTION_TYPE_IDS.includes(id);
 
-    const durationByType = new Map<string, number>();
+    const durationByType = new Map<number, number>();
     for (const row of durationData?.data ?? []) {
-      if (!allowed(row.inspection_type_id)) continue;
-      const key = row.inspection_type_name;
-      durationByType.set(key, (durationByType.get(key) ?? 0) + 1);
+      const id = row.inspection_type_id;
+      durationByType.set(id, (durationByType.get(id) ?? 0) + 1);
     }
 
-    const entryByType = new Map<string, number>();
+    const entryByType = new Map<number, number>();
     for (const loco of delayedEntryRaw?.data ?? []) {
       for (const insp of loco.inspections) {
-        if (!allowed(insp.inspection_type_id)) continue;
-        const key = insp.inspection_type_name;
-        entryByType.set(key, (entryByType.get(key) ?? 0) + 1);
+        const id = insp.inspection_type_id;
+        entryByType.set(id, (entryByType.get(id) ?? 0) + 1);
       }
     }
 
-    return Object.entries(stats)
-      .filter(([name, total]) => total > 0 && !excludedNames.has(name))
-      .map(([name, total]) => ({
-        name,
-        total,
-        delayedEntry: entryByType.get(name) ?? 0,
-        delayedDuration: durationByType.get(name) ?? 0,
+    return inspectionsData.counts
+      .filter((c) => c.count > 0 && allowed(c.inspection_type.id))
+      .map(({ inspection_type, count }) => ({
+        id: inspection_type.id,
+        name: inspection_type.name,
+        total: count,
+        delayedEntry: entryByType.get(inspection_type.id) ?? 0,
+        delayedDuration: durationByType.get(inspection_type.id) ?? 0,
       }))
       .sort((a, b) => b.total - a.total);
-  }, [stats, excludedNames, durationData, delayedEntryRaw]);
+  }, [inspectionsData, durationData, delayedEntryRaw]);
+
+  // Kept apart from `breakdown` so the exports, which mirror the totals, never
+  // pick these up as if they counted.
+  const excludedTypes = useMemo<ExcludedTypeCount[]>(
+    () =>
+      (inspectionsData?.counts ?? [])
+        .filter(
+          (c) =>
+            c.count > 0 &&
+            EXCLUDED_INSPECTION_TYPE_IDS.includes(c.inspection_type.id),
+        )
+        .map(({ inspection_type, count }) => ({
+          id: inspection_type.id,
+          name: inspection_type.name,
+          total: count,
+        })),
+    [inspectionsData],
+  );
 
   return {
     kpis,
     breakdown,
+    excludedTypes,
     inspections: {
       rows: inspectionRows,
       isLoading: inspectionsLoading,

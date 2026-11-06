@@ -108,7 +108,7 @@ function UnifiedInspectionReportPage() {
       ? it.name_ru || it.name || it.name_uz
       : it.name_uz || it.name || it.name_ru;
 
-  // The breakdown cards are keyed by the type *name* the stats endpoint returns,
+  // The breakdown cards are keyed by the type *name* the report's `counts` carry,
   // while the filter travels as an id — so the two are mapped through
   // `inspectionTypes`. Selecting a card drives the same URL filter as the
   // dropdown, which means every query refetches scoped rather than the page
@@ -334,11 +334,13 @@ function UnifiedInspectionReportPage() {
 
       <KpiStrip
         kpis={data.kpis}
+        excludedTypes={data.excludedTypes}
         activeSection={activeSection}
         onSelectSection={(section) => setFilters({ section: section ?? "" })}
       />
       <TypeBreakdown
         rows={data.breakdown}
+        excludedTypes={data.excludedTypes}
         activeType={activeTypeName}
         onSelectType={selectTypeByName}
       />

@@ -4,6 +4,10 @@
 import ExcelJS from "exceljs/dist/exceljs.min.js";
 import { saveAs } from "file-saver";
 import type { DelayedLocomotivesResponse } from "@/api/types/reports";
+import {
+  delayedTrainTypeCount,
+  delayedTrainTypeName,
+} from "@/utils/delayed-report-train-types";
 
 export interface DelayedReportExcelData {
   title: string;
@@ -44,14 +48,7 @@ const HEADER_FILL = fill("FFF1F5F9");
 const ZEBRA_FILL = fill("FFFAFBFC");
 const SUMMARY_FILL = fill("FFEEF2FF");
 
-function trainTypeName(name: string, tr: Record<string, string>): string {
-  if (name === "electric_freight_locos")
-    return tr.freightLocos ?? "Elektrovoz-yuk";
-  if (name === "electric_switches_locos")
-    return tr.switcherLocos ?? "Elektrovoz-manevr";
-  if (name === "passenger_locos") return tr.passengerLocs ?? "Yo'lovchi";
-  return tr.dieselLocs ?? "Teplovoz";
-}
+const trainTypeName = delayedTrainTypeName;
 
 function formatHourMileage(
   hour: number | string | null | undefined,
@@ -121,11 +118,7 @@ export async function generateDelayedReportExcel(data: DelayedReportExcelData) {
     const summary = ws.getCell(r, 1);
     summary.value = presentTypes
       .map((tt) => {
-        const c = tt.inspection_types.reduce(
-          (s, it) => s + it.locomotives.length,
-          0
-        );
-        return `${trainTypeName(tt.name, tr)}: ${c}`;
+        return `${trainTypeName(tt.name, tr)}: ${delayedTrainTypeCount(tt)}`;
       })
       .join("    |    ");
     summary.font = { bold: true, size: 10, color: { argb: "FF3730A3" } };
@@ -146,10 +139,7 @@ export async function generateDelayedReportExcel(data: DelayedReportExcelData) {
     );
     if (!filtered.length) continue;
 
-    const sectionTotal = filtered.reduce(
-      (s, it) => s + it.locomotives.length,
-      0
-    );
+    const sectionTotal = delayedTrainTypeCount(trainType);
 
     // Train type heading
     ws.mergeCells(r, 1, r, TOTAL_COLS);

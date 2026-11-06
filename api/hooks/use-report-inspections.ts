@@ -93,5 +93,8 @@ export const useInspectionCountStats = ({
   });
 
 // Types are re-exported here so the report pages import them alongside the hook.
-export type { InspectionResponse } from "../types/report-inspection";
+export type {
+  InspectionResponse,
+  InspectionsReportResponse,
+} from "../types/report-inspection";
 export type { InspectionCountStatsResponse } from "../services/report-inspections.service";
