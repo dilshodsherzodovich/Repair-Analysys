@@ -14,6 +14,7 @@ import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import { Tu137Record } from "@/api/types/tu137";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { cn } from "@/lib/utils";
+import { authService, getEmmDepoId } from "@/api/services/auth.service";
 
 const PAGE_SIZE = 20;
 
@@ -27,11 +28,9 @@ export default function Tu137Page() {
   const page = Math.max(1, parseInt(getQueryValue("page") || "1"));
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
 
-  const pDepoId = currentUser?.emm_depo_id;
+  const pDepoId = getEmmDepoId(currentUser);
 
   const { data: apiResponse, isLoading, error } = useTu137Records({
     depo_id: pDepoId,

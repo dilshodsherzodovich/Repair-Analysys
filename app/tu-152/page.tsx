@@ -12,6 +12,7 @@ import { DefectiveWorkEntry } from "@/api/types/defective-works";
 import tu152Data from "@/data/tu-152.json";
 import { FileText, CheckCircle, XCircle, TrendingUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { authService } from "@/api/services/auth.service";
 
 const PAGE_SIZE = 20;
 
@@ -96,9 +97,7 @@ export default function Tu152Page() {
   const { getQueryValue, updateQuery } = useFilterParams();
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
 
   if (!currentUser || !canAccessSection(currentUser, "tu-152")) {
     return <UnauthorizedPage />;

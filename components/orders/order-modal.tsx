@@ -33,6 +33,7 @@ import { FileUpload } from "@/ui/file-upload";
 import { DatePicker } from "@/ui/date-picker";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { hasPermission } from "@/lib/permissions";
+import { authService } from "@/api/services/auth.service";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -263,7 +264,7 @@ export function OrderModal({
     useGetLocomotives(isOpen);
 
   // Check if user has choose_organization permission
-  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const user = authService.getUser();
   const canChooseOrganization = hasPermission(user, "choose_organization");
 
   // Fetch organizations if user has permission

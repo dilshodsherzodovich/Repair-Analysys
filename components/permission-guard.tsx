@@ -9,6 +9,7 @@ import {
 } from "@/lib/permissions";
 import { ShieldX } from "lucide-react";
 import { Alert, AlertDescription } from "@/ui/alert";
+import { authService } from "@/api/services/auth.service";
 
 interface PermissionGuardProps {
   children: React.ReactNode;
@@ -27,7 +28,7 @@ export function PermissionGuard({
   fallback = null,
   showError = false,
 }: PermissionGuardProps) {
-  const user = JSON.parse(localStorage.getItem("user")!);
+  const user = authService.getUser();
 
   let hasAccess = false;
 

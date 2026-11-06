@@ -9,6 +9,7 @@ import { canAccessSection, isEchAccount } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { NosozliklarTab } from "@/components/defective-works/nosozliklar-tab";
 import { TU152Tab } from "@/components/defective-works/tu152-tab";
+import { authService } from "@/api/services/auth.service";
 
 export default function DefectiveWorksPage() {
   const t = useTranslations("DefectiveWorksPage");
@@ -16,9 +17,7 @@ export default function DefectiveWorksPage() {
   const { mainTab } = getAllQueryValues();
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "defective-works")) {
     return <UnauthorizedPage />;
   }

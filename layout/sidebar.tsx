@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Zap,
@@ -29,10 +29,18 @@ import {
   FileBarChart,
   Disc,
   Cog,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
 import { Button } from "@/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/ui/select";
 import { authService } from "@/api/services/auth.service";
 import { useTranslations } from "next-intl";
 import { useOrganizations } from "@/api/hooks/use-organizations";
@@ -50,8 +58,15 @@ interface NavigationItem {
   icon: LucideIcon;
   section: string;
   href?: string;
+  /** Org-scoped links stay active on every page under this path */
+  activePrefix?: string;
   children?: NavChild[];
 }
+
+/** Pages that belong to one organization: /{section}/{orgId}/... */
+const ORG_ROUTE =
+  /^\/(depo|bandages|crankshaft|duty-uzel|revision-journal)\/(\d+)(?:\/|$)/;
+const ORG_STORAGE_KEY = "sidebar_organization";
 
 /**
  * The role set most report pages share in dejurniy, expressed there as a list
@@ -68,18 +83,6 @@ const REPORTS_GENERAL_ROLES = (role: string) =>
   role !== "rb" &&
   role !== "rb_admin" &&
   role !== "hr";
-
-function formatOrgDisplayName(org: Organization): string {
-  const name = org.name ?? "";
-  if (
-    name.includes("lokomotiv") ||
-    name.includes("depo") ||
-    name.includes("deposi")
-  ) {
-    return name.split(" ")[0].replaceAll(/"/g, "") + " depo";
-  }
-  return name;
-}
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -119,6 +122,62 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
     return undefined;
   }, [user, organizations]);
 
+  // Admins pick the organization once above the menu; everyone else always
+  // works with their own branch's organization
+  const isAdmin = user?.role === "admin";
+  const routeOrgId = useMemo(() => {
+    const match = pathname.match(ORG_ROUTE);
+    return match ? Number(match[2]) : undefined;
+  }, [pathname]);
+  const [storedOrgId, setStoredOrgId] = useState<number | undefined>();
+
+  useEffect(() => {
+    try {
+      setStoredOrgId(Number(localStorage.getItem(ORG_STORAGE_KEY)) || undefined);
+    } catch {
+      // Storage unavailable; fall back to the branch organization
+    }
+  }, []);
+
+  // Opening an org page directly (link, bookmark) also selects that organization
+  useEffect(() => {
+    if (!isAdmin || !routeOrgId) return;
+    setStoredOrgId(routeOrgId);
+    try {
+      localStorage.setItem(ORG_STORAGE_KEY, String(routeOrgId));
+    } catch {
+      // Not persisted; the selection still holds for this visit
+    }
+  }, [isAdmin, routeOrgId]);
+
+  const selectedOrgId = isAdmin
+    ? (routeOrgId ??
+      storedOrgId ??
+      userBranchOrg?.id ??
+      organizations[0]?.id)
+    : userBranchOrg?.id;
+
+  const pickerOrgs = isAdmin
+    ? organizations
+    : userBranchOrg
+      ? [userBranchOrg]
+      : [];
+
+  const handleOrgChange = (value: string) => {
+    const orgId = Number(value);
+    setStoredOrgId(orgId);
+    try {
+      localStorage.setItem(ORG_STORAGE_KEY, String(orgId));
+    } catch {
+      // Not persisted; the selection still holds for this visit
+    }
+    // On an org page, switch it to the new organization
+    const match = pathname.match(ORG_ROUTE);
+    if (match && Number(match[2]) !== orgId) {
+      router.push(`/${match[1]}/${orgId}`);
+    }
+  };
+
   const navigationItems: NavigationItem[] = useMemo(() => {
     const items: NavigationItem[] = [];
 
@@ -152,104 +211,59 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       });
     }
 
-    if (user && canAccessSection(user, "depo")) {
-      const depoChildren: NavChild[] =
-        user.role === "admin"
-          ? (organizations
-              ?.map((org) => ({
-                name: formatOrgDisplayName(org),
-                href: `/depo/${org.id}`,
-              }))
-              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
-          : userBranchOrg
-            ? [
-                {
-                  name: userBranchOrg.name,
-                  href: `/depo/${userBranchOrg.id}`,
-                },
-              ]
-            : [];
+    // One link per section, opening the organization picked above the menu
+    const orgHref = (basePath: string) =>
+      selectedOrgId ? `${basePath}/${selectedOrgId}` : undefined;
+
+    if (user && canAccessSection(user, "depo") && orgHref("/depo")) {
       items.push({
         key: "depot",
         name: t("nav.depot"),
         icon: FormInput,
         section: "depo",
-        children: depoChildren,
+        href: orgHref("/depo"),
+        activePrefix: "/depo",
       });
     }
 
-    if (user && canAccessSection(user, "depo")) {
+    if (user && canAccessSection(user, "depo") && selectedOrgId) {
       items.push({
         key: "bandages",
         name: t("nav.bandages"),
         icon: Disc,
         section: "depo",
-        href: "/bandages",
+        href: orgHref("/bandages"),
+        activePrefix: "/bandages",
       });
       items.push({
         key: "crankshaft",
         name: t("nav.crankshaft"),
         icon: Cog,
         section: "depo",
-        href: "/crankshaft",
+        href: orgHref("/crankshaft"),
+        activePrefix: "/crankshaft",
       });
     }
 
-    if (user && canAccessSection(user, "duty_uzel")) {
-      const dutyChildren: NavChild[] =
-        user.role === "admin"
-          ? (organizations
-              ?.map((org) => {
-                const firstWord = (org.name ?? "").split(" ")[0] ?? "";
-                const name =
-                  (org.name ?? "").includes("lokomotiv") ||
-                  (org.name ?? "").includes("depo") ||
-                  (org.name ?? "").includes("deposi")
-                    ? firstWord.replaceAll(/[^a-zA-Z0-9]/g, "") + " depo"
-                    : (org.name ?? "");
-                return { name, href: `/duty-uzel/${org.id}` };
-              })
-              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
-          : userBranchOrg
-            ? [
-                {
-                  name: userBranchOrg.name,
-                  href: `/duty-uzel/${userBranchOrg.id}`,
-                },
-              ]
-            : [];
+    if (user && canAccessSection(user, "duty_uzel") && selectedOrgId) {
       items.push({
         key: "duty_uzel",
         name: t("nav.duty_uzel"),
         icon: Train,
         section: "duty_uzel",
-        children: dutyChildren,
+        href: orgHref("/duty-uzel"),
+        activePrefix: "/duty-uzel",
       });
     }
 
-    if (user && canAccessSection(user, "revision_journal")) {
-      const revisionChildren: NavChild[] =
-        user.role === "admin"
-          ? (organizations
-              ?.map((org) => ({
-                name: formatOrgDisplayName(org),
-                href: `/revision-journal/${org.id}`,
-              }))
-              .filter((child): child is NavChild => Boolean(child.name)) ?? [])
-          : userBranchOrg
-            ? [
-                {
-                  name: userBranchOrg.name,
-                  href: `/revision-journal/${userBranchOrg.id}`,
-                },
-              ]
-            : [];
+    if (user && canAccessSection(user, "revision_journal") && selectedOrgId) {
       items.push({
         key: "revision_journal",
         name: t("nav.revision_journal"),
         icon: FileText,
         section: "revision_journal",
-        children: revisionChildren,
+        href: orgHref("/revision-journal"),
+        activePrefix: "/revision-journal",
       });
     }
 
@@ -478,13 +492,19 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
     }
 
     return items;
-  }, [user, organizations, userBranchOrg, t]);
+  }, [user, selectedOrgId, t]);
 
   const toggleSection = (key: string) => {
     setExpandedKey((prev) => (prev === key ? null : key));
   };
 
   const isSectionActive = (item: NavigationItem) => {
+    if (item.activePrefix) {
+      return (
+        pathname === item.activePrefix ||
+        pathname.startsWith(`${item.activePrefix}/`)
+      );
+    }
     if (item.href) return pathname === item.href;
     // Match against every child, not just the first: the Reports group's
     // children each live at their own top-level path, unlike depo/tu-137 where
@@ -523,6 +543,36 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
             )}
           </div>
         </div>
+
+        {/* Admins switch organization here; everyone else sees their own, read-only */}
+        {!isCollapsed && pickerOrgs.length > 0 && (
+          <div className="mb-4 flex-shrink-0 space-y-1.5 border-b border-sidebar-border">
+            <div className="px-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              {t("organization_label")}
+            </div>
+            <Select
+              value={selectedOrgId ? String(selectedOrgId) : undefined}
+              onValueChange={handleOrgChange}
+              disabled={!isAdmin}
+            >
+              <SelectTrigger className="w-full disabled:cursor-default disabled:opacity-100">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Building2 className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                  <span className="truncate">
+                    <SelectValue />
+                  </span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {pickerOrgs.map((org) => (
+                  <SelectItem key={org.id} value={String(org.id)}>
+                    {org.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar">
           {navigationItems.map((item) => {

@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils";
 import { hasPermission } from "@/lib/permissions";
 import { useUpdateInspectionSection } from "@/api/hooks/use-inspections";
 import type { UserData } from "@/api/types/auth";
+import { authService } from "@/api/services/auth.service";
 
 export const INSPECTION_SECTION_OPTIONS = [
   { value: "A", labelKey: "A" },
@@ -113,9 +114,7 @@ export function InspectionsGroupedTable({
   );
 
   const currentUser: UserData | null =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   const canEditSection = hasPermission(
     currentUser,
     "edit_inspection_location_section",

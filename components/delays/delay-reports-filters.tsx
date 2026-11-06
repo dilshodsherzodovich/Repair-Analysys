@@ -17,6 +17,7 @@ import { Button } from "@/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { format, subDays, startOfMonth, endOfDay } from "date-fns";
 import { Download } from "lucide-react";
+import { authService } from "@/api/services/auth.service";
 
 interface DelayReportsFiltersProps {
   onExport?: () => void;
@@ -29,9 +30,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
   // sriv_moderator only ever sees its own depo — the backend scopes the
   // response, so there is nothing to choose.
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   const isOrgScoped = currentUser?.role === "sriv_moderator";
   const {
     start_date,

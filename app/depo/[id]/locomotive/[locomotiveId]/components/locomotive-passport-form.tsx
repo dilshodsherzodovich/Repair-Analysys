@@ -32,6 +32,7 @@ import { PassportJournals } from "./passport-journals";
 import { PassportRegistry } from "./passport-registry";
 import { PassportOilStatus } from "./passport-oil-status";
 import { PassportDashboard, type PassportView } from "./passport-dashboard";
+import { authService } from "@/api/services/auth.service";
 
 interface LocomotivePassportFormProps {
   depotId: string;
@@ -170,14 +171,7 @@ export default function LocomotivePassportForm({
   );
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
-      }
-    }
+    setUser(authService.getUser());
   }, []);
 
   // Set active section when locomotive detail is loaded (including from cache).

@@ -26,6 +26,7 @@ import { BaselineModal } from "./baseline-modal";
 import { TotalMileageBaselineModal } from "./total-mileage-baseline-modal";
 import { txk13ReportService } from "@/api/services/txk13-report.service";
 import { Txk13Filters } from "./txk13-filters";
+import { authService } from "@/api/services/auth.service";
 
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
@@ -165,9 +166,7 @@ export default function LocomotiveMileageReportPage() {
   const { updateQuery, getQueryValue } = useFilterParams();
 
   const currentUser: UserData | null =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
 
   if (!currentUser || !canAccessSection(currentUser, "inspections")) {
     return <UnauthorizedPage />;

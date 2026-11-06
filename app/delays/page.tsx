@@ -62,6 +62,7 @@ import {
   FileSpreadsheet,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { authService } from "@/api/services/auth.service";
 
 // Stages that still have a "next" awaited step (terminal stages excluded)
 const STAGES_WITH_NEXT: DelayStage[] = [
@@ -94,7 +95,7 @@ export default function DelaysPage() {
   } = getAllQueryValues();
   const { showSuccess, showError } = useSnackbar();
 
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const currentUser = authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "delays")) {
     return <UnauthorizedPage />;
   }

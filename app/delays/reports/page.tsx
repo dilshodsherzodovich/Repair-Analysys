@@ -19,6 +19,7 @@ import { DelayReportsFilters } from "@/components/delays/delay-reports-filters";
 import { DelayReportsTableByDelayType } from "@/components/delays/delay-reports-table-by-delay-type";
 import { DelayReportsTableFreight } from "@/components/delays/delay-reports-table-freight";
 import { useTranslations } from "next-intl";
+import { authService } from "@/api/services/auth.service";
 
 export default function DelayReportsPage() {
   const t = useTranslations("DelayReportsPage");
@@ -33,7 +34,7 @@ export default function DelayReportsPage() {
   // Get active service type (default to "passenger")
   const activeServiceType = serviceTypeParam || "passenger";
 
-  const currentUser = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "null") : null;
+  const currentUser = authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "delays-reports")) {
     return <UnauthorizedPage />;
   }

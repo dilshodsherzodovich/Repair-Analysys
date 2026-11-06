@@ -29,6 +29,7 @@ import {
   PaginationPrevious,
 } from "@/ui/pagination";
 import { Badge } from "@/ui/badge";
+import { authService } from "@/api/services/auth.service";
 
 type TabValue = "current" | "archive";
 
@@ -65,9 +66,7 @@ function getLocationDisplay(item: ReserveItem): string {
 
 export default function RezervPage() {
   const currentUser: UserData | null =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
 
   if (!currentUser || !canAccessSection(currentUser, "inspections")) {
     return <UnauthorizedPage />;

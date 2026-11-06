@@ -5,14 +5,13 @@ import { PageHeader } from "@/ui/page-header";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { SrivPaymentReport } from "@/components/delays/sriv-payment-report";
+import { authService } from "@/api/services/auth.service";
 
 export default function SrivPaymentReportPage() {
   const t = useTranslations("SrivPaymentReportPage");
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "sriv-payment-report")) {
     return <UnauthorizedPage />;
   }

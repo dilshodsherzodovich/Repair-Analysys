@@ -25,6 +25,7 @@ import type { Culprit } from "@/api/types/culprits";
 import { CulpritFormModal } from "@/components/culprits/culprit-form-modal";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
+import { authService } from "@/api/services/auth.service";
 
 function formatAmount(amount: string | number): string {
   const value = typeof amount === "string" ? Number(amount) : amount;
@@ -53,7 +54,7 @@ export default function CulpritsPage() {
     end_date,
   } = getAllQueryValues();
 
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const currentUser = authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "culprits")) {
     return <UnauthorizedPage />;
   }

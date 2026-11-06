@@ -46,6 +46,7 @@ export type Permission =
   | "view_locomotive_passport"
   | "edit_locomotive_passport"
   | "edit_bandage"
+  | "edit_crankshaft"
   | "view_locomotive_passport_inspections"
   | "create_locomotive_passport_inspection"
   | "edit_locomotive_passport_inspection"
@@ -83,6 +84,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   observer: [],
   admin: [
     "edit_bandage",
+    "edit_crankshaft",
     "view_dashboard",
     "view_reports",
     "view_defects",
@@ -167,6 +169,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_locomotive_passport",
     "edit_locomotive_passport",
     "edit_bandage",
+    "edit_crankshaft",
     "view_duty_uzel",
   ],
   repair_staff: [
@@ -201,6 +204,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "delete_pantograf",
     "view_depo",
     "view_locomotive_passport",
+    "edit_bandage",
+    "edit_crankshaft",
     "view_duty_uzel",
     "view_inspections",
     "view_locomotive_passport_inspections",
@@ -289,6 +294,20 @@ export function hasAllPermissions(
 ): boolean {
   if (!user) return false;
   return permissions.every((permission) => hasPermission(user, permission));
+}
+
+/**
+ * Whether the user may change data of the given organization: users who can
+ * choose an organization work with all of them, everyone else only with the
+ * organization of their own branch.
+ */
+export function canEditOrganization(
+  user: UserData | null,
+  organizationId: number | undefined,
+): boolean {
+  if (!user || !organizationId) return false;
+  if (hasPermission(user, "choose_organization")) return true;
+  return user.branch?.organization?.id === organizationId;
 }
 
 export function canAccessSection(

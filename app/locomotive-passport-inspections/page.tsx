@@ -19,6 +19,7 @@ import { PassportInspectionModal } from "./components/passport-inspection-modal"
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
+import { authService } from "@/api/services/auth.service";
 
 export default function LocomotivePassportInspectionsPage() {
   const t = useTranslations("LocomotivePassportInspectionsPage");
@@ -26,9 +27,7 @@ export default function LocomotivePassportInspectionsPage() {
   const { showSuccess, showError } = useSnackbar();
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (
     !currentUser ||
     !canAccessSection(currentUser, "locomotive_passport_inspections")

@@ -135,9 +135,7 @@ export default function RazvarotPage() {
   }, [getAllQueryValues, showError, t]);
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "razvarot")) {
     return <UnauthorizedPage />;
   }

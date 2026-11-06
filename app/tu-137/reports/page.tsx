@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/ui/input";
 import { formatDate } from "@/lib/utils";
+import { authService, getEmmDepoId } from "@/api/services/auth.service";
 
 const getProgressBgColor = (percent: number) => {
   if (percent < 50) return "bg-red-500";
@@ -51,11 +52,9 @@ export default function Tu137ReportsPage() {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
 
-  const pDepoId = currentUser?.emm_depo_id;
+  const pDepoId = getEmmDepoId(currentUser);
 
   const {
     data: apiResponse,

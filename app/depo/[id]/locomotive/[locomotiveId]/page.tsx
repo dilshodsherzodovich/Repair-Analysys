@@ -8,6 +8,7 @@ import { PageHeader } from "@/ui/page-header";
 import { PermissionGuard } from "@/components/permission-guard";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
+import { authService } from "@/api/services/auth.service";
 
 export default function LocomotivePassportPage() {
   const t = useTranslations("LocomotivePassportPage");
@@ -22,9 +23,7 @@ export default function LocomotivePassportPage() {
   const useNewDesign = searchParams.get("design") === "new";
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "depo")) {
     return <UnauthorizedPage />;
   }

@@ -552,6 +552,7 @@
   "Sidebar": {
     "brand_title": "Система анализа ремонта",
     "brand_subtitle": "Цифровая аналитика",
+    "organization_label": "Организация",
     "nav": {
       "depot": "Паспорт локомотива",
       "bandages": "Бандажи",

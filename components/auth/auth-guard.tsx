@@ -2,6 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { authService } from "@/api/services/auth.service";
+import { useMe } from "@/api/hooks/use-auth";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import type { UserData } from "@/api/types/auth";
 import { isEchAccount } from "@/lib/permissions";
@@ -71,6 +72,19 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     setIsClient(true);
   }, []);
 
+  // The user comes from /account/auth/me/; storage only holds the tokens
+  const hasToken = isClient && authService.isAuthenticated();
+  const meQuery = useMe(hasToken);
+  const currentUser = hasToken ? (meQuery.data ?? null) : null;
+  const isUserLoading = hasToken && !currentUser && !meQuery.isError;
+
+  // A token the API no longer accepts: start over from the login page
+  useEffect(() => {
+    if (!meQuery.isError || !hasToken) return;
+    authService.clearStorage();
+    if (!isPublicRoute) router.push("/login");
+  }, [meQuery.isError, hasToken, isPublicRoute, router]);
+
   useEffect(() => {
     if (!isClient) return;
 
@@ -124,7 +138,9 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     }
 
     if (isAuthenticated) {
-      const storedUser = authService.getUser();
+      // Routing depends on the role; wait for /me
+      if (!currentUser) return;
+      const storedUser = currentUser;
       const defaultRoute = getDefaultRouteForRole(storedUser);
 
       if (
@@ -159,6 +175,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
       }
     }
   }, [
+    currentUser,
     expires,
     isClient,
     isLoginPage,
@@ -181,7 +198,18 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     );
   }
 
-  if (!isPublicRoute && !authService.isAuthenticated()) {
+  if (isUserLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Yuklanmoqda...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isPublicRoute && !currentUser) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -194,8 +222,8 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     );
   }
 
-  if (!isPublicRoute && authService.isAuthenticated()) {
-    const storedUser = authService.getUser();
+  if (!isPublicRoute && currentUser) {
+    const storedUser = currentUser;
     if (
       isEchAccount(storedUser) &&
       !isEchAllowedRoute(pathname)
@@ -215,8 +243,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
   if (
     isPublicRoute &&
     pathname === PUBLIC_DEFECT_CREATE_ROUTE &&
-    authService.isAuthenticated() &&
-    isEchAccount(authService.getUser())
+    isEchAccount(currentUser)
   ) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -228,9 +255,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     );
   }
 
-  if (isLoginPage && authService.isAuthenticated()) {
-    const storedUser = authService.getUser();
-    const defaultRoute = getDefaultRouteForRole(storedUser);
+  if (isLoginPage && currentUser) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -242,9 +267,8 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
   }
 
   // Check if authenticated user is on root but should be on a different default route
-  if (authService.isAuthenticated() && pathname === "/") {
-    const storedUser = authService.getUser();
-    const defaultRoute = getDefaultRouteForRole(storedUser);
+  if (currentUser && pathname === "/") {
+    const defaultRoute = getDefaultRouteForRole(currentUser);
     if (defaultRoute !== "/") {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">

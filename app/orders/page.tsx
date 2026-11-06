@@ -92,9 +92,7 @@ export default function OrdersPage() {
     useGetLocomotives();
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "orders")) {
     return <UnauthorizedPage />;
   }

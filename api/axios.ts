@@ -93,7 +93,6 @@ api.interceptors.response.use(
           );
           localStorage.removeItem("auth_token");
           localStorage.removeItem("refresh_token");
-          localStorage.removeItem("user");
           localStorage.removeItem("auth_expiry");
           // Instead of redirecting, dispatch a custom event
           if (typeof window !== "undefined") {

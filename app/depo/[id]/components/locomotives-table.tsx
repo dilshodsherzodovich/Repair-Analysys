@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { LocomotiveModelData } from "@/api/types/locomotive";
+import { authService } from "@/api/services/auth.service";
 
 const actionButtons = [
   {
@@ -63,14 +64,7 @@ export default function LocomotivesTable() {
   const showEmpty = !isPending && locomotives.length === 0;
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
-      }
-    }
+    setUser(authService.getUser());
   }, []);
 
   const canViewPassport = hasPermission(user, "view_locomotive_passport");

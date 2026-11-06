@@ -29,6 +29,7 @@ import {
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
+import { authService } from "@/api/services/auth.service";
 
 export default function DutyUzelPage() {
   const t = useTranslations("DutyUzelPage");
@@ -38,9 +39,7 @@ export default function DutyUzelPage() {
   const { showSuccess, showError } = useSnackbar();
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "duty_uzel")) {
     return <UnauthorizedPage />;
   }

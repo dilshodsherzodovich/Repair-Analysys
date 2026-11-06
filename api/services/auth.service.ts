@@ -13,6 +13,18 @@ const ORG_TO_EMM_ID: Record<number, number> = {
   8: 5,
 };
 
+/** Maps an organization to its EMM depo id (tu152 integration). */
+export function getEmmDepoId(user: UserData | null): number | undefined {
+  const orgId = user?.branch?.organization?.id;
+  return orgId ? ORG_TO_EMM_ID[orgId] : undefined;
+}
+
+/**
+ * The signed-in user, loaded from `/account/auth/me/` by `AuthGuard` before
+ * any page renders. Kept in memory only: localStorage holds just the tokens.
+ */
+let currentUser: UserData | null = null;
+
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
@@ -31,11 +43,19 @@ export const authService = {
     return response.data;
   },
 
+  getMe: async (): Promise<UserData> => {
+    const response = await api.get<UserData>("/account/auth/me/");
+    return response.data;
+  },
+
   clearStorage: (): void => {
+    currentUser = null;
     localStorage.removeItem("auth_token");
     localStorage.removeItem("refresh_token");
-    localStorage.removeItem("user");
     localStorage.removeItem("auth_expiry");
+    // Left by older versions that kept the user in storage
+    localStorage.removeItem("user");
+    localStorage.removeItem("user_emm_depo_id");
   },
 
   logout: (): void => {
@@ -49,9 +69,8 @@ export const authService = {
 
   isAuthenticated: (): boolean => {
     const token = localStorage.getItem("auth_token");
-    const user = localStorage.getItem("user");
 
-    if (!token || !user) {
+    if (!token) {
       return false;
     }
 
@@ -78,29 +97,25 @@ export const authService = {
     return localStorage.getItem("refresh_token");
   },
 
-  getUser: (): UserData | null => {
-    try {
-      const userData = localStorage.getItem("user");
-      return userData ? JSON.parse(userData) : null;
-    } catch (error) {
-      console.error("Error parsing stored user:", error);
-      return null;
-    }
+  getUser: (): UserData | null => currentUser,
+
+  setUser: (user: UserData | null): void => {
+    currentUser = user;
   },
 
+  /** Persists only the tokens; the user is kept in memory. */
   storeAuth: (
     accessToken: string,
     refreshToken: string,
-    user: UserData,
+    user?: UserData | null,
     expiryDate?: string,
   ): void => {
     localStorage.setItem("auth_token", accessToken);
     localStorage.setItem("refresh_token", refreshToken);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem(
-      "user_emm_depo_id",
-      ORG_TO_EMM_ID[user?.branch?.organization?.id]?.toString() || "",
-    );
+    // Drop what older versions stored besides the tokens
+    localStorage.removeItem("user");
+    localStorage.removeItem("user_emm_depo_id");
+    if (user) currentUser = user;
 
     if (expiryDate) {
       localStorage.setItem("auth_expiry", expiryDate);

@@ -33,6 +33,7 @@ import { toast } from "@/ui/use-toast";
 import { ComponentValue } from "@/api/types/component";
 import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
+import { authService } from "@/api/services/auth.service";
 
 interface LocomotivePassportClassicProps {
   depotId: string;
@@ -120,14 +121,7 @@ export default function LocomotivePassportClassic({
   );
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
-      }
-    }
+    setUser(authService.getUser());
   }, []);
 
   // Set active section when locomotive detail is loaded

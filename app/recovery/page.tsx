@@ -18,6 +18,7 @@ import type { RecoveryDelay } from "@/api/types/recovery";
 import { RECOVERY_STAGE_VALUES } from "@/api/types/recovery";
 import type { DelayStage } from "@/api/types/delays";
 import { RecoveryCulpritsModal } from "@/components/recovery/recovery-culprits-modal";
+import { authService } from "@/api/services/auth.service";
 
 function formatAmount(amount: string | number): string {
   const value = typeof amount === "string" ? Number(amount) : amount;
@@ -46,7 +47,7 @@ export default function RecoveryPage() {
     end_date,
   } = getAllQueryValues();
 
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const currentUser = authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "recovery")) {
     return <UnauthorizedPage />;
   }

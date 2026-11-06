@@ -42,6 +42,7 @@ import { ConfirmationDialog } from "./confirmation-dialog";
 import { PermissionGuard } from "@/components/permission-guard";
 import { Permission, hasPermission } from "@/lib/permissions";
 import { useTranslations } from "next-intl";
+import { authService } from "@/api/services/auth.service";
 
 export interface TableColumn<T = any> {
   key: string;
@@ -955,7 +956,7 @@ function ActionsDropdown<T>({
     return extraActions.filter((action) => {
       // Check permission
       if (action.permission) {
-        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const user = authService.getUser();
         if (!hasPermission(user, action.permission)) {
           return false;
         }
@@ -979,14 +980,14 @@ function ActionsDropdown<T>({
     onEdit &&
     (!editPermission ||
       hasPermission(
-        JSON.parse(localStorage.getItem("user") || "null"),
+        authService.getUser(),
         editPermission
       ));
   const canDelete =
     onDelete &&
     (!deletePermission ||
       hasPermission(
-        JSON.parse(localStorage.getItem("user") || "null"),
+        authService.getUser(),
         deletePermission
       ));
 

@@ -1,5 +1,5 @@
 "use client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { authService } from "../services/auth.service";
 import { LoginCredentials, LoginResponse, UserData } from "../types/auth";
@@ -10,6 +10,25 @@ export function storeAuth(data: LoginResponse): void {
   const { access, refresh, ...userData } = data;
   const expiryDate = authService.getTokenExpiry(access);
   authService.storeAuth(access, refresh, userData as UserData, expiryDate?.toISOString());
+}
+
+/**
+ * The signed-in user from `/account/auth/me/`. Also fills `authService`'s
+ * in-memory user so code outside React can read it synchronously.
+ */
+export function useMe(enabled = true) {
+  return useQuery({
+    queryKey: [queryKeys.auth.me],
+    queryFn: async () => {
+      const user = await authService.getMe();
+      authService.setUser(user);
+      return user;
+    },
+    enabled,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 }
 
 /**

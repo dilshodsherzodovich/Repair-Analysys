@@ -40,9 +40,7 @@ export default function PantografPage() {
   const { updateQuery, getAllQueryValues, getQueryValue } = useFilterParams();
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "pantograf")) {
     return <UnauthorizedPage />;
   }

@@ -21,6 +21,7 @@ import UnauthorizedPage from "../unauthorized/page";
 import { canAccessSection } from "@/lib/permissions";
 import { FiltersQuery } from "@/ui/filters";
 import { UserData } from "@/api/types/auth";
+import { authService } from "@/api/services/auth.service";
 
 type TabValue = "in_progress" | "archive" | "cancelled";
 
@@ -63,9 +64,7 @@ function getIntervalDisplay(inspection: Inspection): string {
 export default function InspectionsPage() {
 
   const currentUser: UserData | null =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
 
   if (!currentUser || !canAccessSection(currentUser, "inspections")) {
     return <UnauthorizedPage />;

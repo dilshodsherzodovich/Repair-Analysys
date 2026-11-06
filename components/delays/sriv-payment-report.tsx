@@ -23,6 +23,7 @@ import { DatePicker } from "@/ui/date-picker";
 import { MultiSelect } from "@/ui/multi-select";
 import { cn } from "@/lib/utils";
 import { SrivPaymentDrilldownModal } from "./sriv-payment-drilldown-modal";
+import { authService } from "@/api/services/auth.service";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -96,9 +97,7 @@ export function SrivPaymentReport() {
 
   // sriv_moderator is pinned to its own depo (the backend scopes it too).
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   const scopedOrgId =
     currentUser?.role === "sriv_moderator"
       ? currentUser?.branch?.organization?.id

@@ -13,6 +13,7 @@ import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { exportComponentGroupDetailsExcel } from "@/utils/duty-uzel-excel-export";
 import { ComponentGroupComponents } from "../../components/component-group-components";
+import { authService } from "@/api/services/auth.service";
 
 /** One component group on its own page — opened from the group view's list. */
 export default function DutyUzelGroupPage() {
@@ -22,9 +23,7 @@ export default function DutyUzelGroupPage() {
   const { showError } = useSnackbar();
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "duty_uzel")) {
     return <UnauthorizedPage />;
   }

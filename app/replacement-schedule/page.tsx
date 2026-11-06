@@ -21,6 +21,7 @@ import { ReplacementModal } from "./components/replacement-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
+import { authService } from "@/api/services/auth.service";
 
 export default function ReplacementSchedulePage() {
   const t = useTranslations("ReplacementSchedulePage");
@@ -28,9 +29,7 @@ export default function ReplacementSchedulePage() {
   const { showSuccess, showError } = useSnackbar();
 
   const currentUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+    authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "replacement_schedule")) {
     return <UnauthorizedPage />;
   }
