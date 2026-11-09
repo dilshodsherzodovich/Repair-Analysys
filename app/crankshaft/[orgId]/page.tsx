@@ -34,6 +34,8 @@ import {
   firstMessage,
 } from "@/components/locomotive-values/inline-edit";
 import { authService } from "@/api/services/auth.service";
+import { Check } from "lucide-react";
+import { exportCrankshaftExcel } from "@/utils/crankshaft-excel-export";
 
 /** Edited input text per component id, then per field. */
 type Drafts = Record<number, Record<string, string>>;
@@ -53,6 +55,16 @@ const formatValue = (value: unknown) =>
   value === null || value === undefined || value === ""
     ? "—"
     : String(value);
+
+/** Year and factory number are edited like the measurements. */
+const INFO_FIELDS = ["year_of_manufacture", "factory_number"] as const;
+
+/** How long the cells changed by a save stay highlighted. */
+const SAVED_HIGHLIGHT_MS = 5000;
+
+// Tinted headers so the koren and shatun blocks read apart at a glance
+const korenHead = "bg-[#EFF6FF]";
+const shatunHead = "bg-[#FFF7ED]";
 
 const toInputValue = (value: unknown) =>
   typeof value === "string" || typeof value === "number" ? String(value) : "";
@@ -107,6 +119,19 @@ const LocomotiveRows = memo(function LocomotiveRows({
   const [drafts, setDrafts] = useState<Drafts>({});
   const [errors, setErrors] = useState<RowErrors>({});
   const [isSaving, setIsSaving] = useState(false);
+  /** Cells ("id-field") changed by the last save, highlighted for a while. */
+  const [savedCells, setSavedCells] = useState<Set<string> | null>(null);
+
+  useEffect(() => {
+    if (!savedCells) return;
+    const timer = setTimeout(() => setSavedCells(null), SAVED_HIGHLIGHT_MS);
+    return () => clearTimeout(timer);
+  }, [savedCells]);
+
+  // Editing again ends the highlight
+  useEffect(() => {
+    if (isEditing) setSavedCells(null);
+  }, [isEditing]);
 
   // Leaving edit mode (cancel, save, or editing another locomotive) drops edits
   useEffect(() => {
@@ -164,10 +189,14 @@ const LocomotiveRows = memo(function LocomotiveRows({
 
     const nextErrors: RowErrors = {};
     const savedIds: number[] = [];
+    const saved = new Set<string>();
     results.forEach((result, index) => {
       const { component, payload } = changes[index];
       if (result.status === "fulfilled") {
         savedIds.push(component.id);
+        Object.keys(payload).forEach((field) =>
+          saved.add(`${component.id}-${field}`),
+        );
         return;
       }
       const body = (result.reason as any)?.response?.data;
@@ -186,6 +215,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
     });
 
     if (!Object.keys(nextErrors).length) {
+      setSavedCells(saved);
       onDone();
       toast({ title: t("success_updated") });
       return;
@@ -207,14 +237,19 @@ const LocomotiveRows = memo(function LocomotiveRows({
   };
 
   const fieldLabel = (field: string) =>
-    `${field.includes("koren") ? tModal("koren_prefix") : tModal("shatun_prefix")}-${getFieldNumber(field)}`;
+    (INFO_FIELDS as readonly string[]).includes(field)
+      ? tModal(field)
+      : `${field.includes("koren") ? tModal("koren_prefix") : tModal("shatun_prefix")}-${getFieldNumber(field)}`;
 
   const span = group.components.length;
   let isFirstInput = true;
+  const justSaved = !!savedCells;
   // Pinned cells need a solid background or scrolled cells show through
   const stickyBg = isEditing
     ? "bg-[#F0F7FF]"
-    : "bg-white group-hover:bg-[#F8FAFC]";
+    : justSaved
+      ? "bg-[#F0FDF4]"
+      : "bg-white group-hover:bg-[#F8FAFC]";
 
   return (
     <>
@@ -222,8 +257,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={component.id}
           className={cn(
-            "group hover:bg-[#F8FAFC]",
+            "group hover:bg-[#F8FAFC] transition-colors duration-700",
             isEditing && "bg-[#F0F7FF] hover:bg-[#F0F7FF]",
+            justSaved && "bg-[#F0FDF4] hover:bg-[#F0FDF4]",
           )}
         >
           {componentIndex === 0 && (
@@ -246,9 +282,16 @@ const LocomotiveRows = memo(function LocomotiveRows({
                   stickyLocomotive,
                   stickyBg,
                   "z-[5] text-[#0F172B] font-medium align-top",
+                  justSaved && "border-l-2 border-l-green-500",
                 )}
               >
                 {group.name}-{group.modelName}
+                {justSaved && (
+                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                    <Check className="h-3 w-3" />
+                    {t("just_saved")}
+                  </span>
+                )}
               </TableCell>
             </>
           )}
@@ -263,23 +306,22 @@ const LocomotiveRows = memo(function LocomotiveRows({
             {component.section?.name ??
               `${tModal("section")} ${componentIndex + 1}`}
           </TableCell>
-          <TableCell className={`${cellClass} text-[#64748B]`}>
-            {formatValue(component.year_of_manufacture)}
-          </TableCell>
-          <TableCell className={`${cellClass} text-[#64748B]`}>
-            {formatValue(component.factory_number)}
-          </TableCell>
-          {valueFields.map((field) => {
-            const editable = isEditing && field in component;
+          {[...INFO_FIELDS, ...valueFields].map((field) => {
+            const isInfo = (INFO_FIELDS as readonly string[]).includes(field);
+            const editable = isEditing && (isInfo || field in component);
             const autoFocus = editable && isFirstInput;
             if (editable) isFirstInput = false;
+            const wasSaved = !!savedCells?.has(`${component.id}-${field}`);
             return (
               <TableCell
                 key={field}
                 className={cn(
                   cellClass,
-                  "text-center text-[#0F172B]",
+                  "transition-colors duration-700",
+                  isInfo ? "text-[#64748B]" : "text-center text-[#0F172B]",
                   editable && "px-1 py-1.5",
+                  // Changed values stand out while the highlight lasts
+                  wasSaved && "bg-green-100 font-semibold text-green-800",
                 )}
               >
                 {editable ? (
@@ -400,6 +442,23 @@ function CrankshaftPageContent({
     };
   }, [data]);
 
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      await exportCrankshaftExcel(
+        { groups, korenFields, shatunFields },
+        { t, tModal },
+      );
+    } catch (error) {
+      console.error("Error exporting crankshaft:", error);
+      toast({ variant: "destructive", title: t("excel.error") });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [groups, korenFields, shatunFields, t, tModal]);
+
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
       {
@@ -432,6 +491,8 @@ function CrankshaftPageContent({
         filters={pageFilters}
         hasSearch={true}
         searchPlaceholder={t("search_placeholder")}
+        onExport={isPending ? undefined : handleExport}
+        exportLoading={isExporting}
       />
 
       {isError && (
@@ -469,7 +530,7 @@ function CrankshaftPageContent({
               {korenFields.length > 0 && (
                 <TableHead
                   colSpan={korenFields.length}
-                  className={`${headClass} text-center`}
+                  className={cn(headClass, korenHead, "text-center")}
                 >
                   {tModal("koren_prefix")}
                 </TableHead>
@@ -477,7 +538,7 @@ function CrankshaftPageContent({
               {shatunFields.length > 0 && (
                 <TableHead
                   colSpan={shatunFields.length}
-                  className={`${headClass} text-center`}
+                  className={cn(headClass, shatunHead, "text-center")}
                 >
                   {tModal("shatun_prefix")}
                 </TableHead>
@@ -495,7 +556,11 @@ function CrankshaftPageContent({
               {valueFields.map((field) => (
                 <TableHead
                   key={field}
-                  className={`${headClass} text-center text-xs`}
+                  className={cn(
+                    headClass,
+                    "text-center text-xs",
+                    field.includes("koren") ? korenHead : shatunHead,
+                  )}
                 >
                   {getFieldNumber(field) === Number.POSITIVE_INFINITY
                     ? field

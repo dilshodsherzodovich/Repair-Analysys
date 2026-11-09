@@ -1281,12 +1281,18 @@
     "save": "Сохранить",
     "cancel": "Отмена",
     "success_updated": "Успешно сохранено",
+    "just_saved": "Сохранено",
     "error_save": "Ошибка при сохранении",
     "columns": {
       "no": "№",
       "locomotive": "Локомотив",
       "section": "Секция",
       "actions": "Действия"
+    },
+    "excel": {
+      "sheet": "Коленчатый вал",
+      "date": "Дата",
+      "error": "Ошибка при создании Excel-файла"
     }
   },
   "BandagesModal": {

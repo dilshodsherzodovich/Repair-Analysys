@@ -1281,12 +1281,18 @@
     "save": "Saqlash",
     "cancel": "Bekor qilish",
     "success_updated": "Muvaffaqiyatli saqlandi",
+    "just_saved": "Saqlandi",
     "error_save": "Saqlashda xatolik yuz berdi",
     "columns": {
       "no": "№",
       "locomotive": "Lokomotiv",
       "section": "Sektsiya",
       "actions": "Amallar"
+    },
+    "excel": {
+      "sheet": "Коленчатый вал",
+      "date": "Sana",
+      "error": "Excel faylini yaratishda xatolik yuz berdi"
     }
   },
   "BandagesModal": {
