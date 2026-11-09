@@ -92,6 +92,13 @@ const COLOR_GROUPS: {
       { name: "destructive-subtle", use: "Error backgrounds" },
     ],
   },
+  {
+    title: "Category (no status meaning)",
+    tokens: [
+      { name: "category-purple", use: "Reserve, hours and other neutral groups" },
+      { name: "category-purple-subtle", use: "Their backgrounds" },
+    ],
+  },
 ];
 
 const TYPE_SCALE = [

@@ -71,6 +71,10 @@
   --destructive-subtle: #fef2f2;
   --destructive-foreground: #ffffff;
 
+  /* Category: for groups with no status meaning (reserve, hours, ...) */
+  --category-purple: #7c3aed;
+  --category-purple-subtle: #f5f3ff;
+
   /* Focus */
   --ring: #2354bf;
 
@@ -195,6 +199,8 @@
   --color-warning-subtle: var(--warning-subtle);
   --color-warning-foreground: var(--warning-foreground);
   --color-destructive-subtle: var(--destructive-subtle);
+  --color-category-purple: var(--category-purple);
+  --color-category-purple-subtle: var(--category-purple-subtle);
   --color-secondary: var(--secondary); /* bg-secondary, text-secondary */
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted); /* bg-muted, text-muted */
