@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
-import { toast } from "@/ui/use-toast";
+import { useSnackbar } from "@/providers/snackbar-provider";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useBulkUpdateBandages } from "@/api/hooks/use-bandages";
@@ -103,6 +103,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
 }) {
   const t = useTranslations("BandagesPage");
   const tModal = useTranslations("BandagesModal");
+  const { showSuccess, showError } = useSnackbar();
   const { mutateAsync: bulkUpdateBandages } = useBulkUpdateBandages();
 
   const [drafts, setDrafts] = useState<Drafts>({});
@@ -196,7 +197,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
         ),
       );
       onDone();
-      toast({ title: t("success_updated") });
+      showSuccess(t("success_updated"));
     } catch (error) {
       setIsSaving(false);
       // Nothing was saved, so every edit stays. Per-item errors come back as
@@ -220,15 +221,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
       }
       setErrors(nextErrors);
       const firstError = Object.values(nextErrors)[0];
-      toast({
-        variant: "destructive",
-        title: t("error_save"),
-        description:
-          firstError?.left ||
+      showError(t("error_save"), firstError?.left ||
           firstError?.right ||
           firstError?.detail ||
-          (!Array.isArray(body) ? firstMessage(body?.detail) : undefined),
-      });
+          (!Array.isArray(body) ? firstMessage(body?.detail) : undefined));
     }
   };
 

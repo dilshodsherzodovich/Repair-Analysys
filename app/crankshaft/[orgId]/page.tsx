@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
-import { toast } from "@/ui/use-toast";
+import { useSnackbar } from "@/providers/snackbar-provider";
 import { cn } from "@/lib/utils";
 import {
   useGetLocomotiveModels,
@@ -114,6 +114,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
 }) {
   const t = useTranslations("CrankshaftPage");
   const tModal = useTranslations("SpecialComponentsModal");
+  const { showSuccess, showError } = useSnackbar();
   const { mutateAsync: updateSpecialComponent } = useUpdateSpecialComponent();
 
   const [drafts, setDrafts] = useState<Drafts>({});
@@ -217,7 +218,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
     if (!Object.keys(nextErrors).length) {
       setSavedCells(saved);
       onDone();
-      toast({ title: t("success_updated") });
+      showSuccess(t("success_updated"));
       return;
     }
 
@@ -229,11 +230,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
     });
     setErrors(nextErrors);
     const firstError = Object.values(nextErrors)[0];
-    toast({
-      variant: "destructive",
-      title: t("error_save"),
-      description: Object.values(firstError ?? {}).find(Boolean),
-    });
+    showError(t("error_save"), Object.values(firstError ?? {}).find(Boolean));
   };
 
   const fieldLabel = (field: string) =>
@@ -383,6 +380,7 @@ function CrankshaftPageContent({
 }) {
   const t = useTranslations("CrankshaftPage");
   const tModal = useTranslations("SpecialComponentsModal");
+  const { showError } = useSnackbar();
   const searchParams = useSearchParams();
   const { q, locModel } = Object.fromEntries(searchParams.entries());
 
@@ -453,11 +451,11 @@ function CrankshaftPageContent({
       );
     } catch (error) {
       console.error("Error exporting crankshaft:", error);
-      toast({ variant: "destructive", title: t("excel.error") });
+      showError(t("excel.error"));
     } finally {
       setIsExporting(false);
     }
-  }, [groups, korenFields, shatunFields, t, tModal]);
+  }, [groups, korenFields, shatunFields, t, tModal, showError]);
 
   const pageFilters: FiltersQuery[] = useMemo(
     () => [

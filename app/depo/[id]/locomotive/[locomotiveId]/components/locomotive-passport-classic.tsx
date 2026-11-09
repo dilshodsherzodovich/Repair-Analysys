@@ -29,7 +29,7 @@ import {
   useComponents,
   useBulkUpdateComponentValues,
 } from "@/api/hooks/use-component";
-import { toast } from "@/ui/use-toast";
+import { useSnackbar } from "@/providers/snackbar-provider";
 import { ComponentValue } from "@/api/types/component";
 import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
@@ -74,6 +74,7 @@ export default function LocomotivePassportClassic({
   locomotiveId,
 }: LocomotivePassportClassicProps) {
   const t = useTranslations("LocomotivePassportForm");
+  const { showSuccess, showError } = useSnackbar();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
@@ -150,26 +151,19 @@ export default function LocomotivePassportClassic({
 
   useEffect(() => {
     if (componentsQuery.isSuccess && !hasShownSuccessToast) {
-      toast({
-        title: t("toast_components_loaded"),
-        description: `${componentList.length} ${t("toast_components_found")}`,
-      });
+      showSuccess(t("toast_components_loaded"), `${componentList.length} ${t("toast_components_found")}`);
       setHasShownSuccessToast(true);
     }
-  }, [componentList.length, componentsQuery.isSuccess, hasShownSuccessToast, t]);
+  }, [componentList.length, componentsQuery.isSuccess, hasShownSuccessToast, t, showSuccess]);
 
   useEffect(() => {
     if (componentsQuery.isError) {
       const errorMessage =
         (componentsQuery.error as { message?: string })?.message ||
         t("toast_components_error_desc");
-      toast({
-        variant: "destructive",
-        title: t("toast_components_error"),
-        description: errorMessage,
-      });
+      showError(t("toast_components_error"), errorMessage);
     }
-  }, [componentsQuery.error, componentsQuery.isError, t]);
+  }, [componentsQuery.error, componentsQuery.isError, t, showError]);
 
   const handleExportPDF = async () => {
     if (
@@ -177,11 +171,7 @@ export default function LocomotivePassportClassic({
       activeSectionId === null ||
       componentList.length === 0
     ) {
-      toast({
-        variant: "destructive",
-        title: t("toast_export_error"),
-        description: t("toast_export_error_desc"),
-      });
+      showError(t("toast_export_error"), t("toast_export_error_desc"));
       return;
     }
 
@@ -195,17 +185,10 @@ export default function LocomotivePassportClassic({
         componentList,
         activeSection?.name
       );
-      toast({
-        title: t("toast_export_success"),
-        description: t("toast_export_success_desc"),
-      });
+      showSuccess(t("toast_export_success"), t("toast_export_success_desc"));
     } catch (error) {
       console.error("Failed to export PDF:", error);
-      toast({
-        variant: "destructive",
-        title: t("toast_export_failed"),
-        description: t("toast_export_failed_desc"),
-      });
+      showError(t("toast_export_failed"), t("toast_export_failed_desc"));
     } finally {
       setIsExportingPDF(false);
     }
@@ -265,21 +248,13 @@ export default function LocomotivePassportClassic({
 
   const handleSave = async () => {
     if (!componentList.length) {
-      toast({
-        variant: "destructive",
-        title: t("toast_no_components"),
-        description: t("toast_no_components_desc"),
-      });
+      showError(t("toast_no_components"), t("toast_no_components_desc"));
       return;
     }
 
     const payload = buildComponentPayload();
     if (!payload.length) {
-      toast({
-        variant: "destructive",
-        title: t("toast_invalid_data"),
-        description: t("toast_invalid_data_desc"),
-      });
+      showError(t("toast_invalid_data"), t("toast_invalid_data_desc"));
       return;
     }
 
@@ -294,19 +269,12 @@ export default function LocomotivePassportClassic({
       ) {
         syncComponentFormValues(refetchResult.data.results);
       }
-      toast({
-        title: t("toast_saved"),
-        description: t("toast_saved_desc"),
-      });
+      showSuccess(t("toast_saved"), t("toast_saved_desc"));
       setIsEditing(false);
       router.push("?", { scroll: false });
     } catch (error) {
       console.error("Failed to save component values:", error);
-      toast({
-        variant: "destructive",
-        title: t("toast_save_error"),
-        description: t("toast_save_error_desc"),
-      });
+      showError(t("toast_save_error"), t("toast_save_error_desc"));
     }
   };
 

@@ -29,7 +29,7 @@ import {
 import { BandageGroupCards } from "./components/bandage-group-cards";
 import { bandageGroupKey } from "./bandage-groups";
 import { exportBandagesExcel } from "@/utils/bandages-excel-export";
-import { toast } from "@/ui/use-toast";
+import { useSnackbar } from "@/providers/snackbar-provider";
 
 function BandagesPageContent({
   user,
@@ -40,6 +40,7 @@ function BandagesPageContent({
 }) {
   const t = useTranslations("BandagesPage");
   const tModal = useTranslations("BandagesModal");
+  const { showError } = useSnackbar();
   const searchParams = useSearchParams();
   const { q, locModel } = Object.fromEntries(searchParams.entries());
   const activeGroup = searchParams.get("group") || null;
@@ -168,11 +169,11 @@ function BandagesPageContent({
       );
     } catch (error) {
       console.error("Error exporting bandages:", error);
-      toast({ variant: "destructive", title: t("excel.error") });
+      showError(t("excel.error"));
     } finally {
       setIsExporting(false);
     }
-  }, [visibleGroups, groups, componentNames, t, tModal, activeGroup]);
+  }, [visibleGroups, groups, componentNames, t, tModal, activeGroup, showError]);
 
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
