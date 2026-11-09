@@ -245,9 +245,9 @@ export function PaginatedTable<T extends Record<string, any>>({
           key: "actions",
           header: resolvedActionsLabel,
           className:
-            "w-[100px] text-center sticky right-0 bg-white z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)] border-r border-border last:border-r-0",
+            "w-[100px] text-center sticky right-0 bg-white z-10 shadow-pin-end border-r border-border last:border-r-0",
           headerClassName:
-            "text-center sticky right-0 bg-surface-muted z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+            "text-center sticky right-0 bg-surface-muted z-10 shadow-pin-end",
         } as TableColumn<T>,
       ];
     }
@@ -476,7 +476,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                   {hasActions && (
                     <TableCell
                       className={cn(
-                        "py-3 px-4 text-center border-r border-border last:border-r-0 transition-colors sticky right-0 z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+                        "py-3 px-4 text-center border-r border-border last:border-r-0 transition-colors sticky right-0 z-10 shadow-pin-end",
                         isSelected ? "bg-primary-subtle" : "bg-white"
                       )}
                     >

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Rewrites hardcoded colour classes to design tokens, using the mapping agreed
+ * Rewrites hardcoded colour and font-size classes to design tokens, using the mapping agreed
  * for the design system (see /ui-kit). Colours with no token (one-off purples,
  * chart colours, ...) are left alone and listed so they can be handled by hand.
  *
@@ -46,6 +46,23 @@ const PALETTE =
   "(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\\d{2,3}";
 const CLASS = new RegExp(`\\b${PREFIX}-(\\[#[0-9a-fA-F]{6}\\]|${PALETTE})(\\/\\d+)?(?![\\w-])`, "g");
 
+// Arbitrary font sizes -> nearest step of the type scale (11px for dense tables)
+const FONT_SIZES = {
+  "9px": "text-2xs",
+  "10px": "text-2xs",
+  "11px": "text-2xs",
+  "12px": "text-xs",
+  "13px": "text-sm",
+  "14px": "text-sm",
+  "15px": "text-base",
+  "16px": "text-base",
+  "18px": "text-lg",
+  "20px": "text-xl",
+  "24px": "text-2xl",
+  "30px": "text-3xl",
+};
+const FONT_SIZE = /\btext-\[(\d+px)\](?![\w-])/g;
+
 const args = process.argv.slice(2);
 const dry = args.includes("--dry");
 const files = args.filter((arg) => !arg.startsWith("--"));
@@ -55,7 +72,16 @@ for (const file of files) {
   const leftovers = new Set();
   let changes = 0;
 
-  const output = source.replace(CLASS, (match, prefix, color, opacity = "") => {
+  const output = source
+    .replace(FONT_SIZE, (match, size) => {
+      if (!FONT_SIZES[size]) {
+        leftovers.add(match);
+        return match;
+      }
+      changes++;
+      return FONT_SIZES[size];
+    })
+    .replace(CLASS, (match, prefix, color, opacity = "") => {
     const key = color.startsWith("[") ? color.slice(1, -1).toLowerCase() : color;
     const hit = lookup.get(key);
     if (!hit) {

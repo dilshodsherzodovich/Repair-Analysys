@@ -162,6 +162,10 @@
   /* Font family */
   --font-family-sans: var(--font-sans);
 
+  /* Shadow on the edge of a pinned table column (start = left, end = right) */
+  --shadow-pin-start: 2px 0 4px -1px rgb(0 0 0 / 0.08);
+  --shadow-pin-end: inset 2px 0 4px -2px rgb(0 0 0 / 0.1);
+
   /* Extra type step below text-xs, for dense tables and badges */
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
