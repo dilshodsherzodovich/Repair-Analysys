@@ -20,7 +20,7 @@ import {
   EditActions,
   firstMessage,
 } from "@/components/locomotive-values/inline-edit";
-import { bandageGroupKey } from "../bandage-groups";
+import { bandageGroupKey, hasSideMismatch } from "../bandage-groups";
 
 type Side = "left" | "right";
 
@@ -306,6 +306,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 !!activeGroup && !!bandage && bandageGroupKey(bandage) === activeGroup;
               const wasSaved =
                 !!bandage && !!savedCells?.has(`${bandage.id}-${side}`);
+              const isUneven = !!bandage && hasSideMismatch(bandage);
               return (
                 <TableCell
                   key={`${name}-${side}`}
@@ -318,6 +319,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
                       (inActiveGroup
                         ? "bg-[#EFF6FF] font-semibold text-blue-700"
                         : "text-[#CBD5E1]"),
+                    // Left and right too far apart; shown even outside the picked group
+                    !editable &&
+                      isUneven &&
+                      "bg-red-50 font-semibold text-red-600",
                     // Changed values win over the group highlight while it lasts
                     wasSaved && "bg-green-100 font-semibold text-green-800",
                   )}

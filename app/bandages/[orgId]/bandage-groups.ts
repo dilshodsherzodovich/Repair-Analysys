@@ -17,6 +17,18 @@ export const BANDAGE_GROUPS = [
 /** Values below the first range or above the last one. */
 export const OUT_OF_RANGE = "other";
 
+/** Left and right this far apart (or more) mark the KP as uneven. */
+export const SIDE_DIFF_LIMIT = 2;
+
+export const hasSideMismatch = (bandage: Bandage) =>
+  bandage.left !== null &&
+  bandage.left !== undefined &&
+  bandage.right !== null &&
+  bandage.right !== undefined &&
+  // Rounded so float noise (54.1 - 52.1) doesn't decide the edge case
+  Math.round(Math.abs(bandage.left - bandage.right) * 1000) / 1000 >=
+    SIDE_DIFF_LIMIT;
+
 /**
  * The group a bandage belongs to, decided by its thinner side; null when
  * neither side has a value.

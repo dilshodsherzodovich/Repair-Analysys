@@ -10,6 +10,7 @@ import {
   BANDAGE_GROUPS,
   OUT_OF_RANGE,
   bandageGroupKey,
+  hasSideMismatch,
 } from "@/app/bandages/[orgId]/bandage-groups";
 
 /**
@@ -31,6 +32,8 @@ const NAVY = "FF1E3A5F";
 const SUB_HEADER = "FF334E73";
 const HIGHLIGHT = "FFDBEAFE"; // blue-100
 const HIGHLIGHT_TXT = "FF1E40AF"; // blue-800
+const UNEVEN = "FFFEF2F2"; // red-50
+const UNEVEN_TXT = "FFDC2626"; // red-600
 const TOTAL_BAND = "FFE2E8F0"; // slate-200
 const ZEBRA = "FFF8FAFC"; // slate-50
 const MUTED_TXT = "FF94A3B8"; // slate-400
@@ -178,6 +181,7 @@ function writeTableSheet(
         const bandage = section.byComponent[name];
         const inActiveGroup =
           !!activeGroup && !!bandage && bandageGroupKey(bandage) === activeGroup;
+        const isUneven = !!bandage && hasSideMismatch(bandage);
         SIDES.forEach((side, sideIndex) => {
           const cell = ws.getCell(row, 4 + index * 2 + sideIndex);
           const value = bandage?.[side];
@@ -189,8 +193,12 @@ function writeTableSheet(
           }
           cell.alignment = { horizontal: "center", vertical: "middle" };
           cell.border = border;
-          // Same reading as the screen: the picked group stands out, the rest fades
-          if (inActiveGroup) {
+          // Same reading as the screen: uneven sides in red, then the picked
+          // group stands out and the rest fades
+          if (isUneven) {
+            cell.font = { size: 10, bold: true, color: { argb: UNEVEN_TXT } };
+            cell.fill = solid(UNEVEN);
+          } else if (inActiveGroup) {
             cell.font = { size: 10, bold: true, color: { argb: HIGHLIGHT_TXT } };
             cell.fill = solid(HIGHLIGHT);
           } else {
