@@ -71,6 +71,16 @@
   --destructive-subtle: #fef2f2;
   --destructive-foreground: #ffffff;
 
+  /* Brand identity: login screen and logo only, never for UI states */
+  --brand-navy: #214b66;
+  --brand-purple: #644ac4;
+  --brand-purple-light: #927be3;
+  --brand-purple-dark: #492ead;
+  --brand-purple-deep: #2e148c;
+  --brand-blue: #1e47a8;
+  --brand-blue-light: #3d6bc4;
+  --brand-violet: #5538a8;
+
   /* Categories: tell groups apart when the colour carries no status meaning
      (inspection types, reserve, hours, ...). Lighter shades come from opacity:
      bg-category-teal/10, border-category-teal/40, ring-category-teal/25. */
@@ -207,6 +217,14 @@
   --color-warning-subtle: var(--warning-subtle);
   --color-warning-foreground: var(--warning-foreground);
   --color-destructive-subtle: var(--destructive-subtle);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-purple-light: var(--brand-purple-light);
+  --color-brand-purple-dark: var(--brand-purple-dark);
+  --color-brand-purple-deep: var(--brand-purple-deep);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-light: var(--brand-blue-light);
+  --color-brand-violet: var(--brand-violet);
   --color-category-violet: var(--category-violet);
   --color-category-rose: var(--category-rose);
   --color-category-pink: var(--category-pink);

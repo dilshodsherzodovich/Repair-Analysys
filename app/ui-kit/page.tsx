@@ -62,6 +62,19 @@ const COLOR_GROUPS: {
     ],
   },
   {
+    title: "Brand identity (login screen and logo only)",
+    tokens: [
+      { name: "brand-navy", use: "Brand" },
+      { name: "brand-purple", use: "Brand" },
+      { name: "brand-purple-light", use: "Brand" },
+      { name: "brand-purple-dark", use: "Brand" },
+      { name: "brand-purple-deep", use: "Brand" },
+      { name: "brand-blue", use: "Brand" },
+      { name: "brand-blue-light", use: "Brand" },
+      { name: "brand-violet", use: "Brand" },
+    ],
+  },
+  {
     title: "Text",
     tokens: [
       { name: "foreground", use: "Titles, table values, body text", text: true },
