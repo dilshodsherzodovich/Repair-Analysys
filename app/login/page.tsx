@@ -45,7 +45,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-surface-muted via-primary-subtle to-category-indigo/10">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -58,7 +58,7 @@ export default function LoginPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"
+          className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
         ></motion.div>
         <motion.div
           animate={{
@@ -71,9 +71,9 @@ export default function LoginPage() {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl"
+          className="absolute bottom-0 right-1/4 w-96 h-96 bg-category-indigo/20 rounded-full blur-3xl"
         ></motion.div>
-        <div className="absolute top-1/2 left-0 w-72 h-72 bg-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-0 w-72 h-72 bg-category-violet/10 rounded-full blur-3xl"></div>
       </div>
 
       <motion.div
@@ -85,7 +85,7 @@ export default function LoginPage() {
         {/* Main Card */}
         <div className="relative">
           {/* Glassmorphism Card */}
-          <div className="backdrop-blur-xl bg-white/80 rounded-2xl shadow-2xl border border-white/20 p-8 md:p-10">
+          <div className="backdrop-blur-xl bg-background/80 rounded-xl shadow-2xl border border-background/20 p-8 md:p-10">
             {/* Logo Section */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -95,21 +95,21 @@ export default function LoginPage() {
             >
               <div className="inline-flex items-center justify-center mb-6">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#2354bf] via-[#4978ce] to-[#644ac4] rounded-2xl blur-lg opacity-50"></div>
-                  <div className="relative w-20 h-20 bg-gradient-to-br from-[#2354bf] to-[#4978ce] rounded-2xl flex items-center justify-center shadow-xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-brand-purple rounded-xl blur-lg opacity-50"></div>
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-primary to-primary rounded-xl flex items-center justify-center shadow-xl">
                     <div className="grid grid-cols-2 gap-1.5 p-2">
-                      <div className="w-3 h-3 bg-white rounded-md"></div>
-                      <div className="w-3 h-3 bg-white/80 rounded-md"></div>
-                      <div className="w-3 h-3 bg-white/80 rounded-md"></div>
-                      <div className="w-3 h-3 bg-white rounded-md"></div>
+                      <div className="w-3 h-3 bg-background rounded-md"></div>
+                      <div className="w-3 h-3 bg-background/80 rounded-md"></div>
+                      <div className="w-3 h-3 bg-background/80 rounded-md"></div>
+                      <div className="w-3 h-3 bg-background rounded-md"></div>
                     </div>
                   </div>
                 </div>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#2354bf] via-[#4978ce] to-[#644ac4] bg-clip-text text-transparent mb-3">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary to-brand-purple bg-clip-text text-transparent mb-3">
                 Tamir Tahlili Tizimi
               </h1>
-              <p className="text-[#64748b] text-sm md:text-base">
+              <p className="text-muted-foreground text-sm md:text-base">
                 Lokomotivlardan foydalanish tizimi
               </p>
             </motion.div>
@@ -121,15 +121,15 @@ export default function LoginPage() {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="mb-8"
             >
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100/50">
+              <div className="bg-gradient-to-r from-primary-subtle to-category-indigo/10 rounded-xl p-6 border border-primary-subtle/50">
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-[#2354bf] to-[#4978ce] rounded-lg flex items-center justify-center">
-                    <Shield className="w-5 h-5 text-white" />
+                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary to-primary rounded-lg flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-primary-foreground" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-[#475569] leading-relaxed">
+                    <p className="text-sm text-foreground-secondary leading-relaxed">
                       Tizimga kirish{" "}
-                      <span className="font-semibold text-[#2354bf]">
+                      <span className="font-semibold text-primary">
                         Smart Depo
                       </span>{" "}
                       autentifikatsiya xizmati orqali amalga oshiriladi.
@@ -146,17 +146,17 @@ export default function LoginPage() {
               transition={{ delay: 0.4, duration: 0.5 }}
               className="grid grid-cols-3 gap-4 mb-8"
             >
-              <div className="text-center p-4 rounded-lg bg-white/50 border border-gray-100">
-                <Zap className="w-5 h-5 text-[#4978ce] mx-auto mb-2" />
-                <p className="text-xs text-[#64748b] font-medium">Tezkor</p>
+              <div className="text-center p-4 rounded-lg bg-background/50 border border-muted">
+                <Zap className="w-5 h-5 text-primary mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground font-medium">Tezkor</p>
               </div>
-              <div className="text-center p-4 rounded-lg bg-white/50 border border-gray-100">
-                <Shield className="w-5 h-5 text-[#2354bf] mx-auto mb-2" />
-                <p className="text-xs text-[#64748b] font-medium">Xavfsiz</p>
+              <div className="text-center p-4 rounded-lg bg-background/50 border border-muted">
+                <Shield className="w-5 h-5 text-primary mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground font-medium">Xavfsiz</p>
               </div>
-              <div className="text-center p-4 rounded-lg bg-white/50 border border-gray-100">
-                <Users className="w-5 h-5 text-[#644ac4] mx-auto mb-2" />
-                <p className="text-xs text-[#64748b] font-medium">Qulay</p>
+              <div className="text-center p-4 rounded-lg bg-background/50 border border-muted">
+                <Users className="w-5 h-5 text-brand-purple mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground font-medium">Qulay</p>
               </div>
             </motion.div>
 
@@ -172,7 +172,7 @@ export default function LoginPage() {
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <Button
                       asChild
-                      className="h-14 text-sm font-semibold bg-gradient-to-r from-[#2354bf] via-[#4978ce] to-[#644ac4] text-white shadow-lg group"
+                      className="h-14 text-sm font-semibold bg-gradient-to-r from-primary via-primary to-brand-purple text-primary-foreground shadow-lg group"
                     >
                       <Link
                         href={smartDepoUrl}
@@ -186,7 +186,7 @@ export default function LoginPage() {
                       type="button"
                       variant="outline"
                       onClick={() => setShowEchLogin((value) => !value)}
-                      className="h-14 text-sm font-semibold border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                      className="h-14 text-sm font-semibold border-2 border-success text-success hover:bg-success-subtle"
                     >
                       ECH foydalanuvchisi
                     </Button>
@@ -194,7 +194,7 @@ export default function LoginPage() {
 
                   <Button
                     onClick={handleSsoLogin}
-                    className="w-full h-14 text-base font-semibold bg-white hover:bg-gray-50 text-[#2354bf] border-2 border-[#2354bf] shadow-lg hover:shadow-xl transition-all duration-300 group"
+                    className="w-full h-14 text-base font-semibold bg-background hover:bg-surface-muted text-primary border-2 border-primary shadow-lg hover:shadow-xl transition-all duration-300 group"
                   >
                     <span className="flex items-center justify-center gap-2">
                       <span>SSO orqali kirish</span>
@@ -211,7 +211,7 @@ export default function LoginPage() {
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Login"
                     autoComplete="username"
-                    className="h-12 bg-white"
+                    className="h-12 bg-background"
                   />
                   <Input
                     type="password"
@@ -219,10 +219,10 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Parol"
                     autoComplete="current-password"
-                    className="h-12 bg-white"
+                    className="h-12 bg-background"
                   />
                   {isError && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-sm text-destructive">
                       {(error as any)?.response?.data?.detail ||
                         (error as any)?.response?.data?.non_field_errors?.[0] ||
                         "Login yoki parol noto'g'ri"}
@@ -231,7 +231,7 @@ export default function LoginPage() {
                   <Button
                     type="submit"
                     disabled={isPending || !username || !password}
-                    className="w-full h-14 text-base font-semibold bg-gradient-to-r from-[#2354bf] via-[#4978ce] to-[#644ac4] hover:from-[#1e47a8] hover:via-[#3d6bc4] hover:to-[#5538a8] text-white shadow-lg hover:shadow-xl transition-all duration-300 group disabled:opacity-60"
+                    className="w-full h-14 text-base font-semibold bg-gradient-to-r from-primary via-primary to-brand-purple hover:from-brand-blue hover:via-brand-blue-light hover:to-brand-violet text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 group disabled:opacity-60"
                   >
                     <span className="flex items-center justify-center gap-2">
                       {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
@@ -241,14 +241,14 @@ export default function LoginPage() {
                       )}
                     </span>
                   </Button>
-                  <p className="text-center text-xs text-[#94a3b8]">
+                  <p className="text-center text-xs text-foreground-subtle">
                     Dev rejimi — login/parol orqali kirish
                   </p>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setShowEchLogin((value) => !value)}
-                    className="h-12 border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                    className="h-12 border-2 border-success text-success hover:bg-success-subtle"
                   >
                     ECH foydalanuvchisi sifatida kirish
                   </Button>
@@ -258,9 +258,9 @@ export default function LoginPage() {
               {showEchLogin && (
                 <form
                   onSubmit={handleEchLogin}
-                  className="mt-2 flex flex-col gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4"
+                  className="mt-2 flex flex-col gap-3 rounded-xl border border-success/30 bg-success-subtle/60 p-4"
                 >
-                  <p className="text-sm font-semibold text-emerald-800">
+                  <p className="text-sm font-semibold text-success">
                     ECH foydalanuvchisi kirishi
                   </p>
                   <Input
@@ -268,7 +268,7 @@ export default function LoginPage() {
                     onChange={(event) => setEchUsername(event.target.value)}
                     placeholder="Login"
                     autoComplete="username"
-                    className="h-12 bg-white"
+                    className="h-12 bg-background"
                   />
                   <Input
                     type="password"
@@ -276,10 +276,10 @@ export default function LoginPage() {
                     onChange={(event) => setEchPassword(event.target.value)}
                     placeholder="Parol"
                     autoComplete="current-password"
-                    className="h-12 bg-white"
+                    className="h-12 bg-background"
                   />
                   {echLogin.isError && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-sm text-destructive">
                       {(echLogin.error as any)?.response?.data?.detail ||
                         echLogin.error?.message ||
                         "Login yoki parol noto'g'ri"}
@@ -290,7 +290,8 @@ export default function LoginPage() {
                     disabled={
                       echLogin.isPending || !echUsername || !echPassword
                     }
-                    className="h-12 bg-emerald-600 text-white hover:bg-emerald-700"
+                    variant="success"
+                    className="h-12"
                   >
                     {echLogin.isPending && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -308,11 +309,11 @@ export default function LoginPage() {
               transition={{ delay: 0.6, duration: 0.5 }}
               className="mt-8 text-center"
             >
-              <p className="text-sm text-[#64748b]">
+              <p className="text-sm text-muted-foreground">
                 Nosoz ishni tezda yuborish kerakmi?{" "}
                 <Link
                   href="/defective-works/create"
-                  className="font-semibold text-[#2354bf] hover:text-[#1e47a8] hover:underline transition-colors"
+                  className="font-semibold text-primary hover:text-brand-blue hover:underline transition-colors"
                 >
                   Xabar berish sahifasiga o'ting
                 </Link>
@@ -329,7 +330,7 @@ export default function LoginPage() {
           transition={{ delay: 0.7, duration: 0.5 }}
           className="mt-8 text-center"
         >
-          <p className="text-xs text-[#94a3b8]">
+          <p className="text-xs text-foreground-subtle">
             © {new Date().getFullYear()} Smart Depo. Barcha huquqlar
             himoyalangan.
           </p>

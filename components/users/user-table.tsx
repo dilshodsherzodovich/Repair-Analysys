@@ -171,7 +171,7 @@ export function UserTable({
         <div className="overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 text-[var(--table-header-fg)] ">
+              <TableRow className="bg-muted/50 text-foreground-secondary ">
                 <TableHead className="w-12 p-3 ">
                   <Checkbox
                     checked={
@@ -196,7 +196,7 @@ export function UserTable({
               ) : users?.results?.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="p-3">
-                    <div className="text-center py-8 text-[var(--muted-foreground)]">
+                    <div className="text-center py-8 text-muted-foreground">
                       Foydalanuvchilar topilmadi.
                     </div>
                   </TableCell>
@@ -215,19 +215,19 @@ export function UserTable({
                         }
                       />
                     </TableCell>
-                    <TableCell className="font-semibold text-[var(--primary)] p-3">
+                    <TableCell className="font-semibold text-primary p-3">
                       {index + 1}
                     </TableCell>
                     <TableCell className="p-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-[var(--primary)]/10 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-[var(--primary)]" />
+                        <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center">
+                          <User className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                          <p className="font-medium text-[var(--foreground)]">
+                          <p className="font-medium text-foreground">
                             {user.first_name + " " + user.last_name}
                           </p>
-                          <p className="text-xs text-[var(--muted-foreground)]">
+                          <p className="text-xs text-muted-foreground">
                             {user.username}
                           </p>
                         </div>
@@ -235,10 +235,10 @@ export function UserTable({
                     </TableCell>
                     <TableCell className="p-3">
                       <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-[var(--primary)]" />
+                        <Shield className="w-4 h-4 text-primary" />
                         <Badge
                           variant="secondary"
-                          className="bg-[var(--muted)] text-[var(--foreground)] border-none"
+                          className="bg-muted text-foreground border-none"
                         >
                           {getRoleName(user.role as UserRole).toUpperCase()}
                         </Badge>
@@ -246,13 +246,13 @@ export function UserTable({
                     </TableCell>
                     <TableCell className="p-3">
                       <div className="flex items-center gap-2">
-                        <Building className="w-4 h-4 text-[var(--primary)]" />
-                        <span className="text-[var(--muted-foreground)]">
+                        <Building className="w-4 h-4 text-primary" />
+                        <span className="text-muted-foreground">
                           {user?.profile?.secondary_organization?.name}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-[var(--muted-foreground)] p-3">
+                    <TableCell className="text-muted-foreground p-3">
                       {user.createdAt}
                     </TableCell>
                     <TableCell className="p-3">
@@ -260,8 +260,8 @@ export function UserTable({
                         variant={user.is_active ? "default" : "secondary"}
                         className={
                           user.is_active
-                            ? "bg-green-100 text-green-800 border-none"
-                            : "bg-gray-100 text-gray-800 border-none"
+                            ? "bg-success-subtle text-success border-none"
+                            : "bg-muted text-foreground border-none"
                         }
                       >
                         {user.is_active ? "Faol" : "Nofaol"}
@@ -274,10 +274,10 @@ export function UserTable({
                             variant="outline"
                             size="icon"
                             onClick={() => onEdit(user)}
-                            className="h-8 w-8 p-0 border-1 border-[var(--border)] hover:bg-[var(--primary)]/10 shadow-none"
+                            className="h-8 w-8 p-0 border-1 border-border hover:bg-primary/10 shadow-none"
                             aria-label="Tahrirlash"
                           >
-                            <Edit className="h-4 w-4 text-[var(--primary)]" />
+                            <Edit className="h-4 w-4 text-primary" />
                           </Button>
                         </PermissionGuard>
                         <PermissionGuard permission="delete_user">
@@ -285,10 +285,10 @@ export function UserTable({
                             variant="outline"
                             size="icon"
                             onClick={() => onDelete(user.id)}
-                            className="h-8 w-8 p-0 border-1 border-[var(--border)] hover:bg-[var(--destructive)]/10 shadow-none"
+                            className="h-8 w-8 p-0 border-1 border-border hover:bg-destructive/10 shadow-none"
                             aria-label="O'chirish"
                           >
-                            <Trash2 className="h-4 w-4 text-[var(--destructive)]" />
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </PermissionGuard>
                       </div>
@@ -299,7 +299,7 @@ export function UserTable({
             </TableBody>
           </Table>
           {totalPages > 1 && (
-            <div className="p-4 border-t border-[var(--border)]">
+            <div className="p-4 border-t border-border">
               <Pagination
                 currentPage={page || 1}
                 totalPages={getPageCount(totalPages, 10)}

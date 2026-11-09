@@ -33,20 +33,20 @@ export function StructureFilters({
   onDepartmentChange,
 }: StructureFiltersProps) {
   return (
-    <div className="flex items-center justify-between bg-[var(--table-header-bg)] p-4 border-b border-[var(--border)]">
+    <div className="flex items-center justify-between bg-surface-muted p-4 border-b border-border">
       <div className="flex items-center gap-4 flex-1">
         <div className="flex-1 max-w-sm">
           <Input
             placeholder="Umumiy qidiruv..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="border-[var(--border)]"
+            className="border-border"
           />
         </div>
 
         <div className="flex items-center gap-2">
           <Select value={categoryFilter} onValueChange={onCategoryChange}>
-            <SelectTrigger className="w-40 border-[var(--border)]">
+            <SelectTrigger className="w-40 border-border">
               <SelectValue placeholder="Kategoriya" />
             </SelectTrigger>
             <SelectContent>
@@ -62,7 +62,7 @@ export function StructureFilters({
           </Select>
 
           <Select value={departmentFilter} onValueChange={onDepartmentChange}>
-            <SelectTrigger className="w-40 border-[var(--border)]">
+            <SelectTrigger className="w-40 border-border">
               <SelectValue placeholder="Quyi tashkilot" />
             </SelectTrigger>
             <SelectContent>
@@ -86,7 +86,7 @@ export function StructureFilters({
           </Select>
 
           <Select value={statusFilter} onValueChange={onStatusChange}>
-            <SelectTrigger className="w-40 border-[var(--border)]">
+            <SelectTrigger className="w-40 border-border">
               <SelectValue placeholder="Holat" />
             </SelectTrigger>
             <SelectContent>
@@ -101,7 +101,7 @@ export function StructureFilters({
 
       <div className="flex items-center gap-2">
         {selectedCount > 0 && (
-          <div className="text-sm text-[var(--muted-foreground)]">
+          <div className="text-sm text-muted-foreground">
             {selectedCount} ta tanlangan
           </div>
         )}

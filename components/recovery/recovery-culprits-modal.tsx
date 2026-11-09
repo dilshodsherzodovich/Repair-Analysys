@@ -240,8 +240,8 @@ export function RecoveryCulpritsModal({
       <span
         className={
           active
-            ? "inline-flex w-fit items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success"
-            : "inline-flex w-fit items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+            ? "inline-flex w-fit items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-2xs font-medium text-success"
+            : "inline-flex w-fit items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-2xs font-medium text-muted-foreground"
         }
       >
         {active ? (
@@ -252,7 +252,7 @@ export function RecoveryCulpritsModal({
         {label}: {active ? t("yes") : t("no")}
       </span>
       {active && by && (
-        <span className="pl-1 text-[10px] text-muted-foreground">{by}</span>
+        <span className="pl-1 text-2xs text-muted-foreground">{by}</span>
       )}
     </div>
   );

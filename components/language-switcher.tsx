@@ -60,11 +60,11 @@ export function LanguageSwitcher() {
             type="button"
             variant="outline"
             size="sm"
-            className="inline-flex items-center gap-2 rounded-full border-slate-300 bg-white px-3 py-1 text-xs font-medium shadow-sm hover:bg-slate-50"
+            className="inline-flex items-center gap-2 rounded-full border-border-strong bg-background px-3 py-1 text-xs font-medium shadow-sm hover:bg-surface-muted"
           >
             <span className="text-base leading-none">{current.flag}</span>
             <span>{current.label}</span>
-            <ChevronDown className="h-3 w-3 text-slate-500" />
+            <ChevronDown className="h-3 w-3 text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-[140px]">
@@ -76,7 +76,7 @@ export function LanguageSwitcher() {
             >
               <span className="text-base leading-none">{item.flag}</span>
               <span className="font-medium">{item.label}</span>
-              <span className="ml-auto text-[11px] text-slate-500">
+              <span className="ml-auto text-2xs text-muted-foreground">
                 {item.name}
               </span>
             </DropdownMenuItem>

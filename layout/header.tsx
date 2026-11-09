@@ -24,13 +24,13 @@ export function Header({
   const t = useTranslations("Sidebar");
 
   return (
-    <header className="h-16 bg-[#ffffff] border-b border-[#e5e7eb] px-4 md:px-6 flex items-center justify-between">
+    <header className="h-16 bg-background border-b border-border px-4 md:px-6 flex items-center justify-between">
       <div className="flex-1 flex items-center gap-3">
         {/* Mobile: open drawer */}
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden text-[#6b7280] hover:text-[#374151] shrink-0"
+          className="md:hidden text-muted-foreground hover:text-foreground-secondary shrink-0"
           onClick={onMobileMenuOpen}
           title={t("sidebar_expand")}
           aria-label={t("sidebar_expand")}
@@ -42,7 +42,7 @@ export function Header({
         <Button
           variant="ghost"
           size="icon"
-          className="hidden md:inline-flex text-[#6b7280] hover:text-[#374151] shrink-0"
+          className="hidden md:inline-flex text-muted-foreground hover:text-foreground-secondary shrink-0"
           onClick={onSidebarToggle}
           title={
             isSidebarCollapsed ? t("sidebar_expand") : t("sidebar_collapse")

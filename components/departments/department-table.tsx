@@ -91,7 +91,7 @@ export function DepartmentTable({
         <div className="overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 text-[var(--table-header-fg)] sticky top-0 z-10 ">
+              <TableRow className="bg-muted/50 text-foreground-secondary sticky top-0 z-10 ">
                 <TableHead className="w-12 p-3 ">
                   <Checkbox
                     checked={
@@ -126,16 +126,16 @@ export function DepartmentTable({
                           }
                         />
                       </TableCell>
-                      <TableCell className="font-semibold text-[var(--primary)] p-3">
+                      <TableCell className="font-semibold text-primary p-3">
                         {index + 1}
                       </TableCell>
                       <TableCell className="p-3">
                         <span className="font-medium">{department.name}</span>
                       </TableCell>
-                      <TableCell className="p-3 text-[var(--muted-foreground)]">
+                      <TableCell className="p-3 text-muted-foreground">
                         {department.organization}
                       </TableCell>
-                      <TableCell className="p-3 text-[var(--muted-foreground)]">
+                      <TableCell className="p-3 text-muted-foreground">
                         {department.created
                           ? format(department.created, "dd.MM.yyyy HH:mm")
                           : ""}
@@ -147,10 +147,10 @@ export function DepartmentTable({
                               variant="outline"
                               size="icon"
                               onClick={() => onEdit(department)}
-                              className="h-8 w-8 p-0 border border-[var(--border)] hover:bg-[var(--primary)]/10"
+                              className="h-8 w-8 p-0 border border-border hover:bg-primary/10"
                               aria-label="Tahrirlash"
                             >
-                              <Edit className="h-4 w-4 text-[var(--primary)]" />
+                              <Edit className="h-4 w-4 text-primary" />
                             </Button>
                           </PermissionGuard>
                           <PermissionGuard permission="delete_department">
@@ -158,10 +158,10 @@ export function DepartmentTable({
                               variant="outline"
                               size="icon"
                               onClick={() => onDelete(department)}
-                              className="h-8 w-8 p-0 border border-[var(--border)] hover:bg-[var(--destructive)]/10"
+                              className="h-8 w-8 p-0 border border-border hover:bg-destructive/10"
                               aria-label="O'chirish"
                             >
-                              <Trash2 className="h-4 w-4 text-[var(--destructive)]" />
+                              <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </PermissionGuard>
                         </div>
@@ -173,7 +173,7 @@ export function DepartmentTable({
             </TableBody>
           </Table>
           {totalPages > 1 && (
-            <div className="p-4 border-t border-[var(--border)]">
+            <div className="p-4 border-t border-border">
               <Pagination
                 currentPage={currentPage}
                 totalPages={getPageCount(totalPages, 10)}

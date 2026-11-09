@@ -92,7 +92,7 @@ export function OrganizationTable({
       <div className="overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50 text-[var(--table-header-fg)] ">
+            <TableRow className="bg-muted/50 text-foreground-secondary ">
               <TableHead className="w-12 p-3 ">
                 <Checkbox
                   checked={
@@ -116,7 +116,7 @@ export function OrganizationTable({
             ) : organizations?.results.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center">
-                  <div className="text-center py-8 text-[var(--muted-foreground)]">
+                  <div className="text-center py-8 text-muted-foreground">
                     Tashkilotlar topilmadi.
                   </div>
                 </TableCell>
@@ -135,12 +135,12 @@ export function OrganizationTable({
                       }
                     />
                   </TableCell>
-                  <TableCell className="font-semibold text-[var(--primary)] p-3">
+                  <TableCell className="font-semibold text-primary p-3">
                     {index + 1}
                   </TableCell>
                   <TableCell className="p-3">
                     <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-[var(--primary)]" />
+                      <Building2 className="h-4 w-4 text-primary" />
                       <span className="font-medium">{organization.name}</span>
                     </div>
                   </TableCell>
@@ -159,7 +159,7 @@ export function OrganizationTable({
                       {getFileName(organization.attachment_file)}
                     </a>
                   </TableCell>
-                  <TableCell className="p-3 text-[var(--muted-foreground)]">
+                  <TableCell className="p-3 text-muted-foreground">
                     {format(organization.created, "dd.MM.yyyy HH:mm")}
                   </TableCell>
                   <TableCell className="p-3">
@@ -169,10 +169,10 @@ export function OrganizationTable({
                           variant="outline"
                           size="icon"
                           onClick={() => onEdit(organization)}
-                          className="h-8 w-8 p-0 border border-[var(--border)] hover:bg-[var(--primary)]/10"
+                          className="h-8 w-8 p-0 border border-border hover:bg-primary/10"
                           aria-label="Tahrirlash"
                         >
-                          <Edit className="h-4 w-4 text-[var(--primary)]" />
+                          <Edit className="h-4 w-4 text-primary" />
                         </Button>
                       </PermissionGuard>
                       <PermissionGuard permission="delete_organization">
@@ -180,10 +180,10 @@ export function OrganizationTable({
                           variant="outline"
                           size="icon"
                           onClick={() => onDelete(organization.id)}
-                          className="h-8 w-8 p-0 border border-[var(--border)] hover:bg-[var(--destructive)]/10"
+                          className="h-8 w-8 p-0 border border-border hover:bg-destructive/10"
                           aria-label="O'chirish"
                         >
-                          <Trash2 className="h-4 w-4 text-[var(--destructive)]" />
+                          <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </PermissionGuard>
                       <a
@@ -194,9 +194,9 @@ export function OrganizationTable({
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8 p-0 border border-[var(--border)] hover:bg-[var(--primary)]/10"
+                          className="h-8 w-8 p-0 border border-border hover:bg-primary/10"
                         >
-                          <Download className="h-4 w-4 text-[var(--primary)]" />
+                          <Download className="h-4 w-4 text-primary" />
                         </Button>
                       </a>
                     </div>
@@ -207,7 +207,7 @@ export function OrganizationTable({
           </TableBody>
         </Table>
         {totalPages > 1 && (
-          <div className="p-4 border-t border-[var(--border)]">
+          <div className="p-4 border-t border-border">
             <Pagination
               currentPage={currentPage}
               totalPages={getPageCount(totalPages, 10)}

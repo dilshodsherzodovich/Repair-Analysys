@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { Eye, EyeOff, User, Lock, Loader2 } from "lucide-react";
 import { useLogin } from "@/api/hooks/use-auth";
 import { LoginCredentials } from "@/api/types/auth";
+import { Alert, AlertDescription } from "@/ui/alert";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -67,10 +68,10 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center pb-6">
-        <CardTitle className="text-2xl font-semibold text-[#1f2937] mb-2">
+        <CardTitle className="text-2xl font-semibold text-foreground mb-2">
           Ta'mir tahlili tizimi
         </CardTitle>
-        <p className="text-[#6b7280] text-sm">
+        <p className="text-muted-foreground text-sm">
           Ta'mir tahlili tizimiga kirish uchun ma'lumotlaringizni kiriting
         </p>
       </CardHeader>
@@ -79,17 +80,17 @@ export function LoginForm() {
           <div className="space-y-2">
             <Label
               htmlFor="username"
-              className="text-sm font-medium text-[#374151]"
+              className="text-sm font-medium text-foreground-secondary"
             >
               Foydalanuvchi nomi
             </Label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#6b7280] w-4 h-4" />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 id="username"
                 type="text"
                 placeholder="Foydalanuvchi nomini kiriting"
-                className="pl-10 h-12 bg-[#f9fafb] border-[#e5e7eb] focus:border-[#4978ce] focus:ring-[#4978ce]"
+                className="pl-10 h-12 bg-surface-muted border-border focus:border-primary focus:ring-primary"
                 value={formData.username}
                 onChange={(e) => handleInputChange("username", e.target.value)}
                 disabled={loginMutation.isPending}
@@ -100,17 +101,17 @@ export function LoginForm() {
           <div className="space-y-2">
             <Label
               htmlFor="password"
-              className="text-sm font-medium text-[#374151]"
+              className="text-sm font-medium text-foreground-secondary"
             >
               Parol
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#6b7280] w-4 h-4" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Parolni kiriting"
-                className="pl-10 h-12 bg-[#f9fafb] border-[#e5e7eb] focus:border-[#4978ce] focus:ring-[#4978ce]"
+                className="pl-10 h-12 bg-surface-muted border-border focus:border-primary focus:ring-primary"
                 value={formData.password}
                 onChange={(e) => handleInputChange("password", e.target.value)}
                 disabled={loginMutation.isPending}
@@ -133,9 +134,9 @@ export function LoginForm() {
           </div>
 
           {loginMutation.error && (
-            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
+            <Alert variant="destructive" className="rounded-md"><AlertDescription>
               {handleError(loginMutation.error)}
-            </div>
+            </AlertDescription></Alert>
           )}
 
           <Button

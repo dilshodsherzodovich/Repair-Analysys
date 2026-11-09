@@ -189,10 +189,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
 
   if (!isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Yuklanmoqda...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-foreground-secondary">Yuklanmoqda...</p>
         </div>
       </div>
     );
@@ -200,10 +200,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
 
   if (isUserLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Yuklanmoqda...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-foreground-secondary">Yuklanmoqda...</p>
         </div>
       </div>
     );
@@ -211,10 +211,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
 
   if (!isPublicRoute && !currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-foreground-secondary">
             Avtorizatsiya sahifasiga yo'naltirilmoqda...
           </p>
         </div>
@@ -229,10 +229,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
       !isEchAllowedRoute(pathname)
     ) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-surface-muted">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Yo'naltirilmoqda...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-foreground-secondary">Yo'naltirilmoqda...</p>
           </div>
         </div>
       );
@@ -246,10 +246,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     isEchAccount(currentUser)
   ) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Yo'naltirilmoqda...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-foreground-secondary">Yo'naltirilmoqda...</p>
         </div>
       </div>
     );
@@ -257,10 +257,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
 
   if (isLoginPage && currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Bosh sahifaga yo'naltirilmoqda...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-success mx-auto mb-4"></div>
+          <p className="text-foreground-secondary">Bosh sahifaga yo'naltirilmoqda...</p>
         </div>
       </div>
     );
@@ -271,10 +271,10 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     const defaultRoute = getDefaultRouteForRole(currentUser);
     if (defaultRoute !== "/") {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-surface-muted">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Yo'naltirilmoqda...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-foreground-secondary">Yo'naltirilmoqda...</p>
           </div>
         </div>
       );

@@ -224,7 +224,7 @@ export function UserModal({
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Familiyasi *
               </Label>
               <Input
@@ -232,14 +232,14 @@ export function UserModal({
                 onChange={(e) =>
                   setFormData({ ...formData, lastName: e.target.value })
                 }
-                className={errors.lastName ? "border-red-500" : ""}
+                className={errors.lastName ? "border-destructive" : ""}
               />
               {errors.lastName && (
-                <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
+                <p className="text-destructive text-xs mt-1">{errors.lastName}</p>
               )}
             </div>
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Ismi *
               </Label>
               <Input
@@ -247,17 +247,17 @@ export function UserModal({
                 onChange={(e) =>
                   setFormData({ ...formData, firstName: e.target.value })
                 }
-                className={errors.firstName ? "border-red-500" : ""}
+                className={errors.firstName ? "border-destructive" : ""}
               />
               {errors.firstName && (
-                <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
+                <p className="text-destructive text-xs mt-1">{errors.firstName}</p>
               )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Tashkilot *
               </Label>
               <Select
@@ -268,12 +268,12 @@ export function UserModal({
                 }}
               >
                 <SelectTrigger
-                  className={errors.organization ? "border-red-500" : ""}
+                  className={errors.organization ? "border-destructive" : ""}
                 >
                   <SelectValue placeholder="Tashkilot tanlang" />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="p-2 border-b border-[var(--border)]">
+                  <div className="p-2 border-b border-border">
                     <input
                       type="text"
                       placeholder="Qidirish..."
@@ -281,7 +281,7 @@ export function UserModal({
                       onKeyDown={(e) => e.stopPropagation()}
                       onKeyUp={(e) => e.stopPropagation()}
                       onChange={(e) => setOrgSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div className="max-h-60 overflow-y-auto">
@@ -292,7 +292,7 @@ export function UserModal({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
                         Tashkilot topilmadi
                       </div>
                     )}
@@ -300,14 +300,14 @@ export function UserModal({
                 </SelectContent>
               </Select>
               {errors.organization && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-destructive text-xs mt-1">
                   {errors.organization}
                 </p>
               )}
             </div>
 
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Quyi tashkilot *
               </Label>
               <Select
@@ -322,7 +322,7 @@ export function UserModal({
                 disabled={!formData.organization}
               >
                 <SelectTrigger
-                  className={errors.department ? "border-red-500" : ""}
+                  className={errors.department ? "border-destructive" : ""}
                 >
                   <SelectValue
                     placeholder={
@@ -335,7 +335,7 @@ export function UserModal({
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="p-2 border-b border-[var(--border)]">
+                  <div className="p-2 border-b border-border">
                     <input
                       type="text"
                       placeholder="Qidirish..."
@@ -343,7 +343,7 @@ export function UserModal({
                       onKeyDown={(e) => e.stopPropagation()}
                       onKeyUp={(e) => e.stopPropagation()}
                       onChange={(e) => setDeptSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                       disabled={!formData.organization}
                     />
                   </div>
@@ -355,7 +355,7 @@ export function UserModal({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
                         {!formData.organization
                           ? "Avval tashkilot tanlang"
                           : "Quyi tashkilot topilmadi"}
@@ -365,14 +365,14 @@ export function UserModal({
                 </SelectContent>
               </Select>
               {errors.department && (
-                <p className="text-red-500 text-xs mt-1">{errors.department}</p>
+                <p className="text-destructive text-xs mt-1">{errors.department}</p>
               )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Foydalanuvchi nomi *
               </Label>
               <Input
@@ -380,16 +380,16 @@ export function UserModal({
                 onChange={(e) =>
                   setFormData({ ...formData, username: e.target.value })
                 }
-                className={errors.login ? "border-red-500" : ""}
+                className={errors.login ? "border-destructive" : ""}
                 autoComplete="off"
               />
               {errors.login && (
-                <p className="text-red-500 text-xs mt-1">{errors.login}</p>
+                <p className="text-destructive text-xs mt-1">{errors.login}</p>
               )}
             </div>
 
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Parol *
               </Label>
               <Input
@@ -398,16 +398,16 @@ export function UserModal({
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className={errors.password ? "border-red-500" : ""}
+                className={errors.password ? "border-destructive" : ""}
                 autoComplete="off"
               />
               {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                <p className="text-destructive text-xs mt-1">{errors.password}</p>
               )}
             </div>
 
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Rol *
               </Label>
               <Select
@@ -416,7 +416,7 @@ export function UserModal({
                   setFormData({ ...formData, role: value })
                 }
               >
-                <SelectTrigger className={errors.role ? "border-red-500" : ""}>
+                <SelectTrigger className={errors.role ? "border-destructive" : ""}>
                   <SelectValue placeholder="Rol tanlang" />
                 </SelectTrigger>
                 <SelectContent>
@@ -428,13 +428,13 @@ export function UserModal({
                 </SelectContent>
               </Select>
               {errors.role && (
-                <p className="text-red-500 text-xs mt-1">{errors.role}</p>
+                <p className="text-destructive text-xs mt-1">{errors.role}</p>
               )}
             </div>
           </div>
 
           <div>
-            <Label className="text-sm text-[var(--muted-foreground)]">
+            <Label className="text-sm text-muted-foreground">
               Holati
             </Label>
             <div className="flex items-center gap-6 mt-2">
@@ -447,9 +447,9 @@ export function UserModal({
                   onChange={(e) =>
                     setFormData({ ...formData, status: e.target.value })
                   }
-                  className="w-4 h-4 text-[var(--primary)] border-gray-300 focus:ring-[var(--primary)]"
+                  className="w-4 h-4 text-primary border-border-strong focus:ring-primary"
                 />
-                <span className="text-[var(--foreground)] text-sm">Faol</span>
+                <span className="text-foreground text-sm">Faol</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -460,9 +460,9 @@ export function UserModal({
                   onChange={(e) =>
                     setFormData({ ...formData, status: e.target.value })
                   }
-                  className="w-4 h-4 text-[var(--primary)] border-gray-300 focus:ring-[var(--primary)]"
+                  className="w-4 h-4 text-primary border-border-strong focus:ring-primary"
                 />
-                <span className="text-[var(--foreground)] text-sm">Nofaol</span>
+                <span className="text-foreground text-sm">Nofaol</span>
               </label>
             </div>
           </div>

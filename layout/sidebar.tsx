@@ -547,7 +547,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
         {/* Admins switch organization here; everyone else sees their own, read-only */}
         {!isCollapsed && pickerOrgs.length > 0 && (
           <div className="mb-4 flex-shrink-0 space-y-1.5 border-b border-sidebar-border">
-            <div className="px-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            <div className="px-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
               {t("organization_label")}
             </div>
             <Select

@@ -183,7 +183,7 @@ export default function LogsTable({
               ) : logs?.results.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
-                    <div className="text-sm whitespace-nowrap text-[var(--muted-foreground)]">
+                    <div className="text-sm whitespace-nowrap text-muted-foreground">
                       Loglar topilmadi.
                     </div>
                   </TableCell>

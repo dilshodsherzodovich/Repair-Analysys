@@ -91,7 +91,7 @@ export function DepartmentModal({
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-1 gap-2">
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Quyi tashkilot nomi
               </Label>
               <Input
@@ -104,7 +104,7 @@ export function DepartmentModal({
               />
             </div>
             <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
+              <Label className="text-sm text-muted-foreground">
                 Quyi tashkilot tegishli tashkilot
               </Label>
               <Select
@@ -119,7 +119,7 @@ export function DepartmentModal({
                   <SelectValue placeholder="Tashkilot tanlang" />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="p-2 border-b border-[var(--border)]">
+                  <div className="p-2 border-b border-border">
                     <input
                       type="text"
                       placeholder="Qidirish..."
@@ -127,7 +127,7 @@ export function DepartmentModal({
                       onKeyDown={(e) => e.stopPropagation()}
                       onKeyUp={(e) => e.stopPropagation()}
                       onChange={(e) => setOrgSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div className="max-h-60 overflow-y-auto">
@@ -149,7 +149,7 @@ export function DepartmentModal({
                         .toLowerCase()
                         .includes(orgSearchTerm.toLowerCase())
                     )?.length === 0 && (
-                      <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
                         Tashkilot topilmadi
                       </div>
                     )}
@@ -164,7 +164,7 @@ export function DepartmentModal({
             </Button>
             <Button
               type="submit"
-              className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white px-8"
+              className="px-8"
               disabled={isDoingAction}
             >
               {isDoingAction ? actionText : submitText}

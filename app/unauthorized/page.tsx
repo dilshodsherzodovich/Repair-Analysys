@@ -11,18 +11,18 @@ export default function UnauthorizedPage() {
   const t = useTranslations("UnauthorizedPage");
 
   return (
-    <div className="min-h-[calc(100vh-100px)] flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-[calc(100vh-100px)] flex items-center justify-center bg-surface-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-            <ShieldX className="w-8 h-8 text-red-600" />
+          <div className="mx-auto mb-4 w-16 h-16 bg-destructive-subtle rounded-full flex items-center justify-center">
+            <ShieldX className="w-8 h-8 text-destructive" />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">
+          <CardTitle className="text-2xl font-bold text-foreground">
             {t("title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">
+          <p className="text-foreground-secondary">
             {t("description")}
           </p>
           <div className="space-y-2 flex flex-col gap-1">

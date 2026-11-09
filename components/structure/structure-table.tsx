@@ -112,7 +112,7 @@ export function StructureTable({ bulletins }: StructureTableProps) {
       <div className="overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50 text-[var(--table-header-fg)]">
+            <TableRow className="bg-muted/50 text-foreground-secondary">
               <TableHead className="w-12 p-3">
                 <Checkbox
                   checked={
@@ -147,7 +147,7 @@ export function StructureTable({ bulletins }: StructureTableProps) {
                     }
                   />
                 </TableCell>
-                <TableCell className="font-semibold text-[var(--primary)] p-3">
+                <TableCell className="font-semibold text-primary p-3">
                   {index + 1}
                 </TableCell>
                 <TableCell className="font-medium p-3 max-w-xs">
@@ -158,7 +158,7 @@ export function StructureTable({ bulletins }: StructureTableProps) {
                 <TableCell className="p-3">
                   <Badge
                     variant="secondary"
-                    className="bg-[var(--muted)] text-[var(--foreground)] border-none"
+                    className="bg-muted text-foreground border-none"
                   >
                     {bulletin.responsibleDepartment}
                   </Badge>
@@ -169,7 +169,7 @@ export function StructureTable({ bulletins }: StructureTableProps) {
                       <Badge
                         key={orgId}
                         variant="outline"
-                        className="text-xs px-2 py-1 border-[var(--border)]"
+                        className="text-xs px-2 py-1 border-border"
                       >
                         {organizationLabels[orgId] || orgId}
                       </Badge>
@@ -182,7 +182,7 @@ export function StructureTable({ bulletins }: StructureTableProps) {
                       <Badge
                         key={personId}
                         variant="outline"
-                        className="text-xs px-2 py-1 border-[var(--border)] bg-[var(--primary)]/10 text-[var(--primary)]"
+                        className="text-xs px-2 py-1 border-border bg-primary/10 text-primary"
                       >
                         {personLabels[personId] || personId}
                       </Badge>
@@ -192,12 +192,12 @@ export function StructureTable({ bulletins }: StructureTableProps) {
                 <TableCell className="p-3">
                   <Badge
                     variant="secondary"
-                    className="bg-[var(--muted)]/50 text-[var(--foreground)] border-none"
+                    className="bg-muted/50 text-foreground border-none"
                   >
                     {bulletin.periodType}
                   </Badge>
                 </TableCell>
-                <TableCell className="p-3 text-[var(--muted-foreground)]">
+                <TableCell className="p-3 text-muted-foreground">
                   {bulletin.createdDate}
                 </TableCell>
                 <TableCell className="p-3">
@@ -207,10 +207,10 @@ export function StructureTable({ bulletins }: StructureTableProps) {
                     }
                     className={
                       bulletin.status === "active"
-                        ? "bg-green-100 text-green-800 border-none"
+                        ? "bg-success-subtle text-success border-none"
                         : bulletin.status === "completed"
-                        ? "bg-blue-100 text-blue-800 border-none"
-                        : "bg-gray-100 text-gray-800 border-none"
+                        ? "bg-primary-subtle text-primary-hover border-none"
+                        : "bg-muted text-foreground border-none"
                     }
                   >
                     {bulletin.status === "active"
@@ -223,10 +223,10 @@ export function StructureTable({ bulletins }: StructureTableProps) {
                 <TableCell className="p-3">
                   <Link
                     href={`/bulletins/${bulletin.id}/structure`}
-                    className="inline-flex items-center justify-center h-8 w-8 p-0 border border-[var(--border)] rounded-md hover:bg-[var(--primary)]/10 transition-colors"
+                    className="inline-flex items-center justify-center h-8 w-8 p-0 border border-border rounded-md hover:bg-primary/10 transition-colors"
                     aria-label="Struktura"
                   >
-                    <BarChart3 className="h-4 w-4 text-[var(--primary)]" />
+                    <BarChart3 className="h-4 w-4 text-primary" />
                   </Link>
                 </TableCell>
               </TableRow>
@@ -236,7 +236,7 @@ export function StructureTable({ bulletins }: StructureTableProps) {
       </div>
 
       {filteredBulletins.length === 0 && (
-        <div className="text-center py-8 text-[var(--muted-foreground)]">
+        <div className="text-center py-8 text-muted-foreground">
           Byulletenlar topilmadi.
         </div>
       )}

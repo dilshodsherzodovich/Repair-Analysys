@@ -81,7 +81,7 @@ export function OrganizationModal({
           <div className="grid grid-cols-1 gap-4">
             <div>
               <Label
-                className="text-sm text-[var(--muted-foreground)]"
+                className="text-sm text-muted-foreground"
                 aria-required
                 htmlFor="name"
               >
@@ -99,7 +99,7 @@ export function OrganizationModal({
             </div>
             <div>
               <Label
-                className="text-sm text-[var(--muted-foreground)]"
+                className="text-sm text-muted-foreground"
                 aria-required
                 htmlFor="legal_basis"
               >
@@ -120,7 +120,7 @@ export function OrganizationModal({
             </div>
             <div>
               <Label
-                className="text-sm text-[var(--muted-foreground)]"
+                className="text-sm text-muted-foreground"
                 aria-required
                 htmlFor="attachment_file"
               >

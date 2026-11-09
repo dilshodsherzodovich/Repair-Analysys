@@ -43,13 +43,13 @@ export function DepartmentsFilters({
 
       {selectedCount > 0 && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[#6b7280]">
+          <span className="text-sm text-muted-foreground">
             {selectedCount} ta tanlangan
           </span>
           <Button
             variant="outline"
             size="sm"
-            className="text-[#dc2626] border-[#dc2626] hover:bg-[#dc2626] hover:text-white bg-transparent"
+            className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground bg-transparent"
             onClick={onBulkDelete}
           >
             <Trash2 className="w-4 h-4 mr-1" />
@@ -85,7 +85,7 @@ export function DepartmentsFilters({
         <PermissionGuard permission="create_department">
           <Button
             onClick={onAdd}
-            className="h-10 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white whitespace-nowrap"
+            className="h-10 whitespace-nowrap"
           >
             <span className="flex items-center">
               <svg
