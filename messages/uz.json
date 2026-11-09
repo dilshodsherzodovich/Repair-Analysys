@@ -1243,6 +1243,7 @@
     "save": "Saqlash",
     "cancel": "Bekor qilish",
     "success_updated": "Muvaffaqiyatli saqlandi",
+    "just_saved": "Saqlandi",
     "error_save": "Saqlashda xatolik yuz berdi",
     "group_kp_count": "{count} ta KP",
     "group_locomotives_count": "{count} ta lokomotiv",
@@ -1252,6 +1253,17 @@
       "locomotive": "Lokomotiv",
       "section": "Sektsiya",
       "actions": "Amallar"
+    },
+    "excel": {
+      "table_sheet": "Bandajlar",
+      "groups_sheet": "Guruhlar",
+      "date": "Sana",
+      "group": "Guruh",
+      "range": "Oraliq",
+      "kp_count": "KP soni",
+      "locomotive_count": "Lokomotivlar soni",
+      "total": "Jami",
+      "error": "Excel faylini yaratishda xatolik yuz berdi"
     }
   },
   "CrankshaftPage": {

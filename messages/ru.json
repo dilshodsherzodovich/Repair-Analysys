@@ -1243,6 +1243,7 @@
     "save": "Сохранить",
     "cancel": "Отмена",
     "success_updated": "Успешно сохранено",
+    "just_saved": "Сохранено",
     "error_save": "Ошибка при сохранении",
     "group_kp_count": "{count} КП",
     "group_locomotives_count": "Локомотивов: {count}",
@@ -1252,6 +1253,17 @@
       "locomotive": "Локомотив",
       "section": "Секция",
       "actions": "Действия"
+    },
+    "excel": {
+      "table_sheet": "Бандажи",
+      "groups_sheet": "Группы",
+      "date": "Дата",
+      "group": "Группа",
+      "range": "Диапазон",
+      "kp_count": "Кол-во КП",
+      "locomotive_count": "Кол-во локомотивов",
+      "total": "Итого",
+      "error": "Ошибка при создании Excel-файла"
     }
   },
   "CrankshaftPage": {

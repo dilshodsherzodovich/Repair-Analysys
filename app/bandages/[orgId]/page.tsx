@@ -28,6 +28,8 @@ import {
 } from "./components/bandages-table";
 import { BandageGroupCards } from "./components/bandage-group-cards";
 import { bandageGroupKey } from "./bandage-groups";
+import { exportBandagesExcel } from "@/utils/bandages-excel-export";
+import { toast } from "@/ui/use-toast";
 
 function BandagesPageContent({
   user,
@@ -154,6 +156,24 @@ function BandagesPageContent({
     [groups, activeGroup],
   );
 
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Exports the table as shown: current filters and the picked group
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      await exportBandagesExcel(
+        { visibleGroups, allGroups: groups, componentNames },
+        { t, tModal, activeGroup },
+      );
+    } catch (error) {
+      console.error("Error exporting bandages:", error);
+      toast({ variant: "destructive", title: t("excel.error") });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [visibleGroups, groups, componentNames, t, tModal, activeGroup]);
+
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
       {
@@ -184,6 +204,8 @@ function BandagesPageContent({
         filters={pageFilters}
         hasSearch={true}
         searchPlaceholder={t("search_placeholder")}
+        onExport={isLoading ? undefined : handleExport}
+        exportLoading={isExporting}
       />
 
       {isError && (

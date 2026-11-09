@@ -12,7 +12,8 @@ import {
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { toast } from "@/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { useUpdateBandage } from "@/api/hooks/use-bandages";
+import { Check } from "lucide-react";
+import { useBulkUpdateBandages } from "@/api/hooks/use-bandages";
 import { Bandage, UpdateBandagePayload } from "@/api/types/bandage";
 import {
   CellInput,
@@ -22,6 +23,9 @@ import {
 import { bandageGroupKey } from "../bandage-groups";
 
 type Side = "left" | "right";
+
+/** How long the cells changed by a save stay highlighted. */
+const SAVED_HIGHLIGHT_MS = 5000;
 const SIDES: Side[] = ["left", "right"];
 
 /** Edited input text per bandage; a side missing here shows the loaded value. */
@@ -99,11 +103,24 @@ const LocomotiveRows = memo(function LocomotiveRows({
 }) {
   const t = useTranslations("BandagesPage");
   const tModal = useTranslations("BandagesModal");
-  const { mutateAsync: updateBandage } = useUpdateBandage();
+  const { mutateAsync: bulkUpdateBandages } = useBulkUpdateBandages();
 
   const [drafts, setDrafts] = useState<Drafts>({});
   const [errors, setErrors] = useState<RowErrors>({});
   const [isSaving, setIsSaving] = useState(false);
+  /** Cells ("id-side") changed by the last save, highlighted for a while. */
+  const [savedCells, setSavedCells] = useState<Set<string> | null>(null);
+
+  useEffect(() => {
+    if (!savedCells) return;
+    const timer = setTimeout(() => setSavedCells(null), SAVED_HIGHLIGHT_MS);
+    return () => clearTimeout(timer);
+  }, [savedCells]);
+
+  // Editing again ends the highlight
+  useEffect(() => {
+    if (isEditing) setSavedCells(null);
+  }, [isEditing]);
 
   // Leaving edit mode (cancel, save, or editing another locomotive) drops edits
   useEffect(() => {
@@ -162,58 +179,68 @@ const LocomotiveRows = memo(function LocomotiveRows({
       return;
     }
 
+    // One request for the whole locomotive; all-or-nothing on the server
     setIsSaving(true);
-    const results = await Promise.allSettled(
-      changes.map(({ row, payload }) => updateBandage({ id: row.id, payload })),
-    );
-    setIsSaving(false);
-
-    const nextErrors: RowErrors = {};
-    const savedIds: number[] = [];
-    results.forEach((result, index) => {
-      const { row } = changes[index];
-      if (result.status === "fulfilled") {
-        savedIds.push(row.id);
-        return;
-      }
-      const body = (result.reason as any)?.response?.data;
-      nextErrors[row.id] = {
-        left: firstMessage(body?.left),
-        right: firstMessage(body?.right),
-        detail:
-          body?.left || body?.right
-            ? undefined
-            : firstMessage(body?.detail) || t("error_save"),
-      };
-    });
-
-    if (!Object.keys(nextErrors).length) {
+    try {
+      await bulkUpdateBandages(
+        changes.map(({ row, payload }) => ({ id: row.id, ...payload })),
+      );
+      setIsSaving(false);
+      setSavedCells(
+        new Set(
+          changes.flatMap(({ row, payload }) =>
+            SIDES.filter((side) => side in payload).map(
+              (side) => `${row.id}-${side}`,
+            ),
+          ),
+        ),
+      );
       onDone();
       toast({ title: t("success_updated") });
-      return;
+    } catch (error) {
+      setIsSaving(false);
+      // Nothing was saved, so every edit stays. Per-item errors come back as
+      // a list in request order; anything else is one message for the save.
+      const body = (error as any)?.response?.data;
+      const nextErrors: RowErrors = {};
+      if (Array.isArray(body)) {
+        body.forEach((itemErrors, index) => {
+          const change = changes[index];
+          if (!change || !itemErrors || typeof itemErrors !== "object") return;
+          const left = firstMessage(itemErrors.left);
+          const right = firstMessage(itemErrors.right);
+          const detail =
+            left || right
+              ? undefined
+              : firstMessage(itemErrors.detail ?? itemErrors.id);
+          if (left || right || detail) {
+            nextErrors[change.row.id] = { left, right, detail };
+          }
+        });
+      }
+      setErrors(nextErrors);
+      const firstError = Object.values(nextErrors)[0];
+      toast({
+        variant: "destructive",
+        title: t("error_save"),
+        description:
+          firstError?.left ||
+          firstError?.right ||
+          firstError?.detail ||
+          (!Array.isArray(body) ? firstMessage(body?.detail) : undefined),
+      });
     }
-
-    // Saved cells fall back to the refetched values; failed ones keep their edits
-    setDrafts((prev) => {
-      const next = { ...prev };
-      savedIds.forEach((id) => delete next[id]);
-      return next;
-    });
-    setErrors(nextErrors);
-    const firstError = Object.values(nextErrors)[0];
-    toast({
-      variant: "destructive",
-      title: t("error_save"),
-      description: firstError?.left || firstError?.right || firstError?.detail,
-    });
   };
 
   const span = group.sections.length;
   let isFirstInput = true;
+  const justSaved = !!savedCells;
   // Pinned cells need a solid background or scrolled cells show through
   const stickyBg = isEditing
     ? "bg-[#F0F7FF]"
-    : "bg-white group-hover:bg-[#F8FAFC]";
+    : justSaved
+      ? "bg-[#F0FDF4]"
+      : "bg-white group-hover:bg-[#F8FAFC]";
 
   return (
     <>
@@ -221,8 +248,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={section.key}
           className={cn(
-            "group hover:bg-[#F8FAFC]",
+            "group hover:bg-[#F8FAFC] transition-colors duration-700",
             isEditing && "bg-[#F0F7FF] hover:bg-[#F0F7FF]",
+            justSaved && "bg-[#F0FDF4] hover:bg-[#F0FDF4]",
           )}
         >
           {sectionIndex === 0 && (
@@ -245,9 +273,16 @@ const LocomotiveRows = memo(function LocomotiveRows({
                   stickyLocomotive,
                   stickyBg,
                   "z-[5] text-[#0F172B] font-medium align-top",
+                  justSaved && "border-l-2 border-l-green-500",
                 )}
               >
                 {group.name}-{group.modelName}
+                {justSaved && (
+                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                    <Check className="h-3 w-3" />
+                    {t("just_saved")}
+                  </span>
+                )}
               </TableCell>
             </>
           )}
@@ -269,18 +304,22 @@ const LocomotiveRows = memo(function LocomotiveRows({
               if (editable) isFirstInput = false;
               const inActiveGroup =
                 !!activeGroup && !!bandage && bandageGroupKey(bandage) === activeGroup;
+              const wasSaved =
+                !!bandage && !!savedCells?.has(`${bandage.id}-${side}`);
               return (
                 <TableCell
                   key={`${name}-${side}`}
                   className={cn(
                     cellClass,
-                    "text-center text-[#0F172B]",
+                    "text-center text-[#0F172B] transition-colors duration-700",
                     editable && "px-1 py-1.5",
                     !editable &&
                       activeGroup &&
                       (inActiveGroup
                         ? "bg-[#EFF6FF] font-semibold text-blue-700"
                         : "text-[#CBD5E1]"),
+                    // Changed values win over the group highlight while it lasts
+                    wasSaved && "bg-green-100 font-semibold text-green-800",
                   )}
                 >
                   {editable ? (

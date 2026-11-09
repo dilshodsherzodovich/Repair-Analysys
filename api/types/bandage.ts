@@ -17,6 +17,17 @@ export interface UpdateBandagePayload {
   right?: number | null;
 }
 
+/** One item of a bulk update: the bandage id plus the sides to change. */
+export interface BulkUpdateBandageItem extends UpdateBandagePayload {
+  id: number;
+}
+
+export interface BulkUpdateBandagesResponse {
+  updated_count: number;
+  /** Updated records in request order. */
+  items: Bandage[];
+}
+
 export interface BandageParams {
   locomotive?: number;
   section?: number;
