@@ -82,14 +82,14 @@ export function UploadProtocolModal({
             />
             {!file && entry?.report && (
               <div className="mt-2">
-                <p className="text-sm text-gray-600 mb-1">
+                <p className="text-sm text-foreground-secondary mb-1">
                   {t("current_report")}
                 </p>
                 <a
                   href={entry.report}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                  className="text-sm text-primary hover:underline flex items-center gap-1"
                 >
                   <FileText className="h-4 w-4" />
                   {entry.report_filename || entry.protocol_number || "—"}

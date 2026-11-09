@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
+import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { format, subDays, startOfMonth, endOfDay } from "date-fns";
 import { Download } from "lucide-react";
 import { authService } from "@/api/services/auth.service";
@@ -198,25 +198,17 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
   return (
     <div className="px-6 py-4">
       <div className="mb-6">
-        <Tabs value={activeServiceType} onValueChange={handleServiceTypeChange}>
-          <TabsList className="bg-white border-1 border-gray-200 p-1 gap-2 rounded-md inline-flex">
-            <TabsTrigger
-              value="passenger"
-              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
-            >
-              {t("tab_passenger")}
-            </TabsTrigger>
-            <TabsTrigger
-              value="freight"
-              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
-            >
-              {t("tab_freight")}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <SegmentedTabs
+          value={activeServiceType}
+          onValueChange={handleServiceTypeChange}
+          options={[
+            { value: "passenger", label: t("tab_passenger") },
+            { value: "freight", label: t("tab_freight") },
+          ]}
+        />
       </div>
 
-      <div className="bg-white border rounded-lg p-4 mb-4 flex justify-between items-center">
+      <div className="bg-background border rounded-lg p-4 mb-4 flex justify-between items-center">
         <div className="flex flex-wrap items-end gap-4">
           <div className="min-w-[200px] flex-shrink-0">
             <DatePicker
@@ -248,7 +240,7 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
                 searchPlaceholder={t("organizations_search")}
                 emptyMessage={t("organizations_empty")}
                 disabled={isLoadingOrganizations}
-                className="border-[#d1d5db] hover:border-[#d1d5db] focus:border-[#d1d5db] focus:ring-0 py-0 min-h-auto"
+                className="border-border-strong hover:border-border-strong focus:border-border-strong focus:ring-0 py-0 min-h-auto"
               />
             </div>
           )}
@@ -297,13 +289,8 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
 
            {/* Export Button */}
            {onExport && (
-            <Button
-              variant="default"
-              size="md"
-              onClick={onExport}
-              className="rounded-md bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
-            >
-              <Download className="w-4 h-4" />
+            <Button size="md" onClick={onExport}>
+              <Download />
               {t("export_button")}
             </Button>
           )}

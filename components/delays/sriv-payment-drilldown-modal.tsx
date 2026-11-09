@@ -57,18 +57,18 @@ export function SrivPaymentDrilldownModal({
             {t("error")}
           </div>
         ) : results.length === 0 ? (
-          <div className="py-16 text-center text-sm text-slate-400">
+          <div className="py-16 text-center text-sm text-foreground-subtle">
             {t("empty")}
           </div>
         ) : (
           <>
-            <p className="mb-3 text-xs text-slate-500">
+            <p className="mb-3 text-xs text-muted-foreground">
               {t("count_n", { n: data?.count ?? results.length })}
             </p>
-            <div className="max-h-[60vh] overflow-auto rounded-lg border border-slate-200">
+            <div className="max-h-[60vh] overflow-auto rounded-lg border border-border">
               <table className="w-full min-w-[720px] border-collapse text-sm">
-                <thead className="sticky top-0 z-10 bg-slate-50">
-                  <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
+                <thead className="sticky top-0 z-10 bg-surface-muted">
+                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <th className="px-3 py-2.5 font-semibold">{t("dd_date")}</th>
                     <th className="px-3 py-2.5 font-semibold">{t("dd_train")}</th>
                     <th className="px-3 py-2.5 font-semibold">
@@ -91,32 +91,32 @@ export function SrivPaymentDrilldownModal({
                     return (
                       <tr
                         key={row.id}
-                        className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60"
+                        className="border-b border-muted last:border-0 hover:bg-surface-muted/60"
                       >
-                        <td className="whitespace-nowrap px-3 py-2.5 text-slate-700">
+                        <td className="whitespace-nowrap px-3 py-2.5 text-foreground-secondary">
                           {fmtDate(row.incident_date)}
                         </td>
-                        <td className="px-3 py-2.5 font-medium text-slate-800">
+                        <td className="px-3 py-2.5 font-medium text-foreground">
                           {row.train_number || "-"}
                         </td>
-                        <td className="px-3 py-2.5 text-slate-600">
+                        <td className="px-3 py-2.5 text-foreground-secondary">
                           {row.station || "-"}
                         </td>
-                        <td className="px-3 py-2.5 text-slate-600">
+                        <td className="px-3 py-2.5 text-foreground-secondary">
                           {row.responsible_org_name ||
                             row.responsible_org_detail?.name ||
                             "-"}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-semibold tabular-nums text-slate-900">
+                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-semibold tabular-nums text-foreground">
                           {fmtSum(row.damage_amount || 0)}
                         </td>
-                        <td className="px-3 py-2.5 text-slate-600">
+                        <td className="px-3 py-2.5 text-foreground-secondary">
                           {culprits.length > 0 ? (
                             <span className="tabular-nums">
                               {recovered}/{culprits.length}
                             </span>
                           ) : (
-                            <span className="text-slate-400">0</span>
+                            <span className="text-foreground-subtle">0</span>
                           )}
                         </td>
                         <td className="px-3 py-2.5">

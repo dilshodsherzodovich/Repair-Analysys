@@ -76,7 +76,7 @@ export function RecoveryInfoModal({
         <div className="rounded-xl border bg-muted/30 p-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-lg bg-background p-3 shadow-sm">
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              <div className="text-2xs uppercase tracking-wide text-muted-foreground">
                 {t("to_recover")}
               </div>
               <div className="mt-0.5 text-lg font-semibold tabular-nums">
@@ -84,7 +84,7 @@ export function RecoveryInfoModal({
               </div>
             </div>
             <div className="rounded-lg bg-background p-3 shadow-sm">
-              <div className="flex items-center gap-1 text-[11px] uppercase tracking-wide text-success">
+              <div className="flex items-center gap-1 text-2xs uppercase tracking-wide text-success">
                 <Wallet className="h-3.5 w-3.5" />
                 {t("recovered")}
               </div>
@@ -208,7 +208,7 @@ function StatusPill({
     <div className="flex flex-col gap-0.5">
       <span
         className={cn(
-          "inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+          "inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium",
           active
             ? "bg-success/10 text-success"
             : "bg-muted text-muted-foreground"
@@ -222,7 +222,7 @@ function StatusPill({
         {active ? yes : no}
       </span>
       {by && (
-        <span className="pl-1 text-[10px] text-muted-foreground">{by}</span>
+        <span className="pl-1 text-2xs text-muted-foreground">{by}</span>
       )}
     </div>
   );

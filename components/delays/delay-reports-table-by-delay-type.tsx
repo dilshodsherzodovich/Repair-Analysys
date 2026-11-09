@@ -44,65 +44,65 @@ export function DelayReportsTableByDelayType({
       )}
 
       {isLoading && (
-        <div className="bg-white border rounded-lg overflow-hidden">
+        <div className="bg-background border rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               {/* Table Header */}
               <thead>
                 {/* Main Header Row */}
-                <tr className="border-b-1 border-gray-300">
+                <tr className="border-b-1 border-border-strong">
                   <th
                     rowSpan={2}
-                    className="border border-gray-300 px-4 py-3 text-left font-semibold text-sm bg-gray-100"
+                    className="border border-border-strong px-4 py-3 text-left font-semibold text-sm bg-muted"
                   >
                     Депо
                   </th>
                   <th
                     colSpan={3}
-                    className="border border-gray-300 px-4 py-3 text-center font-semibold text-sm bg-gray-100"
+                    className="border border-border-strong px-4 py-3 text-center font-semibold text-sm bg-muted"
                   >
                     По отправлению
                   </th>
                   <th
                     colSpan={3}
-                    className="border border-gray-300 px-4 py-3 text-center font-semibold text-sm bg-gray-100"
+                    className="border border-border-strong px-4 py-3 text-center font-semibold text-sm bg-muted"
                   >
                     По проследованию
                   </th>
                   <th
                     colSpan={3}
-                    className="border border-gray-300 px-4 py-3 text-center font-semibold text-sm bg-gray-200"
+                    className="border border-border-strong px-4 py-3 text-center font-semibold text-sm bg-border"
                   >
                     Всего
                   </th>
                 </tr>
                 {/* Sub-header Row */}
-                <tr className="bg-gray-50 border-b border-gray-300">
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                <tr className="bg-surface-muted border-b border-border-strong">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Количество
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Время задержки
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Ущерб
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Количество
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Время задержки
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Ущерб
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs bg-border">
                     Количество
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs bg-border">
                     Время задержки
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs bg-border">
                     Ущерб
                   </th>
                 </tr>
@@ -113,19 +113,19 @@ export function DelayReportsTableByDelayType({
                   <tr
                     key={index}
                     className={cn(
-                      "border-b border-gray-200",
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                      "border-b border-border",
+                      index % 2 === 0 ? "bg-background" : "bg-surface-muted/50"
                     )}
                   >
-                    <td className="border border-gray-300 px-4 py-3">
-                      <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                    <td className="border border-border-strong px-4 py-3">
+                      <div className="h-4 bg-border rounded animate-pulse" />
                     </td>
                     {Array.from({ length: 9 }).map((_, colIndex) => (
                       <td
                         key={colIndex}
-                        className="border border-gray-300 px-4 py-3"
+                        className="border border-border-strong px-4 py-3"
                       >
-                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                        <div className="h-4 bg-border rounded animate-pulse" />
                       </td>
                     ))}
                   </tr>
@@ -137,64 +137,64 @@ export function DelayReportsTableByDelayType({
       )}
 
       {!isLoading && !error && data && (
-        <div className="bg-white border rounded-md overflow-hidden">
+        <div className="bg-background border rounded-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               {/* Table Header */}
               <thead>
                 {/* Main Header Row */}
-                <tr className="bg-gray-100 border-b-1 border-gray-300">
+                <tr className="bg-muted border-b-1 border-border-strong">
                   <th
                     rowSpan={2}
-                    className="border border-gray-300 px-4 py-3 text-left font-semibold text-sm bg-gray-100"
+                    className="border border-border-strong px-4 py-3 text-left font-semibold text-sm bg-muted"
                   >
                     Депо
                   </th>
                   <th
                     colSpan={3}
-                    className="border border-gray-300 px-4 py-3 text-center font-semibold text-sm bg-gray-100"
+                    className="border border-border-strong px-4 py-3 text-center font-semibold text-sm bg-muted"
                   >
                     По отправлению
                   </th>
                   <th
                     colSpan={3}
-                    className="border border-gray-300 px-4 py-3 text-center font-semibold text-sm bg-gray-100"
+                    className="border border-border-strong px-4 py-3 text-center font-semibold text-sm bg-muted"
                   >
                     По проследованию
                   </th>
                   <th
                     colSpan={3}
-                    className="border border-gray-300 px-4 py-3 text-center font-semibold text-sm bg-gray-200"
+                    className="border border-border-strong px-4 py-3 text-center font-semibold text-sm bg-border"
                   >
                     Всего
                   </th>
                 </tr>
-                <tr className="bg-gray-50 border-b border-gray-300">
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                <tr className="bg-surface-muted border-b border-border-strong">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Количество
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Время задержки
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Ущерб
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Количество
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Время задержки
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs">
                     Ущерб
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs bg-border">
                     Количество
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs bg-border">
                     Время задержки
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-center font-medium text-xs bg-gray-200">
+                  <th className="border border-border-strong px-4 py-2 text-center font-medium text-xs bg-border">
                     Ущерб
                   </th>
                 </tr>
@@ -205,79 +205,79 @@ export function DelayReportsTableByDelayType({
                   <tr
                     key={index}
                     className={cn(
-                      "border-b border-gray-200 hover:bg-gray-50",
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                      "border-b border-border hover:bg-surface-muted",
+                      index % 2 === 0 ? "bg-background" : "bg-surface-muted/50"
                     )}
                   >
-                    <td className="border border-gray-300 px-4 py-2 text-sm font-medium">
+                    <td className="border border-border-strong px-4 py-2 text-sm font-medium">
                       {row?.depo}
                     </td>
                     {/* По отправлению */}
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right">
                       {row?.po_otpravleniyu?.count}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right">
                       {row?.po_otpravleniyu?.total_delay_time}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right">
                       {formatNumber(row?.po_otpravleniyu?.total_damage)}
                     </td>
                     {/* По проследованию */}
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right">
                       {row?.po_prosledovaniyu?.count}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right">
                       {row?.po_prosledovaniyu?.total_delay_time}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right">
                       {formatNumber(row?.po_prosledovaniyu?.total_damage)}
                     </td>
                     {/* Всего */}
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right bg-gray-200">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right bg-border">
                       {row?.total?.count}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right bg-gray-200">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right bg-border">
                       {row?.total?.total_delay_time}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-sm text-right bg-gray-200">
+                    <td className="border border-border-strong px-4 py-2 text-sm text-right bg-border">
                       {formatNumber(row?.total?.total_damage)}
                     </td>
                   </tr>
                 ))}
                 {/* Total Row */}
                 {data?.total && (
-                  <tr className="bg-gray-200 border-t-2 border-gray-400 font-semibold">
-                    <td className="border border-gray-300 px-4 py-3 text-sm font-bold">
+                  <tr className="bg-border border-t-2 border-foreground-subtle font-semibold">
+                    <td className="border border-border-strong px-4 py-3 text-sm font-bold">
                       {data?.total?.depo}
                     </td>
                     {/* По отправлению Total */}
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {data?.total?.po_otpravleniyu?.count}
                     </td>
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {data?.total?.po_otpravleniyu?.total_delay_time}
                     </td>
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {formatNumber(data?.total?.po_otpravleniyu?.total_damage)}
                     </td>
                     {/* По проследованию Total */}
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {data?.total?.po_prosledovaniyu?.count}
                     </td>
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {data?.total?.po_prosledovaniyu?.total_delay_time}
                     </td>
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {formatNumber(data?.total?.po_prosledovaniyu?.total_damage)}
                     </td>
                     {/* Всего Total */}
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {data?.total?.total?.count}
                     </td>
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {data?.total?.total?.total_delay_time}
                     </td>
-                    <td className="border border-gray-300 px-4 py-3 text-sm text-right font-bold">
+                    <td className="border border-border-strong px-4 py-3 text-sm text-right font-bold">
                       {formatNumber(data?.total?.total?.total_damage)}
                     </td>
                   </tr>
@@ -293,16 +293,16 @@ export function DelayReportsTableByDelayType({
 
 
       {!isLoading && !error && !data && startDate && endDate && (
-        <div className="bg-white border rounded-lg p-8 text-center">
-          <p className="text-gray-500 text-sm">
+        <div className="bg-background border rounded-lg p-8 text-center">
+          <p className="text-muted-foreground text-sm">
             Данные не найдены. Пожалуйста, выберите другой диапазон дат.
           </p>
         </div>
       )}
 
       {!isLoading && !error && !startDate && !endDate && !start_date && !end_date && (
-        <div className="bg-white border rounded-lg p-8 text-center">
-          <p className="text-gray-500 text-sm">
+        <div className="bg-background border rounded-lg p-8 text-center">
+          <p className="text-muted-foreground text-sm">
             Для просмотра отчета выберите дату начала и окончания.
           </p>
         </div>

@@ -24,6 +24,7 @@ import { MultiSelect } from "@/ui/multi-select";
 import { cn } from "@/lib/utils";
 import { SrivPaymentDrilldownModal } from "./sriv-payment-drilldown-modal";
 import { authService } from "@/api/services/auth.service";
+import { Alert, AlertDescription } from "@/ui/alert";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -41,25 +42,25 @@ const BUCKETS: BucketMeta[] = [
     key: "paid",
     labelKey: "paid",
     icon: CheckCircle2,
-    color: "#059669",
-    text: "text-emerald-700",
-    soft: "bg-emerald-50 text-emerald-600 ring-emerald-200",
+    color: "var(--success)",
+    text: "text-success",
+    soft: "bg-success-subtle text-success ring-success/30",
   },
   {
     key: "unpaid",
     labelKey: "unpaid",
     icon: Clock3,
-    color: "#d97706",
-    text: "text-amber-700",
-    soft: "bg-amber-50 text-amber-600 ring-amber-200",
+    color: "var(--warning)",
+    text: "text-warning",
+    soft: "bg-warning-subtle text-warning ring-warning/30",
   },
   {
     key: "undetermined",
     labelKey: "undetermined",
     icon: CircleDashed,
-    color: "#64748b",
-    text: "text-slate-700",
-    soft: "bg-slate-100 text-slate-600 ring-slate-200",
+    color: "var(--muted-foreground)",
+    text: "text-foreground-secondary",
+    soft: "bg-muted text-foreground-secondary ring-border",
   },
 ];
 
@@ -219,7 +220,7 @@ export function SrivPaymentReport() {
   return (
     <div className="space-y-5 px-6 pb-8">
       {/* Filters */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
         <div className="flex flex-wrap items-end gap-4">
           <Field label={t("date_start")}>
             <DatePicker
@@ -251,8 +252,8 @@ export function SrivPaymentReport() {
                 className={cn(
                   "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                   activeRange === r.key
-                    ? "border-primary bg-primary text-white"
-                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground-secondary hover:border-border-strong hover:bg-surface-muted"
                 )}
               >
                 {r.label}
@@ -271,7 +272,7 @@ export function SrivPaymentReport() {
                 onSelectionChange={handleOrganizations}
                 placeholder={t("organizations_placeholder")}
                 disabled={isLoadingOrganizations}
-                className="border-slate-300"
+                className="border-border-strong"
               />
             </Field>
           )}
@@ -281,17 +282,17 @@ export function SrivPaymentReport() {
       {isLoading ? (
         <SkeletonState />
       ) : error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-sm text-red-600">
+        <Alert variant="destructive" className="p-6 text-center"><AlertDescription>
           {t("error")}
-        </div>
+        </AlertDescription></Alert>
       ) : !total ? null : (
         <>
           {/* Summary cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryCard
-              accent="#4f46e5"
+              accent="var(--primary)"
               icon={Wallet}
-              iconClass="bg-indigo-50 text-indigo-600 ring-indigo-200"
+              iconClass="bg-primary-subtle text-primary ring-primary/30"
               label={t("total")}
               sum={total.total_sum}
               count={total.total_count}
@@ -320,9 +321,9 @@ export function SrivPaymentReport() {
           </div>
 
           {/* Distribution bar */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <Layers className="h-4 w-4 text-slate-400" />
+          <div className="rounded-xl border border-border bg-background p-5 shadow-sm">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground-secondary">
+              <Layers className="h-4 w-4 text-foreground-subtle" />
               {t("distribution")}
             </div>
             <StackedBar row={total} className="h-4" />
@@ -333,10 +334,10 @@ export function SrivPaymentReport() {
                     className="h-2.5 w-2.5 rounded-sm"
                     style={{ backgroundColor: b.color }}
                   />
-                  <span className="font-medium text-slate-600">
+                  <span className="font-medium text-foreground-secondary">
                     {t(b.labelKey)}
                   </span>
-                  <span className="tabular-nums text-slate-400">
+                  <span className="tabular-nums text-foreground-subtle">
                     {pct(
                       total[
                         `${b.key}_sum` as keyof SrivPaymentReportRow
@@ -351,11 +352,11 @@ export function SrivPaymentReport() {
           </div>
 
           {/* Per-depo table */}
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[820px] border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                  <tr className="border-b border-border bg-surface-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <th className="px-4 py-3 font-semibold">{t("depo")}</th>
                     <th className="px-4 py-3 text-right font-semibold">
                       {t("total")}
@@ -378,7 +379,7 @@ export function SrivPaymentReport() {
                     <tr>
                       <td
                         colSpan={6}
-                        className="px-4 py-10 text-center text-sm text-slate-400"
+                        className="px-4 py-10 text-center text-sm text-foreground-subtle"
                       >
                         {t("empty")}
                       </td>
@@ -387,9 +388,9 @@ export function SrivPaymentReport() {
                     rows.map((row) => (
                       <tr
                         key={row.depo}
-                        className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60"
+                        className="border-b border-muted last:border-0 hover:bg-surface-muted/60"
                       >
-                        <td className="px-4 py-3 font-medium text-slate-800">
+                        <td className="px-4 py-3 font-medium text-foreground">
                           {row.depo}
                         </td>
                         <MoneyCell
@@ -428,8 +429,8 @@ export function SrivPaymentReport() {
                 </tbody>
                 {rows.length > 0 && (
                   <tfoot>
-                    <tr className="border-t-2 border-slate-200 bg-slate-50 font-semibold">
-                      <td className="px-4 py-3 text-slate-800">
+                    <tr className="border-t-2 border-border bg-surface-muted font-semibold">
+                      <td className="px-4 py-3 text-foreground">
                         {total.depo || t("grand_total")}
                       </td>
                       <MoneyCell
@@ -493,7 +494,7 @@ function Field({
 }) {
   return (
     <div className={cn("flex flex-col gap-1", className)}>
-      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+      <span className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       {children}
@@ -525,13 +526,13 @@ function SummaryCard({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border bg-white p-4 shadow-sm",
-        highlight ? "border-slate-300" : "border-slate-200"
+        "relative overflow-hidden rounded-xl border bg-background p-4 shadow-sm",
+        highlight ? "border-border-strong" : "border-border"
       )}
       style={{ borderLeft: `4px solid ${accent}` }}
     >
       <div className="flex items-start justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {label}
         </p>
         <span
@@ -543,15 +544,15 @@ function SummaryCard({
           <Icon className="h-4 w-4" strokeWidth={2.25} />
         </span>
       </div>
-      <p className="mt-2 text-2xl font-bold tabular-nums text-slate-900">
+      <p className="mt-2 text-2xl font-bold tabular-nums text-foreground">
         {fmtSum(sum)}
       </p>
-      <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
         <span className="tabular-nums">
           {t("count_n", { n: count })}
         </span>
         {!highlight && (
-          <span className="tabular-nums text-slate-400">
+          <span className="tabular-nums text-foreground-subtle">
             · {share.toFixed(1)}%
           </span>
         )}
@@ -579,7 +580,7 @@ function MoneyCell({
       <span
         className={cn(
           "tabular-nums",
-          bold ? "font-semibold text-slate-900" : "text-slate-700",
+          bold ? "font-semibold text-foreground" : "text-foreground-secondary",
           textClass
         )}
       >
@@ -589,13 +590,13 @@ function MoneyCell({
         <button
           type="button"
           onClick={onClick}
-          className="ml-1 rounded text-xs tabular-nums text-slate-400 underline decoration-dotted underline-offset-2 transition-colors hover:text-primary"
+          className="ml-1 rounded text-xs tabular-nums text-foreground-subtle underline decoration-dotted underline-offset-2 transition-colors hover:text-primary"
           title={String(count)}
         >
           · {count}
         </button>
       ) : (
-        <span className="ml-1 text-xs tabular-nums text-slate-400">
+        <span className="ml-1 text-xs tabular-nums text-foreground-subtle">
           · {count}
         </span>
       )}
@@ -614,7 +615,7 @@ function StackedBar({
   return (
     <div
       className={cn(
-        "flex w-full overflow-hidden rounded-full bg-slate-100",
+        "flex w-full overflow-hidden rounded-full bg-muted",
         className
       )}
     >
@@ -644,12 +645,12 @@ function SkeletonState() {
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-[104px] animate-pulse rounded-xl border border-slate-200 bg-slate-50"
+            className="h-[104px] animate-pulse rounded-xl border border-border bg-surface-muted"
           />
         ))}
       </div>
-      <div className="h-24 animate-pulse rounded-xl border border-slate-200 bg-slate-50" />
-      <div className="h-64 animate-pulse rounded-xl border border-slate-200 bg-slate-50" />
+      <div className="h-24 animate-pulse rounded-xl border border-border bg-surface-muted" />
+      <div className="h-64 animate-pulse rounded-xl border border-border bg-surface-muted" />
     </div>
   );
 }

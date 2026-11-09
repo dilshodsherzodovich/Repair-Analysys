@@ -52,20 +52,20 @@ export function DepotReasonReportsTable() {
       )}
 
       {isLoading && (
-        <div className="mt-6 bg-white rounded-md overflow-hidden">
+        <div className="mt-6 bg-background rounded-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-gray-100 border-b border-gray-300">
+                <tr className="bg-muted border-b border-border-strong">
                   {Array.from({ length: skeletonColumnCount }).map((_, index) => (
                     <th
                       key={index}
                       className={cn(
-                        "border border-gray-300 px-4 py-3 text-center font-semibold text-sm",
-                        index === skeletonColumnCount - 1 && "bg-gray-200"
+                        "border border-border-strong px-4 py-3 text-center font-semibold text-sm",
+                        index === skeletonColumnCount - 1 && "bg-border"
                       )}
                     >
-                      <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 bg-border rounded animate-pulse" />
                     </th>
                   ))}
                 </tr>
@@ -75,34 +75,34 @@ export function DepotReasonReportsTable() {
                   <tr
                     key={rowIndex}
                     className={cn(
-                      "border-b border-gray-200",
-                      rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                      "border-b border-border",
+                      rowIndex % 2 === 0 ? "bg-background" : "bg-surface-muted/50"
                     )}
                   >
                     {Array.from({ length: skeletonColumnCount }).map((_, colIndex) => (
                       <td
                         key={colIndex}
                         className={cn(
-                          "border border-gray-300 px-4 py-3 text-center",
-                          colIndex === skeletonColumnCount - 1 && "bg-gray-200"
+                          "border border-border-strong px-4 py-3 text-center",
+                          colIndex === skeletonColumnCount - 1 && "bg-border"
                         )}
                       >
-                        <div className="h-4 bg-gray-200 rounded animate-pulse mx-auto w-12" />
+                        <div className="h-4 bg-border rounded animate-pulse mx-auto w-12" />
                       </td>
                     ))}
                   </tr>
                 ))}
                 {/* Skeleton Total Row */}
-                <tr className="bg-gray-200 border-t-2 border-gray-400">
+                <tr className="bg-border border-t-2 border-foreground-subtle">
                   {Array.from({ length: skeletonColumnCount }).map((_, colIndex) => (
                     <td
                       key={colIndex}
                       className={cn(
-                        "border border-gray-300 px-4 py-3 text-center",
-                        colIndex === skeletonColumnCount - 1 && "bg-gray-200"
+                        "border border-border-strong px-4 py-3 text-center",
+                        colIndex === skeletonColumnCount - 1 && "bg-border"
                       )}
                     >
-                      <div className="h-4 bg-gray-300 rounded animate-pulse mx-auto w-12" />
+                      <div className="h-4 bg-border-strong rounded animate-pulse mx-auto w-12" />
                     </td>
                   ))}
                 </tr>
@@ -113,11 +113,11 @@ export function DepotReasonReportsTable() {
       )}
 
       {!isLoading && !error && data && (
-        <div className="mt-6 bg-white rounded-md overflow-hidden">
+        <div className="mt-6 bg-background rounded-md overflow-hidden">
           <div className="overflow-x-auto">
 
             {data?.summary && (
-              <div className="mb-2 border-gray-200 bg-gray-50 text-md text-gray-700 flex justify-center">
+              <div className="mb-2 border-border bg-surface-muted text-md text-foreground-secondary flex justify-center">
                 <div className="font-semibold flex items-center gap-1">
                   Всего по вине локомотивных депо:
                   <span>
@@ -132,13 +132,13 @@ export function DepotReasonReportsTable() {
 
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-gray-100 border-b border-gray-300">
+                <tr className="bg-muted border-b border-border-strong">
                   {headers?.map((header, index) => (
                     <th
                       key={header}
                       className={cn(
-                        "border border-gray-300 px-4 py-3 text-center font-semibold text-sm",
-                        index === headers?.length - 1 && "bg-gray-200"
+                        "border border-border-strong px-4 py-3 text-center font-semibold text-sm",
+                        index === headers?.length - 1 && "bg-border"
                       )}
                     >
                       {header}
@@ -150,14 +150,14 @@ export function DepotReasonReportsTable() {
                 {data?.rows?.map((row, index) => (
                   <tr
                     key={row?.reason}
-                    className="border-b border-gray-200 hover:bg-gray-50"
+                    className="border-b border-border hover:bg-surface-muted"
                   >
                     {Object.entries(row).slice(1).map(([key, value], index) => (
                       <td
                         key={key}
                         className={cn(
-                          "border border-gray-300 px-4 py-3 text-sm text-center font-bold",
-                          index === headers?.length - 1 && "bg-gray-200"
+                          "border border-border-strong px-4 py-3 text-sm text-center font-bold",
+                          index === headers?.length - 1 && "bg-border"
                         )}
                       >
                         {value ?? 0}
@@ -168,13 +168,13 @@ export function DepotReasonReportsTable() {
 
                 {/* Total Row */}
                 {data?.total && (
-                  <tr className="bg-gray-200 border-t-2 border-gray-400 font-semibold">
+                  <tr className="bg-border border-t-2 border-foreground-subtle font-semibold">
                     {Object.entries(data?.total).slice(1).map(([key, value], index) => (
                       <td
                         key={key}
                         className={cn(
-                          "border border-gray-300 px-4 py-3 text-sm text-center font-bold",
-                          index === headers?.length - 1 && "bg-gray-200"
+                          "border border-border-strong px-4 py-3 text-sm text-center font-bold",
+                          index === headers?.length - 1 && "bg-border"
                         )}
                       >
                         {value ?? 0}

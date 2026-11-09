@@ -587,7 +587,7 @@ export default function DelaysPage() {
               <button
                 type="button"
                 onClick={() => handleOpenInfo(row)}
-                className="inline-flex w-fit items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+                className="inline-flex w-fit items-center gap-1 text-2xs text-muted-foreground hover:text-foreground"
                 title={t("actions.culprits")}
               >
                 <Info className="h-3 w-3 shrink-0" />
@@ -627,7 +627,7 @@ export default function DelaysPage() {
             {next && (
               <div className="flex items-center gap-1 pl-0.5 text-muted-foreground">
                 <CornerDownRight className="h-3 w-3 shrink-0 opacity-50" />
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 ring-1 ring-amber-200/70">
+                <span className="inline-flex items-center gap-1 rounded-full bg-warning-subtle px-2 py-0.5 text-2xs font-medium text-warning ring-1 ring-warning/70">
                   <Clock className="h-3 w-3 shrink-0" />
                   {next}
                 </span>
@@ -635,7 +635,7 @@ export default function DelaysPage() {
             )}
 
             {row?.protocol_overdue && (
-              <span className="inline-flex w-fit items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600 ring-1 ring-red-200">
+              <span className="inline-flex w-fit items-center gap-1 rounded-full bg-destructive-subtle px-2 py-0.5 text-2xs font-medium text-destructive ring-1 ring-destructive/30">
                 <AlertTriangle className="h-3 w-3 shrink-0" />
                 {t("protocol_overdue")}
               </span>
@@ -651,7 +651,7 @@ export default function DelaysPage() {
       accessor: (row) => {
         const hasFile = !!(row?.report_filename || row?.report);
         if (!hasFile && !row?.protocol_number) {
-          return <span className="text-gray-400">-</span>;
+          return <span className="text-foreground-subtle">-</span>;
         }
         const filename = row.report_filename || t("columns.report");
         return (
@@ -666,13 +666,13 @@ export default function DelaysPage() {
                 href={row.report}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block truncate text-sm text-blue-600 hover:underline"
+                className="block truncate text-sm text-primary hover:underline"
                 title={filename}
               >
                 {truncateFilename(filename, 25)}
               </a>
             ) : (
-              <span className="text-xs text-gray-400">—</span>
+              <span className="text-xs text-foreground-subtle">—</span>
             )}
           </div>
         );
@@ -868,7 +868,7 @@ export default function DelaysPage() {
           alwaysShowKebab
           rowBadge={(row) =>
             row.archive ? (
-              <span className="inline-flex -rotate-6 select-none items-center gap-1 rounded-md border-2 border-red-400/60 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-500/80">
+              <span className="inline-flex -rotate-6 select-none items-center gap-1 rounded-md border-2 border-destructive/60 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-destructive/80">
                 <Archive className="h-3 w-3" />
                 {t("archive.archived")}
               </span>
@@ -945,7 +945,7 @@ export default function DelaysPage() {
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) =>
                       row.stage === "protocol_uploaded" && !row.archive,
-                    className: "text-red-600 focus:text-red-600 focus:bg-red-50",
+                    className: "text-destructive focus:text-destructive focus:bg-destructive-subtle",
                   },
                   {
                     label: t("actions.classify_not_disruption"),
@@ -1001,7 +1001,7 @@ export default function DelaysPage() {
                     permission: "delete_delay" as Permission,
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) => !row.archive,
-                    className: "text-red-600 focus:text-red-600 focus:bg-red-50",
+                    className: "text-destructive focus:text-destructive focus:bg-destructive-subtle",
                   },
                 ]
               : []),
