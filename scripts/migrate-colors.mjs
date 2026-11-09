@@ -11,9 +11,10 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 // Colour -> token. `text` overrides the token when used as a text colour.
 const COLORS = {
-  primary: ["#2354bf", "#2563eb", "#4978ce", "#3b82f6", "blue-500", "blue-600", "sky-600"],
-  "primary-hover": ["#1d4ed8", "#1d4699", "#1e40af", "blue-700", "blue-800"],
-  "primary-subtle": ["#eff6ff", "#dbeafe", "blue-50", "blue-100"],
+  primary: ["#2354bf", "#2563eb", "#4978ce", "#3b82f6", "blue-400", "blue-500", "blue-600", "sky-500", "sky-600"],
+  "primary-hover": ["#1d4ed8", "#1d4699", "#1e40af", "blue-700", "blue-800", "blue-900"],
+  "primary-subtle": ["#eff6ff", "#dbeafe", "blue-50", "blue-100", "sky-50", "sky-100"],
+  "primary/30": ["blue-200", "blue-300", "sky-200", "sky-300"],
   foreground: ["#0f172b", "#0f172a", "#1f2937", "#1e293b", "#111827", "#1c1c1c", "gray-900", "gray-800", "slate-900", "slate-800"],
   "foreground-secondary": ["#374151", "#475569", "#334155", "gray-700", "gray-600", "slate-700", "slate-600"],
   "muted-foreground": ["#6b7280", "#64748b", "gray-500", "slate-500"],
@@ -22,13 +23,13 @@ const COLORS = {
   border: { values: ["#e5e7eb", "#e2e8f0", "gray-200", "slate-200"], text: "foreground-subtle" },
   muted: ["#f3f4f6", "#f1f5f9", "#f2f2f2", "gray-100", "slate-100"],
   "surface-muted": ["#f9fafb", "#f8fafc", "gray-50", "slate-50"],
-  success: ["#10b981", "#059669", "#28a745", "#16a34a", "green-500", "green-600", "green-700", "emerald-500", "emerald-600", "emerald-700"],
+  success: ["#10b981", "#059669", "#28a745", "#16a34a", "green-400", "green-500", "green-600", "green-700", "green-800", "green-900", "emerald-400", "emerald-500", "emerald-600", "emerald-700", "emerald-800", "emerald-900"],
   "success-subtle": ["#ecfdf5", "#f0fdf4", "green-50", "green-100", "emerald-50", "emerald-100"],
   "success/30": ["green-200", "green-300", "emerald-200", "emerald-300"],
-  warning: ["#f59e0b", "#d97706", "amber-500", "amber-600", "amber-700", "yellow-500", "yellow-600", "yellow-700", "orange-500", "orange-600"],
+  warning: ["#f59e0b", "#d97706", "amber-400", "amber-500", "amber-600", "amber-700", "amber-800", "amber-900", "yellow-400", "yellow-500", "yellow-600", "yellow-700", "yellow-800", "orange-400", "orange-500", "orange-600", "orange-700", "orange-800"],
   "warning-subtle": ["#fffbeb", "amber-50", "amber-100", "yellow-50", "yellow-100", "orange-50", "orange-100"],
   "warning/30": ["amber-200", "amber-300", "yellow-200", "yellow-300", "orange-200"],
-  destructive: ["#dc2626", "#ff5959", "#ef4444", "#b91c1c", "red-500", "red-600", "red-700"],
+  destructive: ["#dc2626", "#ff5959", "#ef4444", "#b91c1c", "red-400", "red-500", "red-600", "red-700", "red-800", "red-900"],
   "destructive-subtle": ["#fef2f2", "#fee2e2", "red-50", "red-100"],
   "destructive/30": ["red-200", "red-300"],
 };
@@ -68,7 +69,7 @@ const BIG_RADIUS = /\b(rounded(?:-[a-z]{1,2})?)-(?:2xl|3xl|4xl)\b/g;
 
 // White / black. Surfaces become background, overlays scrim; text-white takes
 // the on-fill colour of the fill on the same line (bg-success -> success-foreground).
-const BW = /\b(bg|text|border|ring|from|to|via|fill|stroke|divide|outline)-(white|black)(?![\w-])/g;
+const BW = /\b(bg|text|border(?:-[trblxyse])?|ring(?:-offset)?|from|to|via|fill|stroke|divide|outline|placeholder|accent|caret|decoration)-(white|black)(?![\w-])/g;
 const FILLS = [
   ["success", "text-success-foreground"],
   ["destructive", "text-destructive-foreground"],
@@ -91,7 +92,7 @@ function blackWhite(line) {
 }
 
 // bg-[var(--primary)] -> bg-primary. Undefined table vars map to their roles.
-const VAR_CLASS = /\b(bg|text|border|ring|fill|stroke|from|to|via|divide|outline)-\[var\(--([a-z0-9-]+)\)\]/g;
+const VAR_CLASS = /\b(bg|text|border(?:-[trblxyse])?|ring(?:-offset)?|fill|stroke|from|to|via|divide|outline|placeholder|accent|caret|decoration)-\[var\(--([a-z0-9-]+)\)\]/g;
 const VAR_ALIASES = { "table-header-fg": "foreground-secondary", "table-header-bg": "surface-muted" };
 
 const args = process.argv.slice(2);

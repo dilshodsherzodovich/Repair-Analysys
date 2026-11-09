@@ -201,12 +201,8 @@ export default function PageFilters({
               onChange={(e) => handleSearchChange(e.target.value)}
             />
             <Search
-              className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 pointer-events-none text-foreground-subtle"
               strokeWidth={1.25}
-              style={{
-                color: "#90A1B9",
-                stroke: "#90A1B9",
-              }}
             />
           </div>
         </div>

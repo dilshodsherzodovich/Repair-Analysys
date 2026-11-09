@@ -26,17 +26,21 @@ const PATTERNS = [
   {
     name: "palette",
     regex:
-      /\b(?:bg|text|border|ring|fill|stroke|from|to|via|divide|outline|shadow)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/g,
+      /\b(?:bg|text|border(?:-[trblxyse])?|ring(?:-offset)?|fill|stroke|from|to|via|divide|outline|shadow|placeholder|accent|caret|decoration)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/g,
   },
   {
     name: "white/black",
-    regex: /\b(?:bg|text|border|ring|from|to|via|fill|stroke|divide|outline)-(?:white|black)(?![\w-])/g,
+    regex: /\b(?:bg|text|border(?:-[trblxyse])?|ring(?:-offset)?|from|to|via|fill|stroke|divide|outline|shadow|placeholder|accent|caret|decoration)-(?:white|black)(?![\w-])/g,
   },
   // bg-[var(--primary)] reads a token but skips its class; use bg-primary
   {
     name: "var()",
-    regex: /\b(?:bg|text|border|ring|fill|stroke|from|to|via|divide|outline)-\[var\(--[a-z0-9-]+\)\]/g,
+    regex: /\b(?:bg|text|border(?:-[trblxyse])?|ring(?:-offset)?|fill|stroke|from|to|via|divide|outline|shadow|placeholder|accent|caret|decoration)-\[var\(--[a-z0-9-]+\)\]/g,
   },
+  // Colours set from JS (style props, chart colours). Hex inside a selector
+  // such as [stroke='#ccc'] matches a library default and is allowed.
+  { name: "js-color", regex: /(?<![=\w])["'`]#[0-9a-fA-F]{3,8}["'`]/g },
+  { name: "js-color", regex: /\b(?:rgba?|hsla?)\(\s*\d/g },
   { name: "font-size", regex: /\btext-\[\d+(?:\.\d+)?(?:px|rem)\]/g },
   { name: "shadow", regex: /\bshadow-\[[^\]\s]+\]/g },
   // `rounded-[inherit]` passes the parent's radius on; it is not a value

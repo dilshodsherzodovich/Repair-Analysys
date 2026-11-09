@@ -1,4 +1,5 @@
 "use client";
+// tokens-allow-file: decorative ID-card artwork (guilloche gradients drawn on canvas)
 
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";

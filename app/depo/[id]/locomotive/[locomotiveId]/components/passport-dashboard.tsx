@@ -706,7 +706,7 @@ const initials = (name?: string) =>
     .map((w) => w[0]?.toUpperCase())
     .join("") || "?";
 
-const AV_COLORS = ["#2f6fed", "#0ea968", "#8b5cf6", "#e0932a"];
+const AV_COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"];
 
 function CrewTile({
   locomotiveNumber,
