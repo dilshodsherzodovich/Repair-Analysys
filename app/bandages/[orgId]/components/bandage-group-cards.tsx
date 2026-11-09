@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Skeleton } from "@/ui/skeleton";
+import { StatCard } from "@/ui/stat-card";
 import { cn } from "@/lib/utils";
 import { Bandage } from "@/api/types/bandage";
 import {
@@ -85,58 +86,17 @@ export function BandageGroupCards({
     >
       {stats.map((stat) => {
         const isActive = activeGroup === stat.key;
-        const isEmpty = stat.bandageCount === 0;
         return (
-          <button
+          <StatCard
             key={stat.key}
-            type="button"
+            label={stat.label}
+            hint={stat.range ? `(${stat.range})` : undefined}
+            value={t("group_kp_count", { count: stat.bandageCount })}
+            caption={t("group_locomotives_count", { count: stat.locomotiveCount })}
+            selected={isActive}
+            muted={stat.bandageCount === 0}
             onClick={() => onSelect(isActive ? null : stat.key)}
-            aria-pressed={isActive}
-            className={cn(
-              "flex flex-col items-start gap-1 rounded-lg border px-4 py-3 text-left transition-all cursor-pointer",
-              isActive
-                ? "border-blue-600 bg-blue-600 text-white shadow-md"
-                : "border-[#CAD5E2] bg-white hover:border-blue-300 hover:bg-[#F8FAFC]",
-              isEmpty && !isActive && "opacity-60",
-            )}
-          >
-            <span className="flex items-baseline gap-1.5">
-              <span
-                className={cn(
-                  "text-sm font-semibold",
-                  isActive ? "text-white" : "text-[#0F172B]",
-                )}
-              >
-                {stat.label}
-              </span>
-              {stat.range && (
-                <span
-                  className={cn(
-                    "text-xs",
-                    isActive ? "text-blue-100" : "text-[#64748B]",
-                  )}
-                >
-                  ({stat.range})
-                </span>
-              )}
-            </span>
-            <span
-              className={cn(
-                "text-2xl font-bold leading-tight",
-                isActive ? "text-white" : "text-[#0F172B]",
-              )}
-            >
-              {t("group_kp_count", { count: stat.bandageCount })}
-            </span>
-            <span
-              className={cn(
-                "text-xs",
-                isActive ? "text-blue-100" : "text-[#64748B]",
-              )}
-            >
-              {t("group_locomotives_count", { count: stat.locomotiveCount })}
-            </span>
-          </button>
+          />
         );
       })}
     </div>

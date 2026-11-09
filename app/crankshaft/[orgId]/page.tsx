@@ -37,6 +37,7 @@ import {
 import { authService } from "@/api/services/auth.service";
 import { Check } from "lucide-react";
 import { exportCrankshaftExcel } from "@/utils/crankshaft-excel-export";
+import { Alert, AlertDescription } from "@/ui/alert";
 
 /** Edited input text per component id, then per field. */
 type Drafts = Record<number, Record<string, string>>;
@@ -64,8 +65,8 @@ const INFO_FIELDS = ["year_of_manufacture", "factory_number"] as const;
 const SAVED_HIGHLIGHT_MS = 5000;
 
 // Tinted headers so the koren and shatun blocks read apart at a glance
-const korenHead = "bg-[#EFF6FF]";
-const shatunHead = "bg-[#FFF7ED]";
+const korenHead = "bg-primary-subtle";
+const shatunHead = "bg-warning-subtle";
 
 const toInputValue = (value: unknown) =>
   typeof value === "string" || typeof value === "number" ? String(value) : "";
@@ -237,10 +238,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
   const justSaved = !!savedCells;
   // Pinned cells need a solid background or scrolled cells show through
   const stickyBg = isEditing
-    ? "bg-[#F0F7FF]"
+    ? "bg-primary-subtle"
     : justSaved
-      ? "bg-[#F0FDF4]"
-      : "bg-white group-hover:bg-[#F8FAFC]";
+      ? "bg-success-subtle"
+      : "bg-background group-hover:bg-surface-muted";
 
   return (
     <>
@@ -248,9 +249,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={component.id}
           className={cn(
-            "group hover:bg-[#F8FAFC] transition-colors duration-700",
-            isEditing && "bg-[#F0F7FF] hover:bg-[#F0F7FF]",
-            justSaved && "bg-[#F0FDF4] hover:bg-[#F0FDF4]",
+            "group hover:bg-surface-muted transition-colors duration-700",
+            isEditing && "bg-primary-subtle hover:bg-primary-subtle",
+            justSaved && "bg-success-subtle hover:bg-success-subtle",
           )}
         >
           {componentIndex === 0 && (
@@ -261,7 +262,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
                   gridCellClass,
                   stickyNo,
                   stickyBg,
-                  "z-[5] text-[#64748B] align-top",
+                  "z-[5] text-muted-foreground align-top",
                 )}
               >
                 {group.index}
@@ -272,13 +273,13 @@ const LocomotiveRows = memo(function LocomotiveRows({
                   gridCellClass,
                   stickyLocomotive,
                   stickyBg,
-                  "z-[5] text-[#0F172B] font-medium align-top",
-                  justSaved && "border-l-2 border-l-green-500",
+                  "z-[5] text-foreground font-medium align-top",
+                  justSaved && "border-l-2 border-l-success",
                 )}
               >
                 {group.name}-{group.modelName}
                 {justSaved && (
-                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success">
                     <Check className="h-3 w-3" />
                     {t("just_saved")}
                   </span>
@@ -291,7 +292,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
               gridCellClass,
               stickySection,
               stickyBg,
-              "z-[5] text-[#0F172B]",
+              "z-[5] text-foreground",
             )}
           >
             {component.section?.name ??
@@ -309,10 +310,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 className={cn(
                   gridCellClass,
                   "transition-colors duration-700",
-                  isInfo ? "text-[#64748B]" : "text-center text-[#0F172B]",
+                  isInfo ? "text-muted-foreground" : "text-center text-foreground",
                   editable && "px-1 py-1.5",
                   // Changed values stand out while the highlight lasts
-                  wasSaved && "bg-green-100 font-semibold text-green-800",
+                  wasSaved && "bg-success-subtle font-semibold text-success",
                 )}
               >
                 {editable ? (
@@ -488,9 +489,9 @@ function CrankshaftPageContent({
       />
 
       {isError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Alert variant="destructive"><AlertDescription>
           {t("error_load")}
-        </div>
+        </AlertDescription></Alert>
       )}
 
       <GridTable>
@@ -572,7 +573,7 @@ function CrankshaftPageContent({
               <TableRow>
                 <TableCell
                   colSpan={columnCount}
-                  className="py-8 text-center text-[#64748B]"
+                  className="py-8 text-center text-muted-foreground"
                 >
                   {t("empty")}
                 </TableCell>

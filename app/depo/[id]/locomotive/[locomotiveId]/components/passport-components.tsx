@@ -30,7 +30,7 @@ function ComponentField({
 }) {
   return (
     <div className="min-w-0">
-      <label className="mb-0.5 block text-[11px] font-medium text-muted-foreground">
+      <label className="mb-0.5 block text-2xs font-medium text-muted-foreground">
         {label}
       </label>
       <input
@@ -41,8 +41,8 @@ function ComponentField({
         className={cn(
           "h-8 w-full rounded-md px-2.5 text-sm outline-none transition-colors",
           editable
-            ? "border border-gray-300 bg-white text-[#0F172B] hover:border-gray-400 focus:border-[#2354BF]"
-            : "cursor-default border border-gray-200 bg-gray-50 font-medium text-[#0F172B] placeholder:font-normal"
+            ? "border border-border-strong bg-background text-foreground hover:border-foreground-subtle focus:border-primary"
+            : "cursor-default border border-border bg-surface-muted font-medium text-foreground placeholder:font-normal"
         )}
       />
     </div>
@@ -65,10 +65,10 @@ function ComponentTile({
 }) {
   const t = useTranslations("locomotivePassport.components");
   return (
-    <div className="rounded-lg border bg-card p-3 transition-colors hover:border-[#2354BF]/40">
+    <div className="rounded-lg border bg-card p-3 transition-colors hover:border-primary/40">
       <div className="mb-2 flex items-center gap-1.5">
-        <Cog className="h-3.5 w-3.5 shrink-0 text-[#2354BF]" />
-        <h3 className="truncate text-xs font-semibold text-[#0F172B]">
+        <Cog className="h-3.5 w-3.5 shrink-0 text-primary" />
+        <h3 className="truncate text-xs font-semibold text-foreground">
           {component.component}
         </h3>
       </div>
@@ -135,7 +135,7 @@ export function PassportComponents({
           value={activeSectionId?.toString() ?? ""}
           onValueChange={(value) => onSectionChange(Number(value))}
         >
-          <TabsList className="inline-flex w-fit gap-1 rounded-lg border-0 bg-[#F1F5F9] p-1">
+          <TabsList className="inline-flex w-fit gap-1 rounded-lg border-0 bg-muted p-1">
             {sections.map((section) => (
               <TabsTrigger
                 key={section.id}

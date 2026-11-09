@@ -94,7 +94,7 @@ function HistoryDialog({ imei }: { imei: string }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="border-gray-300">
+        <Button variant="outline" size="sm" className="border-border-strong">
           <History className="mr-2 h-4 w-4" />
           {t("history")}
         </Button>
@@ -119,7 +119,7 @@ function HistoryDialog({ imei }: { imei: string }) {
               )}
               {selected && (
                 <div className="rounded-lg border bg-muted/30 p-3 text-sm">
-                  <div className="font-medium text-[#0F172B]">
+                  <div className="font-medium text-foreground">
                     {fmtExact(selected.tpTimestamp)}
                   </div>
                   <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
@@ -133,7 +133,7 @@ function HistoryDialog({ imei }: { imei: string }) {
                       href={mapLink(selected.lat, selected.lon)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[#2354BF] hover:underline"
+                      className="inline-flex items-center gap-1 text-primary hover:underline"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                       {t("mapLink")}
@@ -164,8 +164,8 @@ function HistoryDialog({ imei }: { imei: string }) {
                         key={`${r.id}-${r.tpTimestamp}`}
                         onClick={() => setSelected(r)}
                         className={cn(
-                          "cursor-pointer transition-colors hover:bg-[#2354BF]/5",
-                          isSel && "bg-[#2354BF]/10"
+                          "cursor-pointer transition-colors hover:bg-primary/5",
+                          isSel && "bg-primary/10"
                         )}
                       >
                         <td className="border-b border-r border-border px-3 py-2 whitespace-nowrap">
@@ -216,8 +216,8 @@ export function PassportLocation({ imei }: { imei?: string }) {
             <Badge
               className={
                 moving
-                  ? "bg-emerald-500 text-white border-transparent"
-                  : "bg-[#6b7280] text-white border-transparent"
+                  ? "bg-success text-success-foreground border-transparent"
+                  : "bg-muted-foreground text-primary-foreground border-transparent"
               }
             >
               {moving ? t("moving") : t("stopped")}
@@ -225,8 +225,8 @@ export function PassportLocation({ imei }: { imei?: string }) {
             <Badge
               className={
                 engineOn
-                  ? "bg-[#2354BF] text-white border-transparent"
-                  : "bg-[#f3f4f6] text-[#374151] border-transparent"
+                  ? "bg-primary text-primary-foreground border-transparent"
+                  : "bg-muted text-foreground-secondary border-transparent"
               }
             >
               <Power className="mr-1 h-3 w-3" />
@@ -259,7 +259,7 @@ export function PassportLocation({ imei }: { imei?: string }) {
             </div>
           </div>
 
-          <Button asChild variant="outline" className="w-full border-gray-300">
+          <Button asChild variant="outline" className="w-full border-border-strong">
             <a
               href={mapLink(data.lat, data.lon)}
               target="_blank"

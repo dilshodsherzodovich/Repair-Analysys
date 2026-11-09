@@ -17,9 +17,9 @@ import {
   ComponentGroupRegistry,
 } from "@/api/types/component-registry";
 
-const CELL = "py-2.5 px-3 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0";
+const CELL = "py-2.5 px-3 text-muted-foreground border-r border-border last:border-r-0";
 const HEAD =
-  "py-2.5 px-3 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0 whitespace-nowrap";
+  "py-2.5 px-3 text-foreground-secondary font-medium border-r border-border last:border-r-0 whitespace-nowrap";
 
 /** dd.MM.yyyy, the format used across the duty-uzel screens. */
 export function formatDefectDate(dateString: string): string {
@@ -36,7 +36,7 @@ export function formatDefectDate(dateString: string): string {
 
 export function CountBadge({ count }: { count: number }) {
   return (
-    <span className="inline-flex items-center justify-center rounded-full bg-[#EFF6FF] px-2.5 py-0.5 text-xs font-semibold text-[#1d4ed8] shrink-0">
+    <span className="inline-flex items-center justify-center rounded-full bg-primary-subtle px-2.5 py-0.5 text-xs font-semibold text-primary-hover shrink-0">
       {count}
     </span>
   );
@@ -52,17 +52,17 @@ function RegistryTable({
 
   if (registries.length === 0) {
     return (
-      <div className="px-4 py-4 text-center text-sm text-[#64748B]">
+      <div className="px-4 py-4 text-center text-sm text-muted-foreground">
         {t("empty_description")}
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto border-t border-[#E2E8F0]">
+    <div className="overflow-x-auto border-t border-border">
       <Table className="w-full min-w-[1100px]">
         <TableHeader>
-          <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
+          <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
             <TableHead className={cn(HEAD, "w-12")}>{t("columns.no")}</TableHead>
             <TableHead className={HEAD}>{t("columns.defect_date")}</TableHead>
             <TableHead className={HEAD}>{t("columns.locomotive")}</TableHead>
@@ -89,15 +89,15 @@ function RegistryTable({
           {registries.map((registry, index) => (
             <TableRow
               key={registry.id}
-              className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0 transition-colors"
+              className="hover:bg-surface-muted border-b border-border last:border-b-0 transition-colors"
             >
-              <TableCell className={cn(CELL, "text-[#0F172B] font-medium")}>
+              <TableCell className={cn(CELL, "text-foreground font-medium")}>
                 {index + 1}
               </TableCell>
               <TableCell className={cn(CELL, "whitespace-nowrap")}>
                 {formatDefectDate(registry.defect_date)}
               </TableCell>
-              <TableCell className={cn(CELL, "text-[#0F172B]")}>
+              <TableCell className={cn(CELL, "text-foreground")}>
                 {registry.locomotive}
                 {registry.locomotive_model ? `-${registry.locomotive_model}` : ""}
               </TableCell>
@@ -163,7 +163,7 @@ export function ComponentGroupComponents({
 
   if (components.length === 0) {
     return (
-      <div className={cn("px-4 py-4 text-center text-sm text-[#64748B]", className)}>
+      <div className={cn("px-4 py-4 text-center text-sm text-muted-foreground", className)}>
         {t("empty_description")}
       </div>
     );
@@ -176,21 +176,21 @@ export function ComponentGroupComponents({
         return (
           <div
             key={component.id}
-            className="rounded-md border border-[#E2E8F0] bg-white overflow-hidden"
+            className="rounded-md border border-border bg-background overflow-hidden"
           >
             <button
               type="button"
               onClick={() => toggle(component.id)}
               aria-expanded={isOpen}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-surface-muted transition-colors cursor-pointer"
             >
               <ChevronDown
                 className={cn(
-                  "h-4 w-4 shrink-0 text-[#64748B] transition-transform",
+                  "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
                   !isOpen && "-rotate-90",
                 )}
               />
-              <span className="flex-1 min-w-0 truncate text-sm font-medium text-[#0F172B]">
+              <span className="flex-1 min-w-0 truncate text-sm font-medium text-foreground">
                 {component.name}
               </span>
               <CountBadge count={component.count} />

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import PageFilters, { FiltersQuery } from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
-import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
+import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { List, LayoutList } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
@@ -30,6 +30,7 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
+import { Alert, AlertDescription } from "@/ui/alert";
 
 export default function DutyUzelPage() {
   const t = useTranslations("DutyUzelPage");
@@ -386,9 +387,9 @@ export default function DutyUzelPage() {
   if (!organizationId) {
     return (
       <div className="p-6">
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Alert variant="destructive"><AlertDescription>
           {t("depo_id_not_found")}
-        </div>
+        </AlertDescription></Alert>
       </div>
     );
   }
@@ -399,28 +400,15 @@ export default function DutyUzelPage() {
         title={t("title")}
         description={t("description")}
         actions={
-          <Tabs
+          <SegmentedTabs
             value={isGroupView ? "group" : "list"}
             onValueChange={handleViewChange}
-            className="w-auto"
-          >
-            <TabsList className="bg-white border border-[#CAD5E2] p-1 rounded-lg">
-              <TabsTrigger
-                value="list"
-                className="px-3 py-1.5 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
-              >
-                <List className="h-4 w-4" />
-                {t("view_list")}
-              </TabsTrigger>
-              <TabsTrigger
-                value="group"
-                className="px-3 py-1.5 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
-              >
-                <LayoutList className="h-4 w-4" />
-                {t("view_group")}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+            aria-label={t("view_group")}
+            options={[
+              { value: "list", label: t("view_list"), icon: <List /> },
+              { value: "group", label: t("view_group"), icon: <LayoutList /> },
+            ]}
+          />
         }
       />
 
@@ -440,9 +428,9 @@ export default function DutyUzelPage() {
           </div>
 
           {groupError && (
-            <div className="mt-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <Alert variant="destructive" className="mt-2"><AlertDescription>
               {groupError}
-            </div>
+            </AlertDescription></Alert>
           )}
 
           <div className="mt-6">

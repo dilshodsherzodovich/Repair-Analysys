@@ -393,7 +393,7 @@ export default function LocomotivePassportForm({
           <Button
             variant="ghost"
             onClick={backToDashboard}
-            className="h-8 px-2 text-muted-foreground hover:text-[#0F172B]"
+            className="h-8 px-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-1.5 h-4 w-4" />
             {t("dashboard.backToOverview")}
@@ -456,7 +456,7 @@ export default function LocomotivePassportForm({
                       size="sm"
                       onClick={handleExportPDF}
                       variant="outline"
-                      className="border-gray-300"
+                      className="border-border-strong"
                       disabled={
                         isExportingPDF ||
                         !locomotiveDetail ||
@@ -481,7 +481,6 @@ export default function LocomotivePassportForm({
                         <Button
                           size="sm"
                           onClick={handleEdit}
-                          className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
                         >
                           <Save className="mr-2 h-4 w-4" />
                           {t("actions.edit")}
@@ -492,7 +491,7 @@ export default function LocomotivePassportForm({
                             size="sm"
                             onClick={handleCancel}
                             variant="outline"
-                            className="border-gray-300"
+                            className="border-border-strong"
                             disabled={isSavingComponents}
                           >
                             <X className="mr-2 h-4 w-4" />
@@ -501,7 +500,6 @@ export default function LocomotivePassportForm({
                           <Button
                             size="sm"
                             onClick={handleSave}
-                            className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
                             disabled={isSavingComponents}
                           >
                             {isSavingComponents ? (

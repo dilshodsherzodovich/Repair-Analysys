@@ -100,7 +100,7 @@ function DurationTrack({
     <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
       {maneuverPct > 0 && (
         <div
-          className="absolute inset-y-0 right-0 bg-amber-200/80"
+          className="absolute inset-y-0 right-0 bg-warning/80"
           style={{ width: `${maneuverPct}%` }}
         />
       )}
@@ -118,8 +118,8 @@ function DurationTrack({
 function OvertimeTrack() {
   return (
     <div className="relative flex h-2 w-full overflow-hidden rounded-full">
-      <div className="h-full flex-1 rounded-l-full bg-emerald-500" />
-      <div className="h-full w-3 shrink-0 rounded-r-full bg-red-500" />
+      <div className="h-full flex-1 rounded-l-full bg-success" />
+      <div className="h-full w-3 shrink-0 rounded-r-full bg-destructive" />
     </div>
   );
 }
@@ -145,7 +145,7 @@ function ProgressCell({
       {t("norm")}{" "}
       <span className="font-medium text-foreground">{inspection.duration}h</span>
       {maneuverMs > 0 && (
-        <span className="font-medium text-amber-600"> +{inspection.maneuver_time}m</span>
+        <span className="font-medium text-warning"> +{inspection.maneuver_time}m</span>
       )}
     </span>
   );
@@ -176,18 +176,18 @@ function ProgressCell({
         <DurationTrack
           percent={percent}
           maneuverPct={maneuverPct}
-          fillClass={inManeuver ? "bg-amber-500" : "bg-emerald-500"}
+          fillClass={inManeuver ? "bg-warning" : "bg-success"}
         />
       )}
-      <div className="flex flex-col text-[10px] leading-tight">
+      <div className="flex flex-col text-2xs leading-tight">
         {norma}
         {isOvertime ? (
-          <span className="flex items-center gap-0.5 font-semibold text-red-600">
+          <span className="flex items-center gap-0.5 font-semibold text-destructive">
             <AlertTriangle className="h-2.5 w-2.5" />
             +{overH}h {overM}m
           </span>
         ) : inspection.is_closed ? (
-          <span className="font-medium text-emerald-600">✓</span>
+          <span className="font-medium text-success">✓</span>
         ) : (
           <span className="text-muted-foreground">
             {t("remaining")}{" "}
@@ -235,9 +235,9 @@ export function PassportInspectionHistory({
   }, []);
 
   const thBase =
-    "border-b border-r border-border px-3 py-2.5 text-left font-semibold text-[#0F172B] last:border-r-0";
+    "border-b border-r border-border px-3 py-2.5 text-left font-semibold text-foreground last:border-r-0";
   const tdBase =
-    "border-b border-r border-border px-3 py-2.5 align-top text-[#334155] last:border-r-0";
+    "border-b border-r border-border px-3 py-2.5 align-top text-foreground-secondary last:border-r-0";
 
   return (
     <SectionCard

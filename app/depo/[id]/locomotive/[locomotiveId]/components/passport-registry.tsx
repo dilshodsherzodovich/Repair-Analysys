@@ -20,9 +20,9 @@ export function PassportRegistry({ locomotiveId }: { locomotiveId: number }) {
   const rows = (data?.results ?? []).slice(0, 15);
 
   const thBase =
-    "border-b border-r border-border px-3 py-2.5 text-left font-semibold text-[#0F172B] last:border-r-0";
+    "border-b border-r border-border px-3 py-2.5 text-left font-semibold text-foreground last:border-r-0";
   const tdBase =
-    "border-b border-r border-border px-3 py-2.5 align-top text-[#334155] last:border-r-0";
+    "border-b border-r border-border px-3 py-2.5 align-top text-foreground-secondary last:border-r-0";
 
   const YearFactory = ({
     year,

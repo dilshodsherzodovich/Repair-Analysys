@@ -20,19 +20,19 @@ function DriverRow({ driver }: { driver: DriverData }) {
     <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
       <Avatar className="h-11 w-11">
         {driver.image_url && <AvatarImage src={driver.image_url} alt={driver.mashinist_fio} />}
-        <AvatarFallback className="bg-[#2354BF]/10 text-[#2354BF] font-semibold">
+        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
           {initials(driver.mashinist_fio)}
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold text-[#0F172B]">
+        <div className="truncate text-sm font-semibold text-foreground">
           {driver.mashinist_fio || "—"}
         </div>
         <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
           {driver.phone && (
             <a
               href={`tel:${driver.phone}`}
-              className="flex items-center gap-1 hover:text-[#2354BF]"
+              className="flex items-center gap-1 hover:text-primary"
             >
               <Phone className="h-3 w-3" />
               {driver.phone}

@@ -30,6 +30,7 @@ import { BandageGroupCards } from "./components/bandage-group-cards";
 import { bandageGroupKey } from "./bandage-groups";
 import { exportBandagesExcel } from "@/utils/bandages-excel-export";
 import { useSnackbar } from "@/providers/snackbar-provider";
+import { Alert, AlertDescription } from "@/ui/alert";
 
 function BandagesPageContent({
   user,
@@ -210,9 +211,9 @@ function BandagesPageContent({
       />
 
       {isError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Alert variant="destructive"><AlertDescription>
           {t("error_load")}
-        </div>
+        </AlertDescription></Alert>
       )}
 
       <BandageGroupCards

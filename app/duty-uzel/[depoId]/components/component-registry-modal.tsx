@@ -239,7 +239,7 @@ export function ComponentRegistryModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="locomotive_id">
-                {t("locomotive")} <span className="text-red-500 ml-1">*</span>
+                {t("locomotive")} <span className="text-destructive ml-1">*</span>
               </Label>
               <SearchableSelect
                 value={selects.locomotive_id}
@@ -262,7 +262,7 @@ export function ComponentRegistryModal({
 
             <div>
               <Label htmlFor="section_id">
-                {t("section")} <span className="text-red-500 ml-1">*</span>
+                {t("section")} <span className="text-destructive ml-1">*</span>
               </Label>
               <Select
                 value={selects.section_id}
@@ -307,7 +307,7 @@ export function ComponentRegistryModal({
 
             <div>
               <Label htmlFor="component_id">
-                {t("uzel")} <span className="text-red-500 ml-1">*</span>
+                {t("uzel")} <span className="text-destructive ml-1">*</span>
               </Label>
               <Select
                 value={selects.component_id}
@@ -356,7 +356,7 @@ export function ComponentRegistryModal({
             <div>
               <Label htmlFor="inspection_id">
                 {t("inspection_type")}{" "}
-                <span className="text-red-500 ml-1">*</span>
+                <span className="text-destructive ml-1">*</span>
               </Label>
               <Select
                 value={selects.inspection_id}

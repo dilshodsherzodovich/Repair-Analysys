@@ -285,7 +285,7 @@ export default function LocomotivePassportClassic({
           <Button
             variant="outline"
             onClick={() => router.push(`/depo/${depotId}`)}
-            className="border-gray-300"
+            className="border-border-strong"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t("back")}
@@ -298,7 +298,7 @@ export default function LocomotivePassportClassic({
           <Button
             onClick={handleExportPDF}
             variant="outline"
-            className="border-gray-300"
+            className="border-border-strong"
             disabled={
               isExportingPDF ||
               !locomotiveDetail ||
@@ -323,7 +323,6 @@ export default function LocomotivePassportClassic({
               {!isEditing ? (
                 <Button
                   onClick={handleEdit}
-                  className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
                 >
                   <Save className="mr-2 h-4 w-4" />
                   {t("edit")}
@@ -333,7 +332,7 @@ export default function LocomotivePassportClassic({
                   <Button
                     onClick={handleCancel}
                     variant="outline"
-                    className="border-gray-300"
+                    className="border-border-strong"
                     disabled={isSavingComponents}
                   >
                     <X className="mr-2 h-4 w-4" />
@@ -341,7 +340,6 @@ export default function LocomotivePassportClassic({
                   </Button>
                   <Button
                     onClick={handleSave}
-                    className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
                     disabled={isSavingComponents}
                   >
                     {isSavingComponents ? (
@@ -370,7 +368,7 @@ export default function LocomotivePassportClassic({
               )
             }
             variant="outline"
-            className="border-gray-300"
+            className="border-border-strong"
           >
             <ExternalLink className="mr-2 h-4 w-4" />
             {t("details")}
@@ -383,19 +381,19 @@ export default function LocomotivePassportClassic({
           <h1 className="text-lg font-semibold">{t("locomotive_info")}</h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-0">
             <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-[#0F172B]">
+              <label className="mb-2 block text-sm font-medium text-foreground">
                 {t("depot")}
               </label>
               <Input value={depotId} disabled />
             </div>
             <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-[#0F172B]">
+              <label className="mb-2 block text-sm font-medium text-foreground">
                 {t("locomotive")}
               </label>
               <Input value={locomotiveDetail?.name ?? ""} disabled />
             </div>
             <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-[#0F172B]">
+              <label className="mb-2 block text-sm font-medium text-foreground">
                 {t("model")}
               </label>
               <Input value={locomotiveDetail?.model_name ?? ""} disabled />
@@ -412,7 +410,7 @@ export default function LocomotivePassportClassic({
                 onValueChange={(value) => setActiveSectionId(Number(value))}
                 className="flex w-full flex-col"
               >
-                <TabsList className="bg-[#F1F5F9] p-2 gap-0 border-0 rounded-lg w-full flex">
+                <TabsList className="bg-muted p-2 gap-0 border-0 rounded-lg w-full flex">
                   {locomotiveDetail.sections.map((section) => (
                     <TabsTrigger
                       key={section.id}
@@ -460,7 +458,7 @@ export default function LocomotivePassportClassic({
                   >
                     <div className="space-y-4">
                       <div className="min-w-0">
-                        <label className="mb-2 block text-sm font-medium text-[#0F172B]">
+                        <label className="mb-2 block text-sm font-medium text-foreground">
                           {component.component}
                         </label>
                         <Input
@@ -477,7 +475,7 @@ export default function LocomotivePassportClassic({
                         />
                       </div>
                       <div className="min-w-0">
-                        <label className="mb-2 block text-sm font-medium text-[#0F172B]">
+                        <label className="mb-2 block text-sm font-medium text-foreground">
                           {component.component} {t("year_manufactured")}
                         </label>
                         <Input

@@ -66,12 +66,12 @@ export function SectionCard({
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
           {Icon && (
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#2354BF]/10 text-[#2354BF]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <Icon className="h-5 w-5" />
             </div>
           )}
           <div className="min-w-0">
-            <h2 className="text-base font-semibold leading-tight text-[#0F172B]">
+            <h2 className="text-base font-semibold leading-tight text-foreground">
               {title}
             </h2>
             {description && (
@@ -111,11 +111,11 @@ export function StatTile({
   accent?: "default" | "blue" | "green" | "amber" | "red";
 }) {
   const accents: Record<string, string> = {
-    default: "text-[#0F172B]",
-    blue: "text-[#2354BF]",
-    green: "text-emerald-600",
-    amber: "text-amber-600",
-    red: "text-red-600",
+    default: "text-foreground",
+    blue: "text-primary",
+    green: "text-success",
+    amber: "text-warning",
+    red: "text-destructive",
   };
   return (
     <div className="rounded-xl border bg-card p-4">
@@ -152,7 +152,7 @@ export function InfoRow({
         {Icon && <Icon className="h-4 w-4" />}
         {label}
       </span>
-      <span className="text-sm font-medium text-[#0F172B] text-right">
+      <span className="text-sm font-medium text-foreground text-right">
         {value}
       </span>
     </div>

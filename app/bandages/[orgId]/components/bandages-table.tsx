@@ -227,10 +227,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
   const justSaved = !!savedCells;
   // Pinned cells need a solid background or scrolled cells show through
   const stickyBg = isEditing
-    ? "bg-[#F0F7FF]"
+    ? "bg-primary-subtle"
     : justSaved
-      ? "bg-[#F0FDF4]"
-      : "bg-white group-hover:bg-[#F8FAFC]";
+      ? "bg-success-subtle"
+      : "bg-background group-hover:bg-surface-muted";
 
   return (
     <>
@@ -238,9 +238,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={section.key}
           className={cn(
-            "group hover:bg-[#F8FAFC] transition-colors duration-700",
-            isEditing && "bg-[#F0F7FF] hover:bg-[#F0F7FF]",
-            justSaved && "bg-[#F0FDF4] hover:bg-[#F0FDF4]",
+            "group hover:bg-surface-muted transition-colors duration-700",
+            isEditing && "bg-primary-subtle hover:bg-primary-subtle",
+            justSaved && "bg-success-subtle hover:bg-success-subtle",
           )}
         >
           {sectionIndex === 0 && (
@@ -251,7 +251,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
                   gridCellClass,
                   stickyNo,
                   stickyBg,
-                  "z-[5] text-[#64748B] align-top",
+                  "z-[5] text-muted-foreground align-top",
                 )}
               >
                 {group.index}
@@ -262,13 +262,13 @@ const LocomotiveRows = memo(function LocomotiveRows({
                   gridCellClass,
                   stickyLocomotive,
                   stickyBg,
-                  "z-[5] text-[#0F172B] font-medium align-top",
-                  justSaved && "border-l-2 border-l-green-500",
+                  "z-[5] text-foreground font-medium align-top",
+                  justSaved && "border-l-2 border-l-success",
                 )}
               >
                 {group.name}-{group.modelName}
                 {justSaved && (
-                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success">
                     <Check className="h-3 w-3" />
                     {t("just_saved")}
                   </span>
@@ -281,7 +281,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
               gridCellClass,
               stickySection,
               stickyBg,
-              "z-[5] text-[#0F172B]",
+              "z-[5] text-foreground",
             )}
           >
             {section.sectionName}
@@ -302,19 +302,19 @@ const LocomotiveRows = memo(function LocomotiveRows({
                   key={`${name}-${side}`}
                   className={cn(
                     gridCellClass,
-                    "text-center text-[#0F172B] transition-colors duration-700",
+                    "text-center text-foreground transition-colors duration-700",
                     editable && "px-1 py-1.5",
                     !editable &&
                       activeGroup &&
                       (inActiveGroup
-                        ? "bg-[#EFF6FF] font-semibold text-blue-700"
-                        : "text-[#CBD5E1]"),
+                        ? "bg-primary-subtle font-semibold text-primary-hover"
+                        : "text-foreground-subtle"),
                     // Left and right too far apart; shown even outside the picked group
                     !editable &&
                       isUneven &&
-                      "bg-red-50 font-semibold text-red-600",
+                      "bg-destructive-subtle font-semibold text-destructive",
                     // Changed values win over the group highlight while it lasts
-                    wasSaved && "bg-green-100 font-semibold text-green-800",
+                    wasSaved && "bg-success-subtle font-semibold text-success",
                   )}
                 >
                   {editable ? (
@@ -456,7 +456,7 @@ export function BandagesTable({
             <TableRow>
               <TableCell
                 colSpan={columnCount}
-                className="py-8 text-center text-[#64748B]"
+                className="py-8 text-center text-muted-foreground"
               >
                 {t("empty")}
               </TableCell>

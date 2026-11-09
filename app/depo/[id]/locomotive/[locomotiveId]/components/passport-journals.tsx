@@ -43,7 +43,7 @@ function BorderedTable({
               <th
                 key={c.key}
                 className={cn(
-                  "border-b border-r border-border px-3 py-2.5 font-semibold text-[#0F172B] last:border-r-0",
+                  "border-b border-r border-border px-3 py-2.5 font-semibold text-foreground last:border-r-0",
                   c.align === "right" ? "text-right" : "text-left",
                   c.width
                 )}
@@ -72,7 +72,7 @@ function Row({
         <td
           key={c.key}
           className={cn(
-            "border-b border-r border-border px-3 py-2.5 align-top text-[#334155] last:border-r-0",
+            "border-b border-r border-border px-3 py-2.5 align-top text-foreground-secondary last:border-r-0",
             c.align === "right" ? "text-right tabular-nums" : "text-left",
             c.wrap ? "whitespace-normal break-words" : "whitespace-nowrap",
             c.width

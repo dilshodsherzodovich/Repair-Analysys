@@ -14,6 +14,7 @@ import UnauthorizedPage from "@/app/unauthorized/page";
 import { exportComponentGroupDetailsExcel } from "@/utils/duty-uzel-excel-export";
 import { ComponentGroupComponents } from "../../components/component-group-components";
 import { authService } from "@/api/services/auth.service";
+import { Alert, AlertDescription } from "@/ui/alert";
 
 /** One component group on its own page — opened from the group view's list. */
 export default function DutyUzelGroupPage() {
@@ -105,9 +106,9 @@ export default function DutyUzelGroupPage() {
   if (!groupId) {
     return (
       <div className="p-6">
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Alert variant="destructive"><AlertDescription>
           {t("group_not_found")}
-        </div>
+        </AlertDescription></Alert>
       </div>
     );
   }
@@ -137,9 +138,9 @@ export default function DutyUzelGroupPage() {
       </div>
 
       {errorMessage && (
-        <div className="mt-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Alert variant="destructive" className="mt-2"><AlertDescription>
           {errorMessage}
-        </div>
+        </AlertDescription></Alert>
       )}
 
       {isLoading ? (
@@ -150,11 +151,11 @@ export default function DutyUzelGroupPage() {
         </div>
       ) : (
         <div className="mt-6 space-y-3">
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-[#CAD5E2] bg-[#EFF6FF] px-4 py-2.5">
-            <span className="text-sm font-semibold text-[#0F172B]">
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-border-strong bg-primary-subtle px-4 py-2.5">
+            <span className="text-sm font-semibold text-foreground">
               {data?.group?.name}
             </span>
-            <span className="text-sm font-medium text-[#475569] whitespace-nowrap">
+            <span className="text-sm font-medium text-foreground-secondary whitespace-nowrap">
               {t("group_total", { count: data?.total_count ?? 0 })}
             </span>
           </div>
