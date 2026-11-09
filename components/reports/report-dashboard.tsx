@@ -35,6 +35,8 @@ import { formatDate } from "@/utils/formatDate";
 import { defineGridColsCount } from "@/lib/utils";
 import { PDFExportButton } from "./pdf-export-button";
 import type { PDFExportData } from "@/utils/pdf-export";
+import { Truck } from "lucide-react";
+import { PageHeader } from "@/ui/page-header";
 
 export default function ReportDashboard() {
   const t = useTranslations("Reports");
@@ -249,36 +251,24 @@ export default function ReportDashboard() {
       <div className="space-y-4">
 
       {/* ─── Header Card ─── */}
-      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden" data-no-pdf>
-        {/* Top row: title + export */}
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
-              <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1h6l2-1z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 6h3l3 4v4h-2" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-foreground font-semibold text-base leading-tight">{t("title")}</h1>
-              <p className="text-foreground-subtle text-xs mt-0.5">
-                {new Date().toLocaleDateString(
-                  locale === "ru" ? "ru-RU" : "uz-UZ",
-                  { weekday: "long", year: "numeric", month: "long", day: "numeric" }
-                )}
-              </p>
-            </div>
-          </div>
-          <PDFExportButton data={preparePDFData()} className="shrink-0" />
-        </div>
-        {/* Bottom row: date filter */}
-        <div className="px-5 py-3 bg-surface-muted/60">
-          <ReportsDateFilter
-            leading={<ReportOrganizationSelect label={t("organization")} />}
-          />
-        </div>
-      </div>
+      <PageHeader
+        variant="card"
+        data-no-pdf
+        icon={Truck}
+        title={t("title")}
+        description={new Date().toLocaleDateString(
+            locale === "ru" ? "ru-RU" : "uz-UZ",
+            { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+          )}
+        actions={<>
+            <PDFExportButton data={preparePDFData()} className="shrink-0" />
+          </>}
+        filters={<>
+            <ReportsDateFilter
+              leading={<ReportOrganizationSelect label={t("organization")} />}
+            />
+          </>}
+      />
 
       <div className="space-y-4 border p-5 rounded-xl shadow-md">
         {/* ─── Fleet Snapshot ─── */}

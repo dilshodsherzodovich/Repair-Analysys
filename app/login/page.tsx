@@ -106,6 +106,7 @@ export default function LoginPage() {
                   </div>
                 </div>
               </div>
+              {/* kit-allow: login screen brand hero, outside the app layout */}
               <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary to-brand-purple bg-clip-text text-transparent mb-3">
                 Tamir Tahlili Tizimi
               </h1>

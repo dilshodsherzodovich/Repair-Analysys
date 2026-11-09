@@ -33,6 +33,7 @@ import {
   ReportOrganizationSelect,
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
+import { PageHeader } from "@/ui/page-header";
 
 const LOCOMOTIVE_TYPES = [
   "electric_loco",
@@ -114,92 +115,81 @@ function LocomotiveGpsReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
-              <Satellite className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-foreground font-semibold text-base leading-tight">
-                {t("title")}
-              </h1>
-              <p className="text-foreground-subtle text-xs mt-0.5">{t("description")}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="px-5 py-3 bg-surface-muted/60 flex flex-wrap items-end gap-3">
-          <ReportOrganizationSelect />
-          <Select
-            value={filters.locomotive_type || "all"}
-            onValueChange={(value) =>
-              setFilters({ locomotive_type: value === "all" ? "" : value })
-            }
-          >
-            <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
-              <SelectValue placeholder={t("locomotiveType")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allTypes")}</SelectItem>
-              {LOCOMOTIVE_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {localeTypeLabel(type)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={filters.service_type || "all"}
-            onValueChange={(value) =>
-              setFilters({ service_type: value === "all" ? "" : value })
-            }
-          >
-            <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
-              <SelectValue placeholder={t("serviceType")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allServiceTypes")}</SelectItem>
-              {SERVICE_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {serviceTypeLabel(type)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={filters.locomotive_model || "all"}
-            onValueChange={(value) =>
-              setFilters({ locomotive_model: value === "all" ? "" : value })
-            }
-          >
-            <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
-              <SelectValue placeholder={t("model")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allModels")}</SelectItem>
-              {locomotiveModels?.results?.map((model) => (
-                <SelectItem key={model.id} value={model.id.toString()}>
-                  {model.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {hasActiveFilters && (
-            <button
-              onClick={resetFilters}
-              title={t("reset")}
-              className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
+      <PageHeader
+        variant="card"
+        icon={Satellite}
+        title={t("title")}
+        description={t("description")}
+        filters={<>
+            <ReportOrganizationSelect />
+            <Select
+              value={filters.locomotive_type || "all"}
+              onValueChange={(value) =>
+                setFilters({ locomotive_type: value === "all" ? "" : value })
+              }
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-      </div>
+              <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
+                <SelectValue placeholder={t("locomotiveType")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allTypes")}</SelectItem>
+                {LOCOMOTIVE_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {localeTypeLabel(type)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.service_type || "all"}
+              onValueChange={(value) =>
+                setFilters({ service_type: value === "all" ? "" : value })
+              }
+            >
+              <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
+                <SelectValue placeholder={t("serviceType")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allServiceTypes")}</SelectItem>
+                {SERVICE_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {serviceTypeLabel(type)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.locomotive_model || "all"}
+              onValueChange={(value) =>
+                setFilters({ locomotive_model: value === "all" ? "" : value })
+              }
+            >
+              <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
+                <SelectValue placeholder={t("model")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allModels")}</SelectItem>
+                {locomotiveModels?.results?.map((model) => (
+                  <SelectItem key={model.id} value={model.id.toString()}>
+                    {model.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {hasActiveFilters && (
+              <button
+                onClick={resetFilters}
+                title={t("reset")}
+                className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </>}
+      />
 
       {/* Content */}
       {!ready || (isFetching && !data) ? (

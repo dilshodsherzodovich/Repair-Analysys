@@ -10,6 +10,7 @@ export function Logo() {
         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-1 border-background"></div>
       </div>
       <div>
+        {/* kit-allow: login screen brand hero, outside the app layout */}
         <h1 className="text-lg font-semibold text-foreground">Миллий статистика қўмитаси</h1>
         <p className="text-sm text-muted-foreground">UZSTAT</p>
       </div>

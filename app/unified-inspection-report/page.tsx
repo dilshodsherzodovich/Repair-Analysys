@@ -44,6 +44,7 @@ import { SectionDelayedDuration } from "@/components/reports/unified/section-del
 import { generateUnifiedReportExcel } from "@/utils/unified-inspection-report-excel-export";
 import { generateUnifiedReportPDF } from "@/utils/unified-inspection-report-pdf-export";
 import type { UnifiedReportExportData } from "@/utils/unified-inspection-report-export-data";
+import { PageHeader } from "@/ui/page-header";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -215,19 +216,15 @@ function UnifiedInspectionReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
-          <div className="min-w-0">
-            <h1 className="text-foreground font-semibold text-base leading-tight">
-              {t("title")}
-            </h1>
-            <p className="text-foreground-subtle text-xs mt-0.5">
-              {orgLabel && `${orgLabel} · `}
-              {format(new Date(`${fromDate}T00:00:00`), "dd.MM.yyyy")} –{" "}
-              {format(new Date(`${toDate}T00:00:00`), "dd.MM.yyyy")}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
+      <PageHeader
+        variant="card"
+        title={t("title")}
+        description={<>
+            {orgLabel && `${orgLabel} · `}
+            {format(new Date(`${fromDate}T00:00:00`), "dd.MM.yyyy")} –{" "}
+            {format(new Date(`${toDate}T00:00:00`), "dd.MM.yyyy")}
+          </>}
+        actions={<>
             <button
               onClick={() => runExport("excel")}
               disabled={busy !== null}
@@ -252,85 +249,82 @@ function UnifiedInspectionReportPage() {
               )}
               {busy === "pdf" ? t("generating") : t("exportPdf")}
             </button>
-          </div>
-        </div>
+          </>}
+        filters={<>
+            <ReportOrganizationSelect label={t("organization")} />
 
-        {/* ─── Filters ─── */}
-        <div className="px-5 py-3 bg-surface-muted/60 flex flex-wrap items-end gap-3">
-          <ReportOrganizationSelect label={t("organization")} />
-
-          <DateBox
-            label={t("period")}
-            date={new Date(`${fromDate}T00:00:00`)}
-            onSelect={(d) =>
-              setFilters({ fromDate: d ? format(d, DATE_FMT) : "" })
-            }
-          />
-          <DateBox
-            label="—"
-            date={new Date(`${toDate}T00:00:00`)}
-            onSelect={(d) => setFilters({ toDate: d ? format(d, DATE_FMT) : "" })}
-          />
-
-          <div className="flex flex-col gap-1">
-            <span className={REPORT_FILTER_LABEL}>{t("branch")}</span>
-            <Select
-              value={branch}
-              onValueChange={(v) => setFilters({ branch: v === "all" ? "" : v })}
-            >
-              <SelectTrigger className="w-[190px] h-9 text-sm mb-0 sm:mb-0">
-                <SelectValue placeholder={t("branch")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("all")}</SelectItem>
-                {filteredBranches.map((b) => (
-                  <SelectItem key={b.id} value={String(b.id)}>
-                    {b.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <span className={REPORT_FILTER_LABEL}>{t("inspectionType")}</span>
-            <Select
-              value={inspectionType}
-              onValueChange={(v) =>
-                setFilters({ inspectionType: v === "all" ? "" : v })
+            <DateBox
+              label={t("period")}
+              date={new Date(`${fromDate}T00:00:00`)}
+              onSelect={(d) =>
+                setFilters({ fromDate: d ? format(d, DATE_FMT) : "" })
               }
-            >
-              <SelectTrigger className="w-[170px] h-9 text-sm mb-0 sm:mb-0">
-                <SelectValue placeholder={t("inspectionType")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("all")}</SelectItem>
-                {inspectionTypes.map((it) => (
-                  <SelectItem key={it.id} value={String(it.id)}>
-                    {typeName(it)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            />
+            <DateBox
+              label="—"
+              date={new Date(`${toDate}T00:00:00`)}
+              onSelect={(d) => setFilters({ toDate: d ? format(d, DATE_FMT) : "" })}
+            />
 
-          <button
-            onClick={() =>
-              setFilters({
-                fromDate: "",
-                toDate: "",
-                branch: "",
-                inspectionType: "",
-                section: "",
-              })
-            }
-            title={t("reset")}
-            className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
+            <div className="flex flex-col gap-1">
+              <span className={REPORT_FILTER_LABEL}>{t("branch")}</span>
+              <Select
+                value={branch}
+                onValueChange={(v) => setFilters({ branch: v === "all" ? "" : v })}
+              >
+                <SelectTrigger className="w-[190px] h-9 text-sm mb-0 sm:mb-0">
+                  <SelectValue placeholder={t("branch")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("all")}</SelectItem>
+                  {filteredBranches.map((b) => (
+                    <SelectItem key={b.id} value={String(b.id)}>
+                      {b.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <span className={REPORT_FILTER_LABEL}>{t("inspectionType")}</span>
+              <Select
+                value={inspectionType}
+                onValueChange={(v) =>
+                  setFilters({ inspectionType: v === "all" ? "" : v })
+                }
+              >
+                <SelectTrigger className="w-[170px] h-9 text-sm mb-0 sm:mb-0">
+                  <SelectValue placeholder={t("inspectionType")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("all")}</SelectItem>
+                  {inspectionTypes.map((it) => (
+                    <SelectItem key={it.id} value={String(it.id)}>
+                      {typeName(it)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <button
+              onClick={() =>
+                setFilters({
+                  fromDate: "",
+                  toDate: "",
+                  branch: "",
+                  inspectionType: "",
+                  section: "",
+                })
+              }
+              title={t("reset")}
+              className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          </>}
+      />
 
       <KpiStrip
         kpis={data.kpis}

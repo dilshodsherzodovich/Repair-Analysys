@@ -32,6 +32,7 @@ import {
   ReportOrganizationSelect,
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
+import { PageHeader } from "@/ui/page-header";
 
 export default function InspectionReportPage() {
   const t = useTranslations("Statistics");
@@ -189,25 +190,15 @@ export default function InspectionReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
-              <FileDown className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-foreground font-semibold text-base leading-tight">
-                Texnik ko&apos;riklar hisoboti
-              </h1>
-              <p className="text-foreground-subtle text-xs mt-0.5">
-                {new Date().toLocaleDateString(
-                  locale === "ru" ? "ru-RU" : "uz-UZ",
-                  { weekday: "long", year: "numeric", month: "long", day: "numeric" }
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="shrink-0 flex items-center gap-2">
+      <PageHeader
+        variant="card"
+        icon={FileDown}
+        title="Texnik ko&apos;riklar hisoboti"
+        description={new Date().toLocaleDateString(
+            locale === "ru" ? "ru-RU" : "uz-UZ",
+            { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+          )}
+        actions={<>
             <button
               onClick={handleDownloadExcel}
               disabled={isDownloadingExcel || !Object.keys(visibleInspectionsByType).length}
@@ -232,87 +223,84 @@ export default function InspectionReportPage() {
               )}
               {isDownloadingPdf ? t("downloading") : t("downloadPdf")}
             </button>
-          </div>
-        </div>
+          </>}
+        filters={<>
+            <ReportOrganizationSelect />
+            {/* Start date */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "h-9 w-[140px] justify-start text-left font-normal text-xs",
+                    !startDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-3 w-3" />
+                  {startDate ? format(startDate, "dd/MM/yyyy") : t("selectDate")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={(d) =>
+                    setFilters({ fromDate: d ? format(d, "yyyy-MM-dd") : "" })
+                  }
+                  captionLayout="dropdown"
+                  locale={uz}
+                />
+              </PopoverContent>
+            </Popover>
 
-        {/* Filters */}
-        <div className="px-5 py-3 bg-surface-muted/60 flex flex-wrap items-end gap-2">
-          <ReportOrganizationSelect />
-          {/* Start date */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "h-9 w-[140px] justify-start text-left font-normal text-xs",
-                  !startDate && "text-muted-foreground"
-                )}
+            {/* End date */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "h-9 w-[140px] justify-start text-left font-normal text-xs",
+                    !endDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-3 w-3" />
+                  {endDate ? format(endDate, "dd/MM/yyyy") : t("selectDate")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={(d) =>
+                    setFilters({ toDate: d ? format(d, "yyyy-MM-dd") : "" })
+                  }
+                  captionLayout="dropdown"
+                  locale={uz}
+                />
+              </PopoverContent>
+            </Popover>
+
+            {/* Branch */}
+            {filteredBranches.length > 0 && (
+              <Select
+                value={branch}
+                onValueChange={(v) => setFilters({ branch: v === "all" ? "" : v })}
               >
-                <CalendarIcon className="mr-2 h-3 w-3" />
-                {startDate ? format(startDate, "dd/MM/yyyy") : t("selectDate")}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={(d) =>
-                  setFilters({ fromDate: d ? format(d, "yyyy-MM-dd") : "" })
-                }
-                captionLayout="dropdown"
-                locale={uz}
-              />
-            </PopoverContent>
-          </Popover>
-
-          {/* End date */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "h-9 w-[140px] justify-start text-left font-normal text-xs",
-                  !endDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-3 w-3" />
-                {endDate ? format(endDate, "dd/MM/yyyy") : t("selectDate")}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={(d) =>
-                  setFilters({ toDate: d ? format(d, "yyyy-MM-dd") : "" })
-                }
-                captionLayout="dropdown"
-                locale={uz}
-              />
-            </PopoverContent>
-          </Popover>
-
-          {/* Branch */}
-          {filteredBranches.length > 0 && (
-            <Select
-              value={branch}
-              onValueChange={(v) => setFilters({ branch: v === "all" ? "" : v })}
-            >
-              <SelectTrigger className="w-[200px] h-9 text-xs mb-0 sm:mb-0">
-                <SelectValue placeholder={t("branch")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("all")}</SelectItem>
-                {filteredBranches.map((b) => (
-                  <SelectItem key={b.id} value={b.id.toString()}>
-                    {b.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
-      </div>
+                <SelectTrigger className="w-[200px] h-9 text-xs mb-0 sm:mb-0">
+                  <SelectValue placeholder={t("branch")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("all")}</SelectItem>
+                  {filteredBranches.map((b) => (
+                    <SelectItem key={b.id} value={b.id.toString()}>
+                      {b.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </>}
+      />
 
       {/* ─── Counts by type ─── */}
       <div className="bg-background rounded-xl shadow-sm border border-border p-5">

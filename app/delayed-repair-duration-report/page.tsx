@@ -39,6 +39,7 @@ import {
   ReportOrganizationSelect,
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
+import { PageHeader } from "@/ui/page-header";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -171,22 +172,11 @@ function DelayedRepairDurationReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
-              <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-foreground font-semibold text-base leading-tight">
-                {t("title")}
-              </h1>
-              <p className="text-foreground-subtle text-xs mt-0.5">{t("description")}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
+      <PageHeader
+        variant="card"
+        title={t("title")}
+        description={t("description")}
+        actions={<>
             <button
               onClick={handleExportExcel}
               disabled={isExporting || rows.length === 0}
@@ -199,73 +189,70 @@ function DelayedRepairDurationReportPage() {
               )}
               {isExporting ? t("generatingExcel") : t("exportExcel")}
             </button>
-          </div>
-        </div>
+          </>}
+        filters={<>
+            <ReportOrganizationSelect label={t("organization")} />
+            <DateBox label={t("fromDate")} date={from} onSelect={setFrom} />
+            <ArrowRight className="w-4 h-4 text-foreground-subtle shrink-0 mb-2.5" />
+            <DateBox label={t("toDate")} date={to} onSelect={setTo} />
 
-        {/* Filters */}
-        <div className="px-5 py-3 bg-surface-muted/60 flex flex-wrap items-end gap-3">
-          <ReportOrganizationSelect label={t("organization")} />
-          <DateBox label={t("fromDate")} date={from} onSelect={setFrom} />
-          <ArrowRight className="w-4 h-4 text-foreground-subtle shrink-0 mb-2.5" />
-          <DateBox label={t("toDate")} date={to} onSelect={setTo} />
+            {/* Branch */}
+            <FilterField label={t("branch")}>
+              <Select value={branch} onValueChange={setBranch}>
+                <SelectTrigger className="w-[190px] h-9 text-sm mb-0 sm:mb-0">
+                  <SelectValue placeholder={t("branch")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("all")}</SelectItem>
+                  {filteredBranches.map((b) => (
+                    <SelectItem key={b.id} value={b.id.toString()}>
+                      {b.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FilterField>
 
-          {/* Branch */}
-          <FilterField label={t("branch")}>
-            <Select value={branch} onValueChange={setBranch}>
-              <SelectTrigger className="w-[190px] h-9 text-sm mb-0 sm:mb-0">
-                <SelectValue placeholder={t("branch")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("all")}</SelectItem>
-                {filteredBranches.map((b) => (
-                  <SelectItem key={b.id} value={b.id.toString()}>
-                    {b.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FilterField>
+            {/* Inspection type */}
+            <FilterField label={t("inspectionType")}>
+              <Select value={inspectionType} onValueChange={setInspectionType}>
+                <SelectTrigger className="w-[160px] h-9 text-sm mb-0 sm:mb-0">
+                  <SelectValue placeholder={t("inspectionType")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("all")}</SelectItem>
+                  {inspectionTypes?.map((it) => (
+                    <SelectItem key={it.id} value={it.id.toString()}>
+                      {typeName(it)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FilterField>
 
-          {/* Inspection type */}
-          <FilterField label={t("inspectionType")}>
-            <Select value={inspectionType} onValueChange={setInspectionType}>
-              <SelectTrigger className="w-[160px] h-9 text-sm mb-0 sm:mb-0">
-                <SelectValue placeholder={t("inspectionType")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("all")}</SelectItem>
-                {inspectionTypes?.map((it) => (
-                  <SelectItem key={it.id} value={it.id.toString()}>
-                    {typeName(it)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FilterField>
+            {/* Status */}
+            <FilterField label={t("status")}>
+              <Select value={status} onValueChange={setStatus}>
+                <SelectTrigger className="w-[150px] h-9 text-sm mb-0 sm:mb-0">
+                  <SelectValue placeholder={t("status")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("all")}</SelectItem>
+                  <SelectItem value="closed">{t("statusClosed")}</SelectItem>
+                  <SelectItem value="open">{t("statusOpen")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </FilterField>
 
-          {/* Status */}
-          <FilterField label={t("status")}>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-[150px] h-9 text-sm mb-0 sm:mb-0">
-                <SelectValue placeholder={t("status")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("all")}</SelectItem>
-                <SelectItem value="closed">{t("statusClosed")}</SelectItem>
-                <SelectItem value="open">{t("statusOpen")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </FilterField>
-
-          <button
-            onClick={handleReset}
-            title={t("reset")}
-            className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
+            <button
+              onClick={handleReset}
+              title={t("reset")}
+              className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          </>}
+      />
 
       {/* Content */}
       {isFetching && !report ? (

@@ -445,6 +445,7 @@ export default function PublicDefectiveWorkCreatePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-muted px-4 py-10 text-foreground">
         <Card className="border border-destructive/30 bg-background p-6 shadow-xl md:p-8 space-y-4">
+          {/* kit-allow: public defect form hero, outside the app layout */}
           <h1 className="text-lg font-semibold text-destructive">
             {t("auth_error_title")}
           </h1>
@@ -468,6 +469,7 @@ export default function PublicDefectiveWorkCreatePage() {
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
             Smart Depo
           </p>
+          {/* kit-allow: public defect form hero, outside the app layout */}
           <h1 className="text-3xl font-bold md:text-4xl">{t("title")}</h1>
           <p className="text-base text-foreground-secondary md:text-lg">{t("subtitle")}</p>
           <div className="flex items-center justify-center gap-2 text-sm text-foreground-secondary">

@@ -25,6 +25,7 @@ import {
   ReportOrganizationSelect,
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
+import { PageHeader } from "@/ui/page-header";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -143,24 +144,11 @@ function Txk2ReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
-              <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-foreground font-semibold text-base leading-tight">
-                {t("title")}
-              </h1>
-              <p className="text-foreground-subtle text-xs mt-0.5">
-                {t("description")}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
+      <PageHeader
+        variant="card"
+        title={t("title")}
+        description={t("description")}
+        actions={<>
             <button
               onClick={handleExportExcel}
               disabled={isExporting || organizationId == null || rows.length === 0}
@@ -173,12 +161,11 @@ function Txk2ReportPage() {
               )}
               {isExporting ? t("generatingExcel") : t("exportExcel")}
             </button>
-          </div>
-        </div>
-        <div className="px-5 py-3 bg-surface-muted/60">
-          <Txk2DateFilter dateFrom={dateFrom} dateTo={dateTo} />
-        </div>
-      </div>
+          </>}
+        filters={<>
+            <Txk2DateFilter dateFrom={dateFrom} dateTo={dateTo} />
+          </>}
+      />
 
       {/* Content */}
       {organizationId == null ? (

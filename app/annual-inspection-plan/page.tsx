@@ -22,6 +22,7 @@ import { exportAnnualPlanCompareExcel } from "@/utils/annual-plan-compare-excel-
 import { PlanReportGrid } from "./plan-report-grid";
 import { PlanEditGrid } from "./plan-edit-grid";
 import { PlanCompareGrid } from "./plan-compare-grid";
+import { PageHeader } from "@/ui/page-header";
 
 const ALL = "0";
 
@@ -137,24 +138,12 @@ export default function AnnualInspectionPlanPage() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-border">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
-              <CalendarRange className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-base font-semibold leading-tight">
-                Texnik ko&apos;riklar yillik rejasi
-              </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Grafik raboti — tashkilot, ko&apos;rik turi va rusum bo&apos;yicha yillik reja
-              </p>
-            </div>
-          </div>
-
-          {/* Mode toggle */}
-          <div className="flex items-center rounded-lg border border-border p-0.5 bg-muted/40">
+      <PageHeader
+        variant="card"
+        icon={CalendarRange}
+        title="Texnik ko&apos;riklar yillik rejasi"
+        description="Grafik raboti — tashkilot, ko&apos;rik turi va rusum bo&apos;yicha yillik reja"
+        actions={<>
             <button
               onClick={() => setMode("view")}
               className={cn(
@@ -177,10 +166,8 @@ export default function AnnualInspectionPlanPage() {
             >
               <Pencil className="h-3.5 w-3.5" /> Tahrirlash
             </button>
-          </div>
-        </div>
-
-        {/* Filters */}
+          </>}
+      >
         <div className="px-5 py-3 bg-muted/30 flex flex-wrap items-center gap-2">
           {/* Year */}
           <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
@@ -277,7 +264,7 @@ export default function AnnualInspectionPlanPage() {
             </>
           )}
         </div>
-      </div>
+      </PageHeader>
 
       {/* Content */}
       {mode === "view" ? (

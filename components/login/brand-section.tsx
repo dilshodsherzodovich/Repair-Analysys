@@ -14,6 +14,8 @@ export function BrandSection() {
         </div>
       </div>
 
+
+      {/* kit-allow: login screen brand hero, outside the app layout */}
       <h1 className="text-4xl font-bold text-primary-foreground mb-4 leading-tight">
         Milliy statistika
         <br />

@@ -35,6 +35,7 @@ import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { authService } from "@/api/services/auth.service";
 import { Label } from "@/ui/label";
+import { PageHeader } from "@/ui/page-header";
 
 interface LocomotivePassportClassicProps {
   depotId: string;
@@ -281,8 +282,9 @@ export default function LocomotivePassportClassic({
 
   return (
     <div className="space-y-6 pb-4 max-w-full overflow-x-hidden">
-      <div className="flex justify-between gap-3 items-center">
-        <div className="flex items-center gap-3">
+      <PageHeader
+        title={`${locomotiveDetail?.name ?? ""} - ${locomotiveDetail?.model_name ?? ""}`}
+        leading={
           <Button
             variant="outline"
             onClick={() => router.push(`/depo/${depotId}`)}
@@ -291,95 +293,95 @@ export default function LocomotivePassportClassic({
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t("back")}
           </Button>
-          <h1 className="text-2xl font-bold">
-            {locomotiveDetail?.name} - {locomotiveDetail?.model_name}
-          </h1>
-        </div>
-        <div className="flex gap-3">
-          <Button
-            onClick={handleExportPDF}
-            variant="outline"
-            className="border-border-strong"
-            disabled={
-              isExportingPDF ||
-              !locomotiveDetail ||
-              activeSectionId === null ||
-              componentList.length === 0
-            }
-          >
-            {isExportingPDF ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t("exporting")}
-              </>
-            ) : (
-              <>
-                <FileDown className="mr-2 h-4 w-4" />
-                {t("export_pdf")}
-              </>
-            )}
-          </Button>
-          {canEdit && (
-            <>
-              {!isEditing ? (
-                <Button
-                  onClick={handleEdit}
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  {t("edit")}
-                </Button>
+        }
+        actions={
+          <>
+            <Button
+              onClick={handleExportPDF}
+              variant="outline"
+              className="border-border-strong"
+              disabled={
+                isExportingPDF ||
+                !locomotiveDetail ||
+                activeSectionId === null ||
+                componentList.length === 0
+              }
+            >
+              {isExportingPDF ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("exporting")}
+                </>
               ) : (
                 <>
-                  <Button
-                    onClick={handleCancel}
-                    variant="outline"
-                    className="border-border-strong"
-                    disabled={isSavingComponents}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    {t("cancel")}
-                  </Button>
-                  <Button
-                    onClick={handleSave}
-                    disabled={isSavingComponents}
-                  >
-                    {isSavingComponents ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t("saving")}
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-4 w-4" />
-                        {t("save")}
-                      </>
-                    )}
-                  </Button>
+                  <FileDown className="mr-2 h-4 w-4" />
+                  {t("export_pdf")}
                 </>
               )}
-            </>
-          )}
-          {/* Opens the detailed dashboard as its own page — it has no
-              navigation of its own, so it is closed rather than exited. */}
-          <Button
-            onClick={() =>
-              window.open(
-                `/depo/${depotId}/locomotive/${locomotiveId}?design=new`,
-                "_blank"
-              )
-            }
-            variant="outline"
-            className="border-border-strong"
-          >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            {t("details")}
-          </Button>
-        </div>
-      </div>
+            </Button>
+            {canEdit && (
+              <>
+                {!isEditing ? (
+                  <Button
+                    onClick={handleEdit}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    {t("edit")}
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handleCancel}
+                      variant="outline"
+                      className="border-border-strong"
+                      disabled={isSavingComponents}
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      {t("cancel")}
+                    </Button>
+                    <Button
+                      onClick={handleSave}
+                      disabled={isSavingComponents}
+                    >
+                      {isSavingComponents ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {t("saving")}
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          {t("save")}
+                        </>
+                      )}
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+            {/* Opens the detailed dashboard as its own page — it has no
+                navigation of its own, so it is closed rather than exited. */}
+            <Button
+              onClick={() =>
+                window.open(
+                  `/depo/${depotId}/locomotive/${locomotiveId}?design=new`,
+                  "_blank"
+                )
+              }
+              variant="outline"
+              className="border-border-strong"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              {t("details")}
+            </Button>
+
+          </>
+        }
+      />
 
       <form className="space-y-6 pb-4 max-w-full overflow-x-hidden">
         <Card className="gap-4">
-          <h1 className="text-lg font-semibold">{t("locomotive_info")}</h1>
+          <h2 className="text-lg font-semibold">{t("locomotive_info")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-0">
             <div className="min-w-0">
               <Label className="mb-2 block text-sm font-medium text-foreground">
@@ -405,7 +407,7 @@ export default function LocomotivePassportClassic({
         {locomotiveDetail?.sections && locomotiveDetail.sections.length > 0 && (
           <Card className="gap-4">
             <div className="space-y-3">
-              <h1 className="text-lg font-semibold">{t("active_section")}</h1>
+              <h2 className="text-lg font-semibold">{t("active_section")}</h2>
               <Tabs
                 value={activeSectionId?.toString() ?? ""}
                 onValueChange={(value) => setActiveSectionId(Number(value))}
@@ -429,7 +431,7 @@ export default function LocomotivePassportClassic({
 
         <Card className="gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold">{t("components")}</h1>
+            <h2 className="text-lg font-semibold">{t("components")}</h2>
             {isFetchingComponents && (
               <span className="text-xs text-muted-foreground flex items-center gap-2">
                 <Loader2 className="h-3 w-3 animate-spin" />

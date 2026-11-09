@@ -21,6 +21,7 @@ import {
   ReportOrganizationSelect,
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
+import { PageHeader } from "@/ui/page-header";
 
 const SUPERVISOR_ROLES = ["admin", "dispatcher", "operator", "rb_admin"];
 
@@ -146,34 +147,20 @@ export default function DelayedReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header ─── */}
-      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
-        <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-muted">
-          <div className="flex items-start gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-warning flex items-center justify-center shrink-0 shadow-sm">
-              <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-foreground font-semibold text-base leading-tight">
-                {t("delayedReportTitle")}
-              </h1>
-              {/* The report has no date range — it always shows what is overdue
-                  right now, so the description says so rather than leaving the
-                  timestamp to be misread as "generated on". */}
-              <p className="text-muted-foreground text-xs mt-1">
-                {t("delayedReportDescription")}
-                <span className="text-foreground-subtle">
-                  {" · "}
-                  {snapshotAt} {t("asOf")}
-                </span>
-                {isFetching && (
-                  <Loader2 className="inline w-3 h-3 ml-1.5 animate-spin text-foreground-subtle align-[-1px]" />
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
+      <PageHeader
+        variant="card"
+        title={t("delayedReportTitle")}
+        description={<>
+            {t("delayedReportDescription")}
+            <span className="text-foreground-subtle">
+              {" · "}
+              {snapshotAt} {t("asOf")}
+            </span>
+            {isFetching && (
+              <Loader2 className="inline w-3 h-3 ml-1.5 animate-spin text-foreground-subtle align-[-1px]" />
+            )}
+          </>}
+        actions={<>
             <button
               onClick={handleExportExcel}
               disabled={isExportingExcel}
@@ -198,21 +185,20 @@ export default function DelayedReportPage() {
               )}
               {isExporting ? t("generatingPDF") : t("exportPDF")}
             </button>
-          </div>
-        </div>
-        <div className="px-5 py-3 bg-surface-muted/60">
-          <DelayedReportFilters
-            onRefresh={() => refetch()}
-            leading={
-              <ReportOrganizationSelect
-                label
-                labelClassName="text-sm font-normal normal-case tracking-normal text-foreground pl-0"
-                className="gap-2"
-              />
-            }
-          />
-        </div>
-      </div>
+          </>}
+        filters={<>
+            <DelayedReportFilters
+              onRefresh={() => refetch()}
+              leading={
+                <ReportOrganizationSelect
+                  label
+                  labelClassName="text-sm font-normal normal-case tracking-normal text-foreground pl-0"
+                  className="gap-2"
+                />
+              }
+            />
+          </>}
+      />
 
       {/* ─── Summary: the total leads, the breakdown follows ─── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
