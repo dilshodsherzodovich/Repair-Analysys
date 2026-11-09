@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authService } from "@/api/services/auth.service";
 import { storeAuth } from "@/api/hooks/use-auth";
+import { Button } from "@/ui/button";
 
 function AuthCallbackInner() {
   const searchParams = useSearchParams();
@@ -85,12 +86,11 @@ function AuthCallbackInner() {
             Ruxsat yo'q
           </h2>
           <p className="text-muted-foreground mb-6">{unauthorized}</p>
-          <button
+          <Button size="lg" className="w-full"
             onClick={() => authService.logout()}
-            className="w-full h-11 bg-gradient-to-r from-primary to-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition-opacity"
           >
             Boshqa hisob bilan kirish
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -101,12 +101,11 @@ function AuthCallbackInner() {
       <div className="min-h-screen flex items-center justify-center bg-surface-muted">
         <div className="text-center">
           <p className="text-destructive mb-4">{error}</p>
-          <button
+          <Button variant="link" className="h-auto p-0"
             onClick={() => router.replace("/login")}
-            className="text-primary hover:underline"
           >
             Kirish sahifasiga qaytish
-          </button>
+          </Button>
         </div>
       </div>
     );

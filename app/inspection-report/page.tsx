@@ -199,10 +199,9 @@ export default function InspectionReportPage() {
             { weekday: "long", year: "numeric", month: "long", day: "numeric" }
           )}
         actions={<>
-            <button
+            <Button variant="success"
               onClick={handleDownloadExcel}
               disabled={isDownloadingExcel || !Object.keys(visibleInspectionsByType).length}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-60"
             >
               {isDownloadingExcel ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -210,11 +209,10 @@ export default function InspectionReportPage() {
                 <FileSpreadsheet className="w-4 h-4" />
               )}
               {isDownloadingExcel ? t("downloading") : t("downloadExcel")}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleDownloadPdf}
               disabled={isDownloadingPdf || !Object.keys(visibleInspectionsByType).length}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary hover:bg-primary-hover text-primary-foreground transition-colors disabled:opacity-60"
             >
               {isDownloadingPdf ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -222,7 +220,7 @@ export default function InspectionReportPage() {
                 <Download className="w-4 h-4" />
               )}
               {isDownloadingPdf ? t("downloading") : t("downloadPdf")}
-            </button>
+            </Button>
           </>}
         filters={<>
             <ReportOrganizationSelect />

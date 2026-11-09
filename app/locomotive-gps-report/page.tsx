@@ -34,6 +34,7 @@ import {
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
+import { Button } from "@/ui/button";
 
 const LOCOMOTIVE_TYPES = [
   "electric_loco",
@@ -180,13 +181,12 @@ function LocomotiveGpsReportPage() {
             </Select>
 
             {hasActiveFilters && (
-              <button
+              <Button variant="outline" size="icon"
                 onClick={resetFilters}
                 title={t("reset")}
-                className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             )}
           </>}
       />

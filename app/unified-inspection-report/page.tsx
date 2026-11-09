@@ -45,6 +45,7 @@ import { generateUnifiedReportExcel } from "@/utils/unified-inspection-report-ex
 import { generateUnifiedReportPDF } from "@/utils/unified-inspection-report-pdf-export";
 import type { UnifiedReportExportData } from "@/utils/unified-inspection-report-export-data";
 import { PageHeader } from "@/ui/page-header";
+import { Button } from "@/ui/button";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -225,10 +226,9 @@ function UnifiedInspectionReportPage() {
             {format(new Date(`${toDate}T00:00:00`), "dd.MM.yyyy")}
           </>}
         actions={<>
-            <button
+            <Button variant="success"
               onClick={() => runExport("excel")}
               disabled={busy !== null}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-60"
             >
               {busy === "excel" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -236,11 +236,10 @@ function UnifiedInspectionReportPage() {
                 <FileSpreadsheet className="w-4 h-4" />
               )}
               {busy === "excel" ? t("generating") : t("exportExcel")}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => runExport("pdf")}
               disabled={busy !== null}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary hover:bg-primary-hover text-primary-foreground transition-colors disabled:opacity-60"
             >
               {busy === "pdf" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -248,7 +247,7 @@ function UnifiedInspectionReportPage() {
                 <FileDown className="w-4 h-4" />
               )}
               {busy === "pdf" ? t("generating") : t("exportPdf")}
-            </button>
+            </Button>
           </>}
         filters={<>
             <ReportOrganizationSelect label={t("organization")} />
@@ -308,7 +307,7 @@ function UnifiedInspectionReportPage() {
               </Select>
             </div>
 
-            <button
+            <Button variant="outline" size="icon"
               onClick={() =>
                 setFilters({
                   fromDate: "",
@@ -319,10 +318,9 @@ function UnifiedInspectionReportPage() {
                 })
               }
               title={t("reset")}
-              className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-            </button>
+            </Button>
           </>}
       />
 
@@ -360,10 +358,10 @@ function DateBox({
       <span className={REPORT_FILTER_LABEL}>{label}</span>
       <Popover>
         <PopoverTrigger asChild>
-          <button className="flex items-center gap-2 px-3 py-2 h-9 text-sm font-medium text-foreground-secondary hover:bg-surface-muted transition-colors whitespace-nowrap border border-border rounded-lg bg-background shadow-sm">
+          <Button variant="outline" className="font-normal">
             <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
             {format(date, "dd.MM.yyyy")}
-          </button>
+          </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar

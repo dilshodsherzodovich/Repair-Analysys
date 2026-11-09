@@ -34,6 +34,7 @@ import { hasPermission } from "@/lib/permissions";
 import { useUpdateInspectionSection } from "@/api/hooks/use-inspections";
 import type { UserData } from "@/api/types/auth";
 import { authService } from "@/api/services/auth.service";
+import { Button } from "@/ui/button";
 
 export const INSPECTION_SECTION_OPTIONS = [
   { value: "A", labelKey: "A" },
@@ -329,16 +330,15 @@ export function InspectionsGroupedTable({
                         <span className="inline-flex items-center gap-1.5">
                           {getSectionDisplayLabel(inspection?.section)}
                           {canEditSection && inspection.locomotive && (
-                            <button
+                            <Button variant="ghost" size="icon-sm"
                               type="button"
                               onClick={() =>
                                 setEditingSectionForId(inspection.id)
                               }
-                              className="p-1 rounded hover:bg-border text-muted-foreground hover:text-foreground"
                               aria-label={t("action_edit")}
                             >
                               <Pencil className="h-3.5 w-3.5" />
-                            </button>
+                            </Button>
                           )}
                         </span>
                       )}
@@ -385,13 +385,12 @@ export function InspectionsGroupedTable({
                       <TableCell className="py-3 px-4 text-center">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button
+                            <Button variant="ghost" size="icon-sm"
                               type="button"
-                              className="p-1.5 rounded hover:bg-border inline-flex items-center justify-center"
                               aria-label={t("columns.actions")}
                             >
                               <MoreVertical className="h-4 w-4 text-muted-foreground" />
-                            </button>
+                            </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem

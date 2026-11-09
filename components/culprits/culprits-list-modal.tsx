@@ -630,14 +630,13 @@ export function CulpritsListModal({
                 {canAdd && (
                   <tr className="border-t">
                     <td colSpan={colSpan} className="px-3 py-2">
-                      <button
+                      <Button variant="link" className="h-auto p-0"
                         type="button"
                         onClick={addDraft}
-                        className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                       >
                         <Plus className="h-4 w-4" />
                         {t("add_button")}
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 )}

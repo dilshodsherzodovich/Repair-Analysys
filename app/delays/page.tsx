@@ -63,6 +63,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { authService } from "@/api/services/auth.service";
+import { Button } from "@/ui/button";
 
 // Stages that still have a "next" awaited step (terminal stages excluded)
 const STAGES_WITH_NEXT: DelayStage[] = [
@@ -584,10 +585,9 @@ export default function DelaysPage() {
               <span className="text-success">{fmt(recoveredSum)}</span>
             </span>
             {totalCount > 0 && (
-              <button
+              <Button variant="link" size="xs" className="h-auto w-fit p-0 text-2xs text-muted-foreground hover:text-foreground"
                 type="button"
                 onClick={() => handleOpenInfo(row)}
-                className="inline-flex w-fit items-center gap-1 text-2xs text-muted-foreground hover:text-foreground"
                 title={t("actions.culprits")}
               >
                 <Info className="h-3 w-3 shrink-0" />
@@ -597,7 +597,7 @@ export default function DelaysPage() {
                     tc: totalCount,
                   })}
                 </span>
-              </button>
+              </Button>
             )}
           </div>
         );

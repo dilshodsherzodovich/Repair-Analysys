@@ -478,14 +478,13 @@ export default function LocomotiveMileageReportPage() {
                         <TableCell className="py-2 px-2 border-r border-border">
                           <div className="flex items-center justify-between gap-1">
                             <span className="text-right text-foreground-secondary flex-1">{formatNum(loco.total_mileage)}</span>
-                            <button
+                            <Button variant="ghost" size="icon-sm"
                               type="button"
                               onClick={() => setTotalMileageModal({ locomotiveId: loco.id, locomotiveName: `${loco.series} ${loco.number}` })}
-                              className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-border text-foreground-subtle hover:text-foreground-secondary transition-colors shrink-0"
                               title="Bazani sozlash"
                             >
                               <Settings2 className="size-3.5" />
-                            </button>
+                            </Button>
                           </div>
                         </TableCell>
                         <TableCell className="py-2 px-2 text-right text-foreground-secondary border-r border-border">
@@ -497,7 +496,7 @@ export default function LocomotiveMileageReportPage() {
                           const isSaving = pendingBaselines.has(`${loco.id}-${inspType.type_id}`);
 
                           const gearButton = (
-                            <button
+                            <Button variant="ghost" size="icon-sm"
                               type="button"
                               disabled={isSaving}
                               onClick={() =>
@@ -509,13 +508,12 @@ export default function LocomotiveMileageReportPage() {
                                   currentActualDate: insp?.actual_last_date,
                                 })
                               }
-                              className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-border text-foreground-subtle hover:text-foreground-secondary transition-colors disabled:cursor-not-allowed"
                               title={t("columns.sozlash")}
                             >
                               {isSaving
                                 ? <Loader2 className="size-3.5 animate-spin text-primary" />
                                 : <Settings2 className="size-3.5" />}
-                            </button>
+                            </Button>
                           );
 
                           const hasLastDate = !!insp && !!insp.last_date && insp.last_date !== "-";

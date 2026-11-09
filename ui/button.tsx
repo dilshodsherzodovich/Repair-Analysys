@@ -24,6 +24,15 @@ const buttonVariants = cva(
         /** Delete and other irreversible actions. */
         destructive:
           "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/30",
+        /** Bordered red: reset / remove actions that should not shout. */
+        "outline-destructive":
+          "border border-destructive/40 bg-background text-destructive shadow-xs hover:bg-destructive-subtle",
+        /** Bordered green: confirm / add actions next to neutral ones. */
+        "outline-success":
+          "border border-success/40 bg-background text-success shadow-xs hover:bg-success-subtle",
+        /** Bordered amber: secondary actions that need attention. */
+        "outline-warning":
+          "border border-warning/40 bg-background text-warning shadow-xs hover:bg-warning-subtle",
         /** Positive actions such as the Excel export. */
         success:
           "bg-success text-success-foreground shadow-xs hover:bg-success/90 focus-visible:ring-success/30",
@@ -32,10 +41,13 @@ const buttonVariants = cva(
       size: {
         default:
           "h-9 px-3 py-1.5 text-xs sm:h-10 sm:px-4 sm:py-2 sm:text-sm has-[>svg]:px-3",
+        xs: "h-7 rounded-md gap-1 px-2 text-xs has-[>svg]:px-2 [&_svg:not([class*='size-'])]:size-3.5",
         sm: "h-8 rounded-md gap-1.5 px-3 text-xs has-[>svg]:px-2.5",
         md: "h-10 rounded-md px-4 has-[>svg]:px-3",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
+        /** Small icon action inside rows and cells (edit, delete, settings). */
+        "icon-sm": "size-7 rounded-md [&_svg:not([class*='size-'])]:size-3.5",
       },
     },
     defaultVariants: {

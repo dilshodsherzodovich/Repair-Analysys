@@ -19,12 +19,15 @@ export function SegmentedTabs({
   onValueChange,
   options,
   className,
+  size = "md",
   "aria-label": ariaLabel,
 }: {
   value: string;
   onValueChange: (value: string) => void;
   options: SegmentedTabsOption[];
   className?: string;
+  /** `sm` for compact toggles inside toolbars and cards. */
+  size?: "sm" | "md";
   "aria-label"?: string;
 }) {
   return (
@@ -41,11 +44,13 @@ export function SegmentedTabs({
             key={option.value}
             value={option.value}
             className={cn(
-              "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap",
+              "inline-flex items-center gap-2 rounded-md font-semibold transition-colors cursor-pointer whitespace-nowrap",
+              size === "sm" ? "px-2.5 py-1 text-xs [&_svg]:size-3.5" : "px-3 py-1.5 text-sm",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
               "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm",
               "data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:bg-muted",
-              "[&_svg]:size-4 [&_svg]:shrink-0",
+              "[&_svg]:shrink-0",
+              size === "md" && "[&_svg]:size-4",
             )}
           >
             {option.icon}

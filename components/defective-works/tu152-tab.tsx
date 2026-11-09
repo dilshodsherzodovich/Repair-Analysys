@@ -31,6 +31,7 @@ import { TU152Modal } from "@/components/defective-works/tu152-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { Permission } from "@/lib/permissions";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
+import { Button } from "@/ui/button";
 
 export function TU152Tab() {
   const t = useTranslations("TU152Tab");
@@ -465,16 +466,15 @@ export function TU152Tab() {
               <ul className="flex flex-row items-center gap-1">
                 {currentPage > 1 && (
                   <li>
-                    <button
+                    <Button variant="outline" size="sm"
                       type="button"
                       onClick={() =>
                         updateQuery({ page: (currentPage - 1).toString() })
                       }
-                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-border bg-background text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
                     >
                       <ChevronLeft className="h-4 w-4" />
                       <span>{t("pagination_prev")}</span>
-                    </button>
+                    </Button>
                   </li>
                 )}
 
@@ -520,16 +520,15 @@ export function TU152Tab() {
 
                 {currentPage < totalPages && (
                   <li>
-                    <button
+                    <Button variant="outline" size="sm"
                       type="button"
                       onClick={() =>
                         updateQuery({ page: (currentPage + 1).toString() })
                       }
-                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-border bg-background text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
                     >
                       <span>{t("pagination_next")}</span>
                       <ChevronRight className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </li>
                 )}
               </ul>

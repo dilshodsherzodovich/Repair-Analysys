@@ -177,10 +177,9 @@ function DelayedRepairDurationReportPage() {
         title={t("title")}
         description={t("description")}
         actions={<>
-            <button
+            <Button variant="success"
               onClick={handleExportExcel}
               disabled={isExporting || rows.length === 0}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isExporting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -188,7 +187,7 @@ function DelayedRepairDurationReportPage() {
                 <FileDown className="w-4 h-4" />
               )}
               {isExporting ? t("generatingExcel") : t("exportExcel")}
-            </button>
+            </Button>
           </>}
         filters={<>
             <ReportOrganizationSelect label={t("organization")} />
@@ -244,13 +243,12 @@ function DelayedRepairDurationReportPage() {
               </Select>
             </FilterField>
 
-            <button
+            <Button variant="outline" size="icon"
               onClick={handleReset}
               title={t("reset")}
-              className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-            </button>
+            </Button>
           </>}
       />
 
@@ -375,10 +373,10 @@ function DateBox({
       </span>
       <Popover>
         <PopoverTrigger asChild>
-          <button className="flex items-center gap-2 px-3 py-2 h-9 text-sm font-medium text-foreground-secondary hover:bg-surface-muted transition-colors whitespace-nowrap border border-border rounded-lg bg-background shadow-sm">
+          <Button variant="outline" className="font-normal">
             <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
             {date ? format(date, "dd.MM.yyyy") : "—"}
-          </button>
+          </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar

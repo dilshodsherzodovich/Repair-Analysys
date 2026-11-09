@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { SrivPaymentDrilldownModal } from "./sriv-payment-drilldown-modal";
 import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
+import { Button } from "@/ui/button";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -587,14 +588,13 @@ function MoneyCell({
         {fmtSum(sum)}
       </span>
       {clickable ? (
-        <button
+        <Button variant="link" size="xs" className="ml-1 h-auto p-0 tabular-nums text-foreground-subtle decoration-dotted"
           type="button"
           onClick={onClick}
-          className="ml-1 rounded text-xs tabular-nums text-foreground-subtle underline decoration-dotted underline-offset-2 transition-colors hover:text-primary"
           title={String(count)}
         >
           · {count}
-        </button>
+        </Button>
       ) : (
         <span className="ml-1 text-xs tabular-nums text-foreground-subtle">
           · {count}

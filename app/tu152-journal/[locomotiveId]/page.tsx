@@ -399,24 +399,22 @@ function EntryRow({
         {(onEdit || onDelete) && (
           <div className="flex items-center gap-0.5 shrink-0">
             {onEdit && (
-              <button
+              <Button variant="ghost" size="icon-sm"
                 type="button"
                 onClick={() => onEdit("energy")}
-                className="p-1 rounded hover:bg-muted text-muted-foreground"
                 aria-label={t("edit")}
               >
                 <Pencil className="h-3.5 w-3.5" />
-              </button>
+              </Button>
             )}
             {onDelete && (
-              <button
+              <Button variant="ghost" size="icon-sm" className="hover:text-destructive"
                 type="button"
                 onClick={onDelete}
-                className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-destructive"
                 aria-label={t("delete")}
               >
                 <Trash2 className="h-3.5 w-3.5" />
-              </button>
+              </Button>
             )}
           </div>
         )}

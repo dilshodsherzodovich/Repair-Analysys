@@ -23,6 +23,7 @@ import { PlanReportGrid } from "./plan-report-grid";
 import { PlanEditGrid } from "./plan-edit-grid";
 import { PlanCompareGrid } from "./plan-compare-grid";
 import { PageHeader } from "@/ui/page-header";
+import { Button } from "@/ui/button";
 
 const ALL = "0";
 
@@ -252,14 +253,13 @@ export default function AnnualInspectionPlanPage() {
 
               <div className="ml-auto flex items-center gap-2 mb-3 sm:mb-4">
                 {activeFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-                <button
+                <Button variant="success" size="sm"
                   onClick={handleExcel}
                   disabled={!hasData || isExporting}
-                  className="flex items-center h-8 gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-50"
                 >
                   {isExporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
                   Excel
-                </button>
+                </Button>
               </div>
             </>
           )}

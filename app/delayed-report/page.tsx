@@ -22,6 +22,7 @@ import {
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
+import { Button } from "@/ui/button";
 
 const SUPERVISOR_ROLES = ["admin", "dispatcher", "operator", "rb_admin"];
 
@@ -161,10 +162,9 @@ export default function DelayedReportPage() {
             )}
           </>}
         actions={<>
-            <button
+            <Button variant="success"
               onClick={handleExportExcel}
               disabled={isExportingExcel}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-60"
             >
               {isExportingExcel ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -172,11 +172,10 @@ export default function DelayedReportPage() {
                 <FileDown className="w-4 h-4" />
               )}
               {isExportingExcel ? t("generatingExcel") : t("exportExcel")}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleExportPDF}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary hover:bg-primary-hover text-primary-foreground transition-colors disabled:opacity-60"
             >
               {isExporting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -184,7 +183,7 @@ export default function DelayedReportPage() {
                 <FileDown className="w-4 h-4" />
               )}
               {isExporting ? t("generatingPDF") : t("exportPDF")}
-            </button>
+            </Button>
           </>}
         filters={<>
             <DelayedReportFilters

@@ -113,13 +113,12 @@ export default function ReportsDateFilter({
       </Button>
 
       {/* Reset */}
-      <button
+      <Button variant="outline" size="icon"
         onClick={handleReset}
         title={t("reset")}
-        className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
       >
         <RotateCcw className="w-3.5 h-3.5" />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -148,10 +147,10 @@ function DateBox({
         {/* Date picker */}
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex items-center gap-2 px-3 h-full text-sm font-medium text-foreground-secondary hover:bg-surface-muted transition-colors whitespace-nowrap border-r border-border">
+            <Button variant="ghost" className="h-full rounded-none border-r border-border font-normal">
               <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
               {date ? fmt(date) : "—"}
-            </button>
+            </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar

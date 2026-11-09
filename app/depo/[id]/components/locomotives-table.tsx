@@ -8,23 +8,21 @@ import {
   useGetLocomotiveModels,
   useGetLocomotives,
 } from "@/api/hooks/use-locomotives";
-import { cn } from "@/lib/utils";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { LocomotiveModelData } from "@/api/types/locomotive";
 import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
+import { Button } from "@/ui/button";
 
 const actionButtons = [
   {
     label: "Tahrirlash",
     icon: Pencil,
-    className: "bg-success-subtle text-success border border-success",
   },
   {
     label: "Ko'rish",
     icon: Eye,
-    className: "bg-warning-subtle text-warning border border-warning",
   },
 ];
 
@@ -88,12 +86,11 @@ export default function LocomotivesTable() {
       {isError && (
         <Alert variant="destructive" className="mb-4"><AlertDescription>
           Maʼlumotlarni yuklashda xatolik yuz berdi.{" "}
-          <button
+          <Button variant="link" className="h-auto p-0 font-semibold underline"
             onClick={() => refetch()}
-            className="font-semibold underline underline-offset-2"
           >
             Qayta urinib ko&apos;ring.
-          </button>
+          </Button>
         </AlertDescription></Alert>
       )}
 
@@ -136,30 +133,22 @@ export default function LocomotivesTable() {
 
                 <div className="mt-2 flex items-center justify-between flex-wrap">
                   {canEditPassport && (
-                    <button
+                    <Button variant="outline-success" size="sm" className="w-[49%]"
                       type="button"
                       onClick={() => handleEditClick(locomotive.id)}
-                      className={cn(
-                        "flex h-8 w-[49%] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
-                        actionButtons[0].className,
-                      )}
                       aria-label={actionButtons[0].label}
                     >
                       <Pencil className="h-4 w-4" />
-                    </button>
+                    </Button>
                   )}
                   {canViewPassport && (
-                    <button
+                    <Button variant="outline-warning" size="sm" className="w-[49%]"
                       type="button"
                       onClick={() => handleViewClick(locomotive.id)}
-                      className={cn(
-                        "flex h-8 w-[49%] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
-                        actionButtons[1].className,
-                      )}
                       aria-label={actionButtons[1].label}
                     >
                       <Eye className="h-4 w-4" />
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>

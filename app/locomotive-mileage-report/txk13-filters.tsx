@@ -8,6 +8,7 @@ import { PermissionGuard } from "@/components/permission-guard";
 import type { Permission } from "@/lib/permissions";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { Label } from "@/ui/label";
+import { Button } from "@/ui/button";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "", label: "Barchasi" },
@@ -149,7 +150,7 @@ export function Txk13Filters({
         </div>
 
         {hasActiveFilters && (
-          <button
+          <Button variant="outline-destructive" className="h-10"
             type="button"
             onClick={() => {
               updateQuery({
@@ -160,10 +161,9 @@ export function Txk13Filters({
               });
               setSearchLocal("");
             }}
-            className="h-10 px-3 text-sm text-destructive border border-destructive/40 rounded-md bg-background hover:bg-destructive-subtle transition-colors whitespace-nowrap shrink-0"
           >
             Filtrlarni tozalash
-          </button>
+          </Button>
         )}
       </div>
 
