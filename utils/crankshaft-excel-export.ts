@@ -27,8 +27,11 @@ export interface CrankshaftExportLocomotive {
 }
 
 const NAVY = "FF1E3A5F";
-const KOREN_HEAD = "FF1E40AF"; // blue-800
-const SHATUN_HEAD = "FF9A3412"; // orange-800
+// Light tints with dark text, the same as the headers on the page
+const KOREN_HEAD = "FFDBEAFE"; // blue-100
+const KOREN_HEAD_TXT = "FF1E40AF"; // blue-800
+const SHATUN_HEAD = "FFFFEDD5"; // orange-100
+const SHATUN_HEAD_TXT = "FF9A3412"; // orange-800
 const ZEBRA = "FFF8FAFC"; // slate-50
 const MUTED_TXT = "FF64748B"; // slate-500
 const INK = "FF0F172A"; // slate-900
@@ -68,8 +71,12 @@ function fileName(name: string): string {
   )}.xlsx`;
 }
 
-function styleHeaderCell(cell: ExcelJS.Cell, fill: string) {
-  cell.font = { bold: true, size: 10, color: { argb: "FFFFFFFF" } };
+function styleHeaderCell(
+  cell: ExcelJS.Cell,
+  fill: string,
+  textColor = "FFFFFFFF",
+) {
+  cell.font = { bold: true, size: 10, color: { argb: textColor } };
   cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
   cell.fill = solid(fill);
   cell.border = border;
@@ -132,20 +139,21 @@ export async function exportCrankshaftExcel(
     start: number,
     label: string,
     fill: string,
+    textColor: string,
   ) => {
     if (!fields.length) return;
     ws.mergeCells(top, start, top, start + fields.length - 1);
     const cell = ws.getCell(top, start);
     cell.value = label;
-    styleHeaderCell(cell, fill);
+    styleHeaderCell(cell, fill, textColor);
     fields.forEach((field, index) => {
       const numberCell = ws.getCell(sub, start + index);
       numberCell.value = fieldNumber(field);
-      styleHeaderCell(numberCell, fill);
+      styleHeaderCell(numberCell, fill, textColor);
     });
   };
-  writeBlock(korenFields, korenStart, tModal("koren_prefix"), KOREN_HEAD);
-  writeBlock(shatunFields, shatunStart, tModal("shatun_prefix"), SHATUN_HEAD);
+  writeBlock(korenFields, korenStart, tModal("koren_prefix"), KOREN_HEAD, KOREN_HEAD_TXT);
+  writeBlock(shatunFields, shatunStart, tModal("shatun_prefix"), SHATUN_HEAD, SHATUN_HEAD_TXT);
   ws.getRow(top).height = 30;
   ws.getRow(sub).height = 18;
 
