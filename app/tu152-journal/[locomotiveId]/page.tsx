@@ -37,6 +37,7 @@ import {
 import UnauthorizedPage from "../../unauthorized/page";
 import { Tu152JournalModal } from "../components/tu152-journal-modal";
 import { RailwayStamp } from "../components/railway-stamp";
+import { Alert, AlertDescription } from "@/ui/alert";
 
 type TabKey = "energy" | "fire" | "camera" | "stamp" | "revision";
 
@@ -234,7 +235,7 @@ export default function Tu152LocomotiveHandbookPage() {
 
   if (loadingLoco) {
     return (
-      <div className="flex items-center justify-center py-20 text-slate-500">
+      <div className="flex items-center justify-center py-20 text-muted-foreground">
         <Loader2 className="h-4 w-4 animate-spin mr-2" />
         <span className="text-sm">{tList("loading")}</span>
       </div>
@@ -249,10 +250,10 @@ export default function Tu152LocomotiveHandbookPage() {
         {/* Locomotive line + add button */}
         <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <div className="text-lg font-semibold text-slate-800 truncate">
+            <div className="text-lg font-semibold text-foreground truncate">
               {locomotive?.name ?? `#${locomotiveId}`}
               {locomotive?.model_name && (
-                <span className="ml-2 font-normal text-slate-500 text-base">
+                <span className="ml-2 font-normal text-muted-foreground text-base">
                   {locomotive.model_name}
                 </span>
               )}
@@ -270,21 +271,21 @@ export default function Tu152LocomotiveHandbookPage() {
         </div>
 
         {isLoading && (
-          <div className="flex items-center justify-center py-10 text-slate-500">
+          <div className="flex items-center justify-center py-10 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
             <span className="text-sm">{tList("loading")}</span>
           </div>
         )}
 
         {apiError && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 flex items-start gap-2">
+          <Alert variant="destructive" className="rounded-md flex items-start gap-2"><AlertDescription>
             <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
             <span>{(apiError as any)?.message || tList("error_load")}</span>
-          </div>
+          </AlertDescription></Alert>
         )}
 
         {!isLoading && !apiError && entries.length === 0 && (
-          <div className="rounded-lg border border-slate-200 bg-white p-6">
+          <div className="rounded-lg border border-border bg-background p-6">
             <EmptyState
               title={t("entries_empty_title")}
               description={t("entries_empty_desc")}
@@ -294,7 +295,7 @@ export default function Tu152LocomotiveHandbookPage() {
 
         {!isLoading && !apiError && entries.length > 0 && (
           <>
-            <div className="divide-y divide-slate-200 border border-slate-200 rounded-lg bg-white">
+            <div className="divide-y divide-border border border-border rounded-lg bg-background">
               {entries.map((entry) => (
                 <EntryRow
                   key={entry.id}
@@ -311,13 +312,13 @@ export default function Tu152LocomotiveHandbookPage() {
             {/* Infinite-scroll sentinel + loader */}
             <div ref={sentinelRef} className="h-1" />
             {isFetchingNextPage && (
-              <div className="flex items-center justify-center py-4 text-slate-500">
+              <div className="flex items-center justify-center py-4 text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 <span className="text-xs">{tList("loading")}</span>
               </div>
             )}
             {!hasNextPage && entries.length >= 10 && (
-              <div className="py-3 text-center text-[11px] text-slate-400">
+              <div className="py-3 text-center text-2xs text-foreground-subtle">
                 {t("entries_loaded_all", { count: totalCount })}
               </div>
             )}
@@ -389,8 +390,8 @@ function EntryRow({
       {/* Header line */}
       <div className="flex items-center justify-between gap-3 mb-2">
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-slate-400">#{entry.id}</span>
-          <span className="text-slate-700 font-medium">
+          <span className="text-foreground-subtle">#{entry.id}</span>
+          <span className="text-foreground-secondary font-medium">
             {fmtDate(headerDate)}
           </span>
         </div>
@@ -401,7 +402,7 @@ function EntryRow({
               <button
                 type="button"
                 onClick={() => onEdit("energy")}
-                className="p-1 rounded hover:bg-slate-100 text-slate-500"
+                className="p-1 rounded hover:bg-muted text-muted-foreground"
                 aria-label={t("edit")}
               >
                 <Pencil className="h-3.5 w-3.5" />
@@ -411,7 +412,7 @@ function EntryRow({
               <button
                 type="button"
                 onClick={onDelete}
-                className="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-red-600"
+                className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-destructive"
                 aria-label={t("delete")}
               >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -498,10 +499,10 @@ function EntryRow({
             <Field label={t("col_datetime")}>{fmtDateTime(rev.date)}</Field>
             {rev.issue && (
               <div className="col-span-2 mt-1">
-                <div className="text-[11px] uppercase tracking-wider text-slate-400 mb-0.5">
+                <div className="text-2xs uppercase tracking-wider text-foreground-subtle mb-0.5">
                   {t("col_issue")}
                 </div>
-                <div className="text-sm text-slate-700 whitespace-pre-wrap">
+                <div className="text-sm text-foreground-secondary whitespace-pre-wrap">
                   {rev.issue}
                 </div>
               </div>
@@ -510,7 +511,7 @@ function EntryRow({
         )}
 
         {!e && !fire && !cam && !stamp && !rev && (
-          <div className="text-xs text-slate-400 italic">{t("entry_empty")}</div>
+          <div className="text-xs text-foreground-subtle italic">{t("entry_empty")}</div>
         )}
       </div>
     </div>
@@ -528,7 +529,7 @@ function Block({
 }) {
   return (
     <div className={className}>
-      <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+      <div className="text-2xs uppercase tracking-wider text-foreground-subtle font-semibold mb-1">
         {label}
       </div>
       <dl className="grid grid-cols-2 gap-x-3 gap-y-1">{children}</dl>
@@ -545,8 +546,8 @@ function Field({
 }) {
   return (
     <>
-      <dt className="text-xs text-slate-500">{label}</dt>
-      <dd className="text-sm text-slate-800">{children}</dd>
+      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dd className="text-sm text-foreground">{children}</dd>
     </>
   );
 }

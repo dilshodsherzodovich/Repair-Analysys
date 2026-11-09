@@ -40,6 +40,7 @@ import {
   StampAuthorizedBy,
 } from "@/api/types/tu152-journal";
 import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/ui/alert";
 
 interface Tu152JournalModalProps {
   isOpen: boolean;
@@ -437,10 +438,10 @@ export function Tu152JournalModal({
           {/* Inputs / selects / buttons / textareas are responsive globally via ui/* */}
           {lockedLocomotiveId ? (
             <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-1.5 sm:py-2 text-sm flex items-baseline gap-2">
-              <span className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-primary/70 shrink-0">
+              <span className="text-2xs sm:text-2xs uppercase tracking-wider font-semibold text-primary/70 shrink-0">
                 {t("locomotive")}
               </span>
-              <span className="font-semibold text-slate-800 truncate">
+              <span className="font-semibold text-foreground truncate">
                 {lockedLocomotiveLabel ??
                   locomotiveOptions.find(
                     (o) => o.value === String(lockedLocomotiveId),
@@ -451,7 +452,7 @@ export function Tu152JournalModal({
           ) : (
             <div>
               <Label htmlFor="locomotive_id">
-                {t("locomotive")} <span className="text-red-500 ml-1">*</span>
+                {t("locomotive")} <span className="text-destructive ml-1">*</span>
               </Label>
               <SearchableSelect
                 value={locomotiveId}
@@ -476,19 +477,19 @@ export function Tu152JournalModal({
               ref={tabsScrollRef}
               className="w-full overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain"
             >
-              <TabsList className="inline-flex md:flex md:flex-wrap gap-1 bg-slate-100 p-1 md:w-full">
+              <TabsList className="inline-flex md:flex md:flex-wrap gap-1 bg-muted p-1 md:w-full">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className="md:flex-1 shrink-0 md:min-w-[120px] gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-sm"
+                      className="md:flex-1 shrink-0 md:min-w-[120px] gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-2xs sm:text-sm"
                     >
                       <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       <span className="truncate">{tab.label}</span>
                       {tab.enabled && (
-                        <span className="ml-0.5 h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-500" />
+                        <span className="ml-0.5 h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-success" />
                       )}
                     </TabsTrigger>
                   );
@@ -938,12 +939,12 @@ export function Tu152JournalModal({
           </Tabs>
 
           {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <Alert variant="destructive" className="rounded-md px-3 py-2"><AlertDescription>
               {error}
-            </div>
+            </AlertDescription></Alert>
           )}
 
-          <div className="flex flex-row justify-between gap-2 sm:gap-3 pt-2 border-t border-slate-100">
+          <div className="flex flex-row justify-between gap-2 sm:gap-3 pt-2 border-t border-muted">
             <Button
               type="button"
               variant="outline"
@@ -1008,15 +1009,15 @@ function SectionToggle({
         "outline-none focus-visible:ring-4",
         disabled && "cursor-not-allowed opacity-60",
         enabled
-          ? "border-emerald-500 bg-emerald-50 shadow-sm focus-visible:ring-emerald-200"
-          : "border-dashed border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-white focus-visible:ring-slate-200",
+          ? "border-success bg-success-subtle shadow-sm focus-visible:ring-success/30"
+          : "border-dashed border-border-strong bg-surface-muted hover:border-foreground-subtle hover:bg-background focus-visible:ring-border",
       )}
     >
       <div className="flex items-center gap-2 sm:gap-4">
         <span
           className={cn(
-            "flex h-7 w-7 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-white font-bold transition-colors",
-            enabled ? "bg-emerald-500" : "bg-slate-300",
+            "flex h-7 w-7 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-primary-foreground font-bold transition-colors",
+            enabled ? "bg-success" : "bg-border-strong",
           )}
           aria-hidden
         >
@@ -1029,15 +1030,15 @@ function SectionToggle({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm sm:text-base font-semibold text-slate-800">
+            <span className="text-sm sm:text-base font-semibold text-foreground">
               {title}
             </span>
             <span
               className={cn(
-                "inline-flex items-center gap-1 rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider",
+                "inline-flex items-center gap-1 rounded-full px-1.5 sm:px-2 py-0.5 text-2xs sm:text-2xs font-bold uppercase tracking-wider",
                 enabled
-                  ? "bg-emerald-500 text-white"
-                  : "bg-slate-200 text-slate-600",
+                  ? "bg-success text-success-foreground"
+                  : "bg-border text-foreground-secondary",
               )}
             >
               {enabled
@@ -1045,13 +1046,13 @@ function SectionToggle({
                 : t("section_disabled_badge")}
             </span>
           </div>
-          <div className="hidden sm:block text-xs text-slate-500 mt-1">
+          <div className="hidden sm:block text-xs text-muted-foreground mt-1">
             {description}
           </div>
           <div
             className={cn(
               "hidden md:block text-xs font-semibold mt-2",
-              enabled ? "text-emerald-700" : "text-slate-600",
+              enabled ? "text-success" : "text-foreground-secondary",
             )}
           >
             {enabled
@@ -1066,13 +1067,13 @@ function SectionToggle({
           className={cn(
             "relative inline-flex h-5 w-9 sm:h-7 sm:w-12 shrink-0 items-center rounded-full border transition-colors",
             enabled
-              ? "bg-emerald-500 border-emerald-600"
-              : "bg-slate-200 border-slate-300",
+              ? "bg-success border-success"
+              : "bg-border border-border-strong",
           )}
         >
           <span
             className={cn(
-              "inline-block h-3.5 w-3.5 sm:h-5 sm:w-5 rounded-full bg-white shadow transition-transform",
+              "inline-block h-3.5 w-3.5 sm:h-5 sm:w-5 rounded-full bg-background shadow transition-transform",
               enabled
                 ? "translate-x-4 sm:translate-x-6"
                 : "translate-x-0.5 sm:translate-x-1",

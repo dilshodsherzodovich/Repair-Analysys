@@ -140,8 +140,8 @@ export default function AnnualInspectionPlanPage() {
       <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-border">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
-              <CalendarRange className="w-4 h-4 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
+              <CalendarRange className="w-4 h-4 text-primary-foreground" />
             </div>
             <div className="min-w-0">
               <h1 className="text-base font-semibold leading-tight">
@@ -268,7 +268,7 @@ export default function AnnualInspectionPlanPage() {
                 <button
                   onClick={handleExcel}
                   disabled={!hasData || isExporting}
-                  className="flex items-center h-8 gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-50"
+                  className="flex items-center h-8 gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-50"
                 >
                   {isExporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
                   Excel

@@ -19,10 +19,10 @@ const yVal = (row: AnnualPlanReportRow | undefined) => cellCount(row?.yearly_cou
 function status(plan: number, fact: number) {
   if (plan === 0 && fact === 0) return { bg: "", text: "text-muted-foreground/25", empty: true };
   if (plan === 0 && fact > 0)
-    return { bg: "bg-blue-50 dark:bg-blue-950/40", text: "text-blue-700 dark:text-blue-300" }; // rejadan tashqari
-  if (fact >= plan) return { bg: "bg-emerald-50 dark:bg-emerald-950/40", text: "text-emerald-700 dark:text-emerald-300" }; // bajarildi
-  if (fact > 0) return { bg: "bg-amber-50 dark:bg-amber-950/40", text: "text-amber-700 dark:text-amber-300" }; // qisman
-  return { bg: "bg-rose-50 dark:bg-rose-950/40", text: "text-rose-700 dark:text-rose-300" }; // bajarilmadi
+    return { bg: "bg-primary-subtle", text: "text-primary-hover" }; // rejadan tashqari
+  if (fact >= plan) return { bg: "bg-success-subtle", text: "text-success" }; // bajarildi
+  if (fact > 0) return { bg: "bg-warning-subtle", text: "text-warning" }; // qisman
+  return { bg: "bg-category-rose/10", text: "text-category-rose" }; // bajarilmadi
 }
 
 function Cell({ plan, fact }: { plan: number; fact: number }) {
@@ -34,7 +34,7 @@ function Cell({ plan, fact }: { plan: number; fact: number }) {
       ) : (
         <>
           <span className={cn("font-bold tabular-nums", s.text)}>{fact}</span>
-          <span className="text-[9px] text-muted-foreground tabular-nums">/{plan}</span>
+          <span className="text-2xs text-muted-foreground tabular-nums">/{plan}</span>
         </>
       )}
     </div>
@@ -107,10 +107,10 @@ function buildTypes(
 }
 
 function pctColor(pct: number) {
-  if (pct >= 100) return "bg-emerald-500";
-  if (pct >= 50) return "bg-blue-500";
-  if (pct > 0) return "bg-amber-500";
-  return "bg-rose-400";
+  if (pct >= 100) return "bg-success";
+  if (pct >= 50) return "bg-primary";
+  if (pct > 0) return "bg-warning";
+  return "bg-category-rose/60";
 }
 
 /** Plan-vs-fact comparison for one organization. */
@@ -150,11 +150,11 @@ export function PlanCompareGrid({
       {/* Org header + legend */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
         <h3 className="text-sm font-semibold text-foreground">{org?.organization.name}</h3>
-        <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-400" /> Bajarildi</span>
-          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-amber-400" /> Qisman</span>
-          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-rose-400" /> Bajarilmadi</span>
-          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-blue-400" /> Rejadan tashqari</span>
+        <div className="flex items-center gap-3 text-2xs text-muted-foreground">
+          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-success" /> Bajarildi</span>
+          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-warning" /> Qisman</span>
+          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-category-rose/60" /> Bajarilmadi</span>
+          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Rejadan tashqari</span>
           <span className="ml-1">
             Jami <span className="font-semibold tabular-nums text-foreground">{totalFact}</span>
             <span className="text-muted-foreground">/{totalPlan}</span>
@@ -201,10 +201,10 @@ export function PlanCompareGrid({
                   const f = t.factQ[qi + 1] || 0;
                   const qpct = p > 0 ? f / p : f > 0 ? 1 : 0;
                   return (
-                    <div key={q} className="rounded-md bg-muted/50 dark:bg-muted/30 px-1 py-1 text-center">
-                      <div className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground">{q} kv</div>
+                    <div key={q} className="rounded-md bg-muted/50 px-1 py-1 text-center">
+                      <div className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">{q} kv</div>
                       <div className="text-xs font-semibold tabular-nums leading-tight">
-                        <span className={cn(qpct >= 1 ? "text-emerald-600 dark:text-emerald-400" : f > 0 ? "text-amber-600 dark:text-amber-400" : "text-foreground")}>
+                        <span className={cn(qpct >= 1 ? "text-success" : f > 0 ? "text-warning" : "text-foreground")}>
                           {f}
                         </span>
                         <span className="text-muted-foreground font-normal">/{p}</span>
@@ -233,7 +233,7 @@ export function PlanCompareGrid({
               <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-foreground leading-tight">{t.name}</div>
-                <div className="text-[11px] text-muted-foreground">Fakt / Reja</div>
+                <div className="text-2xs text-muted-foreground">Fakt / Reja</div>
               </div>
               <div className="ml-auto flex items-center gap-3">
                 <span className="text-sm font-bold tabular-nums text-foreground">
@@ -259,7 +259,7 @@ export function PlanCompareGrid({
                         col.kind === "month" ? (
                           <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">{MONTHS_SHORT[col.month - 1]}</th>
                         ) : (
-                          <th key={`q${col.quarter}`} className="border border-border px-1 py-2.5 text-center font-semibold text-emerald-700 dark:text-emerald-300">{QUARTER_LABELS[col.quarter - 1]}</th>
+                          <th key={`q${col.quarter}`} className="border border-border px-1 py-2.5 text-center font-semibold text-success">{QUARTER_LABELS[col.quarter - 1]}</th>
                         )
                       )}
                       <th className="border border-border px-2 py-2.5 text-center font-semibold text-foreground">Σ</th>

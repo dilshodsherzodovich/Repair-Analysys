@@ -58,9 +58,9 @@ export function PlanStatCards({
               {QUARTER_LABELS.map((q, qi) => (
                 <div
                   key={q}
-                  className="rounded-md bg-muted/50 dark:bg-muted/30 px-1 py-1 text-center"
+                  className="rounded-md bg-muted/50 px-1 py-1 text-center"
                 >
-                  <div className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <div className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">
                     {q} kv
                   </div>
                   <div className="text-sm font-semibold tabular-nums text-foreground leading-tight">

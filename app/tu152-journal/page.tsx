@@ -54,7 +54,7 @@ export default function Tu152JournalPage() {
       <div className="pb-6 md:pb-8">
         <div className="mb-3 md:mb-4 max-w-md">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-subtle pointer-events-none" />
             <Input
               type="text"
               value={searchTerm}
@@ -66,14 +66,14 @@ export default function Tu152JournalPage() {
         </div>
 
         {isPending && (
-          <div className="flex items-center justify-center py-12 text-slate-500">
+          <div className="flex items-center justify-center py-12 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
             <span className="text-sm">{t("loading")}</span>
           </div>
         )}
 
         {!isPending && filtered.length === 0 && (
-          <div className="rounded-lg border border-slate-200 bg-white p-6">
+          <div className="rounded-lg border border-border bg-background p-6">
             <EmptyState
               title={t("no_locomotives_title")}
               description={
@@ -101,12 +101,12 @@ function LocomotiveCard({ loco }: { loco: SortedLocomotiveData }) {
   return (
     <Link
       href={`/tu152-journal/${loco.id}`}
-      className="block rounded-md border border-slate-200 bg-white px-2.5 py-2 hover:border-slate-400 hover:bg-slate-50 transition-colors"
+      className="block rounded-md border border-border bg-background px-2.5 py-2 hover:border-foreground-subtle hover:bg-surface-muted transition-colors"
     >
-      <div className="text-sm font-semibold text-slate-800 truncate">
+      <div className="text-sm font-semibold text-foreground truncate">
         {loco.name}
         {loco.model_name && (
-          <span className="ml-1 font-normal text-slate-500">
+          <span className="ml-1 font-normal text-muted-foreground">
             · {loco.model_name}
           </span>
         )}

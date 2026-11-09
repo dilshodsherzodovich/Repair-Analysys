@@ -384,7 +384,7 @@ export default function InspectionsPage() {
       />
 
       <div className="px-6 space-y-4">
-        <div className="mb-6 bg-white border border-[#CAD5E2] rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-6 bg-background border border-border-strong rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
           <PageFilters
             filters={pageFilters}
             hasSearch={isArchive}
@@ -394,23 +394,23 @@ export default function InspectionsPage() {
             className="mb-0 flex-1 min-w-0"
           />
           <Tabs value={tab} onValueChange={handleTabChange}>
-            <TabsList className="bg-white border border-gray-200 p-1 gap-2 rounded-md inline-flex">
+            <TabsList className="bg-background border border-border p-1 gap-2 rounded-md inline-flex">
               <TabsTrigger
                 value="in_progress"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300 flex items-center gap-2"
+                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong flex items-center gap-2"
               >
                 <LayoutGrid className="h-4 w-4" />
                 {t("tab_in_progress")}
               </TabsTrigger>
               <TabsTrigger
                 value="archive"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
+                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong"
               >
                 {t("tab_archive")}
               </TabsTrigger>
               <TabsTrigger
                 value="cancelled"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
+                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong"
               >
                 {t("tab_cancelled")}
               </TabsTrigger>

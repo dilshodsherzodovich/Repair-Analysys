@@ -194,21 +194,21 @@ export default function LocomotivePassportInspectionsPage() {
     const hasKm = km !== null && km !== undefined;
 
     if (!hasDate && !hasKm) {
-      return <span className="text-gray-400">—</span>;
+      return <span className="text-foreground-subtle">—</span>;
     }
 
     return (
       <div className="space-y-1.5">
         {hasDate && (
           <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-gray-500" />
-            <span className="text-sm text-gray-900">{formatDate(date)}</span>
+            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-sm text-foreground">{formatDate(date)}</span>
           </div>
         )}
         {hasKm && (
           <div className="flex items-center gap-1.5">
-            <Gauge className="h-3.5 w-3.5 text-gray-500" />
-            <span className="text-sm text-gray-900">{formatNumber(km)}</span>
+            <Gauge className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-sm text-foreground">{formatNumber(km)}</span>
           </div>
         )}
       </div>
@@ -224,9 +224,9 @@ export default function LocomotivePassportInspectionsPage() {
         accessor: (row) => {
           return (
             <div className="flex items-center gap-2">
-              <Train className="h-4 w-4 text-gray-600" />
+              <Train className="h-4 w-4 text-foreground-secondary" />
               <div className="flex flex-col">
-                <span className="font-medium text-gray-900 text-sm">
+                <span className="font-medium text-foreground text-sm">
                   {row.locomotive_name + " - " + row.locomotive_model}
                 </span>
               </div>
@@ -239,7 +239,7 @@ export default function LocomotivePassportInspectionsPage() {
         key: "section_name",
         header: t("columns.section"),
         accessor: (row) => (
-          <span className="text-sm text-gray-700">{row.section_name}</span>
+          <span className="text-sm text-foreground-secondary">{row.section_name}</span>
         ),
       },
       {

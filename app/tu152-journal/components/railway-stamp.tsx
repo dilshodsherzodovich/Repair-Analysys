@@ -43,7 +43,7 @@ export function RailwayStamp({
   const month = d ? format(d, "MMMM", { locale: uz }) : "_________";
   const yearLast2 = d ? format(d, "yy") : "__";
 
-  const colorText = isRed ? "text-red-700" : "text-emerald-700";
+  const colorText = isRed ? "text-destructive" : "text-success";
   const interactive = Boolean(onClick);
 
   const svg = (
@@ -200,11 +200,11 @@ export function RailwayStamp({
       className={cn(
         "shrink-0 cursor-pointer outline-none rounded-md transition-all duration-300",
         "focus-visible:ring-4 focus-visible:ring-offset-2",
-        isRed ? "focus-visible:ring-red-200" : "focus-visible:ring-emerald-200",
+        isRed ? "focus-visible:ring-destructive/30" : "focus-visible:ring-success/30",
         disabled && "cursor-not-allowed",
         selected
           ? cn("opacity-100 scale-100 -rotate-2 drop-shadow-md", colorText)
-          : "opacity-30 grayscale hover:opacity-60 hover:grayscale-0 scale-95 text-slate-500",
+          : "opacity-30 grayscale hover:opacity-60 hover:grayscale-0 scale-95 text-muted-foreground",
         className,
       )}
     >

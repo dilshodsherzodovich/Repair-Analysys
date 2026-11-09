@@ -299,11 +299,11 @@ export function PlanEditGrid({
     <section className="space-y-3">
       {/* Autosave hint */}
       <div className="flex items-center justify-between gap-3 px-1">
-        <span className="text-[11px] font-medium text-muted-foreground">
+        <span className="text-2xs font-medium text-muted-foreground">
           Katakni bosib to&apos;ldiring — o&apos;zgarish avtomatik saqlanadi
         </span>
         {saving > 0 && (
-          <span className="flex items-center gap-1.5 text-[11px] text-primary">
+          <span className="flex items-center gap-1.5 text-2xs text-primary">
             <Loader2 className="h-3 w-3 animate-spin" /> Saqlanmoqda…
           </span>
         )}
@@ -338,12 +338,12 @@ export function PlanEditGrid({
                   <div className="text-sm font-semibold text-foreground leading-tight">
                     {group.type.name}
                   </div>
-                  <div className="text-[11px] text-muted-foreground">Texnik ko&apos;rik</div>
+                  <div className="text-2xs text-muted-foreground">Texnik ko&apos;rik</div>
                 </div>
                 <div className="ml-auto hidden md:flex items-center gap-1.5">
                   {QUARTER_LABELS.map((q, i) => (
                     <div key={q} className="flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1">
-                      <span className="text-[10px] font-medium text-muted-foreground">{q} kv</span>
+                      <span className="text-2xs font-medium text-muted-foreground">{q} kv</span>
                       <span className="text-xs font-semibold tabular-nums text-foreground">
                         {typeQuarter(group, i + 1) || 0}
                       </span>
@@ -351,7 +351,7 @@ export function PlanEditGrid({
                   ))}
                 </div>
                 <div className={cn("flex items-center gap-1.5 rounded-lg px-3 py-1.5 shrink-0", accent.soft)}>
-                  <span className={cn("text-[10px] font-medium uppercase tracking-wide", accent.text)}>Yillik</span>
+                  <span className={cn("text-2xs font-medium uppercase tracking-wide", accent.text)}>Yillik</span>
                   <span className={cn("text-base font-bold tabular-nums", accent.text)}>{typeYearly(group)}</span>
                 </div>
                 <ChevronDown
