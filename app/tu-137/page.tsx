@@ -15,6 +15,7 @@ import { Tu137Record } from "@/api/types/tu137";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { cn } from "@/lib/utils";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
+import { SegmentedTabs } from "@/ui/segmented-tabs";
 
 const PAGE_SIZE = 20;
 
@@ -153,23 +154,11 @@ export default function Tu137Page() {
       <div className="px-6 py-6 space-y-6">
         {/* Tabs + Export Bar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-background p-4 rounded-xl border border-border/60 shadow-sm">
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-            {tabs.map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => updateQuery({ tab: key, page: "1" })}
-                className={cn(
-                  "px-4 py-1.5 rounded-md text-sm font-semibold transition-all",
-                  tab === key
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground-secondary",
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <SegmentedTabs
+            value={tab}
+            onValueChange={(v) => updateQuery({ tab: v, page: "1" })}
+            options={tabs.map(({ key, label }) => ({ value: key, label }))}
+          />
           <Button
             onClick={() => (records.length ? exportTu137ToDocx(records) : null)}
             disabled={isLoading || !records.length}

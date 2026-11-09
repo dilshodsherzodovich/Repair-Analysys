@@ -24,6 +24,7 @@ import { PlanEditGrid } from "./plan-edit-grid";
 import { PlanCompareGrid } from "./plan-compare-grid";
 import { PageHeader } from "@/ui/page-header";
 import { Button } from "@/ui/button";
+import { SegmentedTabs } from "@/ui/segmented-tabs";
 
 const ALL = "0";
 
@@ -145,28 +146,15 @@ export default function AnnualInspectionPlanPage() {
         title="Texnik ko&apos;riklar yillik rejasi"
         description="Grafik raboti — tashkilot, ko&apos;rik turi va rusum bo&apos;yicha yillik reja"
         actions={<>
-            <button
-              onClick={() => setMode("view")}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
-                mode === "view"
-                  ? "bg-background shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Table2 className="h-3.5 w-3.5" /> Ko&apos;rish
-            </button>
-            <button
-              onClick={() => setMode("edit")}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
-                mode === "edit"
-                  ? "bg-background shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Pencil className="h-3.5 w-3.5" /> Tahrirlash
-            </button>
+            <SegmentedTabs
+              size="sm"
+              value={mode}
+              onValueChange={(v) => setMode(v as typeof mode)}
+              options={[
+                { value: "view", label: "Ko'rish", icon: <Table2 /> },
+                { value: "edit", label: "Tahrirlash", icon: <Pencil /> },
+              ]}
+            />
           </>}
       >
         <div className="px-5 py-3 bg-muted/30 flex flex-wrap items-center gap-2">
@@ -202,26 +190,17 @@ export default function AnnualInspectionPlanPage() {
           {mode === "view" && (
             <>
               {/* Source: plan / fact / compare */}
-              <div className="flex items-center h-8 rounded-lg border border-border p-0.5 bg-background mb-3 sm:mb-4">
-                {([
-                  ["reja", "Reja"],
-                  ["fakt", "Fakt"],
-                  ["compare", "Taqqoslash"],
-                ] as const).map(([key, label]) => (
-                  <button
-                    key={key}
-                    onClick={() => setSource(key)}
-                    className={cn(
-                      "h-full flex items-center px-2.5 rounded-md text-xs font-medium transition-colors",
-                      source === key
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+              <SegmentedTabs
+                size="sm"
+                className="mb-3 sm:mb-4"
+                value={source}
+                onValueChange={(v) => setSource(v as typeof source)}
+                options={[
+                  { value: "reja", label: "Reja" },
+                  { value: "fakt", label: "Fakt" },
+                  { value: "compare", label: "Taqqoslash" },
+                ]}
+              />
 
               {/* Inspection type */}
               <Select value={typeFilter} onValueChange={setTypeFilter}>

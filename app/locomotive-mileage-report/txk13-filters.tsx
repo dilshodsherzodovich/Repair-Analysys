@@ -9,6 +9,7 @@ import type { Permission } from "@/lib/permissions";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { Label } from "@/ui/label";
 import { Button } from "@/ui/button";
+import { SegmentedTabs } from "@/ui/segmented-tabs";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "", label: "Barchasi" },
@@ -169,22 +170,16 @@ export function Txk13Filters({
 
       {/* Row 2: unit tabs + inspection checkboxes */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-          {(["all", "km", "hours"] as const).map((unit) => (
-            <button
-              key={unit}
-              type="button"
-              onClick={() => onUnitChange(unit)}
-              className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
-                activeUnit === unit
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {unit === "all" ? "Barchasi" : unit === "km" ? "Km" : "Soat"}
-            </button>
-          ))}
-        </div>
+        <SegmentedTabs
+          size="sm"
+          value={activeUnit}
+          onValueChange={(v) => onUnitChange(v as typeof activeUnit)}
+          options={[
+            { value: "all", label: "Barchasi" },
+            { value: "km", label: "Km" },
+            { value: "hours", label: "Soat" },
+          ]}
+        />
 
         {inspectionTypes.length > 0 && (
           <div className="h-8 w-px bg-border shrink-0" />
