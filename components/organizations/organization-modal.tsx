@@ -11,7 +11,6 @@ import {
   Organization,
   OrganizationCreateParams,
 } from "@/api/types/organizations";
-import { LoadingButton } from "@/ui/loading-button";
 import { FileUpload } from "@/ui/file-upload";
 
 interface OrganizationModalProps {
@@ -145,9 +144,9 @@ export function OrganizationModal({
             <Button type="button" variant="outline" onClick={onClose}>
               Bekor qilish
             </Button>
-            <LoadingButton type="submit" isPending={isDoingAction}>
+            <Button type="submit" loading={isDoingAction} className="min-w-24">
               {submitText}
-            </LoadingButton>
+            </Button>
           </div>
         </form>
       </Card>

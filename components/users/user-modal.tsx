@@ -18,7 +18,6 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useDepartments } from "@/api/hooks/use-departmants";
 import { userRoles } from "@/lib/users";
 import { getRoleName } from "@/lib/utils";
-import { LoadingButton } from "@/ui/loading-button";
 
 interface UserModalProps {
   isOpen: boolean;
@@ -477,14 +476,14 @@ export function UserModal({
             >
               Bekor qilish
             </Button>
-            <LoadingButton
+            <Button
               type="submit"
-              className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white px-8"
-              disabled={isSubmitButtonDisabled || isLoading}
-              isPending={isLoading}
+              className="min-w-24 px-8"
+              disabled={isSubmitButtonDisabled}
+              loading={isLoading}
             >
               {submitText}
-            </LoadingButton>
+            </Button>
           </div>
         </form>
       </Card>

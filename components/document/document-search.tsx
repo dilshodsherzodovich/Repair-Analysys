@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Filter, X } from "lucide-react";
-import { EnhancedInput } from "@/ui/enhanced-input";
-import { EnhancedSelect } from "@/ui/enhanced-select";
+import { Filter, Search, X } from "lucide-react";
+import { Input } from "@/ui/input";
+import { Label } from "@/ui/label";
+import { SearchableSelect } from "@/ui/select";
 import { DatePicker } from "@/ui/date-picker";
-import { EnhancedButton } from "@/ui/enhanced-button";
+import { Button } from "@/ui/button";
 
 export interface DocumentSearchFilters {
   query?: string;
@@ -91,29 +92,31 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
         {/* Search Input */}
         <div className="flex items-center space-x-4">
           <div className="flex-1">
-            <EnhancedInput
-              variant="search"
-              placeholder="Поиск документов..."
-              value={filters.query || ""}
-              onChange={(e) => handleFilterChange("query", e.target.value)}
-              clearable
-            />
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="mb-0 pl-9 sm:pl-9"
+                placeholder="Поиск документов..."
+                value={filters.query || ""}
+                onChange={(e) => handleFilterChange("query", e.target.value)}
+              />
+            </div>
           </div>
-          <EnhancedButton
+          <Button
             variant="outline"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            leftIcon={<Filter className="w-4 h-4" />}
           >
+            <Filter className="w-4 h-4" />
             Фильтры
-          </EnhancedButton>
+          </Button>
           {hasActiveFilters && (
-            <EnhancedButton
+            <Button
               variant="ghost"
               onClick={clearFilters}
-              leftIcon={<X className="w-4 h-4" />}
             >
+              <X className="w-4 h-4" />
               Очистить
-            </EnhancedButton>
+            </Button>
           )}
         </div>
 
@@ -122,18 +125,21 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
           <div className="border-t border-[#e5e7eb] pt-4 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Category */}
-              <EnhancedSelect
-                label="Категория"
+              <div className="space-y-1.5">
+                <Label>Категория</Label>
+                <SearchableSelect
                 placeholder="Все категории"
                 options={[{ value: "", label: "Все категории" }, ...categories]}
                 value={filters.category || ""}
                 onValueChange={(value) => handleFilterChange("category", value)}
                 clearable
               />
+            </div>
 
               {/* Status */}
-              <EnhancedSelect
-                label="Статус"
+              <div className="space-y-1.5">
+                <Label>Статус</Label>
+                <SearchableSelect
                 placeholder="Все статусы"
                 options={[
                   { value: "", label: "Все статусы" },
@@ -143,10 +149,12 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
                 onValueChange={(value) => handleFilterChange("status", value)}
                 clearable
               />
+            </div>
 
               {/* Author */}
-              <EnhancedSelect
-                label="Автор"
+              <div className="space-y-1.5">
+                <Label>Автор</Label>
+                <SearchableSelect
                 placeholder="Все авторы"
                 options={[{ value: "", label: "Все авторы" }, ...authors]}
                 value={filters.author || ""}
@@ -154,10 +162,12 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
                 searchable
                 clearable
               />
+            </div>
 
               {/* Department */}
-              <EnhancedSelect
-                label="Подразделение"
+              <div className="space-y-1.5">
+                <Label>Подразделение</Label>
+                <SearchableSelect
                 placeholder="Все подразделения"
                 options={[
                   { value: "", label: "Все подразделения" },
@@ -169,6 +179,7 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
                 }
                 clearable
               />
+            </div>
             </div>
 
             {/* Date Range */}

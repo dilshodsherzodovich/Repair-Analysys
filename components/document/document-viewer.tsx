@@ -13,7 +13,7 @@ import {
   RotateCw,
   Maximize,
 } from "lucide-react";
-import { EnhancedButton } from "@/ui/enhanced-button";
+import { Button } from "@/ui/button";
 
 export interface DocumentViewerProps {
   documentUrl: string;
@@ -128,60 +128,60 @@ const DocumentViewer = React.forwardRef<HTMLDivElement, DocumentViewerProps>(
           <div className="flex items-center space-x-2">
             {/* Zoom controls */}
             <div className="flex items-center space-x-1 border rounded-lg p-1">
-              <EnhancedButton
+              <Button
                 size="sm"
                 variant="ghost"
                 onClick={handleZoomOut}
                 disabled={zoom <= 50}
               >
                 <ZoomOut className="w-4 h-4" />
-              </EnhancedButton>
+              </Button>
               <span className="text-sm px-2">{zoom}%</span>
-              <EnhancedButton
+              <Button
                 size="sm"
                 variant="ghost"
                 onClick={handleZoomIn}
                 disabled={zoom >= 200}
               >
                 <ZoomIn className="w-4 h-4" />
-              </EnhancedButton>
+              </Button>
             </div>
 
             {/* Rotate */}
-            <EnhancedButton size="sm" variant="ghost" onClick={handleRotate}>
+            <Button size="sm" variant="ghost" onClick={handleRotate}>
               <RotateCw className="w-4 h-4" />
-            </EnhancedButton>
+            </Button>
 
             {/* Fullscreen */}
-            <EnhancedButton
+            <Button
               size="sm"
               variant="ghost"
               onClick={handleFullscreen}
             >
               <Maximize className="w-4 h-4" />
-            </EnhancedButton>
+            </Button>
 
             {/* Actions */}
             <div className="flex items-center space-x-1 border-l pl-2 ml-2">
               {onDownload && (
-                <EnhancedButton size="sm" variant="ghost" onClick={onDownload}>
+                <Button size="sm" variant="ghost" onClick={onDownload}>
                   <Download className="w-4 h-4" />
-                </EnhancedButton>
+                </Button>
               )}
               {canShare && onShare && (
-                <EnhancedButton size="sm" variant="ghost" onClick={onShare}>
+                <Button size="sm" variant="ghost" onClick={onShare}>
                   <Share2 className="w-4 h-4" />
-                </EnhancedButton>
+                </Button>
               )}
               {canEdit && onEdit && (
-                <EnhancedButton size="sm" variant="ghost" onClick={onEdit}>
+                <Button size="sm" variant="ghost" onClick={onEdit}>
                   <Edit className="w-4 h-4" />
-                </EnhancedButton>
+                </Button>
               )}
               {canDelete && onDelete && (
-                <EnhancedButton size="sm" variant="ghost" onClick={onDelete}>
+                <Button size="sm" variant="ghost" onClick={onDelete}>
                   <Trash2 className="w-4 h-4 text-[#ff5959]" />
-                </EnhancedButton>
+                </Button>
               )}
             </div>
           </div>

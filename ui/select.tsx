@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -175,6 +175,10 @@ export interface SearchableSelectProps {
   options: SearchableSelectOption[];
   placeholder?: string;
   searchable?: boolean;
+  /** Shows an × that resets the value to "". */
+  clearable?: boolean;
+  /** Shows a spinner and blocks opening while options load. */
+  loading?: boolean;
   searchPlaceholder?: string;
   emptyMessage?: string;
   disabled?: boolean;
@@ -190,6 +194,8 @@ function SearchableSelect({
   options,
   placeholder = "Select...",
   searchable = false,
+  clearable = false,
+  loading = false,
   searchPlaceholder = "Search...",
   emptyMessage = "No results found.",
   disabled = false,
@@ -240,13 +246,17 @@ function SearchableSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
+  const isDisabled = disabled || loading;
+
   const handleSelect = (optionValue: string) => {
     onValueChange?.(optionValue);
     setOpen(false);
     setSearchValue("");
   };
 
-  if (!searchable) {
+  // Plain dropdown: native-feeling Radix select. Search, clear and loading
+  // use the custom dropdown below.
+  if (!searchable && !clearable && !loading) {
     return (
       <div className={cn("relative w-full", className)}>
         {name && <input type="hidden" name={name} value={value} readOnly />}
@@ -315,10 +325,12 @@ function SearchableSelect({
           "transition-colors outline-none focus:border-primary focus:ring-0 hover:border-foreground-subtle",
           "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
           "md:text-sm [&>span]:line-clamp-1 mb-4",
+          "aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:bg-surface-muted",
           size === "sm" && "h-8 text-xs",
           triggerClassName
         )}
-        onClick={() => !disabled && setOpen(!open)}
+        aria-disabled={isDisabled || undefined}
+        onClick={() => !isDisabled && setOpen(!open)}
       >
         <span
           className={cn(
@@ -328,7 +340,26 @@ function SearchableSelect({
         >
           {selectedOption ? selectedOption.label : placeholder}
         </span>
-        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+        {loading ? (
+          <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+        ) : (
+          <span className="flex shrink-0 items-center gap-1">
+            {clearable && value && !disabled && (
+              <button
+                type="button"
+                aria-label="Clear"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onValueChange?.("");
+                }}
+                className="rounded-sm p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </span>
+        )}
       </div>
 
       {open && (
@@ -343,6 +374,7 @@ function SearchableSelect({
           )}
           style={{ zIndex: 999999 }}
         >
+          {searchable && (
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -352,10 +384,11 @@ function SearchableSelect({
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => e.stopPropagation()}
-                className="w-full rounded-md border border-border-strong bg-background text-foreground py-2 pl-8 pr-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full rounded-md border border-border-strong bg-background text-foreground py-2 pl-8 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </div>
+          )}
           <div className="max-h-[200px] overflow-y-auto p-1">
             {filteredOptions.length === 0 ? (
               <div className="py-3 text-center text-sm text-muted-foreground">

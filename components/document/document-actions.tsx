@@ -15,7 +15,7 @@ import {
   Eye,
   History,
 } from "lucide-react";
-import { EnhancedButton } from "@/ui/enhanced-button";
+import { Button } from "@/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -169,20 +169,20 @@ const DocumentActions = React.forwardRef<HTMLDivElement, DocumentActionsProps>(
         >
           {[...visiblePrimaryActions, ...visibleSecondaryActions].map(
             (action) => (
-              <EnhancedButton
+              <Button
                 key={action.key}
                 size="sm"
                 variant={action.variant || "outline"}
                 onClick={action.onClick}
-                leftIcon={action.icon}
                 className={
                   action.destructive
-                    ? "text-[#ff5959] hover:text-[#ff5959]"
+                    ? "text-destructive hover:text-destructive"
                     : ""
                 }
               >
+                {action.icon}
                 {action.label}
-              </EnhancedButton>
+              </Button>
             )
           )}
         </div>
@@ -194,9 +194,9 @@ const DocumentActions = React.forwardRef<HTMLDivElement, DocumentActionsProps>(
         <div ref={ref} className={cn("", className)} {...props}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <EnhancedButton size="sm" variant="outline">
+              <Button size="sm" variant="outline">
                 <MoreVertical className="w-4 h-4" />
-              </EnhancedButton>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               {[...visiblePrimaryActions, ...visibleSecondaryActions].map(
@@ -210,7 +210,7 @@ const DocumentActions = React.forwardRef<HTMLDivElement, DocumentActionsProps>(
                       onClick={action.onClick}
                       className={
                         action.destructive
-                          ? "text-[#ff5959] focus:text-[#ff5959]"
+                          ? "text-destructive focus:text-destructive"
                           : ""
                       }
                     >
@@ -235,24 +235,24 @@ const DocumentActions = React.forwardRef<HTMLDivElement, DocumentActionsProps>(
       >
         {/* Primary actions as buttons */}
         {visiblePrimaryActions.map((action) => (
-          <EnhancedButton
+          <Button
             key={action.key}
             size="sm"
             variant={action.variant}
             onClick={action.onClick}
-            leftIcon={action.icon}
           >
+            {action.icon}
             {action.label}
-          </EnhancedButton>
+          </Button>
         ))}
 
         {/* Secondary actions in dropdown */}
         {visibleSecondaryActions.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <EnhancedButton size="sm" variant="outline">
+              <Button size="sm" variant="outline">
                 <MoreVertical className="w-4 h-4" />
-              </EnhancedButton>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               {visibleSecondaryActions.map((action) => (
@@ -261,7 +261,7 @@ const DocumentActions = React.forwardRef<HTMLDivElement, DocumentActionsProps>(
                   onClick={action.onClick}
                   className={
                     action.destructive
-                      ? "text-[#ff5959] focus:text-[#ff5959]"
+                      ? "text-destructive focus:text-destructive"
                       : ""
                   }
                 >

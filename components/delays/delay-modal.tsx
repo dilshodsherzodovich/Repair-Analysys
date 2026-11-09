@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent, useRef } from "react";
 import { Card } from "@/ui/card";
 import { Modal } from "@/ui/modal";
 import { Label } from "@/ui/label";
+import { SearchableSelect } from "@/ui/select";
 import {
   Select,
   SelectContent,
@@ -11,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/select";
-import { EnhancedSelect } from "@/ui/enhanced-select";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
 import { DatePicker } from "@/ui/date-picker";
@@ -434,7 +434,7 @@ export function DelayModal({
 
             <div>
               <Label htmlFor="locomotiv">{t("fields.locomotiv")}</Label>
-              <EnhancedSelect
+              <SearchableSelect
                 options={locomotiveOptions}
                 value={locomotivValue}
                 onValueChange={setLocomotivValue}
