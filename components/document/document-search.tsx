@@ -202,9 +202,9 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
             {/* Tags */}
             {availableTags.length > 0 && (
               <div>
-                <label className="text-sm font-medium text-foreground-secondary mb-2 block">
+                <Label className="text-sm font-medium text-foreground-secondary mb-2 block">
                   Теги
-                </label>
+                </Label>
                 <div className="flex flex-wrap gap-2">
                   {availableTags.map((tag) => (
                     <button

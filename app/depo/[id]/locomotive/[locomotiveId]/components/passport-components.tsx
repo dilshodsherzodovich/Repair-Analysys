@@ -7,6 +7,7 @@ import { Boxes, Cog } from "lucide-react";
 import { SectionCard, EmptyBlock } from "./passport-shared";
 import type { ComponentValue } from "@/api/types/component";
 import type { ReactNode } from "react";
+import { Label } from "@/ui/label";
 
 type FormValues = Record<
   number,
@@ -30,9 +31,9 @@ function ComponentField({
 }) {
   return (
     <div className="min-w-0">
-      <label className="mb-0.5 block text-2xs font-medium text-muted-foreground">
+      <Label className="mb-0.5 block text-2xs font-medium text-muted-foreground">
         {label}
-      </label>
+      </Label>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}

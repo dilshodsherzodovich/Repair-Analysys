@@ -117,6 +117,15 @@ for (const file of files) {
       changes++;
       return `${prefix}-${VAR_ALIASES[name] ?? name}`;
     })
+    // Weights on the scale: 400 / 500 / 600 / 700
+    .replace(/\bfont-(?:extrabold|black)\b/g, () => {
+      changes++;
+      return "font-bold";
+    })
+    .replace(/\bfont-(?:thin|extralight|light)\b/g, () => {
+      changes++;
+      return "font-normal";
+    })
     .replace(BIG_RADIUS, (_match, prefix) => {
       changes++;
       return `${prefix}-xl`;

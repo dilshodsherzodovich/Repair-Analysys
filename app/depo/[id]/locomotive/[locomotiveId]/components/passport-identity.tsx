@@ -240,7 +240,7 @@ export function PassportIdentity({
               {t("identity.boardNumber")}
             </div>
             <div
-              className="my-1 font-extrabold leading-[0.92] tracking-[-0.03em] tabular-nums text-primary-foreground"
+              className="my-1 font-bold leading-[0.92] tracking-[-0.03em] tabular-nums text-primary-foreground"
               style={{
                 fontSize: "clamp(52px, 9vw, 92px)",
                 textShadow: "0 2px 30px rgba(90,140,255,.25)",

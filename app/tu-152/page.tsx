@@ -213,7 +213,7 @@ export default function Tu152Page() {
               </p>
               <FileText className="w-5 h-5 text-primary" />
             </div>
-            <p className="text-3xl font-black text-foreground mt-2">{fmt(totals.total)}</p>
+            <p className="text-3xl font-bold text-foreground mt-2">{fmt(totals.total)}</p>
           </div>
 
           <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
@@ -223,7 +223,7 @@ export default function Tu152Page() {
               </p>
               <CheckCircle className="w-5 h-5 text-success" />
             </div>
-            <p className="text-3xl font-black text-success mt-2">{fmt(totals.fixed)}</p>
+            <p className="text-3xl font-bold text-success mt-2">{fmt(totals.fixed)}</p>
           </div>
 
           <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
@@ -233,7 +233,7 @@ export default function Tu152Page() {
               </p>
               <XCircle className="w-5 h-5 text-warning" />
             </div>
-            <p className="text-3xl font-black text-warning mt-2">{fmt(totals.unfixed)}</p>
+            <p className="text-3xl font-bold text-warning mt-2">{fmt(totals.unfixed)}</p>
           </div>
 
           <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
@@ -243,7 +243,7 @@ export default function Tu152Page() {
               </p>
               <TrendingUp className="w-5 h-5 text-category-indigo/60" />
             </div>
-            <p className={cn("text-3xl font-black mt-2", progressText(totals.fixed_rate))}>
+            <p className={cn("text-3xl font-bold mt-2", progressText(totals.fixed_rate))}>
               {fixedRatePct}%
             </p>
             <div className="mt-2 bg-muted h-1.5 rounded-full overflow-hidden">

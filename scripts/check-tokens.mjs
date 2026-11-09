@@ -47,7 +47,23 @@ const PATTERNS = [
   { name: "radius", regex: /\brounded(?:-[a-z]{1,2})?-\[(?!inherit\])[^\]\s]+\]/g },
   // The radius scale stops at xl (12px)
   { name: "radius", regex: /\brounded(?:-[a-z]{1,2})?-(?:2xl|3xl|4xl)\b/g },
+  // Weights on the scale are 400 / 500 / 600 / 700
+  { name: "font-weight", regex: /\bfont-(?:thin|extralight|light|extrabold|black)\b/g },
 ];
+
+/**
+ * Raw elements that have a kit component. Checked outside ui/ only, since the
+ * kit's own primitives are built from them. File / hidden inputs are fine; a
+ * real one-off carries `kit-allow: <reason>` on the line before or the same line.
+ */
+const KIT_PATTERNS = [
+  { name: "use Button", regex: /<button\b/g },
+  { name: "use Input / Checkbox", regex: /<input\b(?![^>]*type=["'](?:file|hidden)["'])/g },
+  { name: "use Table / GridTable", regex: /<table\b/g },
+  { name: "use Label", regex: /<label\b/g },
+  { name: "use PageHeader", regex: /<h1\b/g },
+];
+const isKitFile = (file) => /(^|[\\/])ui[\\/]/.test(relative(process.cwd(), file));
 
 const args = process.argv.slice(2);
 const strict = args.includes("--strict");
@@ -82,8 +98,16 @@ for (const file of files) {
     continue;
   }
   const hits = [];
+  const kitPatterns = isKitFile(file) ? [] : KIT_PATTERNS;
   lines.forEach((line, index) => {
     for (const { name, regex } of PATTERNS) {
+      for (const match of line.matchAll(regex)) {
+        hits.push(`  ${index + 1}: ${match[0]} (${name})`);
+      }
+    }
+    const allowed = line.includes("kit-allow:") || lines[index - 1]?.includes("kit-allow:");
+    if (allowed) return;
+    for (const { name, regex } of kitPatterns) {
       for (const match of line.matchAll(regex)) {
         hits.push(`  ${index + 1}: ${match[0]} (${name})`);
       }
@@ -103,8 +127,8 @@ perFile
   });
 
 console.log(
-  `\n${total} hardcoded value(s) in ${perFile.length} of ${files.length} file(s).` +
-    (total ? " Replace them with token classes from /ui-kit." : ""),
+  `\n${total} hardcoded value(s) or raw element(s) in ${perFile.length} of ${files.length} file(s).` +
+    (total ? " Use token classes and kit components from /ui-kit." : ""),
 );
 
 if (strict && total > 0) process.exit(1);

@@ -34,6 +34,7 @@ import { ComponentValue } from "@/api/types/component";
 import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { authService } from "@/api/services/auth.service";
+import { Label } from "@/ui/label";
 
 interface LocomotivePassportClassicProps {
   depotId: string;
@@ -381,21 +382,21 @@ export default function LocomotivePassportClassic({
           <h1 className="text-lg font-semibold">{t("locomotive_info")}</h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-0">
             <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-foreground">
+              <Label className="mb-2 block text-sm font-medium text-foreground">
                 {t("depot")}
-              </label>
+              </Label>
               <Input value={depotId} disabled />
             </div>
             <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-foreground">
+              <Label className="mb-2 block text-sm font-medium text-foreground">
                 {t("locomotive")}
-              </label>
+              </Label>
               <Input value={locomotiveDetail?.name ?? ""} disabled />
             </div>
             <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-foreground">
+              <Label className="mb-2 block text-sm font-medium text-foreground">
                 {t("model")}
-              </label>
+              </Label>
               <Input value={locomotiveDetail?.model_name ?? ""} disabled />
             </div>
           </div>
@@ -458,9 +459,9 @@ export default function LocomotivePassportClassic({
                   >
                     <div className="space-y-4">
                       <div className="min-w-0">
-                        <label className="mb-2 block text-sm font-medium text-foreground">
+                        <Label className="mb-2 block text-sm font-medium text-foreground">
                           {component.component}
-                        </label>
+                        </Label>
                         <Input
                           value={currentValues.factory_number}
                           onChange={(event) =>
@@ -475,9 +476,9 @@ export default function LocomotivePassportClassic({
                         />
                       </div>
                       <div className="min-w-0">
-                        <label className="mb-2 block text-sm font-medium text-foreground">
+                        <Label className="mb-2 block text-sm font-medium text-foreground">
                           {component.component} {t("year_manufactured")}
-                        </label>
+                        </Label>
                         <Input
                           value={currentValues.date_info}
                           onChange={(event) =>

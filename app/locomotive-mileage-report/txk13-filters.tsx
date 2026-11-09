@@ -7,6 +7,7 @@ import { SelectWithSearch } from "@/ui/filters";
 import { PermissionGuard } from "@/components/permission-guard";
 import type { Permission } from "@/lib/permissions";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { Label } from "@/ui/label";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "", label: "Barchasi" },
@@ -190,7 +191,7 @@ export function Txk13Filters({
         )}
 
         {inspectionTypes.map((insp) => (
-          <label
+          <Label
             key={insp.type_id}
             className="flex items-center gap-1.5 cursor-pointer select-none"
           >
@@ -203,7 +204,7 @@ export function Txk13Filters({
             <span className="text-sm text-foreground whitespace-nowrap font-medium">
               {insp.type}
             </span>
-          </label>
+          </Label>
         ))}
       </div>
     </div>

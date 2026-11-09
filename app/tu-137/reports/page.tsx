@@ -191,7 +191,7 @@ export default function Tu137ReportsPage() {
                 </p>
                 <Users className="w-5 h-5 text-category-indigo/60" />
               </div>
-              <p className="text-3xl font-black text-foreground mt-2">
+              <p className="text-3xl font-bold text-foreground mt-2">
                 {globalStats.mashinistsCount}
               </p>
             </div>
@@ -203,7 +203,7 @@ export default function Tu137ReportsPage() {
                 </p>
                 <FileText className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-3xl font-black text-foreground mt-2">
+              <p className="text-3xl font-bold text-foreground mt-2">
                 {globalStats.totalRecords}
               </p>
             </div>
@@ -215,7 +215,7 @@ export default function Tu137ReportsPage() {
                 </p>
                 <Clock className="w-5 h-5 text-warning" />
               </div>
-              <p className="text-3xl font-black text-warning mt-2">
+              <p className="text-3xl font-bold text-warning mt-2">
                 {globalStats.totalOpen}
               </p>
             </div>
@@ -228,7 +228,7 @@ export default function Tu137ReportsPage() {
                 <CheckCircle className="w-5 h-5 text-success" />
               </div>
               <div className="mt-2">
-                <p className="text-3xl font-black text-success">
+                <p className="text-3xl font-bold text-success">
                   {globalStats.totalSolved}
                 </p>
                 <div className="flex items-center gap-2 mt-2">
@@ -277,7 +277,7 @@ export default function Tu137ReportsPage() {
                           {mashinist.depo_name}
                         </p>
                       </div>
-                      <div className="flex-shrink-0 text-2xl font-black text-foreground leading-none">
+                      <div className="flex-shrink-0 text-2xl font-bold text-foreground leading-none">
                         {mashinist.total}
                       </div>
                     </div>

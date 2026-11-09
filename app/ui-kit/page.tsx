@@ -524,12 +524,12 @@ function UiKit() {
               <Textarea id="kit-textarea" placeholder="Sababini yozing…" />
             </div>
             <div className="flex items-center gap-6">
-              <label className="flex items-center gap-2 text-sm text-foreground">
+              <Label className="flex items-center gap-2 text-sm text-foreground">
                 <Checkbox defaultChecked /> Checkbox
-              </label>
-              <label className="flex items-center gap-2 text-sm text-foreground">
+              </Label>
+              <Label className="flex items-center gap-2 text-sm text-foreground">
                 <Switch defaultChecked /> Switch
-              </label>
+              </Label>
             </div>
           </div>
         </Panel>

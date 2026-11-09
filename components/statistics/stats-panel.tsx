@@ -22,6 +22,7 @@ import {
   type GenericOrgStatistics,
   type JournalStatisticsParams,
 } from "@/api/types/statistics";
+import { Label } from "@/ui/label";
 
 export interface StatMetric {
   key: string;
@@ -368,12 +369,12 @@ function FilterField({
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex flex-col gap-1">
+    <Label className="flex flex-col gap-1">
       <span className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       {children}
-    </label>
+    </Label>
   );
 }
 

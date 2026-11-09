@@ -438,7 +438,7 @@ export function UserModal({
               Holati
             </Label>
             <div className="flex items-center gap-6 mt-2">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <Label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name={`status-${mode}`}
@@ -450,8 +450,8 @@ export function UserModal({
                   className="w-4 h-4 text-primary border-border-strong focus:ring-primary"
                 />
                 <span className="text-foreground text-sm">Faol</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
+              </Label>
+              <Label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name={`status-${mode}`}
@@ -463,7 +463,7 @@ export function UserModal({
                   className="w-4 h-4 text-primary border-border-strong focus:ring-primary"
                 />
                 <span className="text-foreground text-sm">Nofaol</span>
-              </label>
+              </Label>
             </div>
           </div>
 

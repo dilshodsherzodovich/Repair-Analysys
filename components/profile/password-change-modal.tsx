@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Key, Eye, EyeOff, X, AlertCircle } from "lucide-react";
+import { Label } from "@/ui/label";
 
 interface PasswordChangeData {
   currentPassword: string;
@@ -128,9 +129,9 @@ export function PasswordChangeModal({
         <div className="space-y-4">
           {/* Current Password */}
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
+            <Label className="block text-sm font-medium text-muted-foreground mb-2">
               Joriy parol
-            </label>
+            </Label>
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
@@ -159,9 +160,9 @@ export function PasswordChangeModal({
 
           {/* New Password */}
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
+            <Label className="block text-sm font-medium text-muted-foreground mb-2">
               Yangi parol
-            </label>
+            </Label>
             <Input
               type={showPassword ? "text" : "password"}
               value={passwordData.newPassword}
@@ -178,9 +179,9 @@ export function PasswordChangeModal({
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
+            <Label className="block text-sm font-medium text-muted-foreground mb-2">
               Parolni tasdiqlang
-            </label>
+            </Label>
             <Input
               type={showPassword ? "text" : "password"}
               value={passwordData.confirmPassword}
