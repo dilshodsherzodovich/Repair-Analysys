@@ -1244,6 +1244,9 @@
     "cancel": "Bekor qilish",
     "success_updated": "Muvaffaqiyatli saqlandi",
     "error_save": "Saqlashda xatolik yuz berdi",
+    "group_kp_count": "{count} ta KP",
+    "group_locomotives_count": "{count} ta lokomotiv",
+    "group_out_of_range": "Boshqa",
     "columns": {
       "no": "№",
       "locomotive": "Lokomotiv",

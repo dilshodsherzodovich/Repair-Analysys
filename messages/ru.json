@@ -1244,6 +1244,9 @@
     "cancel": "Отмена",
     "success_updated": "Успешно сохранено",
     "error_save": "Ошибка при сохранении",
+    "group_kp_count": "{count} КП",
+    "group_locomotives_count": "Локомотивов: {count}",
+    "group_out_of_range": "Прочие",
     "columns": {
       "no": "№",
       "locomotive": "Локомотив",
