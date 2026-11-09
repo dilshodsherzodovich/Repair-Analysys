@@ -20,6 +20,7 @@ const badgeVariants = cva(
         danger: "bg-destructive-subtle text-destructive",
 
         // Solid: filled, white text
+        neutral_solid: "bg-muted-foreground text-primary-foreground",
         primary_solid: "bg-primary text-primary-foreground",
         success_solid: "bg-success text-success-foreground",
         warning_solid: "bg-warning text-warning-foreground",

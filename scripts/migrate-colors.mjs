@@ -12,17 +12,17 @@ import { readFileSync, writeFileSync } from "node:fs";
 // Colour -> token. `text` overrides the token when used as a text colour.
 const COLORS = {
   primary: ["#2354bf", "#2563eb", "#4978ce", "#3b82f6", "blue-400", "blue-500", "blue-600", "sky-400", "sky-500", "sky-600"],
-  "primary-hover": ["#1d4ed8", "#1d4699", "#1e40af", "blue-700", "blue-800", "blue-900"],
-  "primary-subtle": ["#eff6ff", "#dbeafe", "blue-50", "blue-100", "sky-50", "sky-100"],
-  "primary/30": ["blue-200", "blue-300", "sky-200", "sky-300"],
+  "primary-hover": ["#1d4ed8", "#1d4699", "#1e40af", "#4338ca", "blue-700", "blue-800", "blue-900"],
+  "primary-subtle": ["#eff6ff", "#dbeafe", "#eef2ff", "blue-50", "blue-100", "sky-50", "sky-100"],
+  "primary/30": ["#cbd5f5", "#c7d7f4", "#93c5fd", "blue-200", "blue-300", "sky-200", "sky-300"],
   foreground: ["#0f172b", "#0f172a", "#1f2937", "#1e293b", "#111827", "#1c1c1c", "gray-900", "gray-800", "slate-900", "slate-800"],
   "foreground-secondary": ["#374151", "#475569", "#334155", "gray-700", "gray-600", "slate-700", "slate-600"],
-  "muted-foreground": ["#6b7280", "#64748b", "gray-500", "slate-500"],
+  "muted-foreground": ["#6b7280", "#64748b", "#7c8db5", "gray-500", "slate-500"],
   "foreground-subtle": ["#9ca3af", "#94a3b8", "#90a1b9", "#9e9e9e", "gray-400", "slate-400"],
   "border-strong": { values: ["#d1d5db", "#cad5e2", "#cbd5e1", "gray-300", "slate-300"], text: "foreground-subtle" },
   border: { values: ["#e5e7eb", "#e2e8f0", "#e5ecf8", "gray-200", "slate-200"], text: "foreground-subtle" },
   muted: ["#f3f4f6", "#f1f5f9", "#f2f2f2", "gray-100", "slate-100"],
-  "surface-muted": ["#f9fafb", "#f8fafc", "gray-50", "slate-50"],
+  "surface-muted": ["#f9fafb", "#f8fafc", "#f7f9fc", "#f8faff", "#f8fbff", "#fbfcfe", "gray-50", "slate-50"],
   success: ["#10b981", "#059669", "#28a745", "#16a34a", "green-400", "green-500", "green-600", "green-700", "green-800", "green-900", "emerald-400", "emerald-500", "emerald-600", "emerald-700", "emerald-800", "emerald-900"],
   "success-subtle": ["#ecfdf5", "#f0fdf4", "green-50", "green-100", "emerald-50", "emerald-100"],
   "success/30": ["green-200", "green-300", "emerald-200", "emerald-300"],
@@ -95,6 +95,9 @@ function blackWhite(line) {
 const VAR_CLASS = /\b(bg|text|border(?:-[trblxyse])?|ring(?:-offset)?|fill|stroke|from|to|via|divide|outline|placeholder|accent|caret|decoration)-\[var\(--([a-z0-9-]+)\)\]/g;
 const VAR_ALIASES = { "table-header-fg": "foreground-secondary", "table-header-bg": "surface-muted" };
 
+// Colours set from JS ("#16a34a" in style props / chart configs) -> var(--token)
+const JS_HEX = /(?<![=\w])(["'`])#([0-9a-fA-F]{6})\1/g;
+
 const args = process.argv.slice(2);
 const dry = args.includes("--dry");
 const files = args.filter((arg) => !arg.startsWith("--"));
@@ -147,6 +150,16 @@ for (const file of files) {
     if (opacity && token.includes("/")) token = token.split("/")[0];
     changes++;
     return `${prefix}-${token}${opacity}`;
+  });
+
+  output = output.replace(JS_HEX, (match, quote, hex) => {
+    const hit = lookup.get(`#${hex.toLowerCase()}`);
+    if (!hit || hit.token.includes("/")) {
+      leftovers.add(match);
+      return match;
+    }
+    changes++;
+    return `${quote}var(--${hit.token})${quote}`;
   });
 
   const beforeBw = output;
