@@ -15,6 +15,7 @@ import {
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { cn } from "@/lib/utils";
+import { GridTable, gridCellClass, gridHeadClass } from "@/ui/grid-table";
 import {
   useGetLocomotiveModels,
   useGetLocomotives,
@@ -32,7 +33,7 @@ import {
   CellInput,
   EditActions,
   firstMessage,
-} from "@/components/locomotive-values/inline-edit";
+} from "@/ui/inline-edit";
 import { authService } from "@/api/services/auth.service";
 import { Check } from "lucide-react";
 import { exportCrankshaftExcel } from "@/utils/crankshaft-excel-export";
@@ -69,20 +70,13 @@ const shatunHead = "bg-[#FFF7ED]";
 const toInputValue = (value: unknown) =>
   typeof value === "string" || typeof value === "number" ? String(value) : "";
 
-// border-separate (not collapse) so the borders stick with the pinned header;
-// every cell draws its own right/bottom border
-const headClass =
-  "py-3 px-3 bg-[#F8FAFC] text-[#475569] font-medium border-r border-b border-[#E2E8F0] whitespace-nowrap";
-const cellClass =
-  "py-2.5 px-3 border-r border-b border-[#E2E8F0] whitespace-nowrap";
-
 // №, locomotive and section stay pinned on horizontal scroll. Fixed widths so
 // each column's left offset is the sum of the widths before it.
 const stickyNo = "sticky left-0 w-[48px] min-w-[48px] max-w-[48px]";
 const stickyLocomotive =
   "sticky left-[48px] w-[160px] min-w-[160px] max-w-[160px] whitespace-normal break-words";
 const stickySection =
-  "sticky left-[208px] w-[96px] min-w-[96px] max-w-[96px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]";
+  "sticky left-[208px] w-[96px] min-w-[96px] max-w-[96px] shadow-pin-start";
 
 interface LocomotiveGroup {
   locomotiveId: number;
@@ -264,7 +258,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 rowSpan={span}
                 className={cn(
-                  cellClass,
+                  gridCellClass,
                   stickyNo,
                   stickyBg,
                   "z-[5] text-[#64748B] align-top",
@@ -275,7 +269,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 rowSpan={span}
                 className={cn(
-                  cellClass,
+                  gridCellClass,
                   stickyLocomotive,
                   stickyBg,
                   "z-[5] text-[#0F172B] font-medium align-top",
@@ -294,7 +288,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           )}
           <TableCell
             className={cn(
-              cellClass,
+              gridCellClass,
               stickySection,
               stickyBg,
               "z-[5] text-[#0F172B]",
@@ -313,7 +307,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 key={field}
                 className={cn(
-                  cellClass,
+                  gridCellClass,
                   "transition-colors duration-700",
                   isInfo ? "text-[#64748B]" : "text-center text-[#0F172B]",
                   editable && "px-1 py-1.5",
@@ -349,7 +343,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           {canEdit && componentIndex === 0 && (
             <TableCell
               rowSpan={span}
-              className={`${cellClass} text-center align-top border-r-0`}
+              className={`${gridCellClass} text-center align-top border-r-0`}
             >
               <EditActions
                 isEditing={isEditing}
@@ -499,36 +493,35 @@ function CrankshaftPageContent({
         </div>
       )}
 
-      <div className="rounded-lg border border-[#CAD5E2] overflow-auto max-h-[75vh] bg-white">
-        <table className="w-full caption-bottom text-sm border-separate border-spacing-0">
+      <GridTable>
           {/* Header stays pinned while the rows scroll inside the box */}
           <TableHeader className="sticky top-0 z-10">
             <TableRow className="hover:bg-transparent">
-              <TableHead rowSpan={2} className={`${headClass} ${stickyNo} z-20`}>
+              <TableHead rowSpan={2} className={`${gridHeadClass} ${stickyNo} z-20`}>
                 {t("columns.no")}
               </TableHead>
               <TableHead
                 rowSpan={2}
-                className={`${headClass} ${stickyLocomotive} z-20`}
+                className={`${gridHeadClass} ${stickyLocomotive} z-20`}
               >
                 {t("columns.locomotive")}
               </TableHead>
               <TableHead
                 rowSpan={2}
-                className={`${headClass} ${stickySection} z-20`}
+                className={`${gridHeadClass} ${stickySection} z-20`}
               >
                 {t("columns.section")}
               </TableHead>
-              <TableHead rowSpan={2} className={headClass}>
+              <TableHead rowSpan={2} className={gridHeadClass}>
                 {tModal("year_of_manufacture")}
               </TableHead>
-              <TableHead rowSpan={2} className={headClass}>
+              <TableHead rowSpan={2} className={gridHeadClass}>
                 {tModal("factory_number")}
               </TableHead>
               {korenFields.length > 0 && (
                 <TableHead
                   colSpan={korenFields.length}
-                  className={cn(headClass, korenHead, "text-center")}
+                  className={cn(gridHeadClass, korenHead, "text-center")}
                 >
                   {tModal("koren_prefix")}
                 </TableHead>
@@ -536,7 +529,7 @@ function CrankshaftPageContent({
               {shatunFields.length > 0 && (
                 <TableHead
                   colSpan={shatunFields.length}
-                  className={cn(headClass, shatunHead, "text-center")}
+                  className={cn(gridHeadClass, shatunHead, "text-center")}
                 >
                   {tModal("shatun_prefix")}
                 </TableHead>
@@ -544,7 +537,7 @@ function CrankshaftPageContent({
               {canEdit && (
                 <TableHead
                   rowSpan={2}
-                  className={`${headClass} text-center border-r-0`}
+                  className={`${gridHeadClass} text-center border-r-0`}
                 >
                   {t("columns.actions")}
                 </TableHead>
@@ -555,7 +548,7 @@ function CrankshaftPageContent({
                 <TableHead
                   key={field}
                   className={cn(
-                    headClass,
+                    gridHeadClass,
                     "text-center text-xs",
                     field.includes("koren") ? korenHead : shatunHead,
                   )}
@@ -598,8 +591,7 @@ function CrankshaftPageContent({
               ))
             )}
           </TableBody>
-        </table>
-      </div>
+        </GridTable>
     </div>
   );
 }

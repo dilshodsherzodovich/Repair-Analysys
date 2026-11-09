@@ -44,7 +44,7 @@ export function CellInput({
       title={error}
       className={cn(
         "mx-auto mb-0 sm:mb-0 h-8 sm:h-8 w-[72px] px-1 sm:px-1 text-center",
-        error && "border-red-500"
+        error && "border-destructive"
       )}
     />
   );
@@ -74,7 +74,7 @@ export function EditActions({
       <button
         type="button"
         onClick={onEdit}
-        className={cn(iconButton, "border-[#1CA34A] bg-[#E8F8ED] text-[#1CA34A]")}
+        className={cn(iconButton, "border-success bg-success-subtle text-success")}
         aria-label={labels.edit}
         title={labels.edit}
       >
@@ -89,7 +89,7 @@ export function EditActions({
         type="button"
         onClick={onSave}
         disabled={isSaving}
-        className={cn(iconButton, "border-[#1CA34A] bg-[#1CA34A] text-white")}
+        className={cn(iconButton, "border-success bg-success text-success-foreground")}
         aria-label={labels.save}
         title={labels.save}
       >
@@ -103,7 +103,7 @@ export function EditActions({
         type="button"
         onClick={onCancel}
         disabled={isSaving}
-        className={cn(iconButton, "border-[#CAD5E2] bg-white text-[#475569]")}
+        className={cn(iconButton, "border-border-strong bg-white text-foreground-secondary")}
         aria-label={labels.cancel}
         title={labels.cancel}
       >

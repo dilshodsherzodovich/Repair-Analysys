@@ -12,6 +12,7 @@ import {
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { cn } from "@/lib/utils";
+import { GridTable, gridCellClass, gridHeadClass } from "@/ui/grid-table";
 import { Check } from "lucide-react";
 import { useBulkUpdateBandages } from "@/api/hooks/use-bandages";
 import { Bandage, UpdateBandagePayload } from "@/api/types/bandage";
@@ -19,7 +20,7 @@ import {
   CellInput,
   EditActions,
   firstMessage,
-} from "@/components/locomotive-values/inline-edit";
+} from "@/ui/inline-edit";
 import { bandageGroupKey, hasSideMismatch } from "../bandage-groups";
 
 type Side = "left" | "right";
@@ -47,13 +48,6 @@ const toNumberOrNull = (value: string) =>
 export const naturalCompare = (a: string, b: string) =>
   a.localeCompare(b, undefined, { numeric: true });
 
-// border-separate (not collapse) so the borders stick with the pinned header;
-// every cell draws its own right/bottom border
-const headClass =
-  "py-3 px-3 bg-[#F8FAFC] text-[#475569] font-medium border-r border-b border-[#E2E8F0] whitespace-nowrap";
-const cellClass =
-  "py-2.5 px-3 border-r border-b border-[#E2E8F0] whitespace-nowrap";
-
 export interface SectionRow {
   key: string;
   sectionName: string;
@@ -67,7 +61,7 @@ const stickyNo = "sticky left-0 w-[48px] min-w-[48px] max-w-[48px]";
 const stickyLocomotive =
   "sticky left-[48px] w-[160px] min-w-[160px] max-w-[160px] whitespace-normal break-words";
 const stickySection =
-  "sticky left-[208px] w-[96px] min-w-[96px] max-w-[96px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]";
+  "sticky left-[208px] w-[96px] min-w-[96px] max-w-[96px] shadow-pin-start";
 
 export interface LocomotiveGroup {
   locomotiveId: number;
@@ -254,7 +248,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 rowSpan={span}
                 className={cn(
-                  cellClass,
+                  gridCellClass,
                   stickyNo,
                   stickyBg,
                   "z-[5] text-[#64748B] align-top",
@@ -265,7 +259,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 rowSpan={span}
                 className={cn(
-                  cellClass,
+                  gridCellClass,
                   stickyLocomotive,
                   stickyBg,
                   "z-[5] text-[#0F172B] font-medium align-top",
@@ -284,7 +278,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           )}
           <TableCell
             className={cn(
-              cellClass,
+              gridCellClass,
               stickySection,
               stickyBg,
               "z-[5] text-[#0F172B]",
@@ -307,7 +301,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 <TableCell
                   key={`${name}-${side}`}
                   className={cn(
-                    cellClass,
+                    gridCellClass,
                     "text-center text-[#0F172B] transition-colors duration-700",
                     editable && "px-1 py-1.5",
                     !editable &&
@@ -351,7 +345,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           {canEdit && sectionIndex === 0 && (
             <TableCell
               rowSpan={span}
-              className={`${cellClass} text-center align-top border-r-0`}
+              className={`${gridCellClass} text-center align-top border-r-0`}
             >
               {group.bandages.length > 0 && (
                 <EditActions
@@ -400,23 +394,22 @@ export function BandagesTable({
   const columnCount = 3 + componentNames.length * 2 + (canEdit ? 1 : 0);
 
   return (
-    <div className="rounded-lg border border-[#CAD5E2] overflow-auto max-h-[75vh] bg-white">
-      <table className="w-full caption-bottom text-sm border-separate border-spacing-0">
+    <GridTable>
         {/* Header stays pinned while the rows scroll inside the box */}
         <TableHeader className="sticky top-0 z-10">
           <TableRow className="hover:bg-transparent">
-            <TableHead rowSpan={2} className={`${headClass} ${stickyNo} z-20`}>
+            <TableHead rowSpan={2} className={`${gridHeadClass} ${stickyNo} z-20`}>
               {t("columns.no")}
             </TableHead>
             <TableHead
               rowSpan={2}
-              className={`${headClass} ${stickyLocomotive} z-20`}
+              className={`${gridHeadClass} ${stickyLocomotive} z-20`}
             >
               {t("columns.locomotive")}
             </TableHead>
             <TableHead
               rowSpan={2}
-              className={`${headClass} ${stickySection} z-20`}
+              className={`${gridHeadClass} ${stickySection} z-20`}
             >
               {t("columns.section")}
             </TableHead>
@@ -424,7 +417,7 @@ export function BandagesTable({
               <TableHead
                 key={name}
                 colSpan={2}
-                className={`${headClass} text-center`}
+                className={`${gridHeadClass} text-center`}
               >
                 {name}
               </TableHead>
@@ -432,7 +425,7 @@ export function BandagesTable({
             {canEdit && (
               <TableHead
                 rowSpan={2}
-                className={`${headClass} text-center border-r-0`}
+                className={`${gridHeadClass} text-center border-r-0`}
               >
                 {t("columns.actions")}
               </TableHead>
@@ -443,7 +436,7 @@ export function BandagesTable({
               SIDES.map((side) => (
                 <TableHead
                   key={`${name}-${side}`}
-                  className={`${headClass} text-center text-xs`}
+                  className={`${gridHeadClass} text-center text-xs`}
                 >
                   {tModal(side)}
                 </TableHead>
@@ -483,7 +476,6 @@ export function BandagesTable({
             ))
           )}
         </TableBody>
-      </table>
-    </div>
+      </GridTable>
   );
 }

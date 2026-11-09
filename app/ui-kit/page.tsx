@@ -41,6 +41,7 @@ import {
   TableRow,
 } from "@/ui/table";
 import { Textarea } from "@/ui/textarea";
+import { GridTable, gridCellClass, gridHeadClass } from "@/ui/grid-table";
 
 /**
  * The design system reference: every token and the standard component for
@@ -625,10 +626,9 @@ function UiKit() {
       <Section
         id="table"
         title="Table"
-        description="Outline in border-strong, header on surface-muted, cell lines in border, values in foreground. Highlight with primary-subtle, flag with destructive-subtle."
+        description="GridTable + gridHeadClass / gridCellClass (stickyCol to pin columns). Highlight with primary-subtle, flag with destructive-subtle."
       >
-        <div className="overflow-auto rounded-lg border border-border-strong bg-background">
-          <table className="w-full border-separate border-spacing-0 text-sm">
+        <GridTable maxHeight="none">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 {["№", "Lokomotiv", "Sektsiya", "Chap", "O'ng", "Holat"].map(
@@ -636,7 +636,8 @@ function UiKit() {
                     <TableHead
                       key={head}
                       className={cn(
-                        "whitespace-nowrap border-b border-r border-border bg-surface-muted px-3 py-3 font-medium text-foreground-secondary last:border-r-0",
+                        gridHeadClass,
+                        "last:border-r-0",
                         index >= 3 && "text-center",
                       )}
                     >
@@ -650,7 +651,7 @@ function UiKit() {
               {SAMPLE_ROWS.map((row, index) => {
                 const uneven =
                   row.left !== null && row.right !== null && Math.abs(row.left - row.right) >= 2;
-                const cell = "border-b border-r border-border px-3 py-2.5 last:border-r-0";
+                const cell = cn(gridCellClass, "last:border-r-0");
                 const value = (v: number | null) =>
                   v === null ? <span className="text-foreground-subtle">—</span> : v.toFixed(1);
                 return (
@@ -682,8 +683,7 @@ function UiKit() {
                 );
               })}
             </TableBody>
-          </table>
-        </div>
+        </GridTable>
       </Section>
 
       {/* ---------------------------------------------------------------- */}
