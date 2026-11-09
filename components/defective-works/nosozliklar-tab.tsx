@@ -77,7 +77,7 @@ export function NosozliklarTab() {
       key: "table_number_not_null",
       totalKey: "total_table_number_not_null",
       label: t("statistics.with_table_number"),
-      color: "#16a34a",
+      color: "var(--success)",
       kind: "count",
       chart: "bar",
       icon: ClipboardCheck,
@@ -86,7 +86,7 @@ export function NosozliklarTab() {
       key: "table_number_null",
       totalKey: "total_table_number_null",
       label: t("statistics.without_table_number"),
-      color: "#f59e0b",
+      color: "var(--warning)",
       kind: "count",
       chart: "bar",
       icon: ClipboardX,
@@ -616,9 +616,9 @@ export function NosozliklarTab() {
           rowClassName={(row) =>
             formatDate(new Date(row.date).toISOString(), false) ===
             formatDate(new Date().toISOString(), false)
-              ? "bg-emerald-50 hover:bg-emerald-100 [&>td]:bg-emerald-50 [&>td]:group-hover:bg-emerald-100"
+              ? "bg-success-subtle hover:bg-success-subtle [&>td]:bg-success-subtle [&>td]:group-hover:bg-success-subtle"
               : !row?.table_number
-                ? "bg-red-50 hover:bg-red-100 [&>td]:bg-red-50 [&>td]:group-hover:bg-red-100"
+                ? "bg-destructive-subtle hover:bg-destructive-subtle [&>td]:bg-destructive-subtle [&>td]:group-hover:bg-destructive-subtle"
                 : ""
           }
           isLoading={isLoading}

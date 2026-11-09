@@ -169,7 +169,7 @@ function LocomotiveHistoryPage() {
                 <Button
                   onClick={handleExportDocx}
                   disabled={isExportingDocx}
-                  className="bg-green-700 hover:bg-green-800 text-white"
+                  variant="success"
                 >
                   {isExportingDocx ? (
                     <>
@@ -186,7 +186,6 @@ function LocomotiveHistoryPage() {
                 <Button
                   onClick={handleExportPdf}
                   disabled={isExporting}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {isExporting ? (
                     <>
@@ -230,7 +229,7 @@ function LocomotiveHistoryPage() {
                 </div>
 
                 {inspectionTypes && inspectionTypes.length > 0 && (
-                  <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+                  <div className="border rounded-lg p-4 bg-surface-muted">
                     <div className="flex items-center justify-between mb-3">
                       <Label className="text-sm font-semibold">
                         {t("filterByInspectionType")}

@@ -52,7 +52,7 @@ export default function DefectiveWorksPage() {
 
       <div className="px-6">
         <Tabs value={currentMainTab} onValueChange={handleMainTabChange}>
-          <TabsList className="bg-[#F1F5F9] p-1 gap-0 border-0 rounded-lg inline-flex">
+          <TabsList className="bg-muted p-1 gap-0 border-0 rounded-lg inline-flex">
             <TabsTrigger value="nosozliklar">
               {t("tab_nosozliklar")}
             </TabsTrigger>

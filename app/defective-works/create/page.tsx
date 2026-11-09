@@ -108,8 +108,8 @@ function SearchableLocomotiveSelect({
       <div
         ref={triggerRef}
         className={cn(
-          "flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-base cursor-pointer",
-          "hover:border-gray-400 focus-within:ring-2 focus-within:ring-[#2354bf]/20 focus-within:border-[#2354bf]",
+          "flex h-10 w-full items-center justify-between rounded-md border border-border-strong bg-background px-4 py-2 text-base cursor-pointer",
+          "hover:border-foreground-subtle focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary",
           "disabled:pointer-events-none disabled:opacity-50",
           "[&>span]:line-clamp-1",
           disabled && "opacity-50 cursor-not-allowed"
@@ -119,19 +119,19 @@ function SearchableLocomotiveSelect({
         <span
           className={cn(
             "truncate flex-1 min-w-0 text-left text-sm",
-            !selectedOption ? "text-[#90A1B9]" : "text-[#0F172B]"
+            !selectedOption ? "text-foreground-subtle" : "text-foreground"
           )}
         >
           {selectedOption ? selectedOption.label : placeholder}
         </span>
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-[#64748B]" />
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
       </div>
 
       {open && (
         <div
           ref={dropdownRef}
           className={cn(
-            "absolute left-0 right-0 z-[999999] max-h-[300px] overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg",
+            "absolute left-0 right-0 z-[999999] max-h-[300px] overflow-hidden rounded-lg border border-border-strong bg-background shadow-lg",
             "animate-in fade-in-0 zoom-in-95 duration-100",
             dropdownPosition === "top"
               ? "bottom-full mb-1 slide-in-from-bottom-2"
@@ -139,26 +139,26 @@ function SearchableLocomotiveSelect({
           )}
           style={{ zIndex: 999999 }}
         >
-          <div className="p-2 border-b border-[#E2E8F0]">
+          <div className="p-2 border-b border-border">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder={placeholder}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => e.stopPropagation()}
-                className="w-full border border-[#E2E8F0] rounded-md py-2 pl-8 pr-3 text-sm focus:border-[#2354bf] focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20"
+                className="w-full border border-border rounded-md py-2 pl-8 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </div>
           <div className="max-h-[240px] overflow-y-auto py-0.5">
             {loading ? (
-              <div className="p-4 text-center text-sm text-[#64748B]">
+              <div className="p-4 text-center text-sm text-muted-foreground">
                 Loading...
               </div>
             ) : filteredOptions.length === 0 ? (
-              <div className="py-3 text-center text-sm text-[#64748B]">
+              <div className="py-3 text-center text-sm text-muted-foreground">
                 {emptyMessage ?? "No items found."}
               </div>
             ) : (
@@ -168,9 +168,9 @@ function SearchableLocomotiveSelect({
                   type="button"
                   onClick={() => handleSelect(opt.value)}
                   className={cn(
-                    "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-[#F1F5F9]",
+                    "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-muted",
                     opt.value === value &&
-                      "bg-[#EFF6FF] font-medium text-[#1d4ed8]"
+                      "bg-primary-subtle font-medium text-primary-hover"
                   )}
                 >
                   <span className="truncate">{opt.label}</span>
@@ -432,9 +432,9 @@ export default function PublicDefectiveWorkCreatePage() {
   // Show loading state while authenticating
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
-        <Card className="border border-[#E2E8F0] bg-white p-6 shadow-xl md:p-8">
-          <p className="text-center text-sm text-[#475569]">{t("loading")}</p>
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted px-4 py-10 text-foreground">
+        <Card className="border border-border bg-background p-6 shadow-xl md:p-8">
+          <p className="text-center text-sm text-foreground-secondary">{t("loading")}</p>
         </Card>
       </div>
     );
@@ -443,12 +443,12 @@ export default function PublicDefectiveWorkCreatePage() {
   // Show error state if authentication failed
   if (authError || !temporaryToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
-        <Card className="border border-red-200 bg-white p-6 shadow-xl md:p-8 space-y-4">
-          <h1 className="text-lg font-semibold text-red-700">
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted px-4 py-10 text-foreground">
+        <Card className="border border-destructive/30 bg-background p-6 shadow-xl md:p-8 space-y-4">
+          <h1 className="text-lg font-semibold text-destructive">
             {t("auth_error_title")}
           </h1>
-          <p className="text-sm text-[#475569] break-words">
+          <p className="text-sm text-foreground-secondary break-words">
             {authError || t("auth_error_token")}
           </p>
           <div className="flex justify-end">
@@ -462,15 +462,15 @@ export default function PublicDefectiveWorkCreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
+    <div className="min-h-screen bg-surface-muted px-4 py-10 text-foreground">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="space-y-3 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#7C8DB5]">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
             Smart Depo
           </p>
           <h1 className="text-3xl font-bold md:text-4xl">{t("title")}</h1>
-          <p className="text-base text-[#475569] md:text-lg">{t("subtitle")}</p>
-          <div className="flex items-center justify-center gap-2 text-sm text-[#475569]">
+          <p className="text-base text-foreground-secondary md:text-lg">{t("subtitle")}</p>
+          <div className="flex items-center justify-center gap-2 text-sm text-foreground-secondary">
             <span>{t("has_account")}</span>
             <Link
               href="/login"
@@ -481,7 +481,7 @@ export default function PublicDefectiveWorkCreatePage() {
           </div>
         </header>
 
-        <Card className="border border-[#E2E8F0] bg-white p-6 shadow-xl md:p-8">
+        <Card className="border border-border bg-background p-6 shadow-xl md:p-8">
           <form
             key={formResetKey}
             ref={formRef}
@@ -498,7 +498,7 @@ export default function PublicDefectiveWorkCreatePage() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                <Label className="mb-2 block text-sm font-medium text-foreground">
                   {t("locomotive")}
                 </Label>
                 <SearchableLocomotiveSelect
@@ -525,10 +525,10 @@ export default function PublicDefectiveWorkCreatePage() {
 
               {organizationFromUrl ? (
                 <div>
-                  <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                  <Label className="mb-2 block text-sm font-medium text-foreground">
                     {t("organization")}
                   </Label>
-                  <div className="flex h-10 w-full items-center rounded-md border border-gray-200 bg-[#F8FAFC] px-4 py-2 text-sm text-[#475569]">
+                  <div className="flex h-10 w-full items-center rounded-md border border-border bg-surface-muted px-4 py-2 text-sm text-foreground-secondary">
                     {organizations.find(
                       (o) => o.id.toString() === organizationFromUrl
                     )?.name ?? organizationFromUrl}
@@ -536,7 +536,7 @@ export default function PublicDefectiveWorkCreatePage() {
                 </div>
               ) : (
                 <div>
-                  <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                  <Label className="mb-2 block text-sm font-medium text-foreground">
                     {t("organization")}
                   </Label>
                   <Select
@@ -545,7 +545,7 @@ export default function PublicDefectiveWorkCreatePage() {
                     onValueChange={setSelectedOrganization}
                     disabled={isLoadingOrganizations}
                   >
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-background">
                       <SelectValue
                         placeholder={t("organization_placeholder")}
                       />
@@ -589,7 +589,7 @@ export default function PublicDefectiveWorkCreatePage() {
 
               {/* TU-152 defect group */}
               <div>
-                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                <Label className="mb-2 block text-sm font-medium text-foreground">
                   {t("remark_group")}
                 </Label>
                 <Select
@@ -600,7 +600,7 @@ export default function PublicDefectiveWorkCreatePage() {
                   }}
                   disabled={!selectedLocomotive || isLoadingRemarkGroups}
                 >
-                  <SelectTrigger className="bg-white">
+                  <SelectTrigger className="bg-background">
                     <SelectValue
                       placeholder={
                         !selectedLocomotive
@@ -625,7 +625,7 @@ export default function PublicDefectiveWorkCreatePage() {
 
               {/* TU-152 defect */}
               <div>
-                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
+                <Label className="mb-2 block text-sm font-medium text-foreground">
                   {t("remark")}
                 </Label>
                 <Select
@@ -633,7 +633,7 @@ export default function PublicDefectiveWorkCreatePage() {
                   onValueChange={setSelectedRemark}
                   disabled={!selectedGroup || remarkOptions.length === 0}
                 >
-                  <SelectTrigger className="bg-white">
+                  <SelectTrigger className="bg-background">
                     <SelectValue
                       placeholder={
                         !selectedGroup
@@ -666,13 +666,13 @@ export default function PublicDefectiveWorkCreatePage() {
               />
 
               <div className="flex items-center justify-between gap-3">
-                <p className="text-xs text-[#64748B]">{t("add_issue_hint")}</p>
+                <p className="text-xs text-muted-foreground">{t("add_issue_hint")}</p>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleAddIssue}
                   disabled={isPending}
-                  className="border-[#CBD5F5] text-[#1D4ED8] hover:bg-[#EEF2FF] whitespace-nowrap"
+                  className="border-primary/30 text-primary-hover hover:bg-primary-subtle whitespace-nowrap"
                 >
                   {t("add_to_list")}
                 </Button>
@@ -681,7 +681,7 @@ export default function PublicDefectiveWorkCreatePage() {
               {issues.length > 0 && (
                 <>
                   <div className="mb-2 flex items-center justify-between">
-                    <p className="text-xs font-medium text-[#1E293B]">
+                    <p className="text-xs font-medium text-foreground">
                       {t("added_issues", { count: issues.length })}
                     </p>
                   </div>
@@ -689,14 +689,14 @@ export default function PublicDefectiveWorkCreatePage() {
                   {issues.map((issue, index) => (
                     <div
                       key={index}
-                      className="rounded-md border-2 border-dashed border-[#CBD5F5]  bg-[#F8FAFF] p-3 space-y-3"
+                      className="rounded-md border-2 border-dashed border-primary/30  bg-surface-muted p-3 space-y-3"
                     >
-                      <div className="flex items-center justify-between overflow-y-auto text-xs text-[#475569]">
+                      <div className="flex items-center justify-between overflow-y-auto text-xs text-foreground-secondary">
                         <div className="flex items-center gap-2">
                           <span className="flex-1">
                             {index + 1}. {issue.text}
                             {issue.remarkLabel && (
-                              <span className="ml-2 inline-flex items-center rounded bg-[#EEF2FF] px-1.5 py-0.5 text-[10px] font-medium text-[#4338CA]">
+                              <span className="ml-2 inline-flex items-center rounded bg-primary-subtle px-1.5 py-0.5 text-2xs font-medium text-primary-hover">
                                 {issue.remarkLabel}
                               </span>
                             )}
@@ -716,7 +716,7 @@ export default function PublicDefectiveWorkCreatePage() {
                           type="button"
                           variant="destructive"
                           size="icon"
-                          className="bg-red-400 w-6 h-6"
+                          className="bg-destructive w-6 h-6"
                           onClick={() => handleRemoveIssue(index)}
                           disabled={isPending}
                         >
@@ -730,12 +730,12 @@ export default function PublicDefectiveWorkCreatePage() {
             </div>
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-sm text-[#475569]">{t("submit_note")}</p>
+              <p className="text-sm text-foreground-secondary">{t("submit_note")}</p>
               <div className="flex gap-3">
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-[#CBD5F5] text-[#1D4ED8] hover:bg-[#EEF2FF]"
+                  className="border-primary/30 text-primary-hover hover:bg-primary-subtle"
                   onClick={resetForm}
                   disabled={isPending}
                 >

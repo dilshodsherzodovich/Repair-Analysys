@@ -32,79 +32,79 @@ const getEventConfig = (action: LogAction, t: (key: string) => string): EventCon
   const configs: Record<LogAction, EventConfig> = {
     inspection_opened: {
       icon: ClipboardCheck,
-      badgeBgColor: "bg-green-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-green-500",
+      badgeBgColor: "bg-success",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-success",
       label: t("inspection_opened"),
     },
     inspection_closed: {
       icon: ClipboardCheck,
-      badgeBgColor: "bg-red-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-red-500",
+      badgeBgColor: "bg-destructive",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-destructive",
       label: t("inspection_closed"),
     },
     location_changed: {
       icon: MapPin,
-      badgeBgColor: "bg-blue-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-blue-500",
+      badgeBgColor: "bg-primary",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-primary",
       label: t("location_changed"),
     },
     reserve_started: {
       icon: Flag,
-      badgeBgColor: "bg-yellow-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-yellow-500",
+      badgeBgColor: "bg-warning",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-warning",
       label: t("reserve_started"),
     },
     reserve_ended: {
       icon: Flag,
-      badgeBgColor: "bg-orange-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-orange-500",
+      badgeBgColor: "bg-warning",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-warning",
       label: t("reserve_ended"),
     },
     assignment_started: {
       icon: ArrowRight,
-      badgeBgColor: "bg-purple-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-purple-500",
+      badgeBgColor: "bg-category-violet",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-category-violet",
       label: t("assignment_started"),
     },
     assignment_ended: {
       icon: ArrowLeft,
-      badgeBgColor: "bg-pink-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-pink-500",
+      badgeBgColor: "bg-category-pink",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-category-pink",
       label: t("assignment_ended"),
     },
     rental_started: {
       icon: Briefcase,
-      badgeBgColor: "bg-indigo-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-indigo-500",
+      badgeBgColor: "bg-category-indigo",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-category-indigo",
       label: t("rental_started"),
     },
     rental_ended: {
       icon: Briefcase,
-      badgeBgColor: "bg-teal-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-teal-500",
+      badgeBgColor: "bg-category-teal",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-category-teal",
       label: t("rental_ended"),
     },
     opened: {
       icon: ClipboardCheck,
-      badgeBgColor: "bg-green-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-green-500",
+      badgeBgColor: "bg-success",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-success",
       label: t("opened"),
     },
     closed: {
       icon: ClipboardCheck,
-      badgeBgColor: "bg-red-500",
-      badgeTextColor: "text-white",
-      nodeColor: "bg-red-500",
+      badgeBgColor: "bg-destructive",
+      badgeTextColor: "text-primary-foreground",
+      nodeColor: "bg-destructive",
       label: t("closed"),
     },
   };
@@ -136,7 +136,7 @@ export function LocomotiveHistoryTimeline({
   return (
     <div className="relative">
       {/* Timeline Line */}
-      <div className="absolute left-[120px] top-0 bottom-0 w-0.5 bg-gray-300" />
+      <div className="absolute left-[120px] top-0 bottom-0 w-0.5 bg-border-strong" />
 
       {/* Events */}
       <div className="space-y-3 pb-6">
@@ -151,14 +151,14 @@ export function LocomotiveHistoryTimeline({
             <div key={log.id} className="relative flex items-center gap-2">
               {/* Timestamp */}
               <div className="w-[80px] text-right flex-shrink-0">
-                <div className="text-sm font-medium text-gray-700">
+                <div className="text-sm font-medium text-foreground-secondary">
                   {timeStr}
                 </div>
                 {index === 0 ||
                 format(new Date(sortedLogs[index - 1].created_time), "dd MMM yyyy", {
                   locale: uz,
                 }) !== dateStr ? (
-                  <div className="text-xs text-gray-500">{dateStr}</div>
+                  <div className="text-xs text-muted-foreground">{dateStr}</div>
                 ) : null}
               </div>
 
@@ -166,17 +166,17 @@ export function LocomotiveHistoryTimeline({
               <div className="relative z-10 flex-shrink-0">
                 <div
                   className={cn(
-                    "w-3 h-3 rounded-full border-2 border-white shadow-md",
+                    "w-3 h-3 rounded-full border-2 border-background shadow-md",
                     config.nodeColor
                   )}
                 />
               </div>
 
               {/* Event Card - Everything in one line with uniform background */}
-              <div className="flex-1 rounded-lg border border-gray-200 bg-white p-2 shadow-sm transition-all hover:shadow-md">
+              <div className="flex-1 rounded-lg border border-border bg-background p-2 shadow-sm transition-all hover:shadow-md">
                 <div className="flex items-center gap-2">
-                  <div className="p-1 rounded-md flex-shrink-0 bg-gray-100">
-                    <Icon className="w-4 h-4 text-gray-600" />
+                  <div className="p-1 rounded-md flex-shrink-0 bg-muted">
+                    <Icon className="w-4 h-4 text-foreground-secondary" />
                   </div>
                   <Badge
                     className={cn(
@@ -188,12 +188,12 @@ export function LocomotiveHistoryTimeline({
                     {config.label}
                   </Badge>
                   {log.message && (
-                    <p className="text-sm text-gray-600 truncate flex-1 min-w-0">
+                    <p className="text-sm text-foreground-secondary truncate flex-1 min-w-0">
                       {log.message}
                     </p>
                   )}
                   {log.author && (
-                    <span className="text-xs text-gray-500 whitespace-nowrap">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {t("author")}: {log.author.first_name}{" "}
                       {log.author.last_name}
                     </span>

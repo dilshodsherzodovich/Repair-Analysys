@@ -83,7 +83,7 @@ const DocumentViewer = React.forwardRef<HTMLDivElement, DocumentViewerProps>(
         case "text":
           return (
             <div
-              className="w-full h-full p-4 overflow-auto bg-white text-[#1f2937]"
+              className="w-full h-full p-4 overflow-auto bg-background text-foreground"
               style={{ fontSize: `${zoom}%` }}
             >
               <pre className="whitespace-pre-wrap font-mono text-sm">
@@ -93,7 +93,7 @@ const DocumentViewer = React.forwardRef<HTMLDivElement, DocumentViewerProps>(
           );
         default:
           return (
-            <div className="flex items-center justify-center h-full bg-[#f9fafb] text-[#6b7280]">
+            <div className="flex items-center justify-center h-full bg-surface-muted text-muted-foreground">
               <div className="text-center">
                 <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Предварительный просмотр недоступен</p>
@@ -110,19 +110,19 @@ const DocumentViewer = React.forwardRef<HTMLDivElement, DocumentViewerProps>(
       <div
         ref={ref}
         className={cn(
-          "bg-white rounded-lg border shadow-sm",
+          "bg-background rounded-lg border shadow-sm",
           isFullscreen && "fixed inset-0 z-50 rounded-none",
           className
         )}
         {...props}
       >
         {/* Toolbar */}
-        <div className="flex items-center justify-between p-4 border-b border-[#e5e7eb]">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div>
-            <h3 className="font-medium text-[#1f2937] truncate">
+            <h3 className="font-medium text-foreground truncate">
               {documentName}
             </h3>
-            <p className="text-sm text-[#6b7280]">Масштаб: {zoom}%</p>
+            <p className="text-sm text-muted-foreground">Масштаб: {zoom}%</p>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -180,7 +180,7 @@ const DocumentViewer = React.forwardRef<HTMLDivElement, DocumentViewerProps>(
               )}
               {canDelete && onDelete && (
                 <Button size="sm" variant="ghost" onClick={onDelete}>
-                  <Trash2 className="w-4 h-4 text-[#ff5959]" />
+                  <Trash2 className="w-4 h-4 text-destructive" />
                 </Button>
               )}
             </div>

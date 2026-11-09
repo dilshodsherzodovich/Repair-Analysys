@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { Badge, type BadgeProps } from "@/ui/badge"
 import { CheckCircle, Clock, Archive, FileText } from "lucide-react"
 
 export interface DocumentStatusBadgeProps {
@@ -11,67 +12,36 @@ export interface DocumentStatusBadgeProps {
   className?: string
 }
 
-const DocumentStatusBadge = React.forwardRef<HTMLSpanElement, DocumentStatusBadgeProps>(
-  ({ status, size = "md", showIcon = true, className, ...props }, ref) => {
-    const getStatusConfig = (status: string) => {
-      switch (status) {
-        case "approved":
-          return {
-            label: "Утверждено",
-            icon: <CheckCircle className="w-3 h-3" />,
-            className: "bg-[#10b981] text-white",
-          }
-        case "review":
-          return {
-            label: "На рассмотрении",
-            icon: <Clock className="w-3 h-3" />,
-            className: "bg-[#f59e0b] text-white",
-          }
-        case "archived":
-          return {
-            label: "Архивировано",
-            icon: <Archive className="w-3 h-3" />,
-            className: "bg-[#6b7280] text-white",
-          }
-        default:
-          return {
-            label: "Черновик",
-            icon: <FileText className="w-3 h-3" />,
-            className: "bg-[#e5e7eb] text-[#374151]",
-          }
-      }
-    }
+const STATUS: Record<
+  DocumentStatusBadgeProps["status"],
+  { label: string; icon: React.ReactNode; variant: BadgeProps["variant"] }
+> = {
+  approved: { label: "Утверждено", icon: <CheckCircle className="size-3" />, variant: "success_solid" },
+  review: { label: "На рассмотрении", icon: <Clock className="size-3" />, variant: "warning_solid" },
+  archived: { label: "Архивировано", icon: <Archive className="size-3" />, variant: "neutral_solid" },
+  draft: { label: "Черновик", icon: <FileText className="size-3" />, variant: "neutral" },
+}
 
-    const getSizeClasses = (size: string) => {
-      switch (size) {
-        case "sm":
-          return "px-2 py-0.5 text-xs"
-        case "lg":
-          return "px-4 py-2 text-sm"
-        default:
-          return "px-3 py-1 text-sm"
-      }
-    }
+const SIZES = {
+  sm: "px-2 py-0.5 text-xs",
+  md: "px-3 py-1 text-sm",
+  lg: "px-4 py-2 text-sm",
+}
 
-    const config = getStatusConfig(status)
+function DocumentStatusBadge({
+  status,
+  size = "md",
+  showIcon = true,
+  className,
+}: DocumentStatusBadgeProps) {
+  const config = STATUS[status] ?? STATUS.draft
 
-    return (
-      <span
-        ref={ref}
-        className={cn(
-          "inline-flex items-center gap-1 rounded-full font-medium",
-          getSizeClasses(size),
-          config.className,
-          className,
-        )}
-        {...props}
-      >
-        {showIcon && config.icon}
-        {config.label}
-      </span>
-    )
-  },
-)
-DocumentStatusBadge.displayName = "DocumentStatusBadge"
+  return (
+    <Badge variant={config.variant} className={cn("font-medium", SIZES[size], className)}>
+      {showIcon && config.icon}
+      {config.label}
+    </Badge>
+  )
+}
 
 export { DocumentStatusBadge }

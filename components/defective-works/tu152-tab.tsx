@@ -354,7 +354,7 @@ export function TU152Tab() {
   return (
     <>
       <div className="px-6 py-4">
-        <div className="bg-white border p-4 mb-4">
+        <div className="bg-background border p-4 mb-4">
           <div className="flex flex-wrap md:flex-nowrap items-end gap-4">
             <div className="min-w-[200px] flex-1">
               <DatePicker
@@ -446,9 +446,9 @@ export function TU152Tab() {
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F8FAFC]">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-muted">
               {totalItems ? (
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   {t("pagination_showing", {
                     from: Math.min(
                       (currentPage - 1) * itemsPerPage + 1,
@@ -470,7 +470,7 @@ export function TU152Tab() {
                       onClick={() =>
                         updateQuery({ page: (currentPage - 1).toString() })
                       }
-                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
+                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-border bg-background text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
                     >
                       <ChevronLeft className="h-4 w-4" />
                       <span>{t("pagination_prev")}</span>
@@ -525,7 +525,7 @@ export function TU152Tab() {
                       onClick={() =>
                         updateQuery({ page: (currentPage + 1).toString() })
                       }
-                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
+                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-border bg-background text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
                     >
                       <span>{t("pagination_next")}</span>
                       <ChevronRight className="h-4 w-4" />

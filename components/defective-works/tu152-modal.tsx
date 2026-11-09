@@ -78,7 +78,7 @@ export function TU152Modal({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="status" className="mb-2 block">
-            {t("status_label")} <span className="text-red-500">*</span>
+            {t("status_label")} <span className="text-destructive">*</span>
           </Label>
           <Select value={statusId} onValueChange={setStatusId}>
             <SelectTrigger id="status">

@@ -317,7 +317,7 @@ export default function CulpritsPage() {
                     variant: "outline" as const,
                     shouldShow: (row: Culprit) => !row.payroll_confirmed,
                     className:
-                      "border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10",
+                      "border-destructive text-destructive hover:text-destructive hover:border-destructive hover:bg-destructive/10",
                   },
                 ]
               : []

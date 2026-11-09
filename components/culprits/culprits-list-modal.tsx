@@ -309,7 +309,7 @@ export function CulpritsListModal({
                   </span>
                 </div>
                 <div className="text-right">
-                  <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <div className="text-2xs uppercase tracking-wide text-muted-foreground">
                     {t("zarar")}
                   </div>
                   <div className="text-base font-semibold tabular-nums">
@@ -324,7 +324,7 @@ export function CulpritsListModal({
                     className={cn(
                       "h-full rounded-full transition-all",
                       over
-                        ? "bg-red-500"
+                        ? "bg-destructive"
                         : percent >= 100
                           ? "bg-success"
                           : "bg-primary"
@@ -342,7 +342,7 @@ export function CulpritsListModal({
                   </span>
                   <span
                     className={
-                      over ? "font-medium text-red-600" : "text-muted-foreground"
+                      over ? "font-medium text-destructive" : "text-muted-foreground"
                     }
                   >
                     {over
@@ -458,7 +458,7 @@ export function CulpritsListModal({
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-7 w-7 p-0 border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10"
+                              className="h-7 w-7 p-0 border-destructive text-destructive hover:text-destructive hover:border-destructive hover:bg-destructive/10"
                               onClick={() => setDeleting(culprit)}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -587,7 +587,7 @@ export function CulpritsListModal({
                               }}
                             />
                             {!row.amount && max > 0 && (
-                              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border bg-muted px-1 text-[10px] font-medium text-muted-foreground">
+                              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border bg-muted px-1 text-2xs font-medium text-muted-foreground">
                                 Tab
                               </span>
                             )}

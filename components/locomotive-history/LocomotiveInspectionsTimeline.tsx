@@ -46,7 +46,7 @@ export function LocomotiveInspectionsTimeline({
   return (
     <div className="relative">
       {/* Timeline Line */}
-      <div className="absolute left-[120px] top-0 bottom-0 w-0.5 bg-gray-300" />
+      <div className="absolute left-[120px] top-0 bottom-0 w-0.5 bg-border-strong" />
 
       {/* Events */}
       <div className="space-y-3 pb-6">
@@ -58,13 +58,13 @@ export function LocomotiveInspectionsTimeline({
           const isCancelled = inspection.is_cancelled;
 
           // Determine status badge color
-          let statusBadgeColor = "bg-blue-500";
+          let statusBadgeColor = "bg-primary";
           let statusText = t("open") || "Open";
           if (isCancelled) {
-            statusBadgeColor = "bg-red-500";
+            statusBadgeColor = "bg-destructive";
             statusText = t("canceled") || t("cancelled") || "Cancelled";
           } else if (isClosed) {
-            statusBadgeColor = "bg-green-500";
+            statusBadgeColor = "bg-success";
             statusText = t("closed") || "Closed";
           }
 
@@ -72,7 +72,7 @@ export function LocomotiveInspectionsTimeline({
             <div key={inspection.id} className="relative flex items-center gap-2">
               {/* Timestamp */}
               <div className="w-[80px] text-right flex-shrink-0">
-                <div className="text-sm font-medium text-gray-700">
+                <div className="text-sm font-medium text-foreground-secondary">
                   {timeStr}
                 </div>
                 {index === 0 ||
@@ -81,7 +81,7 @@ export function LocomotiveInspectionsTimeline({
                   "dd MMM yyyy",
                   { locale: uz }
                 ) !== dateStr ? (
-                  <div className="text-xs text-gray-500">{dateStr}</div>
+                  <div className="text-xs text-muted-foreground">{dateStr}</div>
                 ) : null}
               </div>
 
@@ -89,31 +89,31 @@ export function LocomotiveInspectionsTimeline({
               <div className="relative z-10 flex-shrink-0">
                 <div
                   className={cn(
-                    "w-3 h-3 rounded-full border-2 border-white shadow-md",
+                    "w-3 h-3 rounded-full border-2 border-background shadow-md",
                     isCancelled
-                      ? "bg-red-500"
+                      ? "bg-destructive"
                       : isClosed
-                      ? "bg-green-500"
-                      : "bg-blue-500"
+                      ? "bg-success"
+                      : "bg-primary"
                   )}
                 />
               </div>
 
               {/* Inspection Card */}
-              <div className="flex-1 rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-all hover:shadow-md">
+              <div className="flex-1 rounded-lg border border-border bg-background p-3 shadow-sm transition-all hover:shadow-md">
                 <div className="space-y-2">
                   {/* Header Row */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div className="p-1.5 rounded-md flex-shrink-0 bg-blue-50">
-                        <ClipboardCheck className="w-4 h-4 text-blue-600" />
+                      <div className="p-1.5 rounded-md flex-shrink-0 bg-primary-subtle">
+                        <ClipboardCheck className="w-4 h-4 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm text-gray-900 truncate">
+                        <h3 className="font-semibold text-sm text-foreground truncate">
                           {inspection.inspection_type?.name || "-"}
                         </h3>
                         {inspection.section && (
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             {t("section")}: {t(`sectionNames.${inspection.section}`) || inspection.section}
                           </p>
                         )}
@@ -121,7 +121,7 @@ export function LocomotiveInspectionsTimeline({
                     </div>
                     <Badge
                       className={cn(
-                        "px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-white",
+                        "px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-primary-foreground",
                         statusBadgeColor
                       )}
                     >
@@ -132,14 +132,14 @@ export function LocomotiveInspectionsTimeline({
                   {/* Details Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                     {inspection.branch && (
-                      <div className="flex items-center gap-2 text-gray-600">
+                      <div className="flex items-center gap-2 text-foreground-secondary">
                         <Building2 className="w-3.5 h-3.5 flex-shrink-0" />
                         <span className="font-medium">{t("branch")}:</span>
                         <span className="truncate">{inspection.branch.name}</span>
                       </div>
                     )}
                     {inspection.locomotive?.location && (
-                      <div className="flex items-center gap-2 text-gray-600">
+                      <div className="flex items-center gap-2 text-foreground-secondary">
                         <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                         <span className="font-medium">{t("location")}:</span>
                         <span className="truncate">
@@ -148,7 +148,7 @@ export function LocomotiveInspectionsTimeline({
                       </div>
                     )}
                     {inspection.author && (
-                      <div className="flex items-center gap-2 text-gray-600">
+                      <div className="flex items-center gap-2 text-foreground-secondary">
                         <User className="w-3.5 h-3.5 flex-shrink-0" />
                         <span className="font-medium">{t("author")}:</span>
                         <span className="truncate">
@@ -157,8 +157,8 @@ export function LocomotiveInspectionsTimeline({
                       </div>
                     )}
                     {inspection.is_closed_time && (
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 text-green-600" />
+                      <div className="flex items-center gap-2 text-foreground-secondary">
+                        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 text-success" />
                         <span className="font-medium">{t("closedTime")}:</span>
                         <span>
                           {format(new Date(inspection.is_closed_time), "dd MMM yyyy, HH:mm", {
@@ -168,8 +168,8 @@ export function LocomotiveInspectionsTimeline({
                       </div>
                     )}
                     {inspection.is_cancelled_time && (
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <XCircle className="w-3.5 h-3.5 flex-shrink-0 text-red-600" />
+                      <div className="flex items-center gap-2 text-foreground-secondary">
+                        <XCircle className="w-3.5 h-3.5 flex-shrink-0 text-destructive" />
                         <span className="font-medium">{t("canceledTime")}:</span>
                         <span>
                           {format(new Date(inspection.is_cancelled_time), "dd MMM yyyy, HH:mm", {
@@ -178,7 +178,7 @@ export function LocomotiveInspectionsTimeline({
                         </span>
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-foreground-secondary">
                       <Clock className="w-3.5 h-3.5 flex-shrink-0" />
                       <span className="font-medium">{t("createdTime")}:</span>
                       <span>
@@ -189,11 +189,11 @@ export function LocomotiveInspectionsTimeline({
 
                   {/* Comment */}
                   {inspection.comment && (
-                    <div className="flex items-start gap-2 text-xs text-gray-600 pt-1 border-t border-gray-100">
+                    <div className="flex items-start gap-2 text-xs text-foreground-secondary pt-1 border-t border-muted">
                       <FileText className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
                       <div>
                         <span className="font-medium">{t("comment")}:</span>
-                        <p className="text-gray-700 mt-0.5">{inspection.comment}</p>
+                        <p className="text-foreground-secondary mt-0.5">{inspection.comment}</p>
                       </div>
                     </div>
                   )}

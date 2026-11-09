@@ -86,7 +86,7 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
     return (
       <div
         ref={ref}
-        className={cn("bg-white rounded-lg border p-6 space-y-4", className)}
+        className={cn("bg-background rounded-lg border p-6 space-y-4", className)}
         {...props}
       >
         {/* Search Input */}
@@ -122,7 +122,7 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
 
         {/* Advanced Filters */}
         {showAdvanced && (
-          <div className="border-t border-[#e5e7eb] pt-4 space-y-4">
+          <div className="border-t border-border pt-4 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Category */}
               <div className="space-y-1.5">
@@ -202,7 +202,7 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
             {/* Tags */}
             {availableTags.length > 0 && (
               <div>
-                <label className="text-sm font-medium text-[#374151] mb-2 block">
+                <label className="text-sm font-medium text-foreground-secondary mb-2 block">
                   Теги
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -213,8 +213,8 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
                       className={cn(
                         "px-3 py-1 rounded-full text-sm border transition-colors",
                         selectedTags.includes(tag)
-                          ? "bg-[#2354bf] text-white border-[#2354bf]"
-                          : "bg-white text-[#374151] border-[#d1d5db] hover:border-[#2354bf]"
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-foreground-secondary border-border-strong hover:border-primary"
                       )}
                     >
                       {tag}
@@ -228,29 +228,29 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
 
         {/* Active Filters Summary */}
         {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#e5e7eb]">
-            <span className="text-sm text-[#6b7280]">Активные фильтры:</span>
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
+            <span className="text-sm text-muted-foreground">Активные фильтры:</span>
             {filters.category && (
-              <span className="px-2 py-1 bg-[#f3f4f6] text-[#374151] text-xs rounded border">
+              <span className="px-2 py-1 bg-muted text-foreground-secondary text-xs rounded border">
                 Категория:{" "}
                 {categories.find((c) => c.value === filters.category)?.label}
               </span>
             )}
             {filters.status && (
-              <span className="px-2 py-1 bg-[#f3f4f6] text-[#374151] text-xs rounded border">
+              <span className="px-2 py-1 bg-muted text-foreground-secondary text-xs rounded border">
                 Статус:{" "}
                 {statusOptions.find((s) => s.value === filters.status)?.label}
               </span>
             )}
             {filters.author && (
-              <span className="px-2 py-1 bg-[#f3f4f6] text-[#374151] text-xs rounded border">
+              <span className="px-2 py-1 bg-muted text-foreground-secondary text-xs rounded border">
                 Автор: {authors.find((a) => a.value === filters.author)?.label}
               </span>
             )}
             {selectedTags.map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-1 bg-[#2354bf]/10 text-[#2354bf] text-xs rounded border"
+                className="px-2 py-1 bg-primary/10 text-primary text-xs rounded border"
               >
                 {tag}
               </span>
