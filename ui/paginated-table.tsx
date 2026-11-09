@@ -245,7 +245,7 @@ export function PaginatedTable<T extends Record<string, any>>({
           key: "actions",
           header: resolvedActionsLabel,
           className:
-            "w-[100px] text-center sticky right-0 bg-white z-10 shadow-pin-end border-r border-border last:border-r-0",
+            "w-[100px] text-center sticky right-0 bg-background z-10 shadow-pin-end border-r border-border last:border-r-0",
           headerClassName:
             "text-center sticky right-0 bg-surface-muted z-10 shadow-pin-end",
         } as TableColumn<T>,
@@ -259,7 +259,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Loading state
   if (isLoading) {
     return (
-      <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-white", className)}>
+      <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-background", className)}>
         <Table className="w-full min-w-[900px]">
           <TableHeader>
             <TableRow className="bg-surface-muted border-b border-border">
@@ -269,7 +269,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                     type="checkbox"
                     checked={allSelected}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded-md border-border-strong bg-white text-primary focus:ring-primary w-4 h-4"
+                    className="rounded-md border-border-strong bg-background text-primary focus:ring-primary w-4 h-4"
                   />
                 </TableHead>
               )}
@@ -304,7 +304,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Error state
   // if (error) {
   //   return (
-  //     <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-white", className)}>
+  //     <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-background", className)}>
   //       <ErrorCard
   //         title={resolvedErrorTitle}
   //         message={resolvedErrorMessage || error.message}
@@ -319,7 +319,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Empty state
   if (!isLoading && !error && data.length === 0) {
     return (
-      <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-white", className)}>
+      <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-background", className)}>
         <Table className="w-full min-w-[900px]">
           <TableHeader>
             <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
@@ -361,7 +361,7 @@ export function PaginatedTable<T extends Record<string, any>>({
 
   return (
     <div className={cn("w-full space-y-4 pb-2", className)}>
-      <div className="rounded-lg border border-border-strong overflow-hidden bg-white">
+      <div className="rounded-lg border border-border-strong overflow-hidden bg-background">
         <Table className="w-full min-w-[900px]">
           <TableHeader>
             <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
@@ -375,7 +375,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                         input.indeterminate = someSelected && !allSelected;
                     }}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded-md border-border-strong bg-white text-primary focus:ring-primary w-4 h-4"
+                    className="rounded-md border-border-strong bg-background text-primary focus:ring-primary w-4 h-4"
                   />
                 </TableHead>
               )}
@@ -442,7 +442,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                         onChange={(e) =>
                           handleSelectRow(rowId, e.target.checked)
                         }
-                        className="rounded-md border-border-strong bg-white text-primary focus:ring-primary w-4 h-4"
+                        className="rounded-md border-border-strong bg-background text-primary focus:ring-primary w-4 h-4"
                       />
                     </TableCell>
                   )}
@@ -477,7 +477,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                     <TableCell
                       className={cn(
                         "py-3 px-4 text-center border-r border-border last:border-r-0 transition-colors sticky right-0 z-10 shadow-pin-end",
-                        isSelected ? "bg-primary-subtle" : "bg-white"
+                        isSelected ? "bg-primary-subtle" : "bg-background"
                       )}
                     >
                       <div className="flex items-center justify-center gap-2">
@@ -866,7 +866,7 @@ function PaginationControls({
           <button
             type="button"
             onClick={() => onPageChange(currentPage - 1)}
-            className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-border bg-white text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
+            className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-border bg-background text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
           >
             <ChevronLeft className="h-4 w-4" />
             <span>{t("pagination_prev")}</span>
@@ -894,7 +894,7 @@ function PaginationControls({
           <button
             type="button"
             onClick={() => onPageChange(currentPage + 1)}
-            className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-border bg-white text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
+            className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-border bg-background text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
           >
             <span>{t("pagination_next")}</span>
             <ChevronRight className="h-4 w-4" />

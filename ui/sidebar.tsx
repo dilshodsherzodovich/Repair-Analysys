@@ -30,7 +30,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
     return (
       <div
         ref={ref}
-        className={cn("flex flex-col h-full bg-white", className)}
+        className={cn("flex flex-col h-full bg-background", className)}
         {...props}
       >
         {/* User Info Header */}
@@ -39,7 +39,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
+                  <User className="w-4 h-4 text-primary-foreground" />
                 </div>
                 <div>
                   <p className="font-medium text-foreground text-sm">
@@ -69,7 +69,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                     item.active
-                      ? "bg-primary text-white"
+                      ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >

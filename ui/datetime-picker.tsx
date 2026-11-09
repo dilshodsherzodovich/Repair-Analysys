@@ -158,7 +158,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     return (
       <div ref={ref} className={cn("space-y-2", className)} {...props}>
         {label && (
-          <label className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-[var(--muted-foreground)] mb-1">
+          <label className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-muted-foreground mb-1">
             {label}
           </label>
         )}
@@ -170,7 +170,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal shadow-none",
-                "hover:bg-white hover:text-foreground-secondary hover:border-border-strong",
+                "hover:bg-background hover:text-foreground-secondary hover:border-border-strong",
                 !value && "text-foreground-subtle",
                 hasError
                   ? "border-destructive focus:ring-2 focus:ring-destructive/20"
@@ -237,7 +237,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 {t("time_label")} (24h)
               </label>
               <div className="flex items-center gap-1.5">
-                <div className="flex items-center rounded-md border border-border-strong bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+                <div className="flex items-center rounded-md border border-border-strong bg-background focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
                   <input
                     type="text"
                     inputMode="numeric"
@@ -276,7 +276,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                               className={cn(
                                 "flex w-full items-center justify-center rounded py-2 text-sm transition-colors",
                                 hours === i
-                                  ? "bg-primary text-white"
+                                  ? "bg-primary text-primary-foreground"
                                   : "hover:bg-muted text-foreground"
                               )}
                             >
@@ -289,7 +289,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   </Popover>
                 </div>
                 <span className="text-sm font-medium text-muted-foreground">:</span>
-                <div className="flex items-center rounded-md border border-border-strong bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+                <div className="flex items-center rounded-md border border-border-strong bg-background focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
                   <input
                     type="text"
                     inputMode="numeric"
@@ -328,7 +328,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                               className={cn(
                                 "flex w-full items-center justify-center rounded py-2 text-sm transition-colors",
                                 minutes === i
-                                  ? "bg-primary text-white"
+                                  ? "bg-primary text-primary-foreground"
                                   : "hover:bg-muted text-foreground"
                               )}
                             >

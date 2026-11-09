@@ -28,10 +28,21 @@ const PATTERNS = [
     regex:
       /\b(?:bg|text|border|ring|fill|stroke|from|to|via|divide|outline|shadow)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/g,
   },
+  {
+    name: "white/black",
+    regex: /\b(?:bg|text|border|ring|from|to|via|fill|stroke|divide|outline)-(?:white|black)(?![\w-])/g,
+  },
+  // bg-[var(--primary)] reads a token but skips its class; use bg-primary
+  {
+    name: "var()",
+    regex: /\b(?:bg|text|border|ring|fill|stroke|from|to|via|divide|outline)-\[var\(--[a-z0-9-]+\)\]/g,
+  },
   { name: "font-size", regex: /\btext-\[\d+(?:\.\d+)?(?:px|rem)\]/g },
   { name: "shadow", regex: /\bshadow-\[[^\]\s]+\]/g },
   // `rounded-[inherit]` passes the parent's radius on; it is not a value
   { name: "radius", regex: /\brounded(?:-[a-z]{1,2})?-\[(?!inherit\])[^\]\s]+\]/g },
+  // The radius scale stops at xl (12px)
+  { name: "radius", regex: /\brounded(?:-[a-z]{1,2})?-(?:2xl|3xl|4xl)\b/g },
 ];
 
 const args = process.argv.slice(2);

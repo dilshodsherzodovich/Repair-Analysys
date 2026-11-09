@@ -63,6 +63,37 @@ const FONT_SIZES = {
 };
 const FONT_SIZE = /\btext-\[(\d+px)\](?![\w-])/g;
 
+// Radii above the scale (it stops at xl = 12px) -> xl
+const BIG_RADIUS = /\b(rounded(?:-[a-z]{1,2})?)-(?:2xl|3xl|4xl)\b/g;
+
+// White / black. Surfaces become background, overlays scrim; text-white takes
+// the on-fill colour of the fill on the same line (bg-success -> success-foreground).
+const BW = /\b(bg|text|border|ring|from|to|via|fill|stroke|divide|outline)-(white|black)(?![\w-])/g;
+const FILLS = [
+  ["success", "text-success-foreground"],
+  ["destructive", "text-destructive-foreground"],
+  ["warning", "text-warning-foreground"],
+];
+
+function blackWhite(line) {
+  return line.replace(BW, (_match, prefix, color) => {
+    if (color === "black") {
+      if (prefix === "text") return "text-foreground";
+      if (prefix === "bg" || prefix === "from" || prefix === "to" || prefix === "via") return `${prefix}-scrim`;
+      return `${prefix}-foreground`;
+    }
+    if (prefix === "text") {
+      const fill = FILLS.find(([name]) => new RegExp(`\\bbg-${name}\\b`).test(line));
+      return fill ? fill[1] : "text-primary-foreground";
+    }
+    return `${prefix}-background`;
+  });
+}
+
+// bg-[var(--primary)] -> bg-primary. Undefined table vars map to their roles.
+const VAR_CLASS = /\b(bg|text|border|ring|fill|stroke|from|to|via|divide|outline)-\[var\(--([a-z0-9-]+)\)\]/g;
+const VAR_ALIASES = { "table-header-fg": "foreground-secondary", "table-header-bg": "surface-muted" };
+
 const args = process.argv.slice(2);
 const dry = args.includes("--dry");
 const files = args.filter((arg) => !arg.startsWith("--"));
@@ -72,7 +103,15 @@ for (const file of files) {
   const leftovers = new Set();
   let changes = 0;
 
-  const output = source
+  let output = source
+    .replace(VAR_CLASS, (_match, prefix, name) => {
+      changes++;
+      return `${prefix}-${VAR_ALIASES[name] ?? name}`;
+    })
+    .replace(BIG_RADIUS, (_match, prefix) => {
+      changes++;
+      return `${prefix}-xl`;
+    })
     .replace(FONT_SIZE, (match, size) => {
       if (!FONT_SIZES[size]) {
         leftovers.add(match);
@@ -94,6 +133,12 @@ for (const file of files) {
     changes++;
     return `${prefix}-${token}${opacity}`;
   });
+
+  const beforeBw = output;
+  output = output.split("\n").map(blackWhite).join("\n");
+  if (output !== beforeBw) {
+    changes += (beforeBw.match(BW) ?? []).length;
+  }
 
   if (!dry && output !== source) writeFileSync(file, output);
   console.log(

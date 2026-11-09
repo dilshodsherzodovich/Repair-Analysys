@@ -106,7 +106,7 @@ export function MultiSelect({
       <div
         ref={triggerRef}
         className={cn(
-          "w-full justify-between border-[var(--border)] min-h-[40px] h-auto p-2 bg-white hover:bg-[var(--muted)]/20 focus:bg-white focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-1 transition-all duration-150 border rounded-md cursor-pointer flex items-center",
+          "w-full justify-between border-border min-h-[40px] h-auto p-2 bg-background hover:bg-muted/20 focus:bg-background focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-all duration-150 border rounded-md cursor-pointer flex items-center",
           size === "sm" && "h-8 text-xs",
           size === "md" && "h-10 text-sm",
           size === "lg" && "h-12 text-base",
@@ -117,7 +117,7 @@ export function MultiSelect({
       >
         <div className="flex flex-wrap gap-1 flex-1 min-w-0">
           {selectedOptions.length === 0 ? (
-            <span className="text-[var(--muted-foreground)] text-sm">
+            <span className="text-muted-foreground text-sm">
               {placeholder}
             </span>
           ) : (
@@ -125,7 +125,7 @@ export function MultiSelect({
               <Badge
                 key={option.value}
                 variant="secondary"
-                className="bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20 hover:bg-[var(--primary)]/20 text-xs px-2 py-1"
+                className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 text-xs px-2 py-1"
               >
                 {option.label}
                 <Button
@@ -137,7 +137,7 @@ export function MultiSelect({
                     e.stopPropagation();
                     handleRemove(option.value);
                   }}
-                  className="h-4 w-4 p-0 ml-1 hover:bg-[var(--primary)]/20"
+                  className="h-4 w-4 p-0 ml-1 hover:bg-primary/20"
                 >
                   <X className="w-3 h-3" />
                 </Button>
@@ -153,7 +153,7 @@ export function MultiSelect({
         <div
           ref={dropdownRef}
           className={cn(
-            "absolute left-0 right-0 bg-white border border-[var(--border)] rounded-lg z-[999999] max-h-[300px] overflow-hidden",
+            "absolute left-0 right-0 bg-background border border-border rounded-lg z-[999999] max-h-[300px] overflow-hidden",
             "animate-in fade-in-0 zoom-in-95",
             dropdownPosition === "top"
               ? "bottom-full mb-1 slide-in-from-bottom-2"
@@ -162,19 +162,19 @@ export function MultiSelect({
           style={{ zIndex: 999999 }}
         >
           {/* Search Input */}
-          <div className="p-2 border-b border-[var(--border)]">
+          <div className="p-2 border-b border-border">
             <input
               type="text"
               placeholder={searchPlaceholder}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
           {/* Options List */}
           <div className="max-h-[200px] overflow-y-auto">
             {filteredOptions.length === 0 ? (
-              <div className="py-3 text-center text-sm text-[var(--muted-foreground)] bg-[var(--muted)]/10">
+              <div className="py-3 text-center text-sm text-muted-foreground bg-muted/10">
                 {emptyMessage}
               </div>
             ) : (
@@ -184,9 +184,9 @@ export function MultiSelect({
                     key={option.value}
                     type="button"
                     onClick={() => handleSelect(option.value)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-[var(--muted)]/30 cursor-pointer transition-all duration-150 bg-white rounded-sm"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/30 cursor-pointer transition-all duration-150 bg-background rounded-sm"
                   >
-                    <Check className="h-4 w-4 text-[var(--primary)] flex-shrink-0" />
+                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
                     <span className="truncate">{option.label}</span>
                   </button>
                 ))}

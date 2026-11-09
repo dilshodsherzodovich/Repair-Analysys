@@ -76,6 +76,7 @@ const COLOR_GROUPS: {
       { name: "background", use: "Page, cards, inputs" },
       { name: "surface-muted", use: "Table headers, zebra rows, sidebar" },
       { name: "muted", use: "Hover fills, chips, skeletons" },
+      { name: "scrim", use: "Modal overlay, always with opacity: bg-scrim/50" },
       { name: "border", use: "Cell lines, dividers, card borders" },
       { name: "border-strong", use: "Outline of tables, inputs, boxes" },
     ],

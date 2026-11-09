@@ -246,7 +246,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
                 {files.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 bg-white rounded-lg border border-border"
+                    className="flex items-center justify-between p-3 bg-background rounded-lg border border-border"
                   >
                     <div className="flex items-center space-x-3">
                       {getFileIcon(file)}

@@ -196,7 +196,7 @@ export default function PageFilters({
             <input
               type="text"
               placeholder={effectiveSearchPlaceholder}
-              className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-md bg-white placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors"
+              className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-md bg-background placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors"
               value={searchLocal}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
@@ -232,7 +232,7 @@ export default function PageFilters({
               ) : (
                 <Input
                   placeholder={filter.placeholder || filter.label}
-                  className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-lg bg-white placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors min-w-[200px] max-w-[300px]"
+                  className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-lg bg-background placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors min-w-[200px] max-w-[300px]"
                   value={textValues[filter.name] ?? ""}
                   onChange={(e) => {
                     const v = e.target.value;
@@ -260,7 +260,7 @@ export default function PageFilters({
             ) : (
               <Input
                 placeholder={filter.placeholder || filter.label}
-                className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-lg bg-white placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors min-w-[200px] max-w-[300px]"
+                className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-lg bg-background placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors min-w-[200px] max-w-[300px]"
                 value={textValues[filter.name] ?? ""}
                 onChange={(e) => {
                   const v = e.target.value;
@@ -320,7 +320,7 @@ export default function PageFilters({
             <PermissionGuard permission={addButtonPermittion}>
               <Button
                 onClick={onAdd}
-                className="h-10 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white whitespace-nowrap cursor-pointer"
+                className="h-10 bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap cursor-pointer"
               >
                 <span className="flex items-center">
                   {addButtonIcon || <Plus className="w-4 h-4 mr-2" />}
@@ -362,7 +362,7 @@ export default function PageFilters({
           <Button
             variant="outline"
             size="sm"
-            className="text-destructive border-destructive hover:bg-destructive hover:text-white bg-transparent"
+            className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground bg-transparent"
             onClick={onBulkDelete}
           >
             <Trash2 className="w-4 h-4 mr-1" />
@@ -459,7 +459,7 @@ export function SelectWithSearch({
       <div
         ref={triggerRef}
         className={cn(
-          "flex items-center justify-between border border-border-strong rounded-md bg-white hover:border-foreground-subtle focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary cursor-pointer min-h-10 h-10 px-3 text-sm text-left transition-colors",
+          "flex items-center justify-between border border-border-strong rounded-md bg-background hover:border-foreground-subtle focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary cursor-pointer min-h-10 h-10 px-3 text-sm text-left transition-colors",
           triggerClassName,
         )}
         onClick={() => !loading && setOpen(!open)}
@@ -479,7 +479,7 @@ export function SelectWithSearch({
         <div
           ref={dropdownRef}
           className={cn(
-            "absolute left-0 right-0 bg-white border border-border-strong rounded-lg z-[999999] overflow-hidden min-w-[200px] max-w-[300px]",
+            "absolute left-0 right-0 bg-background border border-border-strong rounded-lg z-[999999] overflow-hidden min-w-[200px] max-w-[300px]",
             "animate-in fade-in-0 zoom-in-95 duration-100",
             dropdownPosition === "top"
               ? "bottom-full mb-1 slide-in-from-bottom-2"

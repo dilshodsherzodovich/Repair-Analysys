@@ -196,12 +196,12 @@ function PaginationLink({
       className={cn(
         "inline-flex items-center justify-center cursor-pointer",
         "h-9 w-9 rounded-md text-sm font-medium",
-        "border border-border bg-white",
+        "border border-border bg-background",
         "transition-colors duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         "disabled:pointer-events-none disabled:opacity-50",
         isActive
-          ? "bg-primary text-white border-primary"
+          ? "bg-primary text-primary-foreground border-primary"
           : "text-foreground-secondary hover:bg-surface-muted hover:border-border-strong",
         disabled && "pointer-events-none opacity-50",
         className
@@ -228,7 +228,7 @@ function PaginationPrevious({
       className={cn(
         "inline-flex items-center justify-center cursor-pointer",
         "h-9 w-9 rounded-md text-sm font-medium",
-        "border border-border bg-white text-muted-foreground",
+        "border border-border bg-background text-muted-foreground",
         "transition-colors duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         "hover:bg-surface-muted hover:border-border-strong",
@@ -258,7 +258,7 @@ function PaginationNext({
       className={cn(
         "inline-flex items-center justify-center cursor-pointer",
         "h-9 w-9 rounded-md text-sm font-medium",
-        "border border-border bg-white text-muted-foreground",
+        "border border-border bg-background text-muted-foreground",
         "transition-colors duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         "hover:bg-surface-muted hover:border-border-strong",
@@ -286,7 +286,7 @@ function PaginationEllipsis({
       className={cn(
         "inline-flex items-center justify-center",
         "h-9 w-9 rounded-md text-sm font-medium",
-        "border border-border bg-white text-muted-foreground",
+        "border border-border bg-background text-muted-foreground",
         className
       )}
       {...props}

@@ -29,8 +29,8 @@ const badgeVariants = cva(
 
         // Older names, kept so existing pages keep working
         default: "bg-muted text-foreground-secondary",
-        secondary: "bg-muted-foreground text-white",
-        secondary_outline: "bg-muted-foreground text-white",
+        secondary: "bg-muted-foreground text-primary-foreground",
+        secondary_outline: "bg-muted-foreground text-primary-foreground",
         destructive: "bg-destructive text-destructive-foreground",
         destructive_outline: "bg-destructive-subtle text-destructive",
         success_outline: "bg-success-subtle text-success",

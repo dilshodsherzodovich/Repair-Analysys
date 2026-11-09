@@ -103,7 +103,7 @@ export function EditActions({
         type="button"
         onClick={onCancel}
         disabled={isSaving}
-        className={cn(iconButton, "border-border-strong bg-white text-foreground-secondary")}
+        className={cn(iconButton, "border-border-strong bg-background text-foreground-secondary")}
         aria-label={labels.cancel}
         title={labels.cancel}
       >

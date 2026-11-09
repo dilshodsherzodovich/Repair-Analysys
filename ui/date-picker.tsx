@@ -58,7 +58,7 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
     return (
       <div ref={ref} className={cn("space-y-2", className)} {...props}>
         {label && (
-          <label className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-[var(--muted-foreground)] mb-1">
+          <label className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-muted-foreground mb-1">
             {label}
           </label>
         )}
@@ -70,7 +70,7 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal shadow-none",
-                "hover:bg-white hover:text-foreground-secondary hover:border-border-strong",
+                "hover:bg-background hover:text-foreground-secondary hover:border-border-strong",
                 !value && "text-foreground-subtle",
                 hasError
                   ? "border-destructive focus:ring-2 focus:ring-destructive/20"

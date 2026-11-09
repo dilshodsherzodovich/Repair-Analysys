@@ -54,6 +54,7 @@
   --background: #ffffff; /* page, cards, inputs */
   --surface-muted: #f8fafc; /* table headers, zebra rows, sidebar */
   --muted: #f1f5f9; /* hover fills, chips, skeletons */
+  --scrim: #000000; /* modal / drawer overlay, always with opacity (bg-scrim/50) */
 
   /* Lines */
   --border: #e2e8f0; /* cell lines, dividers, card borders */
@@ -187,6 +188,7 @@
   --color-foreground-secondary: var(--foreground-secondary);
   --color-foreground-subtle: var(--foreground-subtle);
   --color-surface-muted: var(--surface-muted);
+  --color-scrim: var(--scrim);
   --color-border-strong: var(--border-strong);
   --color-success-subtle: var(--success-subtle);
   --color-warning: var(--warning);
