@@ -71,9 +71,17 @@
   --destructive-subtle: #fef2f2;
   --destructive-foreground: #ffffff;
 
-  /* Category: for groups with no status meaning (reserve, hours, ...) */
-  --category-purple: #7c3aed;
-  --category-purple-subtle: #f5f3ff;
+  /* Categories: tell groups apart when the colour carries no status meaning
+     (inspection types, reserve, hours, ...). Lighter shades come from opacity:
+     bg-category-teal/10, border-category-teal/40, ring-category-teal/25. */
+  --category-violet: #7c3aed;
+  --category-rose: #e11d48;
+  --category-pink: #db2777;
+  --category-indigo: #4f46e5;
+  --category-teal: #0d9488;
+  --category-cyan: #0891b2;
+  --category-lime: #65a30d;
+  --category-fuchsia: #c026d3;
 
   /* Focus */
   --ring: #2354bf;
@@ -199,8 +207,14 @@
   --color-warning-subtle: var(--warning-subtle);
   --color-warning-foreground: var(--warning-foreground);
   --color-destructive-subtle: var(--destructive-subtle);
-  --color-category-purple: var(--category-purple);
-  --color-category-purple-subtle: var(--category-purple-subtle);
+  --color-category-violet: var(--category-violet);
+  --color-category-rose: var(--category-rose);
+  --color-category-pink: var(--category-pink);
+  --color-category-indigo: var(--category-indigo);
+  --color-category-teal: var(--category-teal);
+  --color-category-cyan: var(--category-cyan);
+  --color-category-lime: var(--category-lime);
+  --color-category-fuchsia: var(--category-fuchsia);
   --color-secondary: var(--secondary); /* bg-secondary, text-secondary */
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted); /* bg-muted, text-muted */

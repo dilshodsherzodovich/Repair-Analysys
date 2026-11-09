@@ -93,10 +93,16 @@ const COLOR_GROUPS: {
     ],
   },
   {
-    title: "Category (no status meaning)",
+    title: "Categories (no status meaning; lighter shades via opacity, e.g. bg-category-teal/10)",
     tokens: [
-      { name: "category-purple", use: "Reserve, hours and other neutral groups" },
-      { name: "category-purple-subtle", use: "Their backgrounds" },
+      { name: "category-violet", use: "Category colour" },
+      { name: "category-rose", use: "Category colour" },
+      { name: "category-pink", use: "Category colour" },
+      { name: "category-indigo", use: "Category colour" },
+      { name: "category-teal", use: "Category colour" },
+      { name: "category-cyan", use: "Category colour" },
+      { name: "category-lime", use: "Category colour" },
+      { name: "category-fuchsia", use: "Category colour" },
     ],
   },
 ];

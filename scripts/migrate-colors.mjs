@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 // Colour -> token. `text` overrides the token when used as a text colour.
 const COLORS = {
-  primary: ["#2354bf", "#2563eb", "#4978ce", "#3b82f6", "blue-400", "blue-500", "blue-600", "sky-500", "sky-600"],
+  primary: ["#2354bf", "#2563eb", "#4978ce", "#3b82f6", "blue-400", "blue-500", "blue-600", "sky-400", "sky-500", "sky-600"],
   "primary-hover": ["#1d4ed8", "#1d4699", "#1e40af", "blue-700", "blue-800", "blue-900"],
   "primary-subtle": ["#eff6ff", "#dbeafe", "blue-50", "blue-100", "sky-50", "sky-100"],
   "primary/30": ["blue-200", "blue-300", "sky-200", "sky-300"],
@@ -20,7 +20,7 @@ const COLORS = {
   "muted-foreground": ["#6b7280", "#64748b", "gray-500", "slate-500"],
   "foreground-subtle": ["#9ca3af", "#94a3b8", "#90a1b9", "#9e9e9e", "gray-400", "slate-400"],
   "border-strong": { values: ["#d1d5db", "#cad5e2", "#cbd5e1", "gray-300", "slate-300"], text: "foreground-subtle" },
-  border: { values: ["#e5e7eb", "#e2e8f0", "gray-200", "slate-200"], text: "foreground-subtle" },
+  border: { values: ["#e5e7eb", "#e2e8f0", "#e5ecf8", "gray-200", "slate-200"], text: "foreground-subtle" },
   muted: ["#f3f4f6", "#f1f5f9", "#f2f2f2", "gray-100", "slate-100"],
   "surface-muted": ["#f9fafb", "#f8fafc", "gray-50", "slate-50"],
   success: ["#10b981", "#059669", "#28a745", "#16a34a", "green-400", "green-500", "green-600", "green-700", "green-800", "green-900", "emerald-400", "emerald-500", "emerald-600", "emerald-700", "emerald-800", "emerald-900"],
@@ -105,6 +105,11 @@ for (const file of files) {
   let changes = 0;
 
   let output = source
+    // Dark mode is not enabled, so dark: variants are dead code
+    .replace(/ dark:[^\s"'`]+/g, () => {
+      changes++;
+      return "";
+    })
     .replace(VAR_CLASS, (_match, prefix, name) => {
       changes++;
       return `${prefix}-${VAR_ALIASES[name] ?? name}`;
@@ -125,6 +130,15 @@ for (const file of files) {
     const key = color.startsWith("[") ? color.slice(1, -1).toLowerCase() : color;
     const hit = lookup.get(key);
     if (!hit) {
+      // Category hues (no status meaning): token + opacity for light shades
+      const category = /^(violet|purple|rose|pink|indigo|teal|cyan|lime|fuchsia)-(\d{2,3})$/.exec(key);
+      if (category) {
+        const hue = category[1] === "purple" ? "violet" : category[1];
+        const shade = Number(category[2]);
+        const alpha = opacity || ({ 50: "/10", 100: "/15", 200: "/25", 300: "/40", 400: "/60" }[shade] ?? "");
+        changes++;
+        return `${prefix}-category-${hue}${alpha}`;
+      }
       leftovers.add(match);
       return match;
     }

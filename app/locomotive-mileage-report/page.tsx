@@ -549,19 +549,19 @@ export default function LocomotiveMileageReportPage() {
                             </TableCell>,
                             <TableCell key={`${loco.index}-${inspType.type_id}-tamirdan`} className={`py-1 px-2 text-right border-r border-border ${inspBg(idx)}`}>
                               {showKm && <div className="text-primary">{formatNum(insp!.km_value_since_repair)}<span className="ml-0.5 text-2xs">km</span></div>}
-                              {showHours && <div className="text-category-purple">{formatNum(insp!.hours_value_since_repair)}<span className="ml-0.5 text-2xs">s</span></div>}
+                              {showHours && <div className="text-category-violet">{formatNum(insp!.hours_value_since_repair)}<span className="ml-0.5 text-2xs">s</span></div>}
                             </TableCell>,
                             <TableCell key={`${loco.index}-${inspType.type_id}-norma`} className={`py-1 px-2 text-right text-foreground-secondary border-r border-border ${inspBg(idx)}`}>
                               {showKm && <div>{formatNum(insp!.km_norm)}<span className="ml-0.5 text-2xs">km</span></div>}
-                              {showHours && <div className="text-category-purple">{formatNum(insp!.hours_norm)}<span className="ml-0.5 text-2xs">s</span></div>}
+                              {showHours && <div className="text-category-violet">{formatNum(insp!.hours_norm)}<span className="ml-0.5 text-2xs">s</span></div>}
                             </TableCell>,
                             <TableCell key={`${loco.index}-${inspType.type_id}-qoldiq`} className={`py-1 px-2 text-right border-r border-border ${inspBg(idx)}`}>
                               {showKm && <div className={insp!.km_difference < 0 ? "text-destructive" : "text-foreground-secondary"}>{formatNum(insp!.km_difference)}<span className="ml-0.5 text-2xs">km</span></div>}
-                              {showHours && <div className={insp!.hours_difference < 0 ? "text-destructive" : "text-category-purple"}>{formatNum(insp!.hours_difference)}<span className="ml-0.5 text-2xs">s</span></div>}
+                              {showHours && <div className={insp!.hours_difference < 0 ? "text-destructive" : "text-category-violet"}>{formatNum(insp!.hours_difference)}<span className="ml-0.5 text-2xs">s</span></div>}
                             </TableCell>,
                             <TableCell key={`${loco.index}-${inspType.type_id}-keyingi`} className={`py-1 px-2 border-r border-border whitespace-nowrap ${inspBg(idx)}`}>
                               {showKm && <div className="text-foreground-secondary">{insp!.km_next_repair_date === "-" ? "—" : insp!.km_next_repair_date}</div>}
-                              {showHours && <div className="text-category-purple">{insp!.hours_next_repair_date === "-" ? "—" : insp!.hours_next_repair_date}</div>}
+                              {showHours && <div className="text-category-violet">{insp!.hours_next_repair_date === "-" ? "—" : insp!.hours_next_repair_date}</div>}
                             </TableCell>,
                             <TableCell key={`${loco.index}-${inspType.type_id}-baseline`} className={`py-1 px-1 text-center border-r border-border ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}>
                               {gearButton}

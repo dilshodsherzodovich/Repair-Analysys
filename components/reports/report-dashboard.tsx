@@ -292,7 +292,7 @@ export default function ReportDashboard() {
             { label: t("electricShort"),   count: totalElectricRepair, border: "border-t-warning",   text: "text-warning",   bg: "bg-warning-subtle"   },
             { label: t("dieselShort"),     count: totalDieselRepair,   border: "border-t-warning",   text: "text-warning",   bg: "bg-warning-subtle"   },
             { label: t("delayedShort"),    count: totalDelayed,        border: "border-t-destructive",    text: "text-destructive",    bg: "bg-destructive-subtle"    },
-            { label: t("reserveShort"),    count: totalReserved,       border: "border-t-category-purple",  text: "text-category-purple",  bg: "bg-category-purple-subtle"  },
+            { label: t("reserveShort"),    count: totalReserved,       border: "border-t-category-violet",  text: "text-category-violet",  bg: "bg-category-violet/10"  },
           ].map((s) => (
             <div
               key={s.label}
@@ -447,8 +447,8 @@ export default function ReportDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 divide-x divide-muted">
               {Object.entries(reservedData || {}).map(([groupName, group]) => (
                 <div key={`reserved-${groupName}`} className="overflow-hidden">
-                  <div className="bg-category-purple-subtle px-3 py-1.5 border-b border-category-purple/20">
-                    <p className="text-2xs font-semibold text-category-purple uppercase tracking-wide text-center">{groupName}</p>
+                  <div className="bg-category-violet/10 px-3 py-1.5 border-b border-category-violet/20">
+                    <p className="text-2xs font-semibold text-category-violet uppercase tracking-wide text-center">{groupName}</p>
                   </div>
                   <Table>
                     <TableHeader>
@@ -490,7 +490,7 @@ const accentMap = {
   sky:     { border: "border-l-primary",     badge: "bg-primary-subtle text-primary",         dot: "bg-primary"     },
   amber:   { border: "border-l-warning",   badge: "bg-warning-subtle text-warning",     dot: "bg-warning"   },
   rose:    { border: "border-l-destructive",    badge: "bg-destructive-subtle text-destructive",       dot: "bg-destructive-subtle0"    },
-  violet:  { border: "border-l-category-purple",  badge: "bg-category-purple-subtle text-category-purple",   dot: "bg-category-purple-subtle0"  },
+  violet:  { border: "border-l-category-violet",  badge: "bg-category-violet/10 text-category-violet",   dot: "bg-category-violet/100"  },
 };
 
 function SectionCard({
