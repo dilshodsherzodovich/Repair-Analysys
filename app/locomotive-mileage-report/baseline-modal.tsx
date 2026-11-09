@@ -165,13 +165,13 @@ export function BaselineModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold text-[#0F172B]">
+          <DialogTitle className="text-base font-semibold text-foreground">
             {t("title", { locomotiveName, inspectionTypeName })}
           </DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
-          <div className="py-6 text-center text-sm text-[#64748B]">
+          <div className="py-6 text-center text-sm text-muted-foreground">
             {t("loading")}
           </div>
         ) : (
@@ -238,7 +238,7 @@ export function BaselineModal({
               size="sm"
               disabled={isPending}
               onClick={() => setConfirmDelete(true)}
-              className="text-[#DC2626] hover:text-[#DC2626] hover:bg-red-50 mr-auto"
+              className="text-destructive hover:text-destructive hover:bg-destructive-subtle mr-auto"
             >
               <Trash2 className="size-4" />
               {t("delete")}
@@ -246,7 +246,7 @@ export function BaselineModal({
           )}
           {existing && confirmDelete && (
             <div className="flex items-center gap-2 mr-auto">
-              <span className="text-xs text-[#DC2626]">{t("confirm_delete")}</span>
+              <span className="text-xs text-destructive">{t("confirm_delete")}</span>
               <Button
                 type="button"
                 variant="destructive"

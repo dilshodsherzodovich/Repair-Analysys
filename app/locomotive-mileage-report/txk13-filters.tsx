@@ -88,7 +88,7 @@ export function Txk13Filters({
           value={searchLocal}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Lokomotiv raqami"
-          className="flex-1 min-w-0 h-10 px-3 border border-[#CAD5E2] rounded-md bg-white text-sm text-[#0F172B] placeholder:text-[#90A1B9] focus:outline-none focus:border-[#2354bf] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="flex-1 min-w-0 h-10 px-3 border border-border-strong rounded-md bg-background text-sm text-foreground placeholder:text-foreground-subtle focus:outline-none focus:border-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
 
         <PermissionGuard
@@ -159,7 +159,7 @@ export function Txk13Filters({
               });
               setSearchLocal("");
             }}
-            className="h-10 px-3 text-sm text-[#DC2626] border border-[#FCA5A5] rounded-md bg-white hover:bg-[#FEF2F2] transition-colors whitespace-nowrap shrink-0"
+            className="h-10 px-3 text-sm text-destructive border border-destructive/40 rounded-md bg-background hover:bg-destructive-subtle transition-colors whitespace-nowrap shrink-0"
           >
             Filtrlarni tozalash
           </button>
@@ -168,7 +168,7 @@ export function Txk13Filters({
 
       {/* Row 2: unit tabs + inspection checkboxes */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1 bg-[#F1F5F9] rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
           {(["all", "km", "hours"] as const).map((unit) => (
             <button
               key={unit}
@@ -176,8 +176,8 @@ export function Txk13Filters({
               onClick={() => onUnitChange(unit)}
               className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
                 activeUnit === unit
-                  ? "bg-white text-[#0F172B] shadow-sm"
-                  : "text-[#64748B] hover:text-[#0F172B]"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {unit === "all" ? "Barchasi" : unit === "km" ? "Km" : "Soat"}
@@ -186,7 +186,7 @@ export function Txk13Filters({
         </div>
 
         {inspectionTypes.length > 0 && (
-          <div className="h-8 w-px bg-[#E2E8F0] shrink-0" />
+          <div className="h-8 w-px bg-border shrink-0" />
         )}
 
         {inspectionTypes.map((insp) => (
@@ -198,9 +198,9 @@ export function Txk13Filters({
               type="checkbox"
               checked={selectedInspectionIds.includes(insp.type_id)}
               onChange={() => onToggleInspection(insp.type_id)}
-              className="w-4 h-4 rounded border-[#CAD5E2] text-blue-600 cursor-pointer accent-blue-600"
+              className="w-4 h-4 rounded border-border-strong text-primary cursor-pointer accent-primary"
             />
-            <span className="text-sm text-[#0F172B] whitespace-nowrap font-medium">
+            <span className="text-sm text-foreground whitespace-nowrap font-medium">
               {insp.type}
             </span>
           </label>

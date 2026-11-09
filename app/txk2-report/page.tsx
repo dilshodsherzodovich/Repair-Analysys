@@ -143,19 +143,19 @@ function Txk2ReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100">
+      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
+        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
+              <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="min-w-0">
-              <h1 className="text-gray-900 font-semibold text-base leading-tight">
+              <h1 className="text-foreground font-semibold text-base leading-tight">
                 {t("title")}
               </h1>
-              <p className="text-gray-400 text-xs mt-0.5">
+              <p className="text-foreground-subtle text-xs mt-0.5">
                 {t("description")}
               </p>
             </div>
@@ -164,7 +164,7 @@ function Txk2ReportPage() {
             <button
               onClick={handleExportExcel}
               disabled={isExporting || organizationId == null || rows.length === 0}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isExporting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -175,7 +175,7 @@ function Txk2ReportPage() {
             </button>
           </div>
         </div>
-        <div className="px-5 py-3 bg-gray-50/60">
+        <div className="px-5 py-3 bg-surface-muted/60">
           <Txk2DateFilter dateFrom={dateFrom} dateTo={dateTo} />
         </div>
       </div>
@@ -205,7 +205,7 @@ function Txk2ReportPage() {
           <div className="overflow-x-auto py-2">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="bg-muted/40 text-[11px] font-semibold text-muted-foreground tracking-wide align-bottom">
+                <tr className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide align-bottom">
                   <th className="border px-2 py-2 text-center w-8">#</th>
                   <th className="border px-3 py-2 text-left whitespace-nowrap">{t("locomotive")}</th>
                   <th className="border px-3 py-2 text-left whitespace-nowrap">{t("serviceLocation")}</th>
@@ -253,7 +253,7 @@ function Txk2ReportPage() {
                         <>
                           <span className="font-medium">{delayLabel(row.delay_reason_code)}</span>
                           {row.delay_reason_details ? (
-                            <span className="block text-[10px] text-muted-foreground mt-0.5">
+                            <span className="block text-2xs text-muted-foreground mt-0.5">
                               {row.delay_reason_details}
                             </span>
                           ) : null}
@@ -314,11 +314,11 @@ function Txk2DateFilter({
     <div className="flex flex-wrap items-end gap-3">
       <ReportOrganizationSelect label={t("organization")} />
       <DateBox label={t("fromDate")} date={from} onSelect={setFrom} />
-      <ArrowRight className="w-4 h-4 text-gray-300 shrink-0 mb-2.5" />
+      <ArrowRight className="w-4 h-4 text-foreground-subtle shrink-0 mb-2.5" />
       <DateBox label={t("toDate")} date={to} onSelect={setTo} />
       <Button
         onClick={handleApply}
-        className="h-9 px-4 text-sm bg-blue-600 hover:bg-blue-700 gap-1.5 mb-0"
+        className="h-9 px-4 text-sm gap-1.5 mb-0"
       >
         <Check className="w-3.5 h-3.5" />
         {t("apply")}
@@ -326,7 +326,7 @@ function Txk2DateFilter({
       <button
         onClick={handleReset}
         title={t("reset")}
-        className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 border border-gray-200 transition-colors"
+        className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
       >
         <RotateCcw className="w-3.5 h-3.5" />
       </button>
@@ -345,13 +345,13 @@ function DateBox({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pl-1">
+      <span className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wider pl-1">
         {label}
       </span>
       <Popover>
         <PopoverTrigger asChild>
-          <button className="flex items-center gap-2 px-3 h-9 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors whitespace-nowrap border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
-            <CalendarIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+          <button className="flex items-center gap-2 px-3 h-9 text-sm font-medium text-foreground-secondary hover:bg-surface-muted transition-colors whitespace-nowrap border border-border rounded-lg bg-background shadow-sm">
+            <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
             {date ? format(date, "dd.MM.yyyy") : "—"}
           </button>
         </PopoverTrigger>

@@ -215,13 +215,13 @@ function UnifiedInspectionReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100">
+      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
+        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
           <div className="min-w-0">
-            <h1 className="text-gray-900 font-semibold text-base leading-tight">
+            <h1 className="text-foreground font-semibold text-base leading-tight">
               {t("title")}
             </h1>
-            <p className="text-gray-400 text-xs mt-0.5">
+            <p className="text-foreground-subtle text-xs mt-0.5">
               {orgLabel && `${orgLabel} · `}
               {format(new Date(`${fromDate}T00:00:00`), "dd.MM.yyyy")} –{" "}
               {format(new Date(`${toDate}T00:00:00`), "dd.MM.yyyy")}
@@ -231,7 +231,7 @@ function UnifiedInspectionReportPage() {
             <button
               onClick={() => runExport("excel")}
               disabled={busy !== null}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-60"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-60"
             >
               {busy === "excel" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -243,7 +243,7 @@ function UnifiedInspectionReportPage() {
             <button
               onClick={() => runExport("pdf")}
               disabled={busy !== null}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-60"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary hover:bg-primary-hover text-primary-foreground transition-colors disabled:opacity-60"
             >
               {busy === "pdf" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -256,7 +256,7 @@ function UnifiedInspectionReportPage() {
         </div>
 
         {/* ─── Filters ─── */}
-        <div className="px-5 py-3 bg-gray-50/60 flex flex-wrap items-end gap-3">
+        <div className="px-5 py-3 bg-surface-muted/60 flex flex-wrap items-end gap-3">
           <ReportOrganizationSelect label={t("organization")} />
 
           <DateBox
@@ -325,7 +325,7 @@ function UnifiedInspectionReportPage() {
               })
             }
             title={t("reset")}
-            className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 border border-gray-200 transition-colors"
+            className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -366,8 +366,8 @@ function DateBox({
       <span className={REPORT_FILTER_LABEL}>{label}</span>
       <Popover>
         <PopoverTrigger asChild>
-          <button className="flex items-center gap-2 px-3 py-2 h-9 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap border border-gray-200 rounded-lg bg-white shadow-sm">
-            <CalendarIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+          <button className="flex items-center gap-2 px-3 py-2 h-9 text-sm font-medium text-foreground-secondary hover:bg-surface-muted transition-colors whitespace-nowrap border border-border rounded-lg bg-background shadow-sm">
+            <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
             {format(date, "dd.MM.yyyy")}
           </button>
         </PopoverTrigger>

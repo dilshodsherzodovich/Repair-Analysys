@@ -103,25 +103,25 @@ export function TotalMileageBaselineModal({ isOpen, onClose, locomotiveId, locom
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold text-[#0F172B]">
+          <DialogTitle className="text-base font-semibold text-foreground">
             Umumiy yurish bazasi — {locomotiveName}
           </DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
-          <div className="py-6 text-center text-sm text-[#64748B]">Yuklanmoqda...</div>
+          <div className="py-6 text-center text-sm text-muted-foreground">Yuklanmoqda...</div>
         ) : (
           <div className="space-y-4 py-2">
             {existing && (
-              <div className="rounded-md bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-2 space-y-1 text-xs text-[#475569]">
+              <div className="rounded-md bg-surface-muted border border-border px-3 py-2 space-y-1 text-xs text-foreground-secondary">
                 <div className="flex justify-between">
-                  <span className="text-[#64748B]">Oxirgi yangilashdagi probegi</span>
-                  <span className="font-medium text-[#0F172B]">
+                  <span className="text-muted-foreground">Oxirgi yangilashdagi probegi</span>
+                  <span className="font-medium text-foreground">
                     {existing.last_mileage.toLocaleString("en-US")} km
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#64748B]">Yangilangan</span>
+                  <span className="text-muted-foreground">Yangilangan</span>
                   <span>{formatDateTime(existing.last_updated_at)}</span>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export function TotalMileageBaselineModal({ isOpen, onClose, locomotiveId, locom
               size="sm"
               disabled={isPending}
               onClick={() => setConfirmDelete(true)}
-              className="text-[#DC2626] hover:text-[#DC2626] hover:bg-red-50 mr-auto"
+              className="text-destructive hover:text-destructive hover:bg-destructive-subtle mr-auto"
             >
               <Trash2 className="size-4" />
               O&apos;chirish
@@ -172,7 +172,7 @@ export function TotalMileageBaselineModal({ isOpen, onClose, locomotiveId, locom
           )}
           {existing && confirmDelete && (
             <div className="flex items-center gap-2 mr-auto">
-              <span className="text-xs text-[#DC2626]">Ishonchingiz komilmi?</span>
+              <span className="text-xs text-destructive">Ishonchingiz komilmi?</span>
               <Button type="button" variant="destructive" size="sm" disabled={isPending} onClick={handleDelete}>
                 Ha
               </Button>

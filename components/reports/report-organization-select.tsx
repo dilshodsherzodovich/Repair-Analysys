@@ -44,7 +44,7 @@ export function useReportOrganization() {
 
 /** Label styling shared by the report filter rows that caption their fields. */
 export const REPORT_FILTER_LABEL =
-  "text-[11px] font-semibold text-gray-400 uppercase tracking-wider pl-1";
+  "text-2xs font-semibold text-foreground-subtle uppercase tracking-wider pl-1";
 
 export function ReportOrganizationSelect({
   className,

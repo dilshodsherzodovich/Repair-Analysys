@@ -13,7 +13,7 @@ export type UnifiedSection = "inspections" | "duration" | "entry";
 /** Unresolved values render as a skeleton — never as a misleading `0`. */
 function Value({ value, suffix }: { value: number | null; suffix?: string }) {
   if (value == null) {
-    return <div className="h-8 w-16 rounded bg-gray-200 animate-pulse" />;
+    return <div className="h-8 w-16 rounded bg-border animate-pulse" />;
   }
   return (
     <p className="text-3xl font-bold tabular-nums leading-none">
@@ -25,13 +25,13 @@ function Value({ value, suffix }: { value: number | null; suffix?: string }) {
 
 const TONES = {
   neutral: {
-    idle: "border-t-gray-300",
-    active: "ring-gray-400 border-t-gray-500",
+    idle: "border-t-border-strong",
+    active: "ring-foreground-subtle border-t-muted-foreground",
   },
-  danger: { idle: "border-t-red-400", active: "ring-red-400 border-t-red-500" },
+  danger: { idle: "border-t-destructive", active: "ring-destructive border-t-destructive" },
   warning: {
-    idle: "border-t-amber-400",
-    active: "ring-amber-400 border-t-amber-500",
+    idle: "border-t-warning",
+    active: "ring-warning border-t-warning",
   },
 } as const;
 
@@ -57,14 +57,14 @@ function Tile({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "text-left bg-white rounded-xl border border-gray-200 border-t-4 px-4 py-3 shadow-sm transition-all",
-        "hover:border-gray-300 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1",
+        "text-left bg-background rounded-xl border border-border border-t-4 px-4 py-3 shadow-sm transition-all",
+        "hover:border-border-strong hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1",
         TONES[tone].idle,
         active && cn("ring-2", TONES[tone].active),
         dimmed && "opacity-55 hover:opacity-100",
       )}
     >
-      <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-2">
+      <p className="text-2xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
         {label}
       </p>
       {children}
@@ -99,7 +99,7 @@ export function KpiStrip({
       <Tile label={t("kpiTotal")} tone="neutral" {...state("inspections")}>
         <Value value={kpis.total} />
         {kpis.total != null && excludedTypes.length > 0 && (
-          <p className="text-[11px] text-gray-400 mt-1.5">
+          <p className="text-2xs text-foreground-subtle mt-1.5">
             {t("excludedNote")}:{" "}
             {excludedTypes
               .map((type) => `${type.name} · ${type.total.toLocaleString()}`)
@@ -111,7 +111,7 @@ export function KpiStrip({
       <Tile label={t("kpiDelayedEntry")} tone="danger" {...state("entry")}>
         <Value value={kpis.delayedEntry} />
         {kpis.delayedEntryLocomotives != null && (
-          <p className="text-[11px] text-gray-400 mt-1.5">
+          <p className="text-2xs text-foreground-subtle mt-1.5">
             {kpis.delayedEntryLocomotives} {t("delayedLocomotivesCount")}
           </p>
         )}

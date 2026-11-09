@@ -27,7 +27,7 @@ export function SectionInspections({
       <div className="overflow-x-auto">
         <table className="w-full text-xs border-collapse">
           <thead>
-            <tr className="bg-gray-50 text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
+            <tr className="bg-surface-muted text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
               <th className="border px-2 py-1.5 text-center w-10">
                 {globalT("no")}
               </th>
@@ -44,9 +44,9 @@ export function SectionInspections({
             {rows.map((row, i) => (
               <tr
                 key={row.id}
-                className={cn("hover:bg-gray-50", i % 2 === 1 && "bg-gray-50/40")}
+                className={cn("hover:bg-surface-muted", i % 2 === 1 && "bg-surface-muted/40")}
               >
-                <td className="border px-2 py-1 text-center text-gray-400">
+                <td className="border px-2 py-1 text-center text-foreground-subtle">
                   {i + 1}
                 </td>
                 <td className="border px-2 py-1 font-medium whitespace-nowrap">

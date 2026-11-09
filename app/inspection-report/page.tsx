@@ -189,17 +189,17 @@ export default function InspectionReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
+        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
-              <FileDown className="w-4 h-4 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
+              <FileDown className="w-4 h-4 text-primary-foreground" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-gray-900 dark:text-white font-semibold text-base leading-tight">
+              <h1 className="text-foreground font-semibold text-base leading-tight">
                 Texnik ko&apos;riklar hisoboti
               </h1>
-              <p className="text-gray-400 text-xs mt-0.5">
+              <p className="text-foreground-subtle text-xs mt-0.5">
                 {new Date().toLocaleDateString(
                   locale === "ru" ? "ru-RU" : "uz-UZ",
                   { weekday: "long", year: "numeric", month: "long", day: "numeric" }
@@ -211,7 +211,7 @@ export default function InspectionReportPage() {
             <button
               onClick={handleDownloadExcel}
               disabled={isDownloadingExcel || !Object.keys(visibleInspectionsByType).length}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-60"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-success hover:bg-success text-success-foreground transition-colors disabled:opacity-60"
             >
               {isDownloadingExcel ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -223,7 +223,7 @@ export default function InspectionReportPage() {
             <button
               onClick={handleDownloadPdf}
               disabled={isDownloadingPdf || !Object.keys(visibleInspectionsByType).length}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-60"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary hover:bg-primary-hover text-primary-foreground transition-colors disabled:opacity-60"
             >
               {isDownloadingPdf ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -236,7 +236,7 @@ export default function InspectionReportPage() {
         </div>
 
         {/* Filters */}
-        <div className="px-5 py-3 bg-gray-50/60 dark:bg-gray-900/30 flex flex-wrap items-end gap-2">
+        <div className="px-5 py-3 bg-surface-muted/60 flex flex-wrap items-end gap-2">
           <ReportOrganizationSelect />
           {/* Start date */}
           <Popover>
@@ -315,14 +315,14 @@ export default function InspectionReportPage() {
       </div>
 
       {/* ─── Counts by type ─── */}
-      <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5">
+      <div className="bg-background rounded-xl shadow-sm border border-border p-5">
         <h2 className="text-sm font-semibold mb-4">{t("inspectionCountsByType")}</h2>
         {isLoadingStats ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : statsByType.length === 0 ? (
-          <div className="text-center py-8 text-sm text-gray-400">{t("noData")}</div>
+          <div className="text-center py-8 text-sm text-foreground-subtle">{t("noData")}</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {statsByType.map(([typeName, count]) => {
@@ -336,12 +336,12 @@ export default function InspectionReportPage() {
                   className={cn(
                     "p-3 rounded-lg border text-left transition-colors",
                     isSelected
-                      ? "bg-blue-50 dark:bg-blue-900/30 border-blue-500 dark:border-blue-400 ring-1 ring-blue-500"
-                      : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-gray-800",
+                      ? "bg-primary-subtle border-primary ring-1 ring-primary"
+                      : "bg-surface-muted border-border hover:border-primary hover:bg-primary-subtle/50",
                   )}
                 >
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">{typeName}</div>
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
+                  <div className="text-sm font-medium text-foreground">{typeName}</div>
+                  <div className="text-2xl font-bold text-primary mt-1">
                     {count}
                   </div>
                 </button>
@@ -352,14 +352,14 @@ export default function InspectionReportPage() {
       </div>
 
       {/* ─── Inspections list grouped by type ─── */}
-      <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5">
+      <div className="bg-background rounded-xl shadow-sm border border-border p-5">
         <div className="flex items-center justify-between gap-3 mb-4">
           <h2 className="text-sm font-semibold">{t("inspectionsList")}</h2>
           {selectedType && (
             <button
               type="button"
               onClick={() => setFilters({ inspectionType: "" })}
-              className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+              className="flex items-center gap-1 text-xs text-primary hover:underline shrink-0"
             >
               <X className="h-3 w-3" />
               {selectedType}
@@ -371,7 +371,7 @@ export default function InspectionReportPage() {
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : !Object.keys(visibleInspectionsByType).length ? (
-          <div className="text-center py-8 text-sm text-gray-400">{t("noData")}</div>
+          <div className="text-center py-8 text-sm text-foreground-subtle">{t("noData")}</div>
         ) : (
           <div
             className={cn(
@@ -382,17 +382,17 @@ export default function InspectionReportPage() {
             {Object.entries(visibleInspectionsByType)
               .sort((a, b) => b[1].count - a[1].count)
               .map(([typeName, data]) => (
-                <div key={typeName} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                  <div className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                    <h4 className="font-semibold text-xs text-gray-900 dark:text-white">{typeName}</h4>
-                    <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400">
+                <div key={typeName} className="border border-border rounded-lg overflow-hidden">
+                  <div className="px-3 py-1.5 bg-muted border-b border-border flex items-center justify-between">
+                    <h4 className="font-semibold text-xs text-foreground">{typeName}</h4>
+                    <span className="text-2xs font-bold px-1.5 py-0.5 rounded-full bg-primary-subtle text-primary-hover">
                       {data.count}
                     </span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs border-collapse">
                       <thead>
-                        <tr className="bg-muted/40 text-[10px] font-semibold text-muted-foreground tracking-wide align-bottom">
+                        <tr className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide align-bottom">
                           <th className="border px-1.5 py-1 text-center w-8">{globalT("no")}</th>
                           <th className="border px-2 py-1 text-left whitespace-nowrap">{globalT("locomotive")}</th>
                           <th className="border px-2 py-1 text-left whitespace-nowrap">{t("branch")}</th>

@@ -114,23 +114,23 @@ function LocomotiveGpsReportPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+      <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
+        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-muted">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
-              <Satellite className="w-4 h-4 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
+              <Satellite className="w-4 h-4 text-primary-foreground" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-gray-900 dark:text-gray-100 font-semibold text-base leading-tight">
+              <h1 className="text-foreground font-semibold text-base leading-tight">
                 {t("title")}
               </h1>
-              <p className="text-gray-400 text-xs mt-0.5">{t("description")}</p>
+              <p className="text-foreground-subtle text-xs mt-0.5">{t("description")}</p>
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="px-5 py-3 bg-gray-50/60 dark:bg-gray-800/30 flex flex-wrap items-end gap-3">
+        <div className="px-5 py-3 bg-surface-muted/60 flex flex-wrap items-end gap-3">
           <ReportOrganizationSelect />
           <Select
             value={filters.locomotive_type || "all"}
@@ -138,7 +138,7 @@ function LocomotiveGpsReportPage() {
               setFilters({ locomotive_type: value === "all" ? "" : value })
             }
           >
-            <SelectTrigger className="h-9 w-[220px] bg-white dark:bg-gray-800/50 text-sm mb-0 sm:mb-0">
+            <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
               <SelectValue placeholder={t("locomotiveType")} />
             </SelectTrigger>
             <SelectContent>
@@ -157,7 +157,7 @@ function LocomotiveGpsReportPage() {
               setFilters({ service_type: value === "all" ? "" : value })
             }
           >
-            <SelectTrigger className="h-9 w-[220px] bg-white dark:bg-gray-800/50 text-sm mb-0 sm:mb-0">
+            <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
               <SelectValue placeholder={t("serviceType")} />
             </SelectTrigger>
             <SelectContent>
@@ -176,7 +176,7 @@ function LocomotiveGpsReportPage() {
               setFilters({ locomotive_model: value === "all" ? "" : value })
             }
           >
-            <SelectTrigger className="h-9 w-[220px] bg-white dark:bg-gray-800/50 text-sm mb-0 sm:mb-0">
+            <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
               <SelectValue placeholder={t("model")} />
             </SelectTrigger>
             <SelectContent>
@@ -193,7 +193,7 @@ function LocomotiveGpsReportPage() {
             <button
               onClick={resetFilters}
               title={t("reset")}
-              className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors"
+              className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -238,10 +238,10 @@ function OrganizationCard({
   const t = useTranslations("LocomotiveGpsReport");
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
       {/* Org header */}
-      <div className="px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+      <div className="px-5 py-3.5 border-b border-muted flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-semibold text-sm text-foreground">
           {org.organization_name}
         </h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -254,7 +254,7 @@ function OrganizationCard({
       </div>
 
       {/* Models */}
-      <div className="py-2 divide-y divide-gray-100 dark:divide-gray-800">
+      <div className="py-2 divide-y divide-muted">
         {org.locomotive_models.length === 0 ? (
           <div className="px-5 py-8 text-center text-sm text-muted-foreground">
             {t("noData")}
@@ -290,16 +290,16 @@ function ModelSection({
     <div>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between gap-3 px-5 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors text-left"
+        className="w-full flex items-center justify-between gap-3 px-5 py-3 hover:bg-surface-muted transition-colors text-left"
       >
         <div className="flex items-center gap-3 min-w-0">
           <ChevronDown
             className={cn(
-              "h-4 w-4 shrink-0 text-gray-400 transition-transform",
+              "h-4 w-4 shrink-0 text-foreground-subtle transition-transform",
               open && "rotate-180",
             )}
           />
-          <span className="font-medium text-sm text-gray-800 dark:text-gray-200 truncate">
+          <span className="font-medium text-sm text-foreground truncate">
             {model.model_name}
           </span>
           <span className="text-xs text-muted-foreground shrink-0">
@@ -316,10 +316,10 @@ function ModelSection({
       </button>
 
       {open && (
-        <div className="overflow-x-auto border-t border-gray-100 dark:border-gray-800">
+        <div className="overflow-x-auto border-t border-muted">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="bg-muted/40 text-[11px] font-semibold text-muted-foreground tracking-wide">
+              <tr className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide">
                 <th className="border-b px-2 py-2 text-center w-8">#</th>
                 <th className="border-b px-3 py-2 text-left whitespace-nowrap">
                   {t("locomotive")}
@@ -389,7 +389,7 @@ function GpsStatusBadge({
 
   if (!hasGps) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-rose-600 dark:text-rose-400">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-destructive">
         <MinusCircle className="w-3.5 h-3.5" />
         {t("noGps")}
       </span>
@@ -397,7 +397,7 @@ function GpsStatusBadge({
   }
   if (status === "valid") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-success">
         <CheckCircle2 className="w-3.5 h-3.5" />
         {t("statusValid")}
       </span>
@@ -405,7 +405,7 @@ function GpsStatusBadge({
   }
   if (status === "invalid") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-warning">
         <XCircle className="w-3.5 h-3.5" />
         {t("statusInvalid")}
       </span>
@@ -415,11 +415,11 @@ function GpsStatusBadge({
 }
 
 const toneMap = {
-  slate: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  emerald: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400",
-  rose: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-400",
-  blue: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400",
-  amber: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400",
+  slate: "bg-muted text-foreground-secondary",
+  emerald: "bg-success-subtle text-success",
+  rose: "bg-destructive-subtle text-destructive",
+  blue: "bg-primary-subtle text-primary-hover",
+  amber: "bg-warning-subtle text-warning",
 };
 
 function Stat({
@@ -434,7 +434,7 @@ function Stat({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium",
+        "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-2xs font-medium",
         toneMap[tone],
       )}
     >

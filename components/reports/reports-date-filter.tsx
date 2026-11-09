@@ -91,7 +91,7 @@ export default function ReportsDateFilter({
         fmtTime={fmtTime}
       />
 
-      <ArrowRight className="w-4 h-4 text-gray-300 shrink-0 mb-2.5" />
+      <ArrowRight className="w-4 h-4 text-foreground-subtle shrink-0 mb-2.5" />
 
       {/* To */}
       <DateBox
@@ -106,7 +106,7 @@ export default function ReportsDateFilter({
       {/* Apply */}
       <Button
         onClick={handleApply}
-        className="h-9 px-4 text-sm bg-blue-600 hover:bg-blue-700 gap-1.5 mb-0"
+        className="h-9 px-4 text-sm gap-1.5 mb-0"
       >
         <Check className="w-3.5 h-3.5" />
         {t("apply")}
@@ -116,7 +116,7 @@ export default function ReportsDateFilter({
       <button
         onClick={handleReset}
         title={t("reset")}
-        className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 border border-gray-200 transition-colors"
+        className="h-9 w-9 flex items-center justify-center rounded-lg text-foreground-subtle hover:text-foreground-secondary hover:bg-muted border border-border transition-colors"
       >
         <RotateCcw className="w-3.5 h-3.5" />
       </button>
@@ -141,15 +141,15 @@ function DateBox({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pl-1">
+      <span className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wider pl-1">
         {label}
       </span>
-      <div className="flex items-center gap-0 h-9 border border-gray-200 bg-white rounded-lg overflow-hidden shadow-sm hover:border-blue-300 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+      <div className="flex items-center gap-0 h-9 border border-border bg-background rounded-lg overflow-hidden shadow-sm hover:border-primary/30 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-subtle transition-all">
         {/* Date picker */}
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex items-center gap-2 px-3 h-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap border-r border-gray-200">
-              <CalendarIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+            <button className="flex items-center gap-2 px-3 h-full text-sm font-medium text-foreground-secondary hover:bg-surface-muted transition-colors whitespace-nowrap border-r border-border">
+              <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
               {date ? fmt(date) : "—"}
             </button>
           </PopoverTrigger>
@@ -169,7 +169,7 @@ function DateBox({
           type="time"
           value={date ? fmtTime(date) : ""}
           onChange={(e) => onTimeChange(e.target.value)}
-          className="px-3 h-full text-sm font-medium text-gray-700 bg-transparent border-0 outline-none w-[125px] cursor-pointer hover:bg-gray-50 transition-colors"
+          className="px-3 h-full text-sm font-medium text-foreground-secondary bg-transparent border-0 outline-none w-[125px] cursor-pointer hover:bg-surface-muted transition-colors"
         />
       </div>
     </div>

@@ -31,14 +31,14 @@ export function SectionShell({
   const t = useTranslations("UnifiedInspectionReport");
 
   return (
-    <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <header className="flex items-center gap-2 px-5 py-3 border-b border-gray-100">
-        <span className="w-6 h-6 rounded-lg bg-gray-900 text-white text-xs font-bold flex items-center justify-center shrink-0">
+    <section className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
+      <header className="flex items-center gap-2 px-5 py-3 border-b border-muted">
+        <span className="w-6 h-6 rounded-lg bg-foreground text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0">
           {index}
         </span>
-        <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
         {count != null && (
-          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 tabular-nums">
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-muted text-foreground-secondary tabular-nums">
             {count}
           </span>
         )}
@@ -47,10 +47,10 @@ export function SectionShell({
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-foreground-subtle" />
         </div>
       ) : isEmpty ? (
-        <p className="text-center py-12 text-sm text-gray-400">{t("noData")}</p>
+        <p className="text-center py-12 text-sm text-foreground-subtle">{t("noData")}</p>
       ) : (
         children
       )}

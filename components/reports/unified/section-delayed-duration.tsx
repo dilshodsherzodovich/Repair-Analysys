@@ -55,7 +55,7 @@ export function SectionDelayedDuration({
       <div className="overflow-x-auto">
         <table className="w-full text-xs border-collapse">
           <thead>
-            <tr className="bg-gray-50 text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
+            <tr className="bg-surface-muted text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
               <th className="border px-2 py-1.5 text-center w-10">
                 {globalT("no")}
               </th>
@@ -78,9 +78,9 @@ export function SectionDelayedDuration({
             {rows.map((row, i) => (
               <tr
                 key={row.id ?? i}
-                className={cn("hover:bg-gray-50", i % 2 === 1 && "bg-gray-50/40")}
+                className={cn("hover:bg-surface-muted", i % 2 === 1 && "bg-surface-muted/40")}
               >
-                <td className="border px-2 py-1 text-center text-gray-400">
+                <td className="border px-2 py-1 text-center text-foreground-subtle">
                   {i + 1}
                 </td>
                 <td className="border px-2 py-1 font-medium whitespace-nowrap">
@@ -100,13 +100,13 @@ export function SectionDelayedDuration({
                 <td className="border px-2 py-1 text-center whitespace-nowrap">
                   {fmtTime(row.close_time)}
                 </td>
-                <td className="border px-2 py-1 text-center text-gray-500 tabular-nums">
+                <td className="border px-2 py-1 text-center text-muted-foreground tabular-nums">
                   {fmtNum(row.interval_hours)}
                 </td>
                 <td className="border px-2 py-1 text-center tabular-nums">
                   {fmtNum(row.delayed_hours)}
                 </td>
-                <td className="border px-2 py-1 text-center font-semibold text-red-600 tabular-nums">
+                <td className="border px-2 py-1 text-center font-semibold text-destructive tabular-nums">
                   {fmtNum(overrun(row))}
                 </td>
                 <td className="border px-2 py-1">
@@ -116,13 +116,13 @@ export function SectionDelayedDuration({
                         {delayLabel(row.delay_reason_code)}
                       </span>
                       {row.delay_reason_details && (
-                        <span className="block text-[10px] text-gray-400 mt-0.5">
+                        <span className="block text-2xs text-foreground-subtle mt-0.5">
                           {row.delay_reason_details}
                         </span>
                       )}
                     </>
                   ) : (
-                    <span className="text-gray-400">—</span>
+                    <span className="text-foreground-subtle">—</span>
                   )}
                 </td>
               </tr>

@@ -205,7 +205,7 @@ export function ReplacementModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-[#0F172B]">
+          <DialogTitle className="text-xl font-semibold text-foreground">
             {mode === "edit" ? t("title_edit") : t("title_create")}
           </DialogTitle>
         </DialogHeader>
@@ -219,7 +219,7 @@ export function ReplacementModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="locomotive_id">
-                {t("locomotive")} <span className="text-red-500">*</span>
+                {t("locomotive")} <span className="text-destructive">*</span>
               </Label>
               <Select
                 value={locomotiveId || undefined}
@@ -230,9 +230,9 @@ export function ReplacementModal({
                   <SelectValue placeholder={t("placeholder_locomotive")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="p-2 border-b border-[#E5ECF8]">
+                  <div className="p-2 border-b border-border">
                     <div className="relative">
-                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7280]" />
+                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <input
                         type="text"
                         placeholder={t("placeholder_search")}
@@ -242,7 +242,7 @@ export function ReplacementModal({
                         }
                         onKeyDown={(e) => e.stopPropagation()}
                         onKeyUp={(e) => e.stopPropagation()}
-                        className="w-full pl-8 pr-2 py-1.5 text-sm border border-[#d1d5db] rounded-md focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20"
+                        className="w-full pl-8 pr-2 py-1.5 text-sm border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
                         autoFocus
                       />
                     </div>
@@ -268,7 +268,7 @@ export function ReplacementModal({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-3 py-2 text-sm text-[#6b7280] text-center">
+                      <div className="px-3 py-2 text-sm text-muted-foreground text-center">
                         {t("locomotive_not_found")}
                       </div>
                     )}
@@ -279,7 +279,7 @@ export function ReplacementModal({
 
             <div className="space-y-2">
               <Label htmlFor="section_id">
-                {t("section")} <span className="text-red-500">*</span>
+                {t("section")} <span className="text-destructive">*</span>
               </Label>
               <Select
                 value={sectionId || undefined}
@@ -297,7 +297,7 @@ export function ReplacementModal({
                       </SelectItem>
                     ))
                   ) : (
-                    <div className="px-3 py-2 text-sm text-[#6b7280] text-center">
+                    <div className="px-3 py-2 text-sm text-muted-foreground text-center">
                       {t("section_not_found")}
                     </div>
                   )}
@@ -307,7 +307,7 @@ export function ReplacementModal({
 
             <div className="space-y-2">
               <Label htmlFor="maintenance_type">
-                {t("maintenance_type")} <span className="text-red-500">*</span>
+                {t("maintenance_type")} <span className="text-destructive">*</span>
               </Label>
               <Select
                 value={maintenanceType || undefined}
@@ -351,7 +351,7 @@ export function ReplacementModal({
 
             <div className="space-y-2">
               <Label htmlFor="service_date">
-                {t("service_date")} <span className="text-red-500">*</span>
+                {t("service_date")} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="service_date"

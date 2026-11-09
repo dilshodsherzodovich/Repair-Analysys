@@ -328,7 +328,7 @@ export default function PantografPage() {
       key: "damage",
       totalKey: "total_damage",
       label: t("statistics.damage"),
-      color: "#dc2626",
+      color: "var(--destructive)",
       kind: "currency",
       chart: "line",
       icon: Coins,

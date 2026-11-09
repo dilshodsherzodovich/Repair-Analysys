@@ -28,7 +28,8 @@ export function ExcelExportButton({ data, className }: ExcelExportButtonProps) {
     <Button
       onClick={handleExport}
       disabled={isGenerating}
-      className={`bg-green-600 hover:bg-green-700 text-white ${className}`}
+      variant="success"
+      className={className}
     >
       {isGenerating ? (
         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

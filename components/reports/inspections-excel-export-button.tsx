@@ -97,7 +97,7 @@ export function InspectionsExcelExportButton() {
     <Button
       onClick={handleExport}
       disabled={isExporting}
-      className="bg-green-600 hover:bg-green-700 text-white"
+      variant="success"
     >
       {isExporting ? (
         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

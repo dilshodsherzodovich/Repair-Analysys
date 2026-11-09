@@ -159,10 +159,10 @@ export function StatsPanel({
 
   return (
     <section className={cn("px-6 pt-5", className)}>
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <div className="rounded-xl border border-border bg-background shadow-sm">
         {/* Header + filters */}
-        <div className="flex flex-col gap-3 border-b border-slate-100 p-4 dark:border-slate-800 lg:flex-row lg:items-end lg:justify-between">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-slate-100">
+        <div className="flex flex-col gap-3 border-b border-muted p-4 lg:flex-row lg:items-end lg:justify-between">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
             <BarChart3 className="h-5 w-5 text-primary" />
             {title}
           </h2>
@@ -179,7 +179,7 @@ export function StatsPanel({
                   ]}
                   searchable
                   size="sm"
-                  triggerClassName="min-w-[180px] bg-white dark:bg-slate-950"
+                  triggerClassName="min-w-[180px] bg-background"
                 />
               </FilterField>
             )}
@@ -193,7 +193,7 @@ export function StatsPanel({
                     ...inspectionTypeOptions,
                   ]}
                   size="sm"
-                  triggerClassName="min-w-[180px] bg-white dark:bg-slate-950"
+                  triggerClassName="min-w-[180px] bg-background"
                 />
               </FilterField>
             )}
@@ -204,7 +204,7 @@ export function StatsPanel({
                 options={orgOptions}
                 searchable={orgOptions.length > 8}
                 size="sm"
-                triggerClassName="min-w-[200px] bg-white dark:bg-slate-950"
+                triggerClassName="min-w-[200px] bg-background"
               />
             </FilterField>
           </div>
@@ -247,11 +247,11 @@ export function StatsPanel({
               </div>
 
               {/* Chart */}
-              <div className="mt-4 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="mt-4 rounded-lg border border-border">
                 <button
                   type="button"
                   onClick={() => setChartOpen((v) => !v)}
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-foreground-secondary transition-colors hover:bg-surface-muted"
                 >
                   {t("monthly_dynamics")}
                   <ChevronDown
@@ -275,7 +275,7 @@ export function StatsPanel({
                         <CartesianGrid
                           vertical={false}
                           stroke="currentColor"
-                          className="text-slate-200 dark:text-slate-700"
+                          className="text-foreground-subtle"
                         />
                         <XAxis
                           dataKey="month"
@@ -310,7 +310,7 @@ export function StatsPanel({
                           />
                         )}
                         <ChartTooltip
-                          cursor={{ fill: "rgba(148,163,184,0.12)" }}
+                          cursor={{ fill: "var(--muted)" }}
                           content={<ChartTooltipContent />}
                         />
                         <Legend
@@ -369,7 +369,7 @@ function FilterField({
 }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+      <span className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       {children}
@@ -391,11 +391,11 @@ function KpiCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 pl-5 shadow-sm transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-950"
+      className="relative overflow-hidden rounded-xl border border-border bg-background p-4 pl-5 shadow-sm transition-shadow hover:shadow-md"
       style={{ borderLeft: `4px solid ${metric.color}` }}
     >
       <div className="flex items-start justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {metric.label}
         </p>
         {Icon && (
@@ -409,7 +409,7 @@ function KpiCard({
       </div>
 
       <p
-        className="mt-2 text-2xl font-bold tabular-nums text-slate-900 dark:text-slate-50"
+        className="mt-2 text-2xl font-bold tabular-nums text-foreground"
         title={
           metric.kind === "currency"
             ? (Number(total) || 0).toLocaleString("ru-RU")
