@@ -590,9 +590,9 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                     className={cn(
                       "flex items-center justify-between w-full rounded-t-lg text-sm font-medium cursor-pointer transition-all px-3 py-2.5",
                       isActive
-                        ? "bg-brand text-primary"
+                        ? "bg-primary-subtle text-primary"
                         : "text-muted-foreground",
-                      isExpanded && "bg-brand",
+                      isExpanded && "bg-primary-subtle",
                     )}
                   >
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -628,7 +628,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                         transition={{ duration: 0.25, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="rounded-b-lg bg-brand px-2 py-0">
+                        <div className="rounded-b-lg bg-primary-subtle px-2 py-0">
                           {item.children!.map((child) => {
                             const isChildActive = pathname === child.href;
                             return (
@@ -685,7 +685,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                   className={cn(
                     "flex items-center justify-center rounded-lg text-sm font-medium cursor-pointer transition-all px-3 py-2.5",
                     isActive
-                      ? "bg-brand text-primary"
+                      ? "bg-primary-subtle text-primary"
                       : "text-muted-foreground hover:bg-muted",
                   )}
                   title={item.name}
@@ -704,7 +704,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                     "flex items-center rounded-lg text-sm font-medium cursor-pointer transition-all px-3 py-2.5",
                     isCollapsed ? "justify-center" : "justify-between",
                     isActive
-                      ? "bg-brand text-primary"
+                      ? "bg-primary-subtle text-primary"
                       : "text-muted-foreground hover:bg-muted",
                   )}
                   title={isCollapsed ? item.name : undefined}

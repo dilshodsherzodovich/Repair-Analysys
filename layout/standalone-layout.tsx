@@ -19,7 +19,7 @@ export function StandaloneLayout({
   fullWidth?: boolean;
 }) {
   return (
-    <div className="h-screen overflow-y-auto overflow-x-hidden bg-background-secondary">
+    <div className="h-screen overflow-y-auto overflow-x-hidden bg-surface-muted">
       <div
         className={cn("mx-auto w-full p-3 md:p-4", !fullWidth && "max-w-7xl")}
       >

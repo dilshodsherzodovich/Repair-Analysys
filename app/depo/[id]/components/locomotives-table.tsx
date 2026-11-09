@@ -128,7 +128,7 @@ export default function LocomotivesTable() {
               </div>
 
               <div className="flex flex-col justify-between">
-                <div className="border border-primary/10 bg-brand p-2 rounded-lg">
+                <div className="border border-primary/10 bg-primary-subtle p-2 rounded-lg">
                   <h3 className="text-xl font-semibold text-foreground">
                     {locomotive.name + "-" + locomotive.model_name}
                   </h3>

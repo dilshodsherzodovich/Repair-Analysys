@@ -43,8 +43,18 @@ Weights 400 / 500 / 600, 700 only for big numbers. Radius: `sm` 4, `md` 6,
 dropdowns, `lg` dialogs. Spacing: 24px between sections, 16px panel padding,
 8/12px group gaps, controls 32/36/40px.
 
-Legacy names (`brand`, `error`, `dimmed`, `background-secondary`, `corporate-*`)
-stay as aliases until the migration ends, then are removed.
+Added during the migration:
+
+- `scrim` (`#000000`, always with opacity, e.g. `bg-scrim/50`) for overlays.
+- `shadow-pin-start` / `shadow-pin-end` for pinned table columns.
+- Category scale for groups with no status meaning (inspection types, reserve,
+  hours): `category-violet`, `-rose`, `-pink`, `-indigo`, `-teal`, `-cyan`,
+  `-lime`, `-fuchsia`; lighter shades via opacity (`bg-category-teal/10`).
+- Brand identity, login screen and logo only: `brand-navy`, `brand-purple`
+  (`-light`, `-dark`, `-deep`), `brand-blue` (`-light`), `brand-violet`.
+
+The legacy names (`brand`, `error`, `dimmed`, `background-secondary`,
+`corporate-*`) and the stale `.dark` block were removed once nothing used them.
 
 ## Components (one per job)
 
@@ -64,9 +74,13 @@ To be removed: `enhanced-*`, `loading-button`, `toast` / `toaster` /
 
 ## Guardrails
 
-- `npm run lint:tokens` lists hardcoded colours; `--strict` fails on any.
-- `scripts/migrate-colors.mjs` rewrites hex / palette classes to tokens using
-  the table above.
+- `npm run lint:tokens` lists hardcoded values; `--strict` fails on any; it runs
+  as part of `npm run lint`. It flags hex and palette colour classes,
+  `white` / `black`, `bg-[var(--x)]`, colours set from JS (hex / rgb literals),
+  arbitrary font sizes, shadows and radii, and radii above `xl`.
+- `scripts/migrate-colors.mjs` rewrites all of the above to tokens; dead
+  `dark:` variants are removed. `scripts/codemods/error-box-to-alert.py` turns
+  hand-written error boxes into `<Alert variant="destructive">`.
 - Categorical data-viz colours (chart series, per-category chips) are allowed
   only through `chart-*` tokens or in files marked `tokens-allow-file`.
 
