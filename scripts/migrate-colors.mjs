@@ -1,0 +1,77 @@
+#!/usr/bin/env node
+/**
+ * Rewrites hardcoded colour classes to design tokens, using the mapping agreed
+ * for the design system (see /ui-kit). Colours with no token (one-off purples,
+ * chart colours, ...) are left alone and listed so they can be handled by hand.
+ *
+ *   node scripts/migrate-colors.mjs <file> [<file> ...]
+ *   node scripts/migrate-colors.mjs --dry <file> ...   show changes, write nothing
+ */
+import { readFileSync, writeFileSync } from "node:fs";
+
+// Colour -> token. `text` overrides the token when used as a text colour.
+const COLORS = {
+  primary: ["#2354bf", "#2563eb", "#4978ce", "#3b82f6", "blue-500", "blue-600", "sky-600"],
+  "primary-hover": ["#1d4ed8", "#1d4699", "#1e40af", "blue-700", "blue-800"],
+  "primary-subtle": ["#eff6ff", "#dbeafe", "blue-50", "blue-100"],
+  foreground: ["#0f172b", "#0f172a", "#1f2937", "#1e293b", "#111827", "#1c1c1c", "gray-900", "gray-800", "slate-900", "slate-800"],
+  "foreground-secondary": ["#374151", "#475569", "#334155", "gray-700", "gray-600", "slate-700", "slate-600"],
+  "muted-foreground": ["#6b7280", "#64748b", "gray-500", "slate-500"],
+  "foreground-subtle": ["#9ca3af", "#94a3b8", "#90a1b9", "#9e9e9e", "gray-400", "slate-400"],
+  "border-strong": { values: ["#d1d5db", "#cad5e2", "#cbd5e1", "gray-300", "slate-300"], text: "foreground-subtle" },
+  border: { values: ["#e5e7eb", "#e2e8f0", "gray-200", "slate-200"], text: "foreground-subtle" },
+  muted: ["#f3f4f6", "#f1f5f9", "#f2f2f2", "gray-100", "slate-100"],
+  "surface-muted": ["#f9fafb", "#f8fafc", "gray-50", "slate-50"],
+  success: ["#10b981", "#059669", "#28a745", "#16a34a", "green-500", "green-600", "green-700", "emerald-500", "emerald-600", "emerald-700"],
+  "success-subtle": ["#ecfdf5", "#f0fdf4", "green-50", "green-100", "emerald-50", "emerald-100"],
+  "success/30": ["green-200", "green-300", "emerald-200", "emerald-300"],
+  warning: ["#f59e0b", "#d97706", "amber-500", "amber-600", "amber-700", "yellow-500", "yellow-600", "yellow-700", "orange-500", "orange-600"],
+  "warning-subtle": ["#fffbeb", "amber-50", "amber-100", "yellow-50", "yellow-100", "orange-50", "orange-100"],
+  "warning/30": ["amber-200", "amber-300", "yellow-200", "yellow-300", "orange-200"],
+  destructive: ["#dc2626", "#ff5959", "#ef4444", "#b91c1c", "red-500", "red-600", "red-700"],
+  "destructive-subtle": ["#fef2f2", "#fee2e2", "red-50", "red-100"],
+  "destructive/30": ["red-200", "red-300"],
+};
+
+const lookup = new Map();
+for (const [token, spec] of Object.entries(COLORS)) {
+  const values = Array.isArray(spec) ? spec : spec.values;
+  const text = Array.isArray(spec) ? undefined : spec.text;
+  for (const value of values) lookup.set(value.toLowerCase(), { token, text });
+}
+
+const PREFIX =
+  "(bg|text|border(?:-[trblxy])?|ring|ring-offset|divide|fill|stroke|outline|placeholder|from|via|to|accent|caret|decoration)";
+const PALETTE =
+  "(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\\d{2,3}";
+const CLASS = new RegExp(`\\b${PREFIX}-(\\[#[0-9a-fA-F]{6}\\]|${PALETTE})(\\/\\d+)?(?![\\w-])`, "g");
+
+const args = process.argv.slice(2);
+const dry = args.includes("--dry");
+const files = args.filter((arg) => !arg.startsWith("--"));
+
+for (const file of files) {
+  const source = readFileSync(file, "utf8");
+  const leftovers = new Set();
+  let changes = 0;
+
+  const output = source.replace(CLASS, (match, prefix, color, opacity = "") => {
+    const key = color.startsWith("[") ? color.slice(1, -1).toLowerCase() : color;
+    const hit = lookup.get(key);
+    if (!hit) {
+      leftovers.add(match);
+      return match;
+    }
+    let token = prefix === "text" || prefix === "placeholder" ? hit.text ?? hit.token : hit.token;
+    // A token that already carries opacity (success/30) keeps it unless the class set its own
+    if (opacity && token.includes("/")) token = token.split("/")[0];
+    changes++;
+    return `${prefix}-${token}${opacity}`;
+  });
+
+  if (!dry && output !== source) writeFileSync(file, output);
+  console.log(
+    `${file}: ${changes} replaced` +
+      (leftovers.size ? `, left as is: ${[...leftovers].join(" ")}` : ""),
+  );
+}

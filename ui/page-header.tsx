@@ -37,7 +37,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       <div ref={ref} className={cn("bg-transparent", className)} {...props}>
         <div className="py-2 md:py-4">
           {breadcrumbs && breadcrumbs.length > 0 && (
-            <nav className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-[#6b7280] mb-2 md:mb-4 flex-wrap">
+            <nav className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground mb-2 md:mb-4 flex-wrap">
               {breadcrumbs.map((item, index) => (
                 <React.Fragment key={index}>
                   {index > 0 && (
@@ -46,7 +46,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
                   {item.href && !item.current ? (
                     <a
                       href={item.href}
-                      className="hover:text-[#2354bf] transition-colors truncate max-w-[40vw]"
+                      className="hover:text-primary transition-colors truncate max-w-[40vw]"
                     >
                       {item.label}
                     </a>
@@ -54,7 +54,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
                     <span
                       className={cn(
                         "truncate max-w-[55vw]",
-                        item.current && "text-[#1f2937] font-medium"
+                        item.current && "text-foreground font-medium"
                       )}
                     >
                       {item.label}
@@ -67,13 +67,13 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
 
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg md:text-2xl font-bold text-[#1f2937] leading-tight md:mb-1 truncate">
+              <h1 className="text-lg md:text-2xl font-bold text-foreground leading-tight md:mb-1 truncate">
                 {title}
               </h1>
               {description && (
                 <p
                   className={cn(
-                    "hidden lg:block text-sm text-[#6b7280]",
+                    "hidden lg:block text-sm text-muted-foreground",
                     descriptionClassName
                   )}
                 >

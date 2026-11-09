@@ -2,37 +2,45 @@ import type * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+/**
+ * Status pills. Use the subtle variants (neutral, primary, success, warning,
+ * danger) by default; the solid ones are for counts and strong emphasis.
+ * The *_outline names are older aliases of the subtle variants.
+ */
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1 rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
-        primary: "border-transparent bg-primary text-white hover:bg-primary/80",
-        default:
-          "border-transparent bg-[#f3f4f6] text-[#374151] hover:bg-[#e5e7eb]",
-        outline: "text-[#374151] border-[#d1d5db]",
-        secondary: "border-transparent bg-[#6b7280] text-white",
-        secondary_outline:
-          "border-transparent border-[#6b7280] bg-[#6b7280] text-white hover:bg-[#555e70]",
-        destructive:
-          "border-transparent bg-[#dc2626] text-white hover:bg-[#b91c1c]",
-        destructive_outline:
-          "border-transparent border-[#dc2626] bg-[#dc2626]/10 text-[#dc2626] hover:bg-[#b91c1c]/20 hover:text-[#b91c1c]",
-        success:
-          "border-transparent bg-[#10b981] text-white hover:bg-[#059669]",
-        success_outline:
-          "border-transparent border-[#10b981] bg-[#10b981]/10 text-[#10b981] hover:bg-[#059669]/20 hover:text-[#059669]",
-        warning:
-          "border-transparent bg-[#f59e0b] text-white hover:bg-[#d97706]",
-        warning_outline:
-          "border-transparent border-[#f59e0b] bg-[#f59e0b]/10 text-[#f59e0b] hover:bg-[#f59e0b]/20 hover:text-[#d97706]",
-        info: "border-transparent bg-[#2354bf] text-white hover:bg-[#1d4ed8]",
-        info_outline:
-          "border-transparent border-[#2354bf] bg-[#2354bf] text-white hover:bg-[#1d4ed8]",
+        // Subtle: light fill, coloured text
+        neutral: "bg-muted text-foreground-secondary",
+        primary: "bg-primary-subtle text-primary",
+        success: "bg-success-subtle text-success",
+        warning: "bg-warning-subtle text-warning",
+        danger: "bg-destructive-subtle text-destructive",
+
+        // Solid: filled, white text
+        primary_solid: "bg-primary text-primary-foreground",
+        success_solid: "bg-success text-success-foreground",
+        warning_solid: "bg-warning text-warning-foreground",
+        danger_solid: "bg-destructive text-destructive-foreground",
+
+        outline: "border-border-strong text-foreground-secondary",
+
+        // Older names, kept so existing pages keep working
+        default: "bg-muted text-foreground-secondary",
+        secondary: "bg-muted-foreground text-white",
+        secondary_outline: "bg-muted-foreground text-white",
+        destructive: "bg-destructive text-destructive-foreground",
+        destructive_outline: "bg-destructive-subtle text-destructive",
+        success_outline: "bg-success-subtle text-success",
+        warning_outline: "bg-warning-subtle text-warning",
+        info: "bg-primary text-primary-foreground",
+        info_outline: "bg-primary-subtle text-primary",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "neutral",
     },
   }
 );

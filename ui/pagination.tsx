@@ -93,7 +93,7 @@ function Pagination({
         className
       )}
     >
-      <div className="text-sm text-gray-500">
+      <div className="text-sm text-muted-foreground">
         {totalItems && (
           <span>
             {totalItems} ta natijadan{" "}
@@ -196,13 +196,13 @@ function PaginationLink({
       className={cn(
         "inline-flex items-center justify-center cursor-pointer",
         "h-9 w-9 rounded-md text-sm font-medium",
-        "border border-gray-200 bg-white",
+        "border border-border bg-white",
         "transition-colors duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         "disabled:pointer-events-none disabled:opacity-50",
         isActive
           ? "bg-primary text-white border-primary"
-          : "text-gray-700 hover:bg-gray-50 hover:border-gray-300",
+          : "text-foreground-secondary hover:bg-surface-muted hover:border-border-strong",
         disabled && "pointer-events-none opacity-50",
         className
       )}
@@ -228,10 +228,10 @@ function PaginationPrevious({
       className={cn(
         "inline-flex items-center justify-center cursor-pointer",
         "h-9 w-9 rounded-md text-sm font-medium",
-        "border border-gray-200 bg-white text-gray-500",
+        "border border-border bg-white text-muted-foreground",
         "transition-colors duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-        "hover:bg-gray-50 hover:border-gray-300",
+        "hover:bg-surface-muted hover:border-border-strong",
         "disabled:pointer-events-none disabled:opacity-50",
         disabled && "pointer-events-none opacity-50",
         className
@@ -258,10 +258,10 @@ function PaginationNext({
       className={cn(
         "inline-flex items-center justify-center cursor-pointer",
         "h-9 w-9 rounded-md text-sm font-medium",
-        "border border-gray-200 bg-white text-gray-500",
+        "border border-border bg-white text-muted-foreground",
         "transition-colors duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-        "hover:bg-gray-50 hover:border-gray-300",
+        "hover:bg-surface-muted hover:border-border-strong",
         "disabled:pointer-events-none disabled:opacity-50",
         disabled && "pointer-events-none opacity-50",
         className
@@ -286,7 +286,7 @@ function PaginationEllipsis({
       className={cn(
         "inline-flex items-center justify-center",
         "h-9 w-9 rounded-md text-sm font-medium",
-        "border border-gray-200 bg-white text-gray-500",
+        "border border-border bg-white text-muted-foreground",
         className
       )}
       {...props}

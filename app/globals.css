@@ -32,37 +32,66 @@
   --corporate-gray-900: #000000;
 
   /* ========================================
-     SHADCN/UI THEME VARIABLES (Light Mode)
-     Updated to match design: blue primary, success green, error red
+     DESIGN TOKENS (Light Mode)
+     The one source of colour for the app. Use the classes these map to
+     (bg-primary, text-foreground-secondary, border-border-strong, ...) and
+     never raw hex or palette classes. See /ui-kit for every token in use.
      ======================================== */
-  --background: #ffffff; /* Main background - white */
-  --background-secondary: #f8fafc; /* Secondary background - light gray */
-  --foreground: #1f2937; /* Main text color - dark gray */
-  --card: #ffffff; /* Card background */
-  --card-foreground: #1f2937; /* Card text */
-  --popover: #ffffff; /* Popover background */
-  --popover-foreground: #1f2937; /* Popover text */
-  --primary: #2563eb; /* ✅ Primary blue (selected sidebar, buttons) - bg-primary, text-primary */
-  --primary-foreground: #ffffff; /* Text color on primary backgrounds */
-  --secondary: #f9fafb; /* Secondary background (sidebar background) */
-  --secondary-foreground: #1f2937; /* Text on secondary backgrounds */
-  --muted: #f2f2f2; /* Muted background */
-  --muted-foreground: #475569; /* Muted text (secondary text like "Shifrlovchi") */
-  --accent: #4978ce; /* Accent blue (active pagination) */
-  --accent-foreground: #ffffff; /* Text on accent */
-  --destructive: #dc2626; /* Destructive/error color */
-  --destructive-foreground: #ffffff; /* Text on destructive buttons */
-  --success: #28a745; /* ✅ NEW: Success green (Export EXCEL button) */
-  --success-foreground: #ffffff; /* Text on success backgrounds */
-  --error: #dc2626; /* ✅ NEW: Error color (same as destructive) */
-  --error-foreground: #ffffff; /* Text on error backgrounds */
-  --brand: #eff6ff; /* ✅ NEW: Brand color - bg-brand, text-brand, border-brand */
-  --brand-foreground: #ffffff; /* Text color on brand backgrounds */
-  --border: #e2e8f0; /* Border color (table borders, input borders) */
-  --input: #f9fafb; /* Input field background */
-  --ring: #4978ce; /* Focus ring color */
-  --radius: 0.5rem; /* Border radius for components */
-  --dimmed: #90a1b9;
+
+  /* Brand */
+  --primary: #2354bf; /* buttons, links, active and selected states */
+  --primary-hover: #1d4699; /* hover / pressed on primary */
+  --primary-subtle: #eff6ff; /* selected rows, highlighted cells, info banners */
+  --primary-foreground: #ffffff; /* text on primary */
+
+  /* Text, strongest to faintest */
+  --foreground: #0f172b; /* titles, table values, body */
+  --foreground-secondary: #475569; /* labels, table headers */
+  --muted-foreground: #64748b; /* hints, captions, descriptions */
+  --foreground-subtle: #94a3b8; /* placeholders, empty-value dashes, disabled */
+
+  /* Surfaces */
+  --background: #ffffff; /* page, cards, inputs */
+  --surface-muted: #f8fafc; /* table headers, zebra rows, sidebar */
+  --muted: #f1f5f9; /* hover fills, chips, skeletons */
+
+  /* Lines */
+  --border: #e2e8f0; /* cell lines, dividers, card borders */
+  --border-strong: #cad5e2; /* outer outline of tables, inputs, boxes */
+
+  /* Status: solid colour + light background */
+  --success: #059669;
+  --success-subtle: #ecfdf5;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-subtle: #fffbeb;
+  --warning-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-subtle: #fef2f2;
+  --destructive-foreground: #ffffff;
+
+  /* Focus */
+  --ring: #2354bf;
+
+  /* shadcn roles, mapped onto the tokens above */
+  --card: var(--background);
+  --card-foreground: var(--foreground);
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-muted);
+  --secondary-foreground: var(--foreground);
+  --accent: var(--muted); /* hover fill in menus and lists */
+  --accent-foreground: var(--foreground);
+  --input: var(--border-strong);
+  --radius: 0.5rem; /* lg = 8px; sm 4, md 6, xl 12 derive from it */
+
+  /* Legacy names kept so existing code keeps working; migrate away from them */
+  --background-secondary: var(--surface-muted);
+  --error: var(--destructive);
+  --error-foreground: var(--destructive-foreground);
+  --brand: var(--primary-subtle);
+  --brand-foreground: var(--primary);
+  --dimmed: var(--foreground-subtle);
 
   /* Chart colors */
   --chart-1: #2354bf;
@@ -71,14 +100,14 @@
   --chart-4: #6b7280;
   --chart-5: #9e9e9e;
 
-  --sidebar: #f9fafb; /* Sidebar background - light gray */
-  --sidebar-foreground: #1f2937; /* Sidebar text */
-  --sidebar-primary: #2354bf; /* Selected sidebar item (matches primary) */
-  --sidebar-primary-foreground: #ffffff; /* Text on selected sidebar item */
-  --sidebar-accent: #f2f2f2; /* Sidebar hover state */
-  --sidebar-accent-foreground: #1f2937; /* Text on sidebar hover */
-  --sidebar-border: #f1f5f9; /* Sidebar border */
-  --sidebar-ring: #4978ce; /* Sidebar focus ring */
+  --sidebar: var(--surface-muted);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 .dark {
@@ -133,6 +162,10 @@
   /* Font family */
   --font-family-sans: var(--font-sans);
 
+  /* Extra type step below text-xs, for dense tables and badges */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
   /* Color mappings - these make bg-primary, text-primary, etc. work! */
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
@@ -145,6 +178,17 @@
     --primary
   ); /* ✅ bg-primary uses --primary from :root above */
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-surface-muted: var(--surface-muted);
+  --color-border-strong: var(--border-strong);
+  --color-success-subtle: var(--success-subtle);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-destructive-subtle: var(--destructive-subtle);
   --color-secondary: var(--secondary); /* bg-secondary, text-secondary */
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted); /* bg-muted, text-muted */

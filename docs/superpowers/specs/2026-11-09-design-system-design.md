@@ -1,0 +1,77 @@
+# Design system: tokens, UI kit and migration
+
+**Date:** 2026-11-09
+**Status:** Approved (tokens, component set, kit page); foundation built, migration pending.
+
+## Problem
+
+Pages style themselves. Across `app/`, `components/`, `layout/` there are ~2,450
+hardcoded colours (hex like `text-[#0F172B]`, palette classes like `bg-blue-600`)
+against ~720 uses of the existing CSS-variable tokens. One role has several
+colours (primary: `#2354BF`, `#2563EB`, `blue-600`, `#4978CE`; borders:
+`#E2E8F0`, `#CAD5E2`, `#D1D5DB`, `#E5E7EB`), and several components do the same
+job (`button` / `enhanced-button` / `loading-button`, `toast` / `snackbar`, ...).
+
+## Decisions
+
+- **Direction:** keep the current look, standardised. No redesign.
+- **Primary:** `#2354BF`.
+- **Approach:** semantic tokens as CSS variables in `app/globals.css`, exposed
+  as Tailwind classes. Components in `ui/` use only tokens; pages use components
+  plus token classes. Light mode only; tokens are structured so a dark theme can
+  be added later.
+- **Notifications:** the snackbar (`useSnackbar`) is the one system.
+- **Kit page:** route `/ui-kit` in the app, rendering the real components. Open
+  in development, admins only in production, not in the sidebar.
+
+## Tokens
+
+| Token | Value | Use |
+|---|---|---|
+| `primary` / `primary-hover` / `primary-subtle` | `#2354BF` / `#1D4699` / `#EFF6FF` | actions, selection, highlights |
+| `foreground` | `#0F172B` | titles, values, body |
+| `foreground-secondary` | `#475569` | labels, table headers |
+| `muted-foreground` | `#64748B` | hints, captions |
+| `foreground-subtle` | `#94A3B8` | placeholders, dashes, disabled |
+| `background` / `surface-muted` / `muted` | `#FFFFFF` / `#F8FAFC` / `#F1F5F9` | page, header & zebra, hover & chips |
+| `border` / `border-strong` | `#E2E8F0` / `#CAD5E2` | cell lines / outer outlines |
+| `success`, `warning`, `destructive` (+ `-subtle`) | `#059669`, `#D97706`, `#DC2626` (`#ECFDF5`, `#FFFBEB`, `#FEF2F2`) | status |
+
+Type: Tailwind `text-xs`…`text-3xl` plus `text-2xs` (11px) for dense tables.
+Weights 400 / 500 / 600, 700 only for big numbers. Radius: `sm` 4, `md` 6,
+`lg` 8 (default), `xl` 12, `full`. Shadow: `xs` inputs, `sm` cards, `md`
+dropdowns, `lg` dialogs. Spacing: 24px between sections, 16px panel padding,
+8/12px group gaps, controls 32/36/40px.
+
+Legacy names (`brand`, `error`, `dimmed`, `background-secondary`, `corporate-*`)
+stay as aliases until the migration ends, then are removed.
+
+## Components (one per job)
+
+Button (`default`, `outline`, `secondary`, `ghost`, `destructive`, `success`,
+`link`; `loading`), Badge (`neutral`, `primary`, `success`, `warning`, `danger`,
+`*_solid`), Input / Textarea / Select / SearchableSelect / pickers / Checkbox /
+Switch, Alert (`default`, `info`, `success`, `warning`, `destructive`), Card,
+PageHeader, SegmentedTabs, StatCard, EmptyState, Skeleton / TableSkeleton,
+snackbar, Modal (+ ConfirmationDialog), Table / PaginatedTable / Filters, and a
+bordered grid table for dense measurement tables (added during migration).
+
+To be removed: `enhanced-*`, `loading-button`, `toast` / `toaster` /
+`use-toast` / `sonner`, `page-layout`, `grid-layout`, `content-container`,
+`form-section`, `form-wrapper`, `field-group`, `data-list`, `multi-step-form`,
+`loading-card`, `drawer`, `alert-dialog`, `validation-message`,
+`styles/globals.css`.
+
+## Guardrails
+
+- `npm run lint:tokens` lists hardcoded colours; `--strict` fails on any.
+- `scripts/migrate-colors.mjs` rewrites hex / palette classes to tokens using
+  the table above.
+- Categorical data-viz colours (chart series, per-category chips) are allowed
+  only through `chart-*` tokens or in files marked `tokens-allow-file`.
+
+## Success
+
+`npm run lint:tokens -- --strict` passes on `app/`, `components/`, `layout/`,
+`ui/`; the removed components no longer exist; every page renders with the
+standard components and no visible regressions.

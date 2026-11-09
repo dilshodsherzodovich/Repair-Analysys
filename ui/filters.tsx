@@ -196,7 +196,7 @@ export default function PageFilters({
             <input
               type="text"
               placeholder={effectiveSearchPlaceholder}
-              className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-md bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors"
+              className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-md bg-white placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors"
               value={searchLocal}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
@@ -232,7 +232,7 @@ export default function PageFilters({
               ) : (
                 <Input
                   placeholder={filter.placeholder || filter.label}
-                  className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors min-w-[200px] max-w-[300px]"
+                  className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-lg bg-white placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors min-w-[200px] max-w-[300px]"
                   value={textValues[filter.name] ?? ""}
                   onChange={(e) => {
                     const v = e.target.value;
@@ -260,7 +260,7 @@ export default function PageFilters({
             ) : (
               <Input
                 placeholder={filter.placeholder || filter.label}
-                className="w-full h-full py-2 px-4 mb-0 border border-[#CAD5E2] rounded-lg bg-white placeholder:text-[#90A1B9] text-sm text-[#0F172B] focus:border-[#CAD5E2] focus:outline-none focus:ring-0 hover:border-[#CAD5E2] transition-colors min-w-[200px] max-w-[300px]"
+                className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-lg bg-white placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors min-w-[200px] max-w-[300px]"
                 value={textValues[filter.name] ?? ""}
                 onChange={(e) => {
                   const v = e.target.value;
@@ -333,9 +333,10 @@ export default function PageFilters({
           {/* Export Button */}
           {onExport && (
             <Button
+              variant="success"
               onClick={onExport}
               disabled={exportLoading}
-              className="h-10 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap cursor-pointer disabled:opacity-70 disabled:pointer-events-none"
+              className="h-10 whitespace-nowrap"
             >
               <span className="flex items-center">
                 {exportLoading ? (
@@ -355,13 +356,13 @@ export default function PageFilters({
       {/* Bulk Actions */}
       {selectedCount > 0 && onBulkDelete && (
         <div className="ml-auto shrink-0 flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-sm text-[#6b7280]">
+          <span className="text-sm text-muted-foreground">
             {t("selected_count", { count: selectedCount })}
           </span>
           <Button
             variant="outline"
             size="sm"
-            className="text-[#dc2626] border-[#dc2626] hover:bg-[#dc2626] hover:text-white bg-transparent"
+            className="text-destructive border-destructive hover:bg-destructive hover:text-white bg-transparent"
             onClick={onBulkDelete}
           >
             <Trash2 className="w-4 h-4 mr-1" />
@@ -458,7 +459,7 @@ export function SelectWithSearch({
       <div
         ref={triggerRef}
         className={cn(
-          "flex items-center justify-between border border-[#CAD5E2] rounded-md bg-white hover:border-[#94a3b8] focus-within:ring-2 focus-within:ring-[#2354bf]/20 focus-within:border-[#2354bf] cursor-pointer min-h-10 h-10 px-3 text-sm text-left transition-colors",
+          "flex items-center justify-between border border-border-strong rounded-md bg-white hover:border-foreground-subtle focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary cursor-pointer min-h-10 h-10 px-3 text-sm text-left transition-colors",
           triggerClassName,
         )}
         onClick={() => !loading && setOpen(!open)}
@@ -466,19 +467,19 @@ export function SelectWithSearch({
         <span
           className={cn(
             "truncate flex-1 min-w-0",
-            !selectedOption ? "text-[#90A1B9]" : "text-[#0F172B]",
+            !selectedOption ? "text-foreground-subtle" : "text-foreground",
           )}
         >
           {selectedOption ? selectedOption.label : placeholder}
         </span>
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-[#64748B]" />
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
       </div>
 
       {open && (
         <div
           ref={dropdownRef}
           className={cn(
-            "absolute left-0 right-0 bg-white border border-[#CAD5E2] rounded-lg z-[999999] overflow-hidden min-w-[200px] max-w-[300px]",
+            "absolute left-0 right-0 bg-white border border-border-strong rounded-lg z-[999999] overflow-hidden min-w-[200px] max-w-[300px]",
             "animate-in fade-in-0 zoom-in-95 duration-100",
             dropdownPosition === "top"
               ? "bottom-full mb-1 slide-in-from-bottom-2"
@@ -487,27 +488,27 @@ export function SelectWithSearch({
           style={{ zIndex: 999999 }}
         >
           {searchable && (
-            <div className="p-2 border-b border-[#E2E8F0]">
+            <div className="p-2 border-b border-border">
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B]" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder={t("search_placeholder")}
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   onKeyDown={(e) => e.stopPropagation()}
-                  className="w-full pl-8 pr-3 py-2 text-sm border border-[#E2E8F0] rounded-md focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20 focus:border-[#2354bf]"
+                  className="w-full pl-8 pr-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
             </div>
           )}
           <div className="max-h-[240px] overflow-y-auto py-0.5">
             {loading ? (
-              <div className="p-4 text-center text-sm text-[#64748B]">
+              <div className="p-4 text-center text-sm text-muted-foreground">
                 {t("loading")}
               </div>
             ) : filteredOptions.length === 0 ? (
-              <div className="py-3 text-center text-sm text-[#64748B]">
+              <div className="py-3 text-center text-sm text-muted-foreground">
                 {t("no_results")}
               </div>
             ) : (
@@ -518,14 +519,14 @@ export function SelectWithSearch({
                   disabled={opt.disabled}
                   onClick={() => !opt.disabled && handleSelect(opt.value)}
                   className={cn(
-                    "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-[#F1F5F9] cursor-pointer transition-colors",
+                    "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted cursor-pointer transition-colors",
                     opt.value === value &&
-                      "bg-[#EFF6FF] text-[#1d4ed8] font-medium",
+                      "bg-primary-subtle text-primary-hover font-medium",
                     opt.disabled && "opacity-50 cursor-not-allowed",
                   )}
                 >
                   {opt.value === value && (
-                    <Check className="h-4 w-4 shrink-0 text-[#2354bf]" />
+                    <Check className="h-4 w-4 shrink-0 text-primary" />
                   )}
                   <span className="truncate">{opt.label}</span>
                 </button>

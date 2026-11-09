@@ -70,13 +70,13 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal shadow-none",
-                "hover:bg-white hover:text-[#374151] hover:border-[#d1d5db]",
-                !value && "text-[#9ca3af]",
+                "hover:bg-white hover:text-foreground-secondary hover:border-border-strong",
+                !value && "text-foreground-subtle",
                 hasError
-                  ? "border-[#ff5959] focus:ring-2 focus:ring-[#ff5959]/20"
+                  ? "border-destructive focus:ring-2 focus:ring-destructive/20"
                   : hasSuccess
-                  ? "border-[#10b981] focus:ring-2 focus:ring-[#10b981]/20"
-                  : "border-[#d1d5db]"
+                  ? "border-success focus:ring-2 focus:ring-success/20"
+                  : "border-border-strong"
               )}
               disabled={disabled}
             >
@@ -101,15 +101,15 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
                         onValueChange?.(undefined);
                       }
                     }}
-                    className="hover:bg-gray-100 rounded p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400"
+                    className="hover:bg-muted rounded p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-foreground-subtle"
                     aria-label={t("clear_aria")}
                   >
-                    <X className="h-4 w-4 text-gray-500" />
+                    <X className="h-4 w-4 text-muted-foreground" />
                   </div>
                 )}
-                {hasError && <AlertCircle className="h-4 w-4 text-[#ff5959]" />}
+                {hasError && <AlertCircle className="h-4 w-4 text-destructive" />}
                 {hasSuccess && (
-                  <CheckCircle className="h-4 w-4 text-[#10b981]" />
+                  <CheckCircle className="h-4 w-4 text-success" />
                 )}
               </div>
             </Button>
@@ -141,16 +141,16 @@ const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
         </Popover>
 
         {hint && !error && !success && (
-          <p className="text-xs text-[#6b7280]">{hint}</p>
+          <p className="text-xs text-muted-foreground">{hint}</p>
         )}
         {error && (
-          <p className="text-xs text-[#ff5959] flex items-center gap-1">
+          <p className="text-xs text-destructive flex items-center gap-1">
             <AlertCircle className="h-3 w-3" />
             {error}
           </p>
         )}
         {success && (
-          <p className="text-xs text-[#10b981] flex items-center gap-1">
+          <p className="text-xs text-success flex items-center gap-1">
             <CheckCircle className="h-3 w-3" />
             {success}
           </p>

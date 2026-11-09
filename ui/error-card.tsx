@@ -33,26 +33,26 @@ export function ErrorCard({
     switch (variant) {
       case "error":
         return {
-          iconBg: "bg-red-50",
-          iconColor: "text-red-500",
+          iconBg: "bg-destructive-subtle",
+          iconColor: "text-destructive",
           icon: FileX,
         };
       case "not-found":
         return {
-          iconBg: "bg-gray-50",
-          iconColor: "text-gray-400",
+          iconBg: "bg-surface-muted",
+          iconColor: "text-foreground-subtle",
           icon: FileX,
         };
       case "warning":
         return {
-          iconBg: "bg-yellow-50",
-          iconColor: "text-yellow-500",
+          iconBg: "bg-warning-subtle",
+          iconColor: "text-warning",
           icon: FileX,
         };
       default:
         return {
-          iconBg: "bg-red-50",
-          iconColor: "text-red-500",
+          iconBg: "bg-destructive-subtle",
+          iconColor: "text-destructive",
           icon: FileX,
         };
     }
@@ -68,8 +68,8 @@ export function ErrorCard({
             <Icon className={cn("h-8 w-8", iconColor)} />
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-500">{message}</p>
+            <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+            <p className="text-sm text-muted-foreground">{message}</p>
           </div>
           <div className="flex gap-3">
             {showRetry && onRetry && (

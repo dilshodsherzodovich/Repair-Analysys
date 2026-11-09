@@ -69,10 +69,10 @@ const TimePicker = React.forwardRef<HTMLDivElement, TimePickerProps>(
           placeholder={placeholder}
           aria-label={label ?? t("time_label")}
           className={cn(
-            "flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base",
-            "transition-colors outline-none focus:border-blue-500 focus:ring-0 hover:border-gray-400",
-            "disabled:pointer-events-none disabled:opacity-50 disabled:bg-gray-50",
-            "md:text-sm text-[#0F172B]",
+            "flex h-10 w-full rounded-md border border-border-strong bg-white px-3 py-2 text-base",
+            "transition-colors outline-none focus:border-primary focus:ring-0 hover:border-foreground-subtle",
+            "disabled:pointer-events-none disabled:opacity-50 disabled:bg-surface-muted",
+            "md:text-sm text-foreground",
           )}
         />
       </div>

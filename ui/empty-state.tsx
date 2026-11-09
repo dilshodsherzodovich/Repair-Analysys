@@ -22,10 +22,10 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
         )}
         {...props}
       >
-        {icon && <div className="mx-auto mb-4 text-[#9ca3af]">{icon}</div>}
-        <h3 className="text-lg font-medium text-[#1f2937] mb-2">{title}</h3>
+        {icon && <div className="mx-auto mb-4 text-foreground-subtle">{icon}</div>}
+        <h3 className="text-lg font-medium text-foreground mb-2">{title}</h3>
         {description && (
-          <p className="text-[#6b7280] mb-6 max-w-md mx-auto">{description}</p>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">{description}</p>
         )}
         {action && <div>{action}</div>}
       </div>

@@ -245,9 +245,9 @@ export function PaginatedTable<T extends Record<string, any>>({
           key: "actions",
           header: resolvedActionsLabel,
           className:
-            "w-[100px] text-center sticky right-0 bg-white z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)] border-r border-[#E2E8F0] last:border-r-0",
+            "w-[100px] text-center sticky right-0 bg-white z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)] border-r border-border last:border-r-0",
           headerClassName:
-            "text-center sticky right-0 bg-[#F8FAFC] z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+            "text-center sticky right-0 bg-surface-muted z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
         } as TableColumn<T>,
       ];
     }
@@ -259,17 +259,17 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Loading state
   if (isLoading) {
     return (
-      <div className={cn("w-full rounded-lg border border-[#CAD5E2] overflow-hidden bg-white", className)}>
+      <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-white", className)}>
         <Table className="w-full min-w-[900px]">
           <TableHeader>
-            <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+            <TableRow className="bg-surface-muted border-b border-border">
               {showCheckbox && (
-                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] bg-[#F8FAFC]">
+                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-foreground-secondary font-medium border-r border-border bg-surface-muted">
                   <input
                     type="checkbox"
                     checked={allSelected}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded-md border-[#CBD5E1] bg-white text-primary focus:ring-primary w-4 h-4"
+                    className="rounded-md border-border-strong bg-white text-primary focus:ring-primary w-4 h-4"
                   />
                 </TableHead>
               )}
@@ -278,7 +278,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                   <TableHead
                     key={column.key}
                     className={cn(
-                      "py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0",
+                      "py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0",
                       column.headerClassName
                     )}
                     style={{ width: column.width }}
@@ -304,7 +304,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Error state
   // if (error) {
   //   return (
-  //     <div className={cn("w-full rounded-lg border border-[#CAD5E2] overflow-hidden bg-white", className)}>
+  //     <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-white", className)}>
   //       <ErrorCard
   //         title={resolvedErrorTitle}
   //         message={resolvedErrorMessage || error.message}
@@ -319,18 +319,18 @@ export function PaginatedTable<T extends Record<string, any>>({
   // Empty state
   if (!isLoading && !error && data.length === 0) {
     return (
-      <div className={cn("w-full rounded-lg border border-[#CAD5E2] overflow-hidden bg-white", className)}>
+      <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-white", className)}>
         <Table className="w-full min-w-[900px]">
           <TableHeader>
-            <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
+            <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
               {showCheckbox && (
-                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 bg-[#F8FAFC] border-r border-[#E2E8F0]" />
+                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 bg-surface-muted border-r border-border" />
               )}
               {displayColumns.map((column) => (
                 <TableHead
                   key={column.key}
                   className={cn(
-                    "py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0",
+                    "py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0",
                     column.headerClassName
                   )}
                   style={{ width: column.width }}
@@ -341,10 +341,10 @@ export function PaginatedTable<T extends Record<string, any>>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
+            <TableRow className="hover:bg-surface-muted border-b border-border">
               <TableCell
                 colSpan={totalColumnCount}
-                className="py-8 px-4 text-center border-r border-[#E2E8F0]"
+                className="py-8 px-4 text-center border-r border-border"
               >
                 <EmptyState
                   icon={<AlertCircle className="h-12 w-12" />}
@@ -361,12 +361,12 @@ export function PaginatedTable<T extends Record<string, any>>({
 
   return (
     <div className={cn("w-full space-y-4 pb-2", className)}>
-      <div className="rounded-lg border border-[#CAD5E2] overflow-hidden bg-white">
+      <div className="rounded-lg border border-border-strong overflow-hidden bg-white">
         <Table className="w-full min-w-[900px]">
           <TableHeader>
-            <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
+            <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
               {showCheckbox && (
-                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] bg-[#F8FAFC]">
+                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-foreground-secondary font-medium border-r border-border bg-surface-muted">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -375,7 +375,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                         input.indeterminate = someSelected && !allSelected;
                     }}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded-md border-[#CBD5E1] bg-white text-primary focus:ring-primary w-4 h-4"
+                    className="rounded-md border-border-strong bg-white text-primary focus:ring-primary w-4 h-4"
                   />
                 </TableHead>
               )}
@@ -385,7 +385,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                     <TableHead
                       key={column.key}
                       className={cn(
-                        "py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0",
+                        "py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0",
                         column.headerClassName,
                         headerClassName
                       )}
@@ -398,7 +398,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                   <TableHead
                     key={column.key}
                     className={cn(
-                      "py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0",
+                      "py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0",
                       column.headerClassName,
                       headerClassName
                     )}
@@ -423,17 +423,17 @@ export function PaginatedTable<T extends Record<string, any>>({
                 <TableRow
                   key={rowId}
                   className={cn(
-                    "hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0 transition-colors",
-                    isSelected && "bg-blue-50 hover:bg-blue-50/80 [&>td]:bg-blue-50 [&>td]:hover:bg-blue-50/80",
+                    "hover:bg-surface-muted border-b border-border last:border-b-0 transition-colors",
+                    isSelected && "bg-primary-subtle hover:bg-primary-subtle/80 [&>td]:bg-primary-subtle [&>td]:hover:bg-primary-subtle/80",
                     rowClass
                   )}
                 >
                   {showCheckbox && (
                     <TableCell
                       className={cn(
-                        "py-3 px-4 text-[#64748B] border-r border-[#E2E8F0]",
+                        "py-3 px-4 text-muted-foreground border-r border-border",
                         sizeClasses.checkboxCell,
-                        isSelected && "bg-blue-50"
+                        isSelected && "bg-primary-subtle"
                       )}
                     >
                       <input
@@ -442,7 +442,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                         onChange={(e) =>
                           handleSelectRow(rowId, e.target.checked)
                         }
-                        className="rounded-md border-[#CBD5E1] bg-white text-primary focus:ring-primary w-4 h-4"
+                        className="rounded-md border-border-strong bg-white text-primary focus:ring-primary w-4 h-4"
                       />
                     </TableCell>
                   )}
@@ -455,10 +455,10 @@ export function PaginatedTable<T extends Record<string, any>>({
                       <TableCell
                         key={column.key}
                         className={cn(
-                          "py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0",
+                          "py-3 px-4 text-muted-foreground border-r border-border last:border-r-0",
                           sizeClasses.rowCell,
                           column.className,
-                          isSelected && "bg-blue-50"
+                          isSelected && "bg-primary-subtle"
                         )}
                         style={{ boxSizing: "border-box" }}
                       >
@@ -476,8 +476,8 @@ export function PaginatedTable<T extends Record<string, any>>({
                   {hasActions && (
                     <TableCell
                       className={cn(
-                        "py-3 px-4 text-center border-r border-[#E2E8F0] last:border-r-0 transition-colors sticky right-0 z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
-                        isSelected ? "bg-blue-50" : "bg-white"
+                        "py-3 px-4 text-center border-r border-border last:border-r-0 transition-colors sticky right-0 z-10 shadow-[inset_2px_0_4px_-2px_rgba(0,0,0,0.1)]",
+                        isSelected ? "bg-primary-subtle" : "bg-white"
                       )}
                     >
                       <div className="flex items-center justify-center gap-2">
@@ -545,7 +545,7 @@ export function PaginatedTable<T extends Record<string, any>>({
               onPageChange={handlePageChange}
             />
             {totalItems && (
-              <span className="text-sm text-gray-600 whitespace-nowrap">
+              <span className="text-sm text-foreground-secondary whitespace-nowrap">
                 {t("showing", {
                   from: Math.min(
                     (currentPage - 1) * itemsPerPage + 1,
@@ -866,7 +866,7 @@ function PaginationControls({
           <button
             type="button"
             onClick={() => onPageChange(currentPage - 1)}
-            className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
+            className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-border bg-white text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
           >
             <ChevronLeft className="h-4 w-4" />
             <span>{t("pagination_prev")}</span>
@@ -894,7 +894,7 @@ function PaginationControls({
           <button
             type="button"
             onClick={() => onPageChange(currentPage + 1)}
-            className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
+            className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-border bg-white text-foreground-secondary hover:bg-surface-muted transition-colors gap-1"
           >
             <span>{t("pagination_next")}</span>
             <ChevronRight className="h-4 w-4" />
@@ -1004,7 +1004,7 @@ function ActionsDropdown<T>({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 px-3 hover:bg-gray-100"
+          className="h-8 px-3 hover:bg-muted"
           onClick={() => onEdit(row)}
         >
           <Edit className="h-4 w-4 mr-2" />
@@ -1017,10 +1017,10 @@ function ActionsDropdown<T>({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 px-3 hover:bg-gray-100 text-red-600 hover:text-red-700"
+          className="h-8 px-3 hover:bg-muted text-destructive hover:text-destructive"
           onClick={() => onDelete(row)}
         >
-          <Trash2 className="h-4 w-4 mr-2" color="text-red-600" />
+          <Trash2 className="h-4 w-4 mr-2" color="text-destructive" />
           O'chirish
         </Button>
       );
@@ -1067,7 +1067,7 @@ function ActionsDropdown<T>({
           <Button
             variant="outline"
             size="sm"
-            className="h-8 w-8 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-muted"
             onClick={() => onEdit?.(row)}
             title="Tahrirlash"
           >
@@ -1078,7 +1078,7 @@ function ActionsDropdown<T>({
           <Button
             variant="outline"
             size="sm"
-            className="h-8 w-8 p-0  border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10"
+            className="h-8 w-8 p-0  border-destructive text-destructive hover:text-destructive hover:border-destructive hover:bg-destructive/10"
             onClick={() => onDelete?.(row)}
             title="O'chirish"
           >
@@ -1095,10 +1095,10 @@ function ActionsDropdown<T>({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="p-1.5 rounded hover:bg-[#E2E8F0] inline-flex items-center justify-center transition-colors"
+          className="p-1.5 rounded hover:bg-border inline-flex items-center justify-center transition-colors"
           aria-label="Amallar"
         >
-          <MoreVertical className="h-4 w-4 text-[#64748B]" />
+          <MoreVertical className="h-4 w-4 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">
@@ -1132,7 +1132,7 @@ function ActionsDropdown<T>({
             )}
             <DropdownMenuItem
               onClick={handleDelete}
-              className="flex items-center gap-2 text-red-600 focus:text-red-600 focus:bg-red-50"
+              className="flex items-center gap-2 text-destructive focus:text-destructive focus:bg-destructive-subtle"
             >
               <Trash2 className="h-4 w-4" />
               O'chirish
