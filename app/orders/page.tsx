@@ -446,18 +446,16 @@ export default function OrdersPage() {
   return (
     <Page>
       {view === "stats" ? (
-        <>
-          {header(null, viewSwitch)}
-          {/* Picking a status filters the list and opens it */}
-          <MprStatusStats
-            title={t("statistics.title")}
-            locomotiveOptions={statLocomotiveOptions}
-            activeStatus={confirm_status || ""}
-            onStatusSelect={(status) =>
-              updateQuery({ confirm_status: status || null, view: null })
-            }
-          />
-        </>
+        // Picking a status filters the list and opens it
+        <MprStatusStats
+          title={t("statistics.title")}
+          locomotiveOptions={statLocomotiveOptions}
+          activeStatus={confirm_status || ""}
+          onStatusSelect={(status) =>
+            updateQuery({ confirm_status: status || null, view: null })
+          }
+          header={(filters) => header(filters, viewSwitch)}
+        />
       ) : (
         <>
           {header(
