@@ -228,15 +228,13 @@ const LocomotiveRows = memo(function LocomotiveRows({
     : justSaved
       ? "bg-success-subtle"
       : "bg-background group-hover:bg-surface-muted";
-  // Cells that span the locomotive's rows don't follow the hovered row
-  const spanBg = isEditing
-    ? "bg-primary-subtle"
-    : justSaved
-      ? "bg-success-subtle"
-      : "bg-background";
+  // Every line is a plain row (no merged cells), so hover, borders and pinned
+  // columns behave like any table. No, locomotive and the edit button show on
+  // the locomotive's first line; below them those cells stay empty with no
+  // line between, and a darker line closes each locomotive.
+  const isLast = (index: number) => index === span - 1;
+  const groupCell = (index: number) => !isLast(index) && "border-b-transparent";
 
-  // Only the hovered row highlights; the cells spanning the locomotive's rows
-  // (No, locomotive, actions) keep their own background
   return (
     <TableBody>
       {group.components.map((component, componentIndex) => (
@@ -245,31 +243,32 @@ const LocomotiveRows = memo(function LocomotiveRows({
           className={cn(
             // Solid hover so it matches the pinned section cell
             "group duration-700 hover:bg-surface-muted",
+            isLast(componentIndex) && "[&>td]:border-b-border-strong",
             isEditing && "bg-primary-subtle hover:bg-primary-subtle",
             justSaved && "bg-success-subtle hover:bg-success-subtle",
           )}
         >
-          {componentIndex === 0 && (
-            <>
-              <TableCell
-                rowSpan={span}
-                className={cn(
-                  stickyNo,
-                  spanBg,
-                  "z-[5] text-muted-foreground align-top",
-                )}
-              >
-                {group.index}
-              </TableCell>
-              <TableCell
-                rowSpan={span}
-                className={cn(
-                  stickyLocomotive,
-                  spanBg,
-                  "z-[5] font-medium align-top",
-                  justSaved && "border-l-success",
-                )}
-              >
+          <TableCell
+            className={cn(
+              stickyNo,
+              stickyBg,
+              "z-[5] text-muted-foreground",
+              groupCell(componentIndex),
+            )}
+          >
+            {componentIndex === 0 && group.index}
+          </TableCell>
+          <TableCell
+            className={cn(
+              stickyLocomotive,
+              stickyBg,
+              "z-[5] font-medium",
+              groupCell(componentIndex),
+              justSaved && "border-l-success",
+            )}
+          >
+            {componentIndex === 0 && (
+              <>
                 {group.name}-{group.modelName}
                 {justSaved && (
                   <Badge variant="success" className="mt-1 w-fit">
@@ -277,9 +276,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
                     {t("just_saved")}
                   </Badge>
                 )}
-              </TableCell>
-            </>
-          )}
+              </>
+            )}
+          </TableCell>
           <TableCell
             className={cn(
               stickySection,
@@ -301,10 +300,6 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 key={field}
                 className={cn(
                   "duration-700",
-                  // The actions cell spans the rows from the first one, so in the other
-                  // rows a value cell is last in the markup but not the last column: keep
-                  // its right border (the kit drops it on a row's last cell)
-                  canEdit && "last:border-r",
                   isInfo ? "text-muted-foreground" : "text-center",
                   editable && "",
                   // Changed values stand out while the highlight lasts
@@ -336,23 +331,22 @@ const LocomotiveRows = memo(function LocomotiveRows({
               </TableCell>
             );
           })}
-          {canEdit && componentIndex === 0 && (
-            <TableCell
-              rowSpan={span}
-              className={cn("text-center align-middle", spanBg)}
-            >
-              <EditActions
-                isEditing={isEditing}
-                isSaving={isSaving}
-                onEdit={() => onEdit(group.locomotiveId)}
-                onSave={handleSave}
-                onCancel={cancelEdit}
-                labels={{
-                  edit: t("edit"),
-                  save: t("save"),
-                  cancel: t("cancel"),
-                }}
-              />
+          {canEdit && (
+            <TableCell className={cn("text-center", groupCell(componentIndex))}>
+              {componentIndex === 0 && (
+                <EditActions
+                  isEditing={isEditing}
+                  isSaving={isSaving}
+                  onEdit={() => onEdit(group.locomotiveId)}
+                  onSave={handleSave}
+                  onCancel={cancelEdit}
+                  labels={{
+                    edit: t("edit"),
+                    save: t("save"),
+                    cancel: t("cancel"),
+                  }}
+                />
+              )}
             </TableCell>
           )}
         </TableRow>
