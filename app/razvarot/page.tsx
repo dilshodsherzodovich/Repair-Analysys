@@ -287,8 +287,8 @@ export default function RazvarotPage() {
         }
         actions={
           <>
-            <AddButton onClick={handleOpenCreateModal} permission="create_maneuver_journal" />
             <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />
+            <AddButton onClick={handleOpenCreateModal} permission="create_maneuver_journal" />
           </>
         }
       />

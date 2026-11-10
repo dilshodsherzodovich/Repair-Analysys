@@ -8,7 +8,7 @@ export type ExportKind = "excel" | "pdf" | "word";
 
 /**
  * The only export buttons in the app: Excel (green), PDF and Word (outline),
- * always in that order, size sm, with a spinner on the one running.
+ * always in that order, 36px like every action, with a spinner on the one running.
  * Pass a handler for each format the page offers.
  */
 export function ExportActions({
@@ -32,19 +32,19 @@ export function ExportActions({
   return (
     <>
       {onExcel && (
-        <Button variant="success" size="sm" onClick={onExcel} disabled={off} loading={busy === "excel"}>
+        <Button variant="success" onClick={onExcel} disabled={off} loading={busy === "excel"}>
           {busy !== "excel" && <FileSpreadsheet />}
           {t("export_excel")}
         </Button>
       )}
       {onPdf && (
-        <Button variant="outline" size="sm" onClick={onPdf} disabled={off} loading={busy === "pdf"}>
+        <Button variant="outline" onClick={onPdf} disabled={off} loading={busy === "pdf"}>
           {busy !== "pdf" && <FileDown />}
           {t("export_pdf")}
         </Button>
       )}
       {onWord && (
-        <Button variant="outline" size="sm" onClick={onWord} disabled={off} loading={busy === "word"}>
+        <Button variant="outline" onClick={onWord} disabled={off} loading={busy === "word"}>
           {busy !== "word" && <FileText />}
           {t("export_word")}
         </Button>

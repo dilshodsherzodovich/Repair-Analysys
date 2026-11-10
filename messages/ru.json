@@ -1,5 +1,7 @@
 {
   "Common": {
+    "filters": "Фильтры",
+    "remove_filter": "Убрать фильтр",
     "view_list": "Список",
     "view_statistics": "Статистика",
     "add": "Добавить",

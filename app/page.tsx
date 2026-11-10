@@ -368,8 +368,8 @@ export default function PantografPage() {
             />,
             <>
               {viewSwitch}
-              <AddButton onClick={handleCreate} permission="create_pantograf" />
               <ExportActions onExcel={handleExport} />
+              <AddButton onClick={handleCreate} permission="create_pantograf" />
             </>,
           )}
 

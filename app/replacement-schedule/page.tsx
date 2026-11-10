@@ -271,8 +271,8 @@ export default function ReplacementSchedulePage() {
         }
         actions={
           <>
-            <AddButton onClick={handleCreate} permission="create_locomotive_replacement_oil" />
             <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />
+            <AddButton onClick={handleCreate} permission="create_locomotive_replacement_oil" />
           </>
         }
       />

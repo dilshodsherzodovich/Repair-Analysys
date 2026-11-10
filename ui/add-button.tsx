@@ -22,7 +22,7 @@ export function AddButton({
   if (!onClick) return null;
 
   const button = (
-    <Button size="sm" onClick={onClick}>
+    <Button onClick={onClick}>
       <Plus />
       {t("add")}
     </Button>

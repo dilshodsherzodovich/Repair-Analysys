@@ -136,7 +136,7 @@ one meta line (org · period · "holatiga")
   Only a page without filters shows its actions next to the title.
   Sections use `FilterPanel`, the same card with their actions.
 - Actions order, left to right: view switch (SegmentedTabs /
-  ListStatsSwitch), page actions (AddButton, ...), then ExportActions.
+  ListStatsSwitch), ExportActions, then the primary action (AddButton) last.
 - A page with a list and statistics shows one at a time: `ListStatsSwitch`
   (Ro'yxat / Statistika, `?view=stats`) first in the actions. In the
   statistics view the filter card holds the statistics filters.
@@ -150,6 +150,14 @@ one meta line (org · period · "holatiga")
 - Calendars follow the app language (uz / ru) and start weeks on Monday.
 
 ### FilterBar
+
+- The filter card is one toolbar line: search, up to three main controls
+  (filters marked `primary`, else the first ones; a date counts as one),
+  then "Filtrlar · N", a panel with the other filters in a two-column grid.
+  On the right: view switch, secondary actions (exports), then the primary
+  action (Qo'shish) last. All controls and buttons are 36px.
+- While anything is set, a line under the toolbar shows a chip per active
+  filter ("Label: value ×") and "Tozalash"; nothing is shown otherwise.
 
 - Every filter is a `FilterField` with a label (xs, uppercase, muted). No
   unlabelled controls, no placeholders standing in for labels.

@@ -1,5 +1,7 @@
 {
   "Common": {
+    "filters": "Filtrlar",
+    "remove_filter": "Filtrni olib tashlash",
     "view_list": "Ro'yxat",
     "view_statistics": "Statistika",
     "add": "Qo'shish",

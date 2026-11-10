@@ -501,8 +501,8 @@ export default function OrdersPage() {
             />,
             <>
               {viewSwitch}
-              <AddButton onClick={isAdmin ? undefined : handleCreate} permission={isAdmin ? undefined : "create_order"} />
               <ExportActions onExcel={handleExport} />
+              <AddButton onClick={isAdmin ? undefined : handleCreate} permission={isAdmin ? undefined : "create_order"} />
             </>,
           )}
 

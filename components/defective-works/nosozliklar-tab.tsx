@@ -525,8 +525,8 @@ export function NosozliklarTab() {
             actions={
               <>
                 {viewSwitch}
-                <AddButton onClick={handleCreate} permission="create_defective_work" />
                 <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />
+                <AddButton onClick={handleCreate} permission="create_defective_work" />
               </>
             }
           >
@@ -534,6 +534,7 @@ export function NosozliklarTab() {
               filters={[
                 {
                   name: "locomotive",
+                primary: true,
                   label: t("filters.locomotive"),
                   isSelect: true,
                   options: locomotiveOptions,
@@ -609,6 +610,7 @@ export function NosozliklarTab() {
                 },
                 {
                   name: "tab",
+                primary: true,
                   label: t("filters.status"),
                   isSelect: true,
                   options: statusOptions,

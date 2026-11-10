@@ -841,8 +841,8 @@ export default function DelaysPage() {
         }
         actions={
           <>
-            <AddButton onClick={handleCreate} permission="create_delay" />
             <ExportActions onExcel={canExport ? handleExport : undefined} busy={isExporting ? "excel" : null} />
+            <AddButton onClick={handleCreate} permission="create_delay" />
           </>
         }
       />

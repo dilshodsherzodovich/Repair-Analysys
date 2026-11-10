@@ -32,9 +32,17 @@ export const FILTER_CARD =
   "rounded-xl border border-border bg-background px-4 py-3 shadow-sm";
 
 /**
- * The filter card: the FilterBar on the left and the page's actions on the
- * right, bottom-aligned with the controls. Every page's filters and actions
- * live here, never split between the header and the card.
+ * Where a FilterBar inside the card puts its active-filter chips: a line
+ * under the controls and actions, shown only while it has something.
+ */
+export const FilterCardFooter = React.createContext<HTMLElement | null>(null);
+
+/**
+ * The filter card: one toolbar line with the filters on the left and the
+ * page's actions on the right (view switch, secondary actions, then the
+ * primary one), and under it the active-filter chips when any are set.
+ * Every page's filters and actions live here, never split between the
+ * header and the card.
  */
 export function FilterCard({
   children,
@@ -45,14 +53,22 @@ export function FilterCard({
   actions?: React.ReactNode;
   className?: string;
 }) {
+  const [footer, setFooter] = React.useState<HTMLDivElement | null>(null);
   return (
-    <div className={cn("flex flex-wrap items-end justify-between gap-3", FILTER_CARD, className)}>
-      {children && <div className="min-w-0 flex-1">{children}</div>}
-      {actions && (
-        <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
-          {actions}
-        </div>
-      )}
+    <div className={cn(FILTER_CARD, className)}>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        {children && (
+          <div className="min-w-0 flex-1">
+            <FilterCardFooter.Provider value={footer}>{children}</FilterCardFooter.Provider>
+          </div>
+        )}
+        {actions && (
+          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+            {actions}
+          </div>
+        )}
+      </div>
+      <div ref={setFooter} className="empty:hidden mt-3 border-t border-border pt-3" />
     </div>
   );
 }
