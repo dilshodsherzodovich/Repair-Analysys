@@ -633,7 +633,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                           {item.children!.map((child) => {
                             const isChildActive = pathname === child.href;
                             return (
-                              {/* kit-allow: app shell navigation item */}
+                              // kit-allow: app shell navigation item
                               <button
                                 key={child.href}
                                 type="button"

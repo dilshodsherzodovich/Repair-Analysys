@@ -192,7 +192,7 @@ export function RailwayStamp({
   }
 
   return (
-    {/* kit-allow: interactive stamp artwork (SVG), not a UI action */}
+    // kit-allow: interactive stamp artwork (SVG), not a UI action
     <button
       type="button"
       onClick={onClick}
