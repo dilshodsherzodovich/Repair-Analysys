@@ -7,7 +7,7 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import type { UserData } from "@/api/types/auth";
 import { isEchAccount } from "@/lib/permissions";
 
-import { LoadingState } from "@/ui/empty-state";
+import { LoadingScreen } from "@/ui/empty-state";
 interface AuthGuardProps {
   children: React.ReactNode;
   publicRoutes?: string[];
@@ -190,19 +190,19 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
 
   if (!isClient) {
     return (
-      <LoadingState size="page" className="min-h-screen" />
+      <LoadingScreen />
     );
   }
 
   if (isUserLoading) {
     return (
-      <LoadingState size="page" className="min-h-screen" />
+      <LoadingScreen />
     );
   }
 
   if (!isPublicRoute && !currentUser) {
     return (
-      <LoadingState size="page" label="Avtorizatsiya sahifasiga yo'naltirilmoqda..." className="min-h-screen" />
+      <LoadingScreen label="Avtorizatsiya sahifasiga yo'naltirilmoqda..." />
     );
   }
 
@@ -213,7 +213,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
       !isEchAllowedRoute(pathname)
     ) {
       return (
-        <LoadingState size="page" label="Yo'naltirilmoqda..." className="min-h-screen" />
+        <LoadingScreen label="Yo'naltirilmoqda..." />
       );
     }
   }
@@ -225,13 +225,13 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     isEchAccount(currentUser)
   ) {
     return (
-      <LoadingState size="page" label="Yo'naltirilmoqda..." className="min-h-screen" />
+      <LoadingScreen label="Yo'naltirilmoqda..." />
     );
   }
 
   if (isLoginPage && currentUser) {
     return (
-      <LoadingState size="page" label="Bosh sahifaga yo'naltirilmoqda..." className="min-h-screen" />
+      <LoadingScreen label="Bosh sahifaga yo'naltirilmoqda..." />
     );
   }
 
@@ -240,7 +240,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     const defaultRoute = getDefaultRouteForRole(currentUser);
     if (defaultRoute !== "/") {
       return (
-        <LoadingState size="page" label="Yo'naltirilmoqda..." className="min-h-screen" />
+        <LoadingScreen label="Yo'naltirilmoqda..." />
       );
     }
   }

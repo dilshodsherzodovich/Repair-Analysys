@@ -115,5 +115,5 @@ export function EmptyBlock({
 }
 
 export function LoadingBlock({ label }: { label?: string }) {
-  return <LoadingState size="compact" label={label} />;
+  return <LoadingState size="compact" shape="lines" label={label} />;
 }

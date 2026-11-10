@@ -207,7 +207,7 @@ export function StatsPanel({
           {title}
         </h2>
         {isLoading ? (
-          <LoadingState />
+          <LoadingState shape="cards" />
         ) : error ? (
           <ErrorState title={t("error")} />
         ) : !data || data.length === 0 ? (

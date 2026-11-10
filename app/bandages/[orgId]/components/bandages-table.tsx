@@ -231,7 +231,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={section.key}
           className={cn(
-            "duration-700 hover:bg-transparent group-hover:bg-surface-muted/70",
+            "duration-700 hover:bg-transparent group-hover:bg-surface-muted",
             isEditing && "bg-primary-subtle group-hover:bg-primary-subtle",
             justSaved && "bg-success-subtle group-hover:bg-success-subtle",
           )}
@@ -334,7 +334,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
           {canEdit && sectionIndex === 0 && (
             <TableCell
               rowSpan={span}
-              className="text-center align-middle"
+              // Spanning cells paint their own background: browsers paint a row's
+              // background only over that row, so they would look half-highlighted
+              className={cn("text-center align-middle", stickyBg)}
             >
               {group.bandages.length > 0 && (
                 <EditActions

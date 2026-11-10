@@ -26,6 +26,7 @@ import { XIcon } from "lucide-react";
 import { DateTimePicker } from "@/ui/datetime-picker";
 
 import { Field } from "@/ui/field";
+import { LoadingScreen } from "@/ui/empty-state";
 interface IssueWithDate {
   text: string;
   date: Date | undefined;
@@ -283,11 +284,7 @@ export default function PublicDefectiveWorkCreatePage() {
   // Show loading state while authenticating
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-muted px-4 py-10 text-foreground">
-        <Card className="border border-border bg-background p-6 shadow-xl md:p-8">
-          <p className="text-center text-sm text-foreground-secondary">{t("loading")}</p>
-        </Card>
-      </div>
+      <LoadingScreen label={t("loading")} />
     );
   }
 

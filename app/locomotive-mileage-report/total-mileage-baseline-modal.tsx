@@ -15,6 +15,7 @@ import {
 import { Field } from "@/ui/field";
 import { Modal, ModalFooter } from "@/ui/modal";
 import { formatNumber } from "@/lib/format";
+import { LoadingState } from "@/ui/empty-state";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -103,7 +104,7 @@ export function TotalMileageBaselineModal({ isOpen, onClose, locomotiveId, locom
     >
 
         {isLoading ? (
-          <div className="py-6 text-center text-sm text-muted-foreground">Yuklanmoqda...</div>
+          <LoadingState size="compact" shape="lines" />
         ) : (
           <div className="space-y-4 py-2">
             {existing && (

@@ -6,7 +6,7 @@ import { authService } from "@/api/services/auth.service";
 import { storeAuth } from "@/api/hooks/use-auth";
 import { Button } from "@/ui/button";
 
-import { LoadingState } from "@/ui/empty-state";
+import { LoadingScreen } from "@/ui/empty-state";
 function AuthCallbackInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -113,7 +113,7 @@ function AuthCallbackInner() {
   }
 
   return (
-    <LoadingState size="page" label="Autentifikatsiya amalga oshirilmoqda..." className="min-h-screen" />
+    <LoadingScreen label="Autentifikatsiya amalga oshirilmoqda..." />
   );
 }
 
@@ -121,7 +121,7 @@ export default function AuthCallbackPage() {
   return (
     <Suspense
       fallback={
-        <LoadingState size="page" className="min-h-screen" />
+        <LoadingScreen />
       }
     >
       <AuthCallbackInner />

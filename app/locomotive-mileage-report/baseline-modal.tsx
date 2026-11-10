@@ -17,6 +17,7 @@ import {
 
 import { Field } from "@/ui/field";
 import { Modal, ModalFooter } from "@/ui/modal";
+import { LoadingState } from "@/ui/empty-state";
 interface BaselineModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -164,9 +165,7 @@ export function BaselineModal({
     >
 
         {isLoading ? (
-          <div className="py-6 text-center text-sm text-muted-foreground">
-            {t("loading")}
-          </div>
+          <LoadingState size="compact" shape="lines" />
         ) : (
           <div className="space-y-4 py-2">
             {/* Hidden per request — kept mounted so its logic/state stays intact */}

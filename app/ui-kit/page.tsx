@@ -644,7 +644,7 @@ function UiKit() {
       <Section
         id="feedback"
         title="Feedback"
-        description="Data states: LoadingState, EmptyState, ErrorState (size page / section / compact; TableStateRow inside tables). Alert for a banner over content that still shows, the snackbar for results of an action."
+        description="Data states: LoadingState (skeleton: table / cards / block / lines), EmptyState, ErrorState (size page / section / compact; TableStateRow inside tables). Alert for a banner over content that still shows, the snackbar for results of an action."
       >
         <div className="grid gap-3 lg:grid-cols-2">
           <Alert variant="info">

@@ -84,7 +84,7 @@ export default function ReportDashboard() {
   if (
     isLoading || isInspectionLoading || isDelayedLoading ||
     isTxk2InspectionLoading || isReservedLoading
-  ) return <LoadingState size="page" />;
+  ) return <LoadingState size="page" shape="cards" />;
 
   if (
     isError || isInspectionError || isDelayedError ||

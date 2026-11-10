@@ -19,6 +19,7 @@ import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
 import { formatNumber } from "@/lib/format";
+import { LoadingState } from "@/ui/empty-state";
 const PAGE_SIZE = 20;
 
 const ALL_INSPECTION_TYPES = (() => {
@@ -359,9 +360,7 @@ export default function Tu152Page() {
             </div>
 
             {isLoading ? (
-              <div className="bg-background rounded-xl border border-border/60 shadow-sm p-8 flex items-center justify-center">
-                <p className="text-sm text-muted-foreground">{t("loading")}</p>
-              </div>
+              <LoadingState />
             ) : (
               <div className="bg-background rounded-xl border border-border/60 shadow-sm overflow-hidden">
                 <PaginatedTable<DefectiveWorkEntry>

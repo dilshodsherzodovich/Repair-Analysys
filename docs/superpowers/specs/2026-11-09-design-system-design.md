@@ -236,7 +236,8 @@ one meta line (org · period · "holatiga")
 ### Data states
 
 - Every place that loads data shows the same three states from
-  `ui/empty-state.tsx`: `LoadingState` (spinner + "Yuklanmoqda…"),
+  `ui/empty-state.tsx`: `LoadingState` (a skeleton shaped like the content:
+  `shape` table (default) / cards / block / lines),
   `EmptyState` (inbox icon + "Ma'lumot topilmadi", optional description and
   action) and `ErrorState` (warning icon, message, Retry).
 - `size`: `page` fills the content area, `section` (default) sits in a card,
@@ -246,8 +247,11 @@ one meta line (org · period · "holatiga")
 - A failed load with nothing to show is an `ErrorState`; a failure while the
   page still shows content is a destructive `Alert` above it. Results of an
   action go to the snackbar.
-- Inline progress (a "Saving…" next to a toolbar, a spinner in a button)
-  stays inline; it is not a data state.
+- Loading content is always a skeleton, never a centred spinner. Tables use
+  `TableSkeleton` rows (PaginatedTable does this itself).
+- Spinners only for in-place progress (a button or cell saving, a background
+  refresh next to a title) and for `LoadingScreen`, the full-screen app start
+  (session check, sign-in redirects) shown before the layout exists.
 - Default texts come from `Common` (loading, no_data, load_error, retry).
 
 ### Badges

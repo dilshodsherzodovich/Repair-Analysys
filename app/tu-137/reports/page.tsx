@@ -18,7 +18,7 @@ import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-ba
 import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
-import { EmptyState, TableStateRow, ErrorState } from "@/ui/empty-state";
+import { LoadingState, EmptyState, TableStateRow, ErrorState } from "@/ui/empty-state";
 const getProgressBgColor = (percent: number) => {
   if (percent < 50) return "bg-destructive";
   if (percent < 80) return "bg-warning";
@@ -167,7 +167,7 @@ export default function Tu137ReportsPage() {
 
         {/* Global Stats Cards */}
         {isLoading ? (
-          <div className="text-sm text-muted-foreground">{t("loading")}</div>
+          <LoadingState shape="cards" />
         ) : error ? (
           <ErrorState title={t("error")} message={(error as Error).message} />
         ) : (
