@@ -584,6 +584,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
             if (hasChildren && !isCollapsed) {
               return (
                 <div key={item.key} className="mb-1">
+                  {/* kit-allow: app shell navigation item */}
                   <button
                     type="button"
                     onClick={() => toggleSection(item.key)}
@@ -632,6 +633,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                           {item.children!.map((child) => {
                             const isChildActive = pathname === child.href;
                             return (
+                              {/* kit-allow: app shell navigation item */}
                               <button
                                 key={child.href}
                                 type="button"

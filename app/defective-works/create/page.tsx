@@ -13,6 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SearchableSelect,
 } from "@/ui/select";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { authService } from "@/api/services/auth.service";
@@ -22,9 +23,8 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useRevisionRemarkGroups } from "@/api/hooks/use-defective-works";
 import { defectiveWorksService } from "@/api/services/defective-works.service";
 import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
-import { XIcon, ChevronsUpDown, Search } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { DateTimePicker } from "@/ui/datetime-picker";
-import { cn } from "@/lib/utils";
 
 interface IssueWithDate {
   text: string;
@@ -35,155 +35,6 @@ interface IssueWithDate {
 }
 
 /** Single-select with search, same pattern as multi-select */
-function SearchableLocomotiveSelect({
-  options,
-  value,
-  onValueChange,
-  placeholder,
-  disabled,
-  loading,
-  emptyMessage,
-}: {
-  options: { value: string; label: string }[];
-  value: string;
-  onValueChange: (value: string) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  loading?: boolean;
-  emptyMessage?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
-    "bottom"
-  );
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const selectedOption = options.find((o) => o.value === value);
-
-  const filteredOptions = options.filter((opt) =>
-    opt.label.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
-  useEffect(() => {
-    if (open && triggerRef.current) {
-      const triggerRect = triggerRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const dropdownHeight = 300;
-      const spaceBelow = viewportHeight - triggerRect.bottom;
-      const spaceAbove = triggerRect.top;
-      if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
-        setDropdownPosition("top");
-      } else {
-        setDropdownPosition("bottom");
-      }
-    }
-  }, [open]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-        setSearchValue("");
-      }
-    };
-    if (open) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
-
-  const handleSelect = (optionValue: string) => {
-    onValueChange(optionValue);
-    setOpen(false);
-    setSearchValue("");
-  };
-
-  return (
-    <div className="relative w-full">
-      <div
-        ref={triggerRef}
-        className={cn(
-          "flex h-10 w-full items-center justify-between rounded-md border border-border-strong bg-background px-4 py-2 text-base cursor-pointer",
-          "hover:border-foreground-subtle focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary",
-          "disabled:pointer-events-none disabled:opacity-50",
-          "[&>span]:line-clamp-1",
-          disabled && "opacity-50 cursor-not-allowed"
-        )}
-        onClick={() => !disabled && !loading && setOpen(!open)}
-      >
-        <span
-          className={cn(
-            "truncate flex-1 min-w-0 text-left text-sm",
-            !selectedOption ? "text-foreground-subtle" : "text-foreground"
-          )}
-        >
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
-      </div>
-
-      {open && (
-        <div
-          ref={dropdownRef}
-          className={cn(
-            "absolute left-0 right-0 z-[999999] max-h-[300px] overflow-hidden rounded-lg border border-border-strong bg-background shadow-lg",
-            "animate-in fade-in-0 zoom-in-95 duration-100",
-            dropdownPosition === "top"
-              ? "bottom-full mb-1 slide-in-from-bottom-2"
-              : "top-full mt-1 slide-in-from-top-2"
-          )}
-          style={{ zIndex: 999999 }}
-        >
-          <div className="p-2 border-b border-border">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder={placeholder}
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onKeyDown={(e) => e.stopPropagation()}
-                className="w-full border border-border rounded-md py-2 pl-8 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-          </div>
-          <div className="max-h-[240px] overflow-y-auto py-0.5">
-            {loading ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                Loading...
-              </div>
-            ) : filteredOptions.length === 0 ? (
-              <div className="py-3 text-center text-sm text-muted-foreground">
-                {emptyMessage ?? "No items found."}
-              </div>
-            ) : (
-              filteredOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleSelect(opt.value)}
-                  className={cn(
-                    "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-muted",
-                    opt.value === value &&
-                      "bg-primary-subtle font-medium text-primary-hover"
-                  )}
-                >
-                  <span className="truncate">{opt.label}</span>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function PublicDefectiveWorkCreatePage() {
   const t = useTranslations("DefectiveWorksCreatePage");
   const searchParams = useSearchParams();
@@ -503,7 +354,8 @@ export default function PublicDefectiveWorkCreatePage() {
                 <Label className="mb-2 block text-sm font-medium text-foreground">
                   {t("locomotive")}
                 </Label>
-                <SearchableLocomotiveSelect
+                <SearchableSelect
+                  searchable
                   options={
                     locomotives.length
                       ? locomotives.map((loc) => ({

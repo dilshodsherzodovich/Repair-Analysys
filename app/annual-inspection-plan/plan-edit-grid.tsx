@@ -22,6 +22,7 @@ import {
 } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import { Button } from "@/ui/button";
 
 function getErrorMessage(e: any): string {
   return (
@@ -99,16 +100,14 @@ const EditableCell = memo(function EditableCell({
   }
 
   return (
-    <button
-      type="button"
+    <Button variant="ghost" className="h-9 w-full rounded-none text-xs font-normal tabular-nums text-foreground hover:bg-primary/5 focus-visible:bg-primary/10"
       onClick={begin}
       onKeyDown={(e) => {
         if (e.key === "Enter") begin();
       }}
-      className="w-full h-9 text-center text-xs tabular-nums hover:bg-primary/5 focus:bg-primary/10 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-primary/40 transition-colors"
     >
       {value ? value : <span className="text-muted-foreground/25">·</span>}
-    </button>
+    </Button>
   );
 });
 
