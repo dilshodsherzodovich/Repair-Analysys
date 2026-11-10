@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
 
+import { LoadingState, EmptyState } from "@/ui/empty-state";
 /**
  * Shared chrome for the three numbered detail sections: number badge, title,
  * count, and the loading / empty states.
@@ -46,11 +46,9 @@ export function SectionShell({
       </header>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-5 w-5 animate-spin text-foreground-subtle" />
-        </div>
+        <LoadingState />
       ) : isEmpty ? (
-        <p className="text-center py-12 text-sm text-foreground-subtle">{t("noData")}</p>
+        <EmptyState title={t("noData")} />
       ) : (
         children
       )}

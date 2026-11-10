@@ -5,7 +5,6 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useState } from "react";
 import { useDelayedLocomotives } from "@/api/hooks/use-reports";
 import type { DelayedLocomotivesResponse, DelayedLocomotive } from "@/api/types/reports";
-import PageLoading from "@/components/page-loading";
 import { Loader2 } from "lucide-react";
 import { generateDelayedReportPDF } from "@/utils/delayed-report-pdf-export";
 import type { DelayedReportPDFData } from "@/utils/delayed-report-pdf-export";
@@ -21,6 +20,7 @@ import { FilterBar } from "@/ui/filter-bar";
 import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
+import { EmptyState, LoadingState } from "@/ui/empty-state";
 const SUPERVISOR_ROLES = ["admin", "dispatcher", "operator", "rb_admin"];
 
 export default function DelayedReportPage() {
@@ -140,7 +140,7 @@ export default function DelayedReportPage() {
     }
   };
 
-  if (isPending) return <PageLoading />;
+  if (isPending) return <LoadingState size="page" />;
 
   return (
     <Page>
@@ -187,7 +187,7 @@ export default function DelayedReportPage() {
       {/* ─── Detail per train type ─── */}
       {totalDelayed === 0 ? (
         <div className="bg-background rounded-xl border border-border shadow-sm py-16 text-center">
-          <p className="text-sm text-foreground-subtle">{t("noData")}</p>
+          <EmptyState title={t("noData")} />
         </div>
       ) : (
         rows.map((trainType) => {

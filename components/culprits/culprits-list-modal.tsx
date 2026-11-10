@@ -15,6 +15,7 @@ import type { Culprit } from "@/api/types/culprits";
 import type { DelayEntry } from "@/api/types/delays";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { LoadingState, EmptyState, TableStateRow } from "@/ui/empty-state";
 interface CulpritsListModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -370,22 +371,9 @@ export function CulpritsListModal({
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={colSpan}>
-                    <div className="flex justify-center">
-                      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <TableStateRow colSpan={colSpan}><LoadingState /></TableStateRow>
               ) : culprits.length === 0 && drafts.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={colSpan}
-                    className="text-center text-muted-foreground"
-                  >
-                    {t("empty")}
-                  </TableCell>
-                </TableRow>
+                <TableStateRow colSpan={colSpan}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
               ) : null}
 
               {/* Existing culprits */}

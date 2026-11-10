@@ -18,6 +18,7 @@ import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-ba
 import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
+import { EmptyState, TableStateRow, ErrorState } from "@/ui/empty-state";
 const getProgressBgColor = (percent: number) => {
   if (percent < 50) return "bg-destructive";
   if (percent < 80) return "bg-warning";
@@ -168,9 +169,7 @@ export default function Tu137ReportsPage() {
         {isLoading ? (
           <div className="text-sm text-muted-foreground">{t("loading")}</div>
         ) : error ? (
-          <div className="text-sm text-destructive">
-            {t("error")} {(error as Error).message}
-          </div>
+          <ErrorState title={t("error")} message={(error as Error).message} />
         ) : (
           <StatGrid columns={4}>
             <StatCard label={t("mashinists_count")} icon={Users} value={globalStats.mashinistsCount} />
@@ -281,14 +280,7 @@ export default function Tu137ReportsPage() {
             </TableHeader>
             <TableBody className="divide-y divide-muted text-foreground-secondary">
               {filteredMashinists.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center text-muted-foreground"
-                  >
-                    {t("no_data")}
-                  </TableCell>
-                </TableRow>
+                <TableStateRow colSpan={5}><EmptyState title={t("no_data")} size="compact" /></TableStateRow>
               ) : (
                 filteredMashinists.map((mashinist) => {
                   const matchKey = String(mashinist.id);

@@ -5,8 +5,6 @@ import { withRole } from "@/components/withRole";
 import { useDelayedRepairDurationReport, DelayedRepairDurationRow } from "@/api/hooks/use-delayed-repair-duration-report";
 import { useBranches } from "@/api/hooks/use-branches";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations, useLocale } from "next-intl";
 import { format } from "date-fns";
@@ -20,6 +18,7 @@ import { DateRangeField } from "@/ui/date-range-field";
 import { SearchableSelect } from "@/ui/select";
 import { Page } from "@/ui/page";
 
+import { LoadingState, EmptyState } from "@/ui/empty-state";
 const DATE_FMT = "yyyy-MM-dd";
 
 function firstOfMonth(d: Date) {
@@ -227,9 +226,7 @@ function DelayedRepairDurationReportPage() {
 
       {/* Content */}
       {isFetching && !report ? (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <LoadingState size="page" />
       ) : (
         <div className="rounded-lg border overflow-hidden shadow-sm">
           {/* Report header */}
@@ -298,9 +295,7 @@ function DelayedRepairDurationReportPage() {
           </Table>
 
           {rows.length === 0 && !isFetching && (
-            <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
-              {t("noData")}
-            </div>
+            <EmptyState title={t("noData")} size="page" />
           )}
         </div>
       )}

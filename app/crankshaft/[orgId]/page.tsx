@@ -23,6 +23,7 @@ import { Alert, AlertDescription } from "@/ui/alert";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
 /** Edited input text per component id, then per field. */
 type Drafts = Record<number, Record<string, string>>;
 /** 400 messages per component id, keyed by field name like the API returns them. */
@@ -552,14 +553,7 @@ function CrankshaftPageContent({
                 cellClassName="py-3 px-3"
               />
             ) : groups.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columnCount}
-                  className="text-center text-muted-foreground"
-                >
-                  {t("empty")}
-                </TableCell>
-              </TableRow>
+              <TableStateRow colSpan={columnCount}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
             ) : (
               groups.map((group) => (
                 <LocomotiveRows

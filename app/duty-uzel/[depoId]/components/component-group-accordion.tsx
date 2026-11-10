@@ -5,16 +5,9 @@ import { useTranslations } from "next-intl";
 import { AlertCircle, ExternalLink } from "lucide-react";
 import { Skeleton } from "@/ui/skeleton";
 import { EmptyState } from "@/ui/empty-state";
-import { cn } from "@/lib/utils";
 import { useComponentRegistryByGroup } from "@/api/hooks/use-component-registry";
-import {
-  ComponentGroupOverview,
-  ComponentGroupOverviewGroup,
-} from "@/api/types/component-registry";
-import {
-  ComponentGroupComponents,
-  CountBadge,
-} from "./component-group-components";
+import { ComponentGroupOverview, ComponentGroupOverviewGroup } from "@/api/types/component-registry";
+import { ComponentGroupComponents, CountBadge } from "./component-group-components";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 interface ComponentGroupAccordionProps {
@@ -157,7 +150,7 @@ export function ComponentGroupAccordion({
     return (
       <div className="rounded-lg border border-border-strong bg-background p-8">
         <EmptyState
-          icon={<AlertCircle className="h-12 w-12" />}
+          icon={<AlertCircle className="size-6" />}
           title={t("empty_title")}
           description={t("empty_description")}
         />

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Bar, CartesianGrid, ComposedChart, Legend, Line, XAxis, YAxis } from "recharts";
-import { BarChart3, Loader2 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/ui/chart";
 import type { ChartConfig } from "@/ui/chart";
@@ -14,6 +14,7 @@ import { Label } from "@/ui/label";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { StatCard, type StatTone } from "@/ui/stat-card";
 
+import { LoadingState, EmptyState, ErrorState } from "@/ui/empty-state";
 export interface StatMetric {
   key: string;
   totalKey: string;
@@ -204,18 +205,11 @@ export function StatsPanel({
         {/* Body */}
         <div className="p-4">
           {isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              {t("loading")}
-            </div>
+            <LoadingState />
           ) : error ? (
-            <div className="py-12 text-center text-sm text-destructive">
-              {t("error")}
-            </div>
+            <ErrorState title={t("error")} />
           ) : !data || data.length === 0 ? (
-            <div className="py-12 text-center text-sm text-muted-foreground">
-              {t("empty")}
-            </div>
+            <EmptyState title={t("empty")} />
           ) : (
             <>
               {/* KPI cards */}

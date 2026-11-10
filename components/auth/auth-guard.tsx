@@ -7,6 +7,7 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import type { UserData } from "@/api/types/auth";
 import { isEchAccount } from "@/lib/permissions";
 
+import { LoadingState } from "@/ui/empty-state";
 interface AuthGuardProps {
   children: React.ReactNode;
   publicRoutes?: string[];
@@ -189,36 +190,19 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
 
   if (!isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-foreground-secondary">Yuklanmoqda...</p>
-        </div>
-      </div>
+      <LoadingState size="page" className="min-h-screen" />
     );
   }
 
   if (isUserLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-foreground-secondary">Yuklanmoqda...</p>
-        </div>
-      </div>
+      <LoadingState size="page" className="min-h-screen" />
     );
   }
 
   if (!isPublicRoute && !currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-foreground-secondary">
-            Avtorizatsiya sahifasiga yo'naltirilmoqda...
-          </p>
-        </div>
-      </div>
+      <LoadingState size="page" label="Avtorizatsiya sahifasiga yo'naltirilmoqda..." className="min-h-screen" />
     );
   }
 
@@ -229,12 +213,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
       !isEchAllowedRoute(pathname)
     ) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-foreground-secondary">Yo'naltirilmoqda...</p>
-          </div>
-        </div>
+        <LoadingState size="page" label="Yo'naltirilmoqda..." className="min-h-screen" />
       );
     }
   }
@@ -246,23 +225,13 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     isEchAccount(currentUser)
   ) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-foreground-secondary">Yo'naltirilmoqda...</p>
-        </div>
-      </div>
+      <LoadingState size="page" label="Yo'naltirilmoqda..." className="min-h-screen" />
     );
   }
 
   if (isLoginPage && currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-success mx-auto mb-4"></div>
-          <p className="text-foreground-secondary">Bosh sahifaga yo'naltirilmoqda...</p>
-        </div>
-      </div>
+      <LoadingState size="page" label="Bosh sahifaga yo'naltirilmoqda..." className="min-h-screen" />
     );
   }
 
@@ -271,12 +240,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     const defaultRoute = getDefaultRouteForRole(currentUser);
     if (defaultRoute !== "/") {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-foreground-secondary">Yo'naltirilmoqda...</p>
-          </div>
-        </div>
+        <LoadingState size="page" label="Yo'naltirilmoqda..." className="min-h-screen" />
       );
     }
   }

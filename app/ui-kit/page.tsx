@@ -23,7 +23,7 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 import { Checkbox } from "@/ui/checkbox";
-import { EmptyState } from "@/ui/empty-state";
+import { EmptyState, ErrorState, LoadingState } from "@/ui/empty-state";
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 import { Modal, ModalFooter } from "@/ui/modal";
@@ -645,7 +645,7 @@ function UiKit() {
       <Section
         id="feedback"
         title="Feedback"
-        description="Alert for inline messages, the snackbar for results of an action, EmptyState and Skeleton for lists."
+        description="Data states: LoadingState, EmptyState, ErrorState (size page / section / compact; TableStateRow inside tables). Alert for a banner over content that still shows, the snackbar for results of an action."
       >
         <div className="grid gap-3 lg:grid-cols-2">
           <Alert variant="info">
@@ -687,12 +687,13 @@ function UiKit() {
         </Panel>
         <div className="grid gap-4 lg:grid-cols-2">
           <Panel title="EmptyState">
-            <EmptyState
-              className="py-6"
-              icon={<AlertCircle className="size-10" />}
-              title="Ma'lumot topilmadi"
-              description="Filtrlarni o'zgartirib ko'ring."
-            />
+            <EmptyState description="Filtrlarni o'zgartirib ko'ring." />
+          </Panel>
+          <Panel title="LoadingState">
+            <LoadingState />
+          </Panel>
+          <Panel title="ErrorState">
+            <ErrorState message="Server javob bermadi." onRetry={() => undefined} />
           </Panel>
           <Panel title="Skeleton">
             <div className="space-y-2">

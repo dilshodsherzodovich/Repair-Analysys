@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, Pencil, Table2 } from "lucide-react";
+import { Pencil, Table2 } from "lucide-react";
 import { authService } from "@/api/services/auth.service";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
@@ -22,6 +22,7 @@ import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { SearchableSelect } from "@/ui/select";
 import { Page } from "@/ui/page";
 
+import { LoadingState } from "@/ui/empty-state";
 const ALL = "0";
 
 export default function AnnualInspectionPlanPage() {
@@ -250,9 +251,7 @@ export default function AnnualInspectionPlanPage() {
               Ma&apos;lumotni yuklashda xatolik yuz berdi
             </div>
           ) : activeFetching && !active && !(source === "compare" && (report || fact)) ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
+            <LoadingState size="page" />
           ) : source === "compare" ? (
             (() => {
               const orgIds = Array.from(

@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import type { DelayEntry } from "@/api/types/delays";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
 interface RecoveryInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -128,14 +129,7 @@ export function RecoveryInfoModal({
           </TableHeader>
           <TableBody>
             {culprits.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center text-muted-foreground"
-                >
-                  {t("empty")}
-                </TableCell>
-              </TableRow>
+              <TableStateRow colSpan={4}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
             ) : (
               culprits.map((c) => (
                 <TableRow key={c.id} className="align-top">

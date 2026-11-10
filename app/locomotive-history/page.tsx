@@ -7,7 +7,6 @@ import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useTranslations } from "next-intl";
 import { withRole } from "@/components/withRole";
 import { useLocale } from "next-intl";
-import CircularProgress from "@/components/circular-progress";
 import { format } from "date-fns";
 import { Button } from "@/ui/button";
 import { LocomotiveHistoryForm } from "@/components/locomotive-history/LocomotiveHistoryForm";
@@ -21,6 +20,7 @@ import { PageHeader } from "@/ui/page-header";
 import { Page } from "@/ui/page";
 
 import { Field } from "@/ui/field";
+import { EmptyState, LoadingState } from "@/ui/empty-state";
 function LocomotiveHistoryPage() {
   const t = useTranslations("LocomotiveHistory");
   const globalT = useTranslations("Inspects");
@@ -171,9 +171,7 @@ function LocomotiveHistoryPage() {
           </CardHeader>
           <CardContent>
             {isLoading && !inspectionsData ? (
-              <div className="flex justify-center items-center h-64">
-                <CircularProgress />
-              </div>
+              <LoadingState />
             ) : inspectionsData && inspectionsData.results.length > 0 ? (
               <div className="space-y-4">
                 <div className="rounded-lg border bg-muted/40 p-4">
@@ -241,9 +239,7 @@ function LocomotiveHistoryPage() {
                 )}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                {t("noData")}
-              </div>
+              <EmptyState title={t("noData")} />
             )}
           </CardContent>
         </Card>

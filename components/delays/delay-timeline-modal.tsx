@@ -8,6 +8,7 @@ import { CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { DelayEntry, DelayStage, DelayTimelineEntry } from "@/api/types/delays";
 
+import { EmptyState } from "@/ui/empty-state";
 interface DelayTimelineModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -99,7 +100,7 @@ export function DelayTimelineModal({
         )}
 
         {entries.length === 0 ? (
-          <p className="py-6 text-center text-muted-foreground">{t("empty")}</p>
+          <EmptyState title={t("empty")} size="compact" />
         ) : (
           <ol className="relative ml-3 border-l border-border">
             {entries.map((entry, i) => (

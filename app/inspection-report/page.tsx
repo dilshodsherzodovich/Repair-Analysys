@@ -6,7 +6,6 @@ import { useInspectionCountStats } from "@/api/hooks/use-report-inspections";
 import { useBranches } from "@/api/hooks/use-branches";
 import { format } from "date-fns";
 import { uz } from "date-fns/locale";
-import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useInspectionsReport } from "@/api/hooks/use-report-inspections";
@@ -25,6 +24,7 @@ import { SearchableSelect } from "@/ui/select";
 import { Page } from "@/ui/page";
 import { StatCard } from "@/ui/stat-card";
 
+import { LoadingState, EmptyState } from "@/ui/empty-state";
 export default function InspectionReportPage() {
   const t = useTranslations("Statistics");
   const tc = useTranslations("Common");
@@ -237,11 +237,9 @@ export default function InspectionReportPage() {
       <div className="bg-background rounded-xl shadow-sm border border-border p-5">
         <h2 className="text-sm font-semibold mb-4">{t("inspectionCountsByType")}</h2>
         {isLoadingStats ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
+          <LoadingState />
         ) : statsByType.length === 0 ? (
-          <div className="text-center py-8 text-sm text-foreground-subtle">{t("noData")}</div>
+          <EmptyState title={t("noData")} />
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {statsByType.map(([typeName, count]) => {
@@ -275,11 +273,9 @@ export default function InspectionReportPage() {
           )}
         </div>
         {isLoadingInspections ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
+          <LoadingState />
         ) : !Object.keys(visibleInspectionsByType).length ? (
-          <div className="text-center py-8 text-sm text-foreground-subtle">{t("noData")}</div>
+          <EmptyState title={t("noData")} />
         ) : (
           <div
             className={cn(

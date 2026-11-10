@@ -6,6 +6,7 @@ import { authService } from "@/api/services/auth.service";
 import { storeAuth } from "@/api/hooks/use-auth";
 import { Button } from "@/ui/button";
 
+import { LoadingState } from "@/ui/empty-state";
 function AuthCallbackInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -112,12 +113,7 @@ function AuthCallbackInner() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-        <p className="text-foreground-secondary">Autentifikatsiya amalga oshirilmoqda...</p>
-      </div>
-    </div>
+    <LoadingState size="page" label="Autentifikatsiya amalga oshirilmoqda..." className="min-h-screen" />
   );
 }
 
@@ -125,9 +121,7 @@ export default function AuthCallbackPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-surface-muted">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-        </div>
+        <LoadingState size="page" className="min-h-screen" />
       }
     >
       <AuthCallbackInner />

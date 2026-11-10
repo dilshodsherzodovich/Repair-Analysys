@@ -12,6 +12,7 @@ import { Bandage, UpdateBandagePayload } from "@/api/types/bandage";
 import { CellInput, EditActions, firstMessage } from "@/ui/inline-edit";
 import { bandageGroupKey, hasSideMismatch } from "../bandage-groups";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
 type Side = "left" | "right";
 
 /** How long the cells changed by a save stay highlighted. */
@@ -438,14 +439,7 @@ export function BandagesTable({
               cellClassName="py-3 px-3"
             />
           ) : groups.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={columnCount}
-                className="text-center text-muted-foreground"
-              >
-                {t("empty")}
-              </TableCell>
-            </TableRow>
+            <TableStateRow colSpan={columnCount}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
           ) : (
             groups.map((group) => (
               <LocomotiveRows

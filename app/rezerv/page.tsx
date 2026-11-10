@@ -6,14 +6,7 @@ import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { PageHeader } from "@/ui/page-header";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useReserve } from "@/api/hooks/use-reserve";
@@ -22,16 +15,12 @@ import { getPageCount } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import type { UserData } from "@/api/types/auth";
-import {
-  PaginationEllipsis,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/ui/pagination";
+import { PaginationEllipsis, PaginationLink, PaginationNext, PaginationPrevious } from "@/ui/pagination";
 import { Badge } from "@/ui/badge";
 import { authService } from "@/api/services/auth.service";
 import { Page } from "@/ui/page";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
 type TabValue = "current" | "archive";
 
 const TAB_TO_IS_ACTIVE: Record<TabValue, 0 | 1> = {
@@ -229,14 +218,7 @@ export default function RezervPage() {
             </TableHeader>
             <TableBody>
               {displayRows.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columnCount}
-                    className="text-center text-muted-foreground"
-                  >
-                    {t("empty_title")}
-                  </TableCell>
-                </TableRow>
+                <TableStateRow colSpan={columnCount}><EmptyState title={t("empty_title")} size="compact" /></TableStateRow>
               ) : (
                 displayRows.map((row) => (
                   <TableRow

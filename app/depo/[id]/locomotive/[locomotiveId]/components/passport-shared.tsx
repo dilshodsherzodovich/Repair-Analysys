@@ -3,10 +3,10 @@
 import { cn } from "@/lib/utils";
 import { Card } from "@/ui/card";
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { EmptyState, LoadingState } from "@/ui/empty-state";
 /* -------------------------------------------------------------------------- */
 /*  Formatting helpers                                                        */
 /* -------------------------------------------------------------------------- */
@@ -123,6 +123,7 @@ export function InfoRow({
 /*  Empty / error placeholders                                                */
 /* -------------------------------------------------------------------------- */
 
+/** Passport sections use the kit states, compact, with the section's icon. */
 export function EmptyBlock({
   icon: Icon,
   message,
@@ -130,20 +131,9 @@ export function EmptyBlock({
   icon?: LucideIcon;
   message: string;
 }) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
-      {Icon && <Icon className="h-6 w-6 opacity-60" />}
-      <span>{message}</span>
-    </div>
-  );
+  return <EmptyState size="compact" title={message} icon={Icon ? <Icon className="size-5" /> : undefined} />;
 }
 
 export function LoadingBlock({ label }: { label?: string }) {
-  const t = useTranslations("common");
-  return (
-    <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-      <Loader2 className="h-4 w-4 animate-spin" />
-      {label ?? t("loading")}
-    </div>
-  );
+  return <LoadingState size="compact" label={label} />;
 }

@@ -1,18 +1,10 @@
 "use client";
 
 import { useCallback } from "react";
-import { cn } from "@/lib/utils";
 import { DelayReportFreightResponse } from "@/api/types/delays";
-import { ErrorCard } from "@/ui/error-card";
+import { ErrorState, EmptyState } from "@/ui/empty-state";
 import { DepotReasonReportsTable } from "./depot-reason-reports-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 interface DelayReportsTableFreightProps {
   data: DelayReportFreightResponse | undefined;
@@ -41,14 +33,7 @@ export function DelayReportsTableFreight({
   return (
     <div className="px-6 pb-6">
       {error && (
-        <ErrorCard
-          title="Произошла ошибка"
-          message={error.message || "Произошла ошибка"}
-          onRetry={() => { }}
-          showRetry={false}
-          showBack={false}
-          className="mb-4"
-        />
+        <ErrorState message={error.message} />
       )}
 
       {isLoading && (
@@ -418,9 +403,7 @@ export function DelayReportsTableFreight({
 
       {!isLoading && !error && !data && startDate && endDate && (
         <div className="bg-background rounded-lg p-8 text-center">
-          <p className="text-muted-foreground text-sm">
-            Данные не найдены. Пожалуйста, выберите другой диапазон дат.
-          </p>
+          <EmptyState />
         </div>
       )}
 

@@ -16,6 +16,7 @@ import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 
+import { ErrorState } from "@/ui/empty-state";
 const PAGE_SIZE = 20;
 
 type Tab = "in_progress" | "hal_qilingan";
@@ -168,9 +169,7 @@ export default function Tu137Page() {
         {isLoading ? (
           <div className="text-sm text-muted-foreground">{t("loading")}</div>
         ) : error ? (
-          <div className="text-sm text-destructive">
-            {t("error")} {(error as Error).message}
-          </div>
+          <ErrorState title={t("error")} message={(error as Error).message} />
         ) : (
           <div>
             <div className="flex items-center gap-2 mb-4">

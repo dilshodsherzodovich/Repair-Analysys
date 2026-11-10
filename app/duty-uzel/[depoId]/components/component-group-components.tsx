@@ -2,21 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { cn } from "@/lib/utils";
-import {
-  ComponentGroupComponent,
-  ComponentGroupRegistry,
-} from "@/api/types/component-registry";
+import { ComponentGroupComponent, ComponentGroupRegistry } from "@/api/types/component-registry";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
+import { EmptyState } from "@/ui/empty-state";
 const CELL = "py-2.5 px-3 text-muted-foreground border-r border-border last:border-r-0";
 const HEAD =
   "py-2.5 px-3 text-foreground-secondary font-medium border-r border-border last:border-r-0 whitespace-nowrap";
@@ -52,9 +43,7 @@ function RegistryTable({
 
   if (registries.length === 0) {
     return (
-      <div className="px-4 py-4 text-center text-sm text-muted-foreground">
-        {t("empty_description")}
-      </div>
+      <EmptyState title={t("empty_description")} size="compact" />
     );
   }
 
@@ -162,9 +151,7 @@ export function ComponentGroupComponents({
 
   if (components.length === 0) {
     return (
-      <div className={cn("px-4 py-4 text-center text-sm text-muted-foreground", className)}>
-        {t("empty_description")}
-      </div>
+      <EmptyState title={t("empty_description")} />
     );
   }
 

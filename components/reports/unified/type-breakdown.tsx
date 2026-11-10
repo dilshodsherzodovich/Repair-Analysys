@@ -2,12 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import type {
-  ExcludedTypeCount,
-  TypeBreakdownRow,
-} from "./use-unified-report-data";
+import type { ExcludedTypeCount, TypeBreakdownRow } from "./use-unified-report-data";
 import { CardButton } from "@/ui/card-button";
 
+import { EmptyState } from "@/ui/empty-state";
 /** Share of a type's inspections, as a whole percentage. 0 when the type is empty. */
 const share = (part: number, total: number) =>
   total === 0 ? 0 : Math.round((part / total) * 100);
@@ -76,7 +74,7 @@ export function TypeBreakdown({
       <h2 className="text-sm font-semibold text-foreground mb-4">{t("byType")}</h2>
 
       {rows.length === 0 && excludedTypes.length === 0 ? (
-        <p className="text-sm text-foreground-subtle py-6 text-center">{t("noData")}</p>
+        <EmptyState title={t("noData")} size="compact" />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {rows.map((row) => {

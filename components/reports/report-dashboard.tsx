@@ -16,7 +16,6 @@ import type {
 } from "@/api/types/reports";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations, useLocale } from "next-intl";
-import PageLoading from "../page-loading";
 import ReportsDateFilter from "./reports-date-filter";
 import { ReportOrganizationSelect, useReportOrganization } from "./report-organization-select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
@@ -29,6 +28,7 @@ import { FilterBar } from "@/ui/filter-bar";
 import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
+import { EmptyState, LoadingState } from "@/ui/empty-state";
 export default function ReportDashboard() {
   const t = useTranslations("Reports");
   const globalT = useTranslations();
@@ -84,7 +84,7 @@ export default function ReportDashboard() {
   if (
     isLoading || isInspectionLoading || isDelayedLoading ||
     isTxk2InspectionLoading || isReservedLoading
-  ) return <PageLoading />;
+  ) return <LoadingState size="page" />;
 
   if (
     isError || isInspectionError || isDelayedError ||
@@ -282,7 +282,7 @@ export default function ReportDashboard() {
           count={totalActive}
           accent="emerald"
         >
-          {activeLocomotives.length === 0 ? <EmptyState /> : (
+          {activeLocomotives.length === 0 ? <NoData /> : (
             <Table bordered density="compact">
               <TableHeader>
                 <TableRow>
@@ -312,7 +312,7 @@ export default function ReportDashboard() {
             { title: t("rentedLocomotives"),      count: totalRented,      items: rentedLocomotives },
           ].map((col) => (
             <SectionCard key={col.title} title={col.title} count={col.count} accent="sky">
-              {col.items.length === 0 ? <EmptyState /> : (
+              {col.items.length === 0 ? <NoData /> : (
                 <Table bordered density="compact">
                   <TableHeader>
                     <TableRow>
@@ -336,7 +336,7 @@ export default function ReportDashboard() {
 
         {/* ─── TXK-2 Ta'mir ─── */}
         <SectionCard title={t("txk2Electric")} count={totalTxk2} accent="amber">
-          {!txk2InspectionData?.electric_loco?.length ? <EmptyState /> : (
+          {!txk2InspectionData?.electric_loco?.length ? <NoData /> : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 divide-x divide-muted">
               {txk2InspectionData.electric_loco.map((repairType: InspectionTypeGroup, idx: number) => (
                 <RepairTypeTable key={`txk2-${idx}`} repairType={repairType} />
@@ -347,7 +347,7 @@ export default function ReportDashboard() {
 
         {/* ─── Elektrovoz Ta'mir ─── */}
         <SectionCard title={t("electricRepair")} count={totalElectricRepair} accent="amber">
-          {!inspectionData?.electric_loco?.length ? <EmptyState /> : (
+          {!inspectionData?.electric_loco?.length ? <NoData /> : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 divide-x divide-muted">
               {inspectionData.electric_loco.map((repairType: InspectionTypeGroup, idx: number) => (
                 <RepairTypeTable key={`electric-${idx}`} repairType={repairType} />
@@ -358,7 +358,7 @@ export default function ReportDashboard() {
 
         {/* ─── Teplovoz Ta'mir ─── */}
         <SectionCard title={t("dieselRepair")} count={totalDieselRepair} accent="amber">
-          {!inspectionData?.diesel_loco?.length ? <EmptyState /> : (
+          {!inspectionData?.diesel_loco?.length ? <NoData /> : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 divide-x divide-muted">
               {inspectionData.diesel_loco.map((repairType: InspectionTypeGroup, idx: number) => (
                 <RepairTypeTable key={`diesel-${idx}`} repairType={repairType} />
@@ -369,7 +369,7 @@ export default function ReportDashboard() {
 
         {/* ─── Kechikkan Ta'mirlar ─── */}
         <SectionCard title={t("delayedRepairs")} count={totalDelayed} accent="rose" data-pdf-separate-page>
-          {!delayedData?.length ? <EmptyState /> : (
+          {!delayedData?.length ? <NoData /> : (
             <div className="divide-y divide-muted">
               {delayedData.map((trainType: DelayedLocomotivesResponse, idx: number) => {
                 const filtered = trainType.inspection_types.filter((t) => t.locomotives.length > 0);
@@ -415,7 +415,7 @@ export default function ReportDashboard() {
 
         {/* ─── Rezervdagi Lokomotivlar ─── */}
         <SectionCard title={t("reservedLocomotives")} count={totalReserved} accent="violet" data-pdf-separate-page>
-          {Object.keys(reservedData || {}).length === 0 ? <EmptyState /> : (
+          {Object.keys(reservedData || {}).length === 0 ? <NoData /> : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 divide-x divide-muted">
               {Object.entries(reservedData || {}).map(([groupName, group]) => (
                 <div key={`reserved-${groupName}`} className="overflow-hidden">
@@ -532,11 +532,7 @@ function RepairTypeTable({ repairType }: { repairType: InspectionTypeGroup }) {
   );
 }
 
-function EmptyState() {
+function NoData() {
   const t = useTranslations("Reports");
-  return (
-    <div className="flex items-center justify-center h-16">
-      <p className="text-sm text-foreground-subtle">{t("noData")}</p>
-    </div>
-  );
+  return <EmptyState size="compact" title={t("noData")} />;
 }

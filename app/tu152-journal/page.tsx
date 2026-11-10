@@ -3,10 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
 
 import { PageHeader } from "@/ui/page-header";
-import { EmptyState } from "@/ui/empty-state";
+import { EmptyState, LoadingState } from "@/ui/empty-state";
 import { canAccessSection } from "@/lib/permissions";
 import { authService } from "@/api/services/auth.service";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
@@ -71,10 +70,7 @@ export default function Tu152JournalPage() {
       <div>
 
         {isPending && (
-          <div className="flex items-center justify-center py-12 text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            <span className="text-sm">{t("loading")}</span>
-          </div>
+          <LoadingState />
         )}
 
         {!isPending && filtered.length === 0 && (

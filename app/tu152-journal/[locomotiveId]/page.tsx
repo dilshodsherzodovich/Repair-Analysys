@@ -4,20 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  Loader2,
-  AlertCircle,
-} from "lucide-react";
+import { Plus, Pencil, Trash2, AlertCircle } from "lucide-react";
 
 import { PageHeader } from "@/ui/page-header";
 import { Button } from "@/ui/button";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
-import { EmptyState } from "@/ui/empty-state";
+import { EmptyState, LoadingState } from "@/ui/empty-state";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import { cn } from "@/lib/utils";
 import { canAccessSection, hasPermission } from "@/lib/permissions";
 import { authService } from "@/api/services/auth.service";
 
@@ -29,10 +22,7 @@ import {
   useUpdateTU152Journal,
   useDeleteTU152Journal,
 } from "@/api/hooks/use-tu152-journal";
-import {
-  CombinedJournalEntry,
-  CombinedJournalPayload,
-} from "@/api/types/tu152-journal";
+import { CombinedJournalEntry, CombinedJournalPayload } from "@/api/types/tu152-journal";
 
 import UnauthorizedPage from "../../unauthorized/page";
 import { Tu152JournalModal } from "../components/tu152-journal-modal";
@@ -236,10 +226,7 @@ export default function Tu152LocomotiveHandbookPage() {
 
   if (loadingLoco) {
     return (
-      <div className="flex items-center justify-center py-20 text-muted-foreground">
-        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-        <span className="text-sm">{tList("loading")}</span>
-      </div>
+      <LoadingState size="page" />
     );
   }
 
@@ -272,10 +259,7 @@ export default function Tu152LocomotiveHandbookPage() {
         </div>
 
         {isLoading && (
-          <div className="flex items-center justify-center py-10 text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            <span className="text-sm">{tList("loading")}</span>
-          </div>
+          <LoadingState />
         )}
 
         {apiError && (
@@ -313,10 +297,7 @@ export default function Tu152LocomotiveHandbookPage() {
             {/* Infinite-scroll sentinel + loader */}
             <div ref={sentinelRef} className="h-1" />
             {isFetchingNextPage && (
-              <div className="flex items-center justify-center py-4 text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                <span className="text-xs">{tList("loading")}</span>
-              </div>
+              <LoadingState size="compact" />
             )}
             {!hasNextPage && entries.length >= 10 && (
               <div className="py-3 text-center text-2xs text-foreground-subtle">
@@ -510,7 +491,7 @@ function EntryRow({
         )}
 
         {!e && !fire && !cam && !stamp && !rev && (
-          <div className="text-xs text-foreground-subtle italic">{t("entry_empty")}</div>
+          <EmptyState title={t("entry_empty")} />
         )}
       </div>
     </div>

@@ -13,26 +13,14 @@ import {
 } from "@/api/hooks/use-annual-inspection-plans";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useLocomotiveModels } from "@/api/hooks/use-locomotive-models";
-import {
-  GRID_COLUMNS,
-  MONTHS_SHORT,
-  QUARTER_LABELS,
-  accentFor,
-  roundCount,
-} from "./plan-grid-shared";
+import { GRID_COLUMNS, MONTHS_SHORT, QUARTER_LABELS, accentFor, roundCount } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { LoadingState } from "@/ui/empty-state";
 function getErrorMessage(e: any): string {
   return (
     e?.response?.data?.message ||
@@ -289,9 +277,7 @@ export function PlanEditGrid({
 
   if (isLoading || typesLoading || modelsLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
+      <LoadingState size="page" />
     );
   }
 

@@ -17,7 +17,6 @@ import { MultiSelect } from "@/ui/multi-select";
 import { cn } from "@/lib/utils";
 import { SrivPaymentDrilldownModal } from "./sriv-payment-drilldown-modal";
 import { authService } from "@/api/services/auth.service";
-import { Alert, AlertDescription } from "@/ui/alert";
 import { Button } from "@/ui/button";
 import {
   Table,
@@ -33,6 +32,7 @@ import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { Page } from "@/ui/page";
 import { StatCard, type StatTone } from "@/ui/stat-card";
 
+import { EmptyState, TableStateRow, ErrorState } from "@/ui/empty-state";
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
 interface BucketMeta {
@@ -174,9 +174,7 @@ export function SrivPaymentReport() {
       {isLoading ? (
         <SkeletonState />
       ) : error ? (
-        <Alert variant="destructive" className="p-6 text-center"><AlertDescription>
-          {t("error")}
-        </AlertDescription></Alert>
+        <ErrorState title={t("error")} />
       ) : !total ? null : (
         <>
           {/* Summary cards */}
@@ -264,14 +262,7 @@ export function SrivPaymentReport() {
             </TableHeader>
             <TableBody>
               {rows.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center text-foreground-subtle"
-                  >
-                    {t("empty")}
-                  </TableCell>
-                </TableRow>
+                <TableStateRow colSpan={6}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
               ) : (
                 rows.map((row) => (
                   <TableRow

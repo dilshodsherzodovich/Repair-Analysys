@@ -20,7 +20,13 @@
     "as_of": "на {date}",
     "records": "Записей: {count}",
     "time_from": "Время начала",
-    "time_to": "Время окончания"
+    "time_to": "Время окончания",
+    "loading": "Загрузка…",
+    "no_data": "Данные не найдены",
+    "load_error": "Не удалось загрузить данные",
+    "retry": "Повторить",
+    "close": "Закрыть",
+    "back": "Назад"
   },
   "UnifiedInspectionReport": {
     "title": "Технические осмотры — единый отчёт",
@@ -606,7 +612,6 @@
       "txk2_report": "Отчёт ТХК-2",
       "inspection_report": "Отчёт по техническим осмотрам",
       "delayed_repair_duration_report": "Длительность задержки ремонта",
-
       "unified_inspection_report": "Единый отчёт по осмотрам",
       "locomotive_history": "История локомотива",
       "locomotive_gps_report": "GPS отчёт локомотивов"
@@ -1655,7 +1660,7 @@
     "description": "Даты и пробеги технических осмотров по локомотивам",
     "export_button": "Экспорт в Excel",
     "exporting": "Экспорт...",
-    "export_error": "Не удалось скачать файл",
+    "export_error": "Ошибка при загрузке Excel",
     "tab_km": "км",
     "tab_kun": "День",
     "loc_number_placeholder": "Номер локомотива",
@@ -1664,7 +1669,6 @@
     "empty_title": "Данные не найдены",
     "export_excel": "Excel",
     "export_filename": "Отчёт по пробегу локомотивов",
-    "export_error": "Ошибка при загрузке Excel",
     "locomotives_count": "{count} та локомотив",
     "columns": {
       "locomotive": "Локомотив",

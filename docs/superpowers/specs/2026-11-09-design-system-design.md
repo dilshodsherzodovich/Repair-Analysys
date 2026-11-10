@@ -219,3 +219,20 @@ one meta line (org · period · "holatiga")
   single outline Close.
 - No Card wrappers, hand-built button rows or own scroll containers inside a
   modal.
+
+### Data states
+
+- Every place that loads data shows the same three states from
+  `ui/empty-state.tsx`: `LoadingState` (spinner + "Yuklanmoqda…"),
+  `EmptyState` (inbox icon + "Ma'lumot topilmadi", optional description and
+  action) and `ErrorState` (warning icon, message, Retry).
+- `size`: `page` fills the content area, `section` (default) sits in a card,
+  panel or modal, `compact` fits small panels and table rows. Inside a table
+  the state goes in `TableStateRow` under the header; `PaginatedTable` does
+  this itself (and now shows its error).
+- A failed load with nothing to show is an `ErrorState`; a failure while the
+  page still shows content is a destructive `Alert` above it. Results of an
+  action go to the snackbar.
+- Inline progress (a "Saving…" next to a toolbar, a spinner in a button)
+  stays inline; it is not a data state.
+- Default texts come from `Common` (loading, no_data, load_error, retry).

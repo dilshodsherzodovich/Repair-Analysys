@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Modal } from "@/ui/modal";
 import { Button } from "@/ui/button";
-import { Badge } from "@/ui/badge";
 import { Checkbox } from "@/ui/checkbox";
 import { Progress } from "@/ui/progress";
 import {
@@ -22,15 +21,9 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { usePayrollConfirm, useRecover } from "@/api/hooks/use-recovery";
 import type { RecoveryDelay } from "@/api/types/recovery";
 import type { Culprit } from "@/api/types/culprits";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
 type RecoveryMode = "payroll" | "accountant";
 
 interface RecoveryCulpritsModalProps {
@@ -335,14 +328,7 @@ export function RecoveryCulpritsModal({
           </TableHeader>
           <TableBody>
             {culprits.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center text-muted-foreground"
-                >
-                  {t("empty")}
-                </TableCell>
-              </TableRow>
+              <TableStateRow colSpan={6}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
             ) : (
               culprits.map((c) => {
                 const selectable = isSelectable(c);

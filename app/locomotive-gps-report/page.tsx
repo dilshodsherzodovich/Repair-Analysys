@@ -7,7 +7,7 @@ import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations } from "next-intl";
 import { useLocomotiveGpsReport, GpsReportOrganization, GpsReportModel } from "@/api/hooks/use-locomotive-gps-report";
 import { useTrainTypes } from "@/api/hooks/use-locomotives";
-import { Loader2, CheckCircle2, XCircle, MinusCircle } from "lucide-react";
+import { CheckCircle2, XCircle, MinusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
@@ -17,6 +17,7 @@ import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { SearchableSelect } from "@/ui/select";
 import { Page } from "@/ui/page";
 
+import { LoadingState, EmptyState } from "@/ui/empty-state";
 const LOCOMOTIVE_TYPES = [
   "electric_loco",
   "diesel_loco",
@@ -149,13 +150,9 @@ function LocomotiveGpsReportPage() {
 
       {/* Content */}
       {!ready || (isFetching && !data) ? (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <LoadingState size="page" />
       ) : orgs.length === 0 ? (
-        <div className="flex items-center justify-center py-24 text-muted-foreground text-sm border rounded-lg">
-          {t("noData")}
-        </div>
+        <EmptyState title={t("noData")} size="page" />
       ) : (
         <div className="space-y-4">
           {orgs.map((org) => (
@@ -202,9 +199,7 @@ function OrganizationCard({
       {/* Models */}
       <div className="py-2 divide-y divide-muted">
         {org.locomotive_models.length === 0 ? (
-          <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-            {t("noData")}
-          </div>
+          <EmptyState title={t("noData")} />
         ) : (
           org.locomotive_models.map((model) => (
             <ModelSection

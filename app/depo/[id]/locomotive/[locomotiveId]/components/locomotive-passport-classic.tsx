@@ -28,6 +28,7 @@ import { PageHeader } from "@/ui/page-header";
 import { ExportActions } from "@/ui/export-actions";
 
 import { Field, FieldGrid } from "@/ui/field";
+import { EmptyState } from "@/ui/empty-state";
 interface LocomotivePassportClassicProps {
   depotId: string;
   locomotiveId: string;
@@ -407,9 +408,7 @@ export default function LocomotivePassportClassic({
           {activeSectionId === null ? (
             <p className="text-sm text-muted-foreground">{t("select_section")}</p>
           ) : !componentList.length && !isFetchingComponents ? (
-            <p className="text-sm text-muted-foreground">
-              {t("no_components")}
-            </p>
+            <EmptyState title={t("no_components")} />
           ) : (
             <FieldGrid columns={4}>
               {componentList.map((component) => {

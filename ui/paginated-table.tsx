@@ -1,18 +1,10 @@
 "use client";
 
 import * as React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table";
 import { PaginationEllipsis, PaginationLink } from "./pagination";
 import { TableSkeleton } from "./table-skeleton";
-import { EmptyState } from "./empty-state";
-import { ErrorCard } from "./error-card";
+import { EmptyState, ErrorState, TableStateRow } from "./empty-state";
 import { Button } from "./button";
 import {
   DropdownMenu,
@@ -21,21 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./select";
-import {
-  MoreVertical,
-  Edit,
-  Trash2,
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { MoreVertical, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { ConfirmationDialog } from "./confirmation-dialog";
@@ -300,23 +278,8 @@ export function PaginatedTable<T extends Record<string, any>>({
     );
   }
 
-  // Error state
-  // if (error) {
-  //   return (
-  //     <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-background", className)}>
-  //       <ErrorCard
-  //         title={resolvedErrorTitle}
-  //         message={resolvedErrorMessage || error.message}
-  //         onRetry={onRetry}
-  //         showBack={false}
-  //
-  //       />
-  //     </div>
-  //   );
-  // }
-
-  // Empty state
-  if (!isLoading && !error && data.length === 0) {
+  // Nothing to show: the header stays, one state row (error or empty) below it
+  if (!isLoading && data.length === 0) {
     return (
       <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-background", className)}>
         <Table bordered className=" min-w-[900px]">
@@ -339,18 +302,17 @@ export function PaginatedTable<T extends Record<string, any>>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell
-                colSpan={totalColumnCount}
-                className="text-center"
-              >
-                <EmptyState
-                  icon={<AlertCircle className="h-12 w-12" />}
-                  title={resolvedEmptyTitle}
-                  description={resolvedEmptyDescription}
+            <TableStateRow colSpan={totalColumnCount}>
+              {error ? (
+                <ErrorState
+                  title={resolvedErrorTitle}
+                  message={resolvedErrorMessage || error.message}
+                  onRetry={onRetry}
                 />
-              </TableCell>
-            </TableRow>
+              ) : (
+                <EmptyState title={resolvedEmptyTitle} description={resolvedEmptyDescription} />
+              )}
+            </TableStateRow>
           </TableBody>
         </Table>
       </div>

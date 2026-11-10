@@ -1,20 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
 import { Modal } from "@/ui/modal";
 import { Badge } from "@/ui/badge";
 import { useSrivPaymentReportDetails } from "@/api/hooks/use-delays";
 import type { SrivPaymentReportDetailsParams } from "@/api/types/delays";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { LoadingState, EmptyState, ErrorState } from "@/ui/empty-state";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -56,18 +49,11 @@ export function SrivPaymentDrilldownModal({
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="xl">
       <div className="min-h-[200px]">
         {isLoading ? (
-          <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            {t("loading")}
-          </div>
+          <LoadingState />
         ) : error ? (
-          <div className="py-16 text-center text-sm text-destructive">
-            {t("error")}
-          </div>
+          <ErrorState title={t("error")} />
         ) : results.length === 0 ? (
-          <div className="py-16 text-center text-sm text-foreground-subtle">
-            {t("empty")}
-          </div>
+          <EmptyState title={t("empty")} />
         ) : (
           <>
             <p className="mb-3 text-xs text-muted-foreground">

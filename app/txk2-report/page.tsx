@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { withRole } from "@/components/withRole";
 import { useTxk2Report, Txk2ReportRow, NextInspectionType } from "@/api/hooks/use-txk2-report";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations, useLocale } from "next-intl";
 import { format } from "date-fns";
@@ -17,6 +15,7 @@ import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { DateRangeField } from "@/ui/date-range-field";
 import { Page } from "@/ui/page";
 
+import { LoadingState, EmptyState } from "@/ui/empty-state";
 const DATE_FMT = "yyyy-MM-dd";
 
 function firstOfMonth(d: Date) {
@@ -180,9 +179,7 @@ function Txk2ReportPage() {
           {t("selectOrganization")}
         </div>
       ) : isFetching && !report ? (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <LoadingState size="page" />
       ) : (
         <div className="rounded-lg border overflow-hidden shadow-sm">
           {/* Report header */}
@@ -258,9 +255,7 @@ function Txk2ReportPage() {
           </Table>
 
           {rows.length === 0 && !isFetching && (
-            <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
-              {t("noData")}
-            </div>
+            <EmptyState title={t("noData")} size="page" />
           )}
         </div>
       )}

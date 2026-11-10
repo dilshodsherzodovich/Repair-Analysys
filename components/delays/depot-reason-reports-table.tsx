@@ -2,17 +2,10 @@
 
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { ErrorCard } from "@/ui/error-card";
+import { ErrorState } from "@/ui/empty-state";
 import { useDepotReasonReports } from "@/api/hooks/use-delays";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 export function DepotReasonReportsTable() {
   const { getAllQueryValues } = useFilterParams();
@@ -49,14 +42,7 @@ export function DepotReasonReportsTable() {
   return (
     <div className="mt-8">
       {error && (
-        <ErrorCard
-          title="Произошла ошибка"
-          message={error.message || "Произошла ошибка"}
-          onRetry={() => { }}
-          showRetry={false}
-          showBack={false}
-          className="mb-4"
-        />
+        <ErrorState message={error.message} />
       )}
 
       {isLoading && (

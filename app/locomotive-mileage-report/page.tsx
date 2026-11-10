@@ -24,6 +24,7 @@ import { Input } from "@/ui/input";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
 
@@ -418,14 +419,7 @@ export default function LocomotiveMileageReportPage() {
               cellClassName="py-2 px-2"
             />
           ) : isEmpty ? (
-            <TableRow>
-              <TableCell
-                colSpan={totalColCount}
-                className="text-center text-muted-foreground"
-              >
-                {t("empty_title")}
-              </TableCell>
-            </TableRow>
+            <TableStateRow colSpan={totalColCount}><EmptyState title={t("empty_title")} size="compact" /></TableStateRow>
           ) : (
             orgs.map((org) => (
               <React.Fragment key={org.organization_name}>
