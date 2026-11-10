@@ -72,12 +72,29 @@ To be removed: `enhanced-*`, `loading-button`, `toast` / `toaster` /
 `loading-card`, `drawer`, `alert-dialog`, `validation-message`,
 `styles/globals.css`.
 
+## Phase 2: kit everywhere (added 2026-11-10)
+
+Pages use kit components, not raw elements: `Button` (adds `outline-success`,
+`outline-warning`, `outline-destructive`; sizes `xs`, `icon-sm`), `Input`
+(`variant="compact"` for toolbars / dropdown search / dense forms,
+`variant="cell"` for editors inside table cells), `Label`, `Checkbox`,
+`RadioGroup`, `SearchableSelect` (adds `clearable`, `loading`), `Table` parts
+(`wrapper={false}` when the table sits in its own scroll frame),
+`PageHeader` (`variant="card"` with `icon` / `filters` for report pages,
+`leading` for a Back button), `SegmentedTabs` (`size="sm"`), and new
+`CardButton` (clickable tiles), `Chip` (filter pills, removable filters) and
+`DisclosureTrigger` (expandable rows). Real one-offs carry
+`kit-allow: <reason>` (login / public-form heroes, sidebar navigation, the
+railway stamp artwork).
+
 ## Guardrails
 
 - `npm run lint:tokens` lists hardcoded values; `--strict` fails on any; it runs
   as part of `npm run lint`. It flags hex and palette colour classes,
   `white` / `black`, `bg-[var(--x)]`, colours set from JS (hex / rgb literals),
-  arbitrary font sizes, shadows and radii, and radii above `xl`.
+  arbitrary font sizes, shadows and radii, and radii above `xl`. Outside `ui/`
+  it also flags raw `<button>`, `<input>`, `<table>`, `<label>` and page-level
+  `<h1>`, and font weights off the scale.
 - `scripts/migrate-colors.mjs` rewrites all of the above to tokens; dead
   `dark:` variants are removed. `scripts/codemods/error-box-to-alert.py` turns
   hand-written error boxes into `<Alert variant="destructive">`.

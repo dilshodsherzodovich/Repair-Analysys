@@ -106,7 +106,9 @@ for (const file of files) {
       }
     }
     const allowed = line.includes("kit-allow:") || lines[index - 1]?.includes("kit-allow:");
-    if (allowed) return;
+    // Element names in comments (e.g. "mounts an <input>") are prose, not markup
+    const isComment = /^\s*(\*|\/\*|\/\/)/.test(line);
+    if (allowed || isComment) return;
     for (const { name, regex } of kitPatterns) {
       for (const match of line.matchAll(regex)) {
         hits.push(`  ${index + 1}: ${match[0]} (${name})`);

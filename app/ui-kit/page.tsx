@@ -42,6 +42,10 @@ import {
 } from "@/ui/table";
 import { Textarea } from "@/ui/textarea";
 import { GridTable, gridCellClass, gridHeadClass } from "@/ui/grid-table";
+import { CardButton } from "@/ui/card-button";
+import { Chip } from "@/ui/chip";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import { RadioGroup, RadioGroupItem } from "@/ui/radio-group";
 
 /**
  * The design system reference: every token and the standard component for
@@ -245,6 +249,7 @@ const NAV = [
   ["forms", "Form controls"],
   ["feedback", "Feedback"],
   ["layout", "Cards & stats"],
+  ["selection", "Selection & disclosure"],
   ["table", "Table"],
   ["overlays", "Overlays"],
 ] as const;
@@ -264,6 +269,11 @@ function UiKit() {
   const [selectValue, setSelectValue] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [radio, setRadio] = useState("active");
+  const [chips, setChips] = useState<string[]>(["7d"]);
+  const [card, setCard] = useState<string | null>("tr1");
+  const [open, setOpen] = useState(true);
+  const [size, setSize] = useState("km");
 
   const fakeSave = () => {
     setLoading(true);
@@ -431,15 +441,24 @@ function UiKit() {
             </Button>
             <Button variant="link">Havola</Button>
           </div>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <Button variant="outline-success">Qo&apos;shish</Button>
+            <Button variant="outline-warning">Ko&apos;rish</Button>
+            <Button variant="outline-destructive">Filtrlarni tozalash</Button>
+          </div>
         </Panel>
         <div className="grid gap-4 lg:grid-cols-2">
           <Panel title="Sizes">
             <div className="flex flex-wrap items-center gap-3">
+              <Button size="xs">XSmall</Button>
               <Button size="sm">Small</Button>
               <Button>Default</Button>
               <Button size="lg">Large</Button>
               <Button size="icon" variant="outline" aria-label="Download">
                 <Download />
+              </Button>
+              <Button size="icon-sm" variant="ghost" aria-label="Edit">
+                <Pencil />
               </Button>
             </div>
           </Panel>
@@ -530,9 +549,27 @@ function UiKit() {
               <Label className="flex items-center gap-2 text-sm text-foreground">
                 <Switch defaultChecked /> Switch
               </Label>
+              <RadioGroup value={radio} onValueChange={setRadio} className="flex items-center gap-4">
+                <Label className="flex items-center gap-2 text-sm text-foreground">
+                  <RadioGroupItem value="active" /> Faol
+                </Label>
+                <Label className="flex items-center gap-2 text-sm text-foreground">
+                  <RadioGroupItem value="inactive" /> Nofaol
+                </Label>
+              </RadioGroup>
             </div>
           </div>
         </Panel>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Panel title='Input variant="compact" — toolbars, dropdown search, dense forms'>
+            <Input variant="compact" placeholder="Qidirish…" />
+          </Panel>
+          <Panel title='Input variant="cell" — editor inside a table cell'>
+            <div className="h-9 rounded-md border border-border">
+              <Input variant="cell" type="number" defaultValue={12} className="text-center tabular-nums" />
+            </div>
+          </Panel>
+        </div>
       </Section>
 
       {/* ---------------------------------------------------------------- */}
@@ -646,6 +683,91 @@ function UiKit() {
               }
             />
           ))}
+        </div>
+      </Section>
+
+      {/* ---------------------------------------------------------------- */}
+      <Section
+        id="selection"
+        title="Selection & disclosure"
+        description="CardButton for clickable tiles, Chip for filter pills, DisclosureTrigger for expandable rows, PageHeader variant=card for report pages."
+      >
+        <PageHeader
+          variant="card"
+          icon={FileSpreadsheet}
+          title="Texnik ko'riklar hisoboti"
+          description="PageHeader variant=&quot;card&quot; with actions and a filters strip"
+          actions={<Button variant="success" size="sm"><FileSpreadsheet /> Excel</Button>}
+          filters={
+            <SegmentedTabs
+              size="sm"
+              value={size}
+              onValueChange={setSize}
+              options={[
+                { value: "all", label: "Barchasi" },
+                { value: "km", label: "Km" },
+                { value: "hours", label: "Soat" },
+              ]}
+            />
+          }
+        />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Panel title="CardButton">
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { id: "tr1", name: "TR-1", count: 24 },
+                { id: "tr2", name: "TR-2", count: 9 },
+              ].map((item) => (
+                <CardButton
+                  key={item.id}
+                  selected={card === item.id}
+                  onClick={() => setCard(card === item.id ? null : item.id)}
+                >
+                  <p className="text-sm font-semibold text-foreground">{item.name}</p>
+                  <p className="text-2xl font-bold text-primary">{item.count}</p>
+                </CardButton>
+              ))}
+            </div>
+          </Panel>
+          <Panel title="Chip">
+            <div className="flex flex-wrap items-center gap-2">
+              {[
+                ["7d", "7 kun"],
+                ["30d", "30 kun"],
+                ["year", "Yil"],
+              ].map(([key, label]) => (
+                <Chip
+                  key={key}
+                  selected={chips.includes(key)}
+                  onClick={() =>
+                    setChips((prev) =>
+                      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+                    )
+                  }
+                >
+                  {label}
+                </Chip>
+              ))}
+              <Chip onRemove={() => undefined}>Toshkent depo</Chip>
+              <Chip
+                className="bg-category-teal/10 text-category-teal border-category-teal/25"
+                onRemove={() => undefined}
+              >
+                TO-3
+              </Chip>
+            </div>
+          </Panel>
+        </div>
+        <div className="overflow-hidden rounded-lg border border-border-strong bg-background">
+          <DisclosureTrigger open={open} onClick={() => setOpen((v) => !v)} className="px-4 py-3">
+            <span className="text-sm font-semibold text-foreground">3VL80S</span>
+            <span className="text-xs text-muted-foreground">12 ta lokomotiv</span>
+          </DisclosureTrigger>
+          {open && (
+            <div className="border-t border-border px-4 py-3 text-sm text-foreground-secondary">
+              DisclosureTrigger draws the chevron; put the row content as children.
+            </div>
+          )}
         </div>
       </Section>
 
