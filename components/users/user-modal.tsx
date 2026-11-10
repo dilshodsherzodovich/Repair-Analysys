@@ -1,18 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { Label } from "@/ui/label";
-import { Card } from "@/ui/card";
 import { UserData } from "@/api/types/user";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useDepartments } from "@/api/hooks/use-departmants";
@@ -20,6 +13,7 @@ import { userRoles } from "@/lib/users";
 import { getRoleName } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/ui/radio-group";
 
+import { Field, FieldGrid } from "@/ui/field";
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -221,46 +215,30 @@ export function UserModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="lg">
-      <Card className="border-none p-0 mt-4">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Familiyasi *
-              </Label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+          <FieldGrid columns={2}>
+            <Field label="Familiyasi" required error={errors.lastName}>
               <Input
                 value={formData.lastName}
                 onChange={(e) =>
                   setFormData({ ...formData, lastName: e.target.value })
                 }
-                className={errors.lastName ? "border-destructive" : ""}
+                aria-invalid={!!errors.lastName}
               />
-              {errors.lastName && (
-                <p className="text-destructive text-xs mt-1">{errors.lastName}</p>
-              )}
-            </div>
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Ismi *
-              </Label>
+            </Field>
+            <Field label="Ismi" required error={errors.firstName}>
               <Input
                 value={formData.firstName}
                 onChange={(e) =>
                   setFormData({ ...formData, firstName: e.target.value })
                 }
-                className={errors.firstName ? "border-destructive" : ""}
+                aria-invalid={!!errors.firstName}
               />
-              {errors.firstName && (
-                <p className="text-destructive text-xs mt-1">{errors.firstName}</p>
-              )}
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Tashkilot *
-              </Label>
+          <FieldGrid columns={2}>
+            <Field label="Tashkilot" required error={errors.organization}>
               <Select
                 value={formData.organization}
                 onValueChange={(value) => {
@@ -269,7 +247,7 @@ export function UserModal({
                 }}
               >
                 <SelectTrigger
-                  className={errors.organization ? "border-destructive" : ""}
+                  aria-invalid={!!errors.organization}
                 >
                   <SelectValue placeholder="Tashkilot tanlang" />
                 </SelectTrigger>
@@ -299,17 +277,9 @@ export function UserModal({
                   </div>
                 </SelectContent>
               </Select>
-              {errors.organization && (
-                <p className="text-destructive text-xs mt-1">
-                  {errors.organization}
-                </p>
-              )}
-            </div>
+            </Field>
 
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Quyi tashkilot *
-              </Label>
+            <Field label="Quyi tashkilot" required error={errors.department}>
               <Select
                 value={formData.secondary_organization_id}
                 onValueChange={(value) => {
@@ -322,7 +292,7 @@ export function UserModal({
                 disabled={!formData.organization}
               >
                 <SelectTrigger
-                  className={errors.department ? "border-destructive" : ""}
+                  aria-invalid={!!errors.department}
                 >
                   <SelectValue
                     placeholder={
@@ -363,59 +333,41 @@ export function UserModal({
                   </div>
                 </SelectContent>
               </Select>
-              {errors.department && (
-                <p className="text-destructive text-xs mt-1">{errors.department}</p>
-              )}
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Foydalanuvchi nomi *
-              </Label>
+          <FieldGrid columns={3}>
+            <Field label="Foydalanuvchi nomi" required error={errors.login}>
               <Input
                 value={formData.username}
                 onChange={(e) =>
                   setFormData({ ...formData, username: e.target.value })
                 }
-                className={errors.login ? "border-destructive" : ""}
+                aria-invalid={!!errors.login}
                 autoComplete="off"
               />
-              {errors.login && (
-                <p className="text-destructive text-xs mt-1">{errors.login}</p>
-              )}
-            </div>
+            </Field>
 
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Parol *
-              </Label>
+            <Field label="Parol" required error={errors.password}>
               <Input
                 type="password"
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className={errors.password ? "border-destructive" : ""}
+                aria-invalid={!!errors.password}
                 autoComplete="off"
               />
-              {errors.password && (
-                <p className="text-destructive text-xs mt-1">{errors.password}</p>
-              )}
-            </div>
+            </Field>
 
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Rol *
-              </Label>
+            <Field label="Rol" required error={errors.role}>
               <Select
                 value={formData.role}
                 onValueChange={(value) =>
                   setFormData({ ...formData, role: value })
                 }
               >
-                <SelectTrigger className={errors.role ? "border-destructive" : ""}>
+                <SelectTrigger aria-invalid={!!errors.role}>
                   <SelectValue placeholder="Rol tanlang" />
                 </SelectTrigger>
                 <SelectContent>
@@ -426,16 +378,10 @@ export function UserModal({
                   ))}
                 </SelectContent>
               </Select>
-              {errors.role && (
-                <p className="text-destructive text-xs mt-1">{errors.role}</p>
-              )}
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
-          <div>
-            <Label className="text-sm text-muted-foreground">
-              Holati
-            </Label>
+          <Field label="Holati">
             <RadioGroup
               name={`status-${mode}`}
               value={formData.status}
@@ -451,9 +397,9 @@ export function UserModal({
                 <span className="text-foreground text-sm">Nofaol</span>
               </Label>
             </RadioGroup>
-          </div>
+          </Field>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -470,9 +416,8 @@ export function UserModal({
             >
               {submitText}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

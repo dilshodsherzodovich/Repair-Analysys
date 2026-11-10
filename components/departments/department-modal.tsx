@@ -1,21 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/ui/select";
 import { Button } from "@/ui/button";
-import { Label } from "@/ui/label";
-import { Card } from "@/ui/card";
 import { Department, DepartmentCreateParams } from "@/api/types/deparments";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 
+import { Field, FieldGrid } from "@/ui/field";
 interface DepartmentModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -87,13 +80,9 @@ export function DepartmentModal({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={title} size="md">
-      <Card className="border-none p-0 mt-4">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 gap-2">
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Quyi tashkilot nomi
-              </Label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+          <FieldGrid>
+            <Field label="Quyi tashkilot nomi">
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -102,11 +91,8 @@ export function DepartmentModal({
                 placeholder="Quyi tashkilot nomini kiriting"
                 required
               />
-            </div>
-            <div>
-              <Label className="text-sm text-muted-foreground">
-                Quyi tashkilot tegishli tashkilot
-              </Label>
+            </Field>
+            <Field label="Quyi tashkilot tegishli tashkilot">
               <Select
                 value={formData.organization}
                 onValueChange={(value) => {
@@ -155,22 +141,20 @@ export function DepartmentModal({
                   </div>
                 </SelectContent>
               </Select>
-            </div>
-          </div>
-          <div className="flex justify-end gap-3 pt-4">
+            </Field>
+          </FieldGrid>
+          <ModalFooter>
             <Button type="button" variant="outline" onClick={handleClose}>
               Bekor qilish
             </Button>
             <Button
               type="submit"
-              className="px-8"
               disabled={isDoingAction}
             >
               {isDoingAction ? actionText : submitText}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

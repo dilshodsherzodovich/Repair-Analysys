@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
-import { Label } from "@/ui/label";
 import {
   Select,
   SelectContent,
@@ -26,6 +25,7 @@ import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
 import { XIcon } from "lucide-react";
 import { DateTimePicker } from "@/ui/datetime-picker";
 
+import { Field } from "@/ui/field";
 interface IssueWithDate {
   text: string;
   date: Date | undefined;
@@ -346,10 +346,7 @@ export default function PublicDefectiveWorkCreatePage() {
             <input type="hidden" name="organization" value={organizationFromUrl ?? selectedOrganization} />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <Label className="mb-2 block text-sm font-medium text-foreground">
-                  {t("locomotive")}
-                </Label>
+              <Field label={t("locomotive")}>
                 <SearchableSelect
                   searchable
                   options={
@@ -371,24 +368,18 @@ export default function PublicDefectiveWorkCreatePage() {
                   loading={isLoadingLocomotives}
                   emptyMessage={t("locomotive_empty")}
                 />
-              </div>
+              </Field>
 
               {organizationFromUrl ? (
-                <div>
-                  <Label className="mb-2 block text-sm font-medium text-foreground">
-                    {t("organization")}
-                  </Label>
+                <Field label={t("organization")}>
                   <div className="flex h-10 w-full items-center rounded-md border border-border bg-surface-muted px-4 py-2 text-sm text-foreground-secondary">
                     {organizations.find(
                       (o) => o.id.toString() === organizationFromUrl
                     )?.name ?? organizationFromUrl}
                   </div>
-                </div>
+                </Field>
               ) : (
-                <div>
-                  <Label className="mb-2 block text-sm font-medium text-foreground">
-                    {t("organization")}
-                  </Label>
+                <Field label={t("organization")}>
                   <Select
                     name="organization"
                     value={selectedOrganization}
@@ -417,7 +408,7 @@ export default function PublicDefectiveWorkCreatePage() {
                       )}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
               )}
 
               <FormField
@@ -438,10 +429,7 @@ export default function PublicDefectiveWorkCreatePage() {
               </div>
 
               {/* TU-152 defect group */}
-              <div>
-                <Label className="mb-2 block text-sm font-medium text-foreground">
-                  {t("remark_group")}
-                </Label>
+              <Field label={t("remark_group")}>
                 <Select
                   value={selectedGroup}
                   onValueChange={(v) => {
@@ -471,13 +459,10 @@ export default function PublicDefectiveWorkCreatePage() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </Field>
 
               {/* TU-152 defect */}
-              <div>
-                <Label className="mb-2 block text-sm font-medium text-foreground">
-                  {t("remark")}
-                </Label>
+              <Field label={t("remark")}>
                 <Select
                   value={selectedRemark}
                   onValueChange={setSelectedRemark}
@@ -502,7 +487,7 @@ export default function PublicDefectiveWorkCreatePage() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </Field>
             </div>
 
             <div className="space-y-3">

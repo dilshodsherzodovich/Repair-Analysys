@@ -3,8 +3,8 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 const VARIANTS = {
-  /** Form field: 36/40px tall, spacing below for stacked forms. */
-  default: "h-9 px-3 py-1.5 text-sm sm:h-10 sm:px-4 sm:py-2 sm:text-sm mb-3 sm:mb-4",
+  /** Form and filter field: 36px, no margin (Field / FieldGrid space it). */
+  default: "h-9 px-3 py-1.5 text-sm",
   /** Toolbars, filters, dropdown search boxes and dense forms: 32px, no margin. */
   compact: "h-8 px-2.5 py-1 text-sm",
   /** Editor inside a table / grid cell: fills the cell, no chrome until focused. */

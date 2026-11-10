@@ -22,12 +22,11 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "flex w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground",
-      "h-9 px-3 py-1.5 text-sm sm:h-10 sm:px-4 sm:py-2 sm:text-sm",
+      "h-9 px-3 py-1.5 text-sm",
       "transition-colors outline-none",
       "focus:border-primary focus:ring-0 hover:border-foreground-subtle",
       "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
       "aria-invalid:border-destructive aria-invalid:focus:border-destructive",
-      "mb-3 sm:mb-4",
       "[&>span]:line-clamp-1",
       "data-[placeholder]:text-foreground-subtle",
       "[&>span]:text-foreground [&>span]:data-[placeholder]:text-foreground-subtle",
@@ -283,14 +282,12 @@ function SearchableSelect({
         >
           <SelectPrimitive.Trigger
             className={cn(
-              "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground px-4 py-2 text-base",
+              "flex h-9 w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground px-3 py-1.5 text-sm",
               "transition-colors outline-none focus:border-primary focus:ring-0 hover:border-foreground-subtle",
               "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
-              "md:text-sm [&>span]:line-clamp-1",
+              "[&>span]:line-clamp-1",
               "[&>span]:text-foreground [&>span]:data-[placeholder]:text-foreground-subtle",
-              size === "default" && "mb-4",
               size === "sm" && "h-8 text-xs",
-              size === "md" && "h-9 mb-0 px-3",
               triggerClassName
             )}
           >
@@ -342,12 +339,10 @@ function SearchableSelect({
         role="combobox"
         aria-expanded={open}
         className={cn(
-          "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground px-4 py-2 text-base",
+          "flex h-9 w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground px-3 py-1.5 text-sm",
           "transition-colors outline-none focus:border-primary focus:ring-0 hover:border-foreground-subtle",
           "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
-          "md:text-sm [&>span]:line-clamp-1",
-          size === "default" && "mb-4",
-          size === "md" && "h-9 mb-0 px-3",
+          "[&>span]:line-clamp-1",
           "aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:bg-surface-muted",
           size === "sm" && "h-8 text-xs",
           triggerClassName

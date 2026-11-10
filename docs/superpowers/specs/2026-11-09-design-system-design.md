@@ -194,3 +194,28 @@ one meta line (org · period · "holatiga")
   background), and status highlights (primary-subtle, destructive-subtle,
   ...). No per-cell backgrounds, borders, padding or text sizes.
 - A table's scroll box is `frame`, never a hand-built wrapper div.
+
+### Forms
+
+- Every labelled control is a `Field`: label (sm, medium,
+  foreground-secondary) above the control, a red `*` when `required`, then
+  either `hint` or `error` (xs; error in destructive). A control in error
+  also gets `aria-invalid`, which turns its border red.
+- Fields sit in a `FieldGrid` (`columns` 1–4, 16px gaps, one column on
+  phones); `span="full"` takes a whole row. Long forms group fields in
+  `FormSection`s (title, optional description and actions, a line between).
+- One control height: inputs, selects, pickers and buttons are 36px. Controls
+  carry no outer margin; only the grid spaces them.
+- A form's blocks are `space-y-5`.
+
+### Modals
+
+- `Modal` is the only dialog (`ui/dialog.tsx` re-exports its parts for kit
+  internals). Title bar with an optional one-line description, a body that
+  scrolls inside 90vh, sizes sm 448 / md 512 / lg 672 / xl 896 / 2xl 1152.
+- Actions are a `ModalFooter`, the body's (or the form's) last child, which
+  sticks to the bottom edge: Cancel (outline) then the primary action,
+  right-aligned; a Delete goes on the far left. Read-only modals have a
+  single outline Close.
+- No Card wrappers, hand-built button rows or own scroll containers inside a
+  modal.

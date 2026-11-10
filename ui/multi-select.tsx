@@ -108,7 +108,7 @@ export function MultiSelect({
         className={cn(
           "w-full justify-between border-border min-h-[40px] h-auto p-2 bg-background hover:bg-muted/20 focus:bg-background focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-all duration-150 border rounded-md cursor-pointer flex items-center",
           size === "sm" && "h-8 text-xs",
-          size === "md" && "h-10 text-sm",
+          size === "md" && "h-9 text-sm",
           size === "lg" && "h-12 text-base",
           disabled && "opacity-50 cursor-not-allowed",
           className

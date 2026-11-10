@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, memo, type FormEvent } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import {
   Select,
   SelectTrigger,
@@ -11,8 +11,6 @@ import {
   SearchableSelect,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
-import { Label } from "@/ui/label";
-import { Card } from "@/ui/card";
 import type { OrderData, CreateOrderPayload, UpdateOrderPayload } from "@/api/types/orders";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { FormField } from "@/ui/form-field";
@@ -22,6 +20,7 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { hasPermission } from "@/lib/permissions";
 import { authService } from "@/api/services/auth.service";
 
+import { Field, FieldGrid } from "@/ui/field";
 interface OrderModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -254,11 +253,9 @@ export function OrderModal({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={title} size="lg">
-      <Card className="border-none p-0 mt-4">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="type_of_journal">Jurnal turi</Label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+          <FieldGrid columns={2}>
+            <Field label="Jurnal turi" htmlFor="type_of_journal">
               <Select
                 value={formData.type_of_journal}
                 onValueChange={handleJournalTypeChange}
@@ -274,7 +271,7 @@ export function OrderModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
             <FormField
               id="train_number"
@@ -293,8 +290,7 @@ export function OrderModal({
             />
 
             {canChooseOrganization && (
-              <div>
-                <Label htmlFor="organization">Tashkilot</Label>
+              <Field label="Tashkilot" htmlFor="organization">
                 <Select
                   value={formData.organization}
                   onValueChange={handleOrganizationChange}
@@ -321,7 +317,7 @@ export function OrderModal({
                     )}
                   </SelectContent>
                 </Select>
-              </div>
+              </Field>
             )}
 
             <LocomotiveSelect
@@ -350,7 +346,7 @@ export function OrderModal({
               placeholder="Zarar summasini kiriting"
               required
             />
-          </div>
+          </FieldGrid>
 
           <div className="space-y-2">
             <FileUpload
@@ -383,7 +379,7 @@ export function OrderModal({
             required
           />
 
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -395,9 +391,8 @@ export function OrderModal({
             <Button type="submit" disabled={isPending}>
               {isPending ? actionText : submitText}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

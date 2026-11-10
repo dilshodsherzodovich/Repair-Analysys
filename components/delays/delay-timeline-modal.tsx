@@ -1,16 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 import { CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type {
-  DelayEntry,
-  DelayStage,
-  DelayTimelineEntry,
-} from "@/api/types/delays";
+import type { DelayEntry, DelayStage, DelayTimelineEntry } from "@/api/types/delays";
 
 interface DelayTimelineModalProps {
   isOpen: boolean;
@@ -125,11 +121,11 @@ export function DelayTimelineModal({
           </ol>
         )}
 
-        <div className="flex justify-end pt-2">
+        <ModalFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             {t("close")}
           </Button>
-        </div>
+        </ModalFooter>
       </div>
     </Modal>
   );

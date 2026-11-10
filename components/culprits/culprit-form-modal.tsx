@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { Card } from "@/ui/card";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { FormField } from "@/ui/form-field";
 import { Button } from "@/ui/button";
 import { useSnackbar } from "@/providers/snackbar-provider";
@@ -78,8 +77,7 @@ export function CulpritFormModal({
       size="md"
       ariaDescribedBy="culprit-form-modal"
     >
-      <Card className="border-none p-0 mt-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
           <FormField
             id="full_name"
             name="full_name"
@@ -99,7 +97,7 @@ export function CulpritFormModal({
             placeholder={t("form.amount_placeholder")}
             required
           />
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -111,9 +109,8 @@ export function CulpritFormModal({
             <Button type="submit" disabled={isPending}>
               {isEdit ? t("form.submit_edit") : t("form.submit_create")}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

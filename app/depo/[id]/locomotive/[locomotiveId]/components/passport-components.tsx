@@ -7,9 +7,9 @@ import { Boxes, Cog } from "lucide-react";
 import { SectionCard, EmptyBlock } from "./passport-shared";
 import type { ComponentValue } from "@/api/types/component";
 import type { ReactNode } from "react";
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
 
+import { Field } from "@/ui/field";
 type FormValues = Record<
   number,
   { factory_number: string; date_info: string }
@@ -31,10 +31,7 @@ function ComponentField({
   placeholder: string;
 }) {
   return (
-    <div className="min-w-0">
-      <Label className="mb-0.5 block text-2xs font-medium text-muted-foreground">
-        {label}
-      </Label>
+    <Field label={label}>
       <Input
         variant="compact"
         value={value}
@@ -46,7 +43,7 @@ function ComponentField({
             "cursor-default border-border bg-surface-muted font-medium hover:border-border placeholder:font-normal"
         )}
       />
-    </div>
+    </Field>
   );
 }
 

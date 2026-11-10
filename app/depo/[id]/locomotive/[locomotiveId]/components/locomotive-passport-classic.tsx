@@ -24,10 +24,10 @@ import { ComponentValue } from "@/api/types/component";
 import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { authService } from "@/api/services/auth.service";
-import { Label } from "@/ui/label";
 import { PageHeader } from "@/ui/page-header";
 import { ExportActions } from "@/ui/export-actions";
 
+import { Field, FieldGrid } from "@/ui/field";
 interface LocomotivePassportClassicProps {
   depotId: string;
   locomotiveId: string;
@@ -356,24 +356,15 @@ export default function LocomotivePassportClassic({
         <Card className="gap-4">
           <h2 className="text-lg font-semibold">{t("locomotive_info")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-0">
-            <div className="min-w-0">
-              <Label className="mb-2 block text-sm font-medium text-foreground">
-                {t("depot")}
-              </Label>
+            <Field label={t("depot")}>
               <Input value={depotId} disabled />
-            </div>
-            <div className="min-w-0">
-              <Label className="mb-2 block text-sm font-medium text-foreground">
-                {t("locomotive")}
-              </Label>
+            </Field>
+            <Field label={t("locomotive")}>
               <Input value={locomotiveDetail?.name ?? ""} disabled />
-            </div>
-            <div className="min-w-0">
-              <Label className="mb-2 block text-sm font-medium text-foreground">
-                {t("model")}
-              </Label>
+            </Field>
+            <Field label={t("model")}>
               <Input value={locomotiveDetail?.model_name ?? ""} disabled />
-            </div>
+            </Field>
           </div>
         </Card>
 
@@ -420,7 +411,7 @@ export default function LocomotivePassportClassic({
               {t("no_components")}
             </p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <FieldGrid columns={4}>
               {componentList.map((component) => {
                 const currentValues = componentFormValues[component.id] || {
                   factory_number: "",
@@ -433,10 +424,7 @@ export default function LocomotivePassportClassic({
                     className="border border-border rounded-lg p-4 space-y-4"
                   >
                     <div className="space-y-4">
-                      <div className="min-w-0">
-                        <Label className="mb-2 block text-sm font-medium text-foreground">
-                          {component.component}
-                        </Label>
+                      <Field label={component.component}>
                         <Input
                           value={currentValues.factory_number}
                           onChange={(event) =>
@@ -449,11 +437,8 @@ export default function LocomotivePassportClassic({
                           disabled={!isEditing}
                           placeholder={t("factory_number")}
                         />
-                      </div>
-                      <div className="min-w-0">
-                        <Label className="mb-2 block text-sm font-medium text-foreground">
-                          {component.component} {t("year_manufactured")}
-                        </Label>
+                      </Field>
+                      <Field label={<>{component.component} {t("year_manufactured")}</>}>
                         <Input
                           value={currentValues.date_info}
                           onChange={(event) =>
@@ -466,12 +451,12 @@ export default function LocomotivePassportClassic({
                           disabled={!isEditing}
                           placeholder={t("year_placeholder")}
                         />
-                      </div>
+                      </Field>
                     </div>
                   </div>
                 );
               })}
-            </div>
+            </FieldGrid>
           )}
         </Card>
       </form>

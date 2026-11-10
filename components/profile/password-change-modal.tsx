@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Key, Eye, EyeOff, X, AlertCircle } from "lucide-react";
-import { Label } from "@/ui/label";
 
+import { Field } from "@/ui/field";
 interface PasswordChangeData {
   currentPassword: string;
   newPassword: string;
@@ -128,10 +128,7 @@ export function PasswordChangeModal({
 
         <div className="space-y-4">
           {/* Current Password */}
-          <div>
-            <Label className="block text-sm font-medium text-muted-foreground mb-2">
-              Joriy parol
-            </Label>
+          <Field label="Joriy parol">
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
@@ -156,13 +153,10 @@ export function PasswordChangeModal({
                 )}
               </Button>
             </div>
-          </div>
+          </Field>
 
           {/* New Password */}
-          <div>
-            <Label className="block text-sm font-medium text-muted-foreground mb-2">
-              Yangi parol
-            </Label>
+          <Field label="Yangi parol">
             <Input
               type={showPassword ? "text" : "password"}
               value={passwordData.newPassword}
@@ -175,13 +169,10 @@ export function PasswordChangeModal({
             <p className="text-xs text-muted-foreground mt-1">
               Kamida 8 ta belgi
             </p>
-          </div>
+          </Field>
 
           {/* Confirm Password */}
-          <div>
-            <Label className="block text-sm font-medium text-muted-foreground mb-2">
-              Parolni tasdiqlang
-            </Label>
+          <Field label="Parolni tasdiqlang">
             <Input
               type={showPassword ? "text" : "password"}
               value={passwordData.confirmPassword}
@@ -191,7 +182,7 @@ export function PasswordChangeModal({
               placeholder="Parolni qayta kiriting"
               className="border-border"
             />
-          </div>
+          </Field>
 
           {/* Error Messages */}
           {passwordErrors.length > 0 && (

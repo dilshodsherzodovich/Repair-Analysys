@@ -2,9 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Card } from "@/ui/card";
-import { Modal } from "@/ui/modal";
-import { Label } from "@/ui/label";
+import { Modal, ModalFooter } from "@/ui/modal";
 import {
   Select,
   SelectContent,
@@ -31,6 +29,7 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { authService } from "@/api/services/auth.service";
 import { isEchAccount } from "@/lib/permissions";
 
+import { Field, FieldGrid } from "@/ui/field";
 type LocomotiveOption = {
   id: number;
   label: string;
@@ -108,8 +107,7 @@ function LocomotiveSelectField({
   );
 
   return (
-    <div className="w-full">
-      <Label htmlFor="locomotive">{label}</Label>
+    <Field label={label} htmlFor="locomotive">
       <SearchableSelect
         name={name}
         searchable
@@ -124,7 +122,7 @@ function LocomotiveSelectField({
         searchPlaceholder={searchPlaceholder}
         emptyMessage={locomotives.length ? noResultsText : emptyText}
       />
-    </div>
+    </Field>
   );
 }
 
@@ -148,8 +146,7 @@ function InspectionTypesSelectField({
   emptyText: string;
 }) {
   return (
-    <div>
-      <Label htmlFor="inspection-types">{label}</Label>
+    <Field label={label} htmlFor="inspection-types">
       <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
         <SelectTrigger id="inspection-types">
           <SelectValue placeholder={placeholder} />
@@ -172,7 +169,7 @@ function InspectionTypesSelectField({
           )}
         </SelectContent>
       </Select>
-    </div>
+    </Field>
   );
 }
 
@@ -327,8 +324,7 @@ export function DefectiveWorkModal({
         size="sm"
         ariaDescribedBy="defective-works-resolution-modal"
       >
-        <Card className="border-none p-0 mt-4">
-          <form
+        <form
             key={formKey}
             onSubmit={(event) => {
               event.preventDefault();
@@ -348,7 +344,7 @@ export function DefectiveWorkModal({
               required
             />
 
-            <div className="flex justify-end gap-3 pt-4">
+            <ModalFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -360,9 +356,8 @@ export function DefectiveWorkModal({
               <Button type="submit" disabled={isPending}>
                 {isPending ? modalTexts.pending : modalTexts.submit}
               </Button>
-            </div>
+            </ModalFooter>
           </form>
-        </Card>
       </Modal>
     );
   }
@@ -375,14 +370,13 @@ export function DefectiveWorkModal({
       size="lg"
       ariaDescribedBy="defective-works-modal"
     >
-      <Card className="border-none p-0 mt-4">
-        <form
+      <form
           key={formKey}
           ref={formRef}
           onSubmit={handleSubmit}
           className="space-y-2"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FieldGrid columns={2}>
             <LocomotiveSelectField
               name="locomotive"
               defaultValue={formDefaults.locomotive}
@@ -411,8 +405,7 @@ export function DefectiveWorkModal({
             />
 
             {/* ECH group */}
-            {isEchUser && <div className="mb-4">
-              <Label htmlFor="group_ech">{t("group_ech")}</Label>
+            {isEchUser && <Field label={t("group_ech")} htmlFor="group_ech" className="mb-4">
               <Select
                 value={selectedEchGroup}
                 onValueChange={setSelectedEchGroup}
@@ -437,12 +430,11 @@ export function DefectiveWorkModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>}
+            </Field>}
 
             {!isEchUser && (
               <>
-                <div className="mb-4">
-                  <Label htmlFor="remark_group">{t("remark_group")}</Label>
+                <Field label={t("remark_group")} htmlFor="remark_group" className="mb-4">
                   <Select
                     value={selectedGroup}
                     onValueChange={(value) => {
@@ -474,10 +466,9 @@ export function DefectiveWorkModal({
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
 
-                <div className="mb-4">
-                  <Label htmlFor="remark">{t("remark")}</Label>
+                <Field label={t("remark")} htmlFor="remark" className="mb-4">
                   <Select
                     value={selectedRemark}
                     onValueChange={setSelectedRemark}
@@ -504,7 +495,7 @@ export function DefectiveWorkModal({
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
               </>
             )}
 
@@ -554,7 +545,7 @@ export function DefectiveWorkModal({
               value={selectedDate}
               onValueChange={(date) => setSelectedDate(date)}
             />
-          </div>
+          </FieldGrid>
 
           <FormField
             id="issue"
@@ -567,7 +558,7 @@ export function DefectiveWorkModal({
             required
           />
 
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -579,9 +570,8 @@ export function DefectiveWorkModal({
             <Button type="submit" disabled={isPending}>
               {isPending ? modalTexts.pending : modalTexts.submit}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

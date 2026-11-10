@@ -1,26 +1,12 @@
 "use client";
 
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Button } from "@/ui/button";
-import {
-  Train,
-  MapPin,
-  Users,
-  CircleCheck,
-  CircleDashed,
-  Wallet,
-} from "lucide-react";
+import { Train, MapPin, Users, CircleCheck, CircleDashed, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { DelayEntry } from "@/api/types/delays";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 interface RecoveryInfoModalProps {
   isOpen: boolean;
@@ -189,11 +175,11 @@ export function RecoveryInfoModal({
           </TableBody>
         </Table>
 
-        <div className="flex justify-end pt-1">
+        <ModalFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             {t("close")}
           </Button>
-        </div>
+        </ModalFooter>
       </div>
     </Modal>
   );

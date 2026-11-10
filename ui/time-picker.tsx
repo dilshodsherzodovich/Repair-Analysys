@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Label } from "@/ui/label";
 import { useTranslations } from "next-intl";
 
 export interface TimePickerProps {
@@ -54,11 +55,11 @@ const TimePicker = React.forwardRef<HTMLDivElement, TimePickerProps>(
     };
 
     return (
-      <div ref={ref} className={cn("space-y-2", className)}>
+      <div ref={ref} className={cn("flex flex-col gap-1.5", className)}>
         {label && (
-          <label className="flex items-center gap-2 text-sm leading-none font-medium select-none text-muted-foreground mb-1">
+          <Label>
             {label}
-          </label>
+          </Label>
         )}
         <input
           type="time"
@@ -69,7 +70,7 @@ const TimePicker = React.forwardRef<HTMLDivElement, TimePickerProps>(
           placeholder={placeholder}
           aria-label={label ?? t("time_label")}
           className={cn(
-            "flex h-10 w-full rounded-md border border-border-strong bg-background px-3 py-2 text-base",
+            "flex h-9 w-full rounded-md border border-border-strong bg-background px-3 py-1.5 text-sm",
             "transition-colors outline-none focus:border-primary focus:ring-0 hover:border-foreground-subtle",
             "disabled:pointer-events-none disabled:opacity-50 disabled:bg-surface-muted",
             "md:text-sm text-foreground",

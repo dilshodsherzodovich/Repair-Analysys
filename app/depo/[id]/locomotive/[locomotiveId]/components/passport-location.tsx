@@ -5,41 +5,12 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/ui/dialog";
-import {
-  MapPin,
-  Navigation,
-  Gauge,
-  Power,
-  Satellite,
-  History,
-  ExternalLink,
-} from "lucide-react";
-import {
-  SectionCard,
-  InfoRow,
-  EmptyBlock,
-  LoadingBlock,
-} from "./passport-shared";
-import {
-  useLocomotiveLocation,
-  useLocomotiveLocationHistory,
-} from "@/api/hooks/use-emm";
+import { Modal } from "@/ui/modal";
+import { MapPin, Navigation, Gauge, Power, Satellite, History, ExternalLink } from "lucide-react";
+import { SectionCard, InfoRow, EmptyBlock, LoadingBlock } from "./passport-shared";
+import { useLocomotiveLocation, useLocomotiveLocationHistory } from "@/api/hooks/use-emm";
 import type { LocationRecord } from "@/api/services/emm.service";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 const mapLink = (lat: number, lon: number) =>
   `https://yandex.com/maps/?ll=${lon},${lat}&pt=${lon},${lat}&z=15&l=map`;
@@ -94,23 +65,20 @@ function HistoryDialog({ imei }: { imei: string }) {
   }, [rows, selected]);
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        setOpen(v);
-        if (!v) setSelected(null);
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="border-border-strong">
-          <History className="mr-2 h-4 w-4" />
-          {t("history")}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>{t("historyTitle")}</DialogTitle>
-        </DialogHeader>
+    <>
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        <History className="size-4" />
+        {t("history")}
+      </Button>
+      <Modal
+        isOpen={open}
+        onClose={() => {
+          setOpen(false);
+          setSelected(null);
+        }}
+        title={t("historyTitle")}
+        size="xl"
+      >
         {isLoading ? (
           <LoadingBlock />
         ) : rows.length === 0 ? (
@@ -188,8 +156,8 @@ function HistoryDialog({ imei }: { imei: string }) {
             </Table>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </Modal>
+    </>
   );
 }
 

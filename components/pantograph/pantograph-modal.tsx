@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Card } from "@/ui/card";
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
 import { Textarea } from "@/ui/textarea";
 import { Button } from "@/ui/button";
@@ -15,14 +13,9 @@ import {
   UpdatePantographJournalPayload,
 } from "@/api/types/pantograph";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/ui/dialog";
 
+import { Field, FieldGrid } from "@/ui/field";
+import { Modal, ModalFooter } from "@/ui/modal";
 interface PantographModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -60,8 +53,7 @@ function LocomotiveSelectInner({
   emptyText: string;
 }) {
   return (
-    <div>
-      <Label htmlFor="locomotive">{label}</Label>
+    <Field label={label} htmlFor="locomotive">
       <SearchableSelect
         name="locomotive"
         value={value}
@@ -72,7 +64,7 @@ function LocomotiveSelectInner({
         emptyMessage={emptyText}
         disabled={isLoading || options.length === 0}
       />
-    </div>
+    </Field>
   );
 }
 
@@ -155,24 +147,20 @@ export function PantographModal({
   const initialSection = entry && mode === "edit" ? (entry.section ?? "") : "";
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
-      <DialogContent className="sm:max-w-3xl" aria-describedby={undefined}>
-        <DialogHeader>
-          <DialogTitle>{modalTitle}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {modalTitle} {t("form_description")}
-          </DialogDescription>
-        </DialogHeader>
-        <Card className="border-none p-0 mt-2">
-          <form
+    <Modal
+      isOpen={isOpen}
+      onClose={() => handleDialogOpenChange(false)}
+      title={modalTitle}
+      size="lg"
+    >
+        <form
             ref={formRef}
             key={isOpen ? (entry?.id ?? "new") : "closed"}
             onSubmit={handleSubmit}
             className="space-y-5"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="date">{t("fields.date")}</Label>
+            <FieldGrid columns={2}>
+              <Field label={t("fields.date")} htmlFor="date">
                 <Input
                   id="date"
                   name="date"
@@ -180,7 +168,7 @@ export function PantographModal({
                   defaultValue={initialDate}
                   required
                 />
-              </div>
+              </Field>
 
               <LocomotiveSelectInner
                 value={locomotive}
@@ -193,8 +181,7 @@ export function PantographModal({
                 emptyText={t("fields.locomotive_empty")}
               />
 
-              <div>
-                <Label htmlFor="department">{t("fields.department")}</Label>
+              <Field label={t("fields.department")} htmlFor="department">
                 <Input
                   id="department"
                   name="department"
@@ -203,10 +190,9 @@ export function PantographModal({
                   placeholder={t("fields.department_placeholder")}
                   required
                 />
-              </div>
+              </Field>
 
-              <div>
-                <Label htmlFor="section">{t("fields.section")}</Label>
+              <Field label={t("fields.section")} htmlFor="section">
                 <Input
                   id="section"
                   name="section"
@@ -215,10 +201,9 @@ export function PantographModal({
                   placeholder={t("fields.section_placeholder")}
                   required
                 />
-              </div>
+              </Field>
 
-              <div>
-                <Label htmlFor="damage">{t("fields.damage")}</Label>
+              <Field label={t("fields.damage")} htmlFor="damage">
                 <Input
                   id="damage"
                   name="damage"
@@ -228,11 +213,10 @@ export function PantographModal({
                   placeholder={t("fields.damage_placeholder")}
                   required
                 />
-              </div>
-            </div>
+              </Field>
+            </FieldGrid>
 
-            <div>
-              <Label htmlFor="description">{t("fields.description")}</Label>
+            <Field label={t("fields.description")} htmlFor="description">
               <Textarea
                 id="description"
                 name="description"
@@ -241,9 +225,9 @@ export function PantographModal({
                 rows={4}
                 required
               />
-            </div>
+            </Field>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <ModalFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -255,10 +239,8 @@ export function PantographModal({
               <Button type="submit" disabled={isPending}>
                 {isPending ? pendingLabel : submitLabel}
               </Button>
-            </div>
+            </ModalFooter>
           </form>
-        </Card>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

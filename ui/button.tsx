@@ -40,10 +40,11 @@ const buttonVariants = cva(
       },
       size: {
         default:
-          "h-9 px-3 py-1.5 text-xs sm:h-10 sm:px-4 sm:py-2 sm:text-sm has-[>svg]:px-3",
+          "h-9 px-4 py-1.5 text-sm has-[>svg]:px-3",
         xs: "h-7 rounded-md gap-1 px-2 text-xs has-[>svg]:px-2 [&_svg:not([class*='size-'])]:size-3.5",
         sm: "h-8 rounded-md gap-1.5 px-3 text-xs has-[>svg]:px-2.5",
-        md: "h-10 rounded-md px-4 has-[>svg]:px-3",
+        /** Same as default; kept for existing callers. */
+        md: "h-9 rounded-md px-4 text-sm has-[>svg]:px-3",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
         /** Small icon action inside rows and cells (edit, delete, settings). */

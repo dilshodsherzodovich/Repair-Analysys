@@ -2,25 +2,11 @@
 
 import { useState, useEffect, useCallback, useMemo, memo, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { Search } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/ui/modal";
 import { DatePicker } from "@/ui/date-picker";
 import {
   CreateLocomotivePassportInspectionPayload,
@@ -28,6 +14,8 @@ import {
   LocomotivePassportInspection,
 } from "@/api/types/locomotive-passport-inspections";
 
+import { Field, FieldGrid } from "@/ui/field";
+import { Modal, ModalFooter } from "@/ui/modal";
 interface PassportInspectionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -325,20 +313,16 @@ export function PassportInspectionModal({
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-foreground">
-            {mode === "edit" ? t("title_edit") : t("title_create")}
-          </DialogTitle>
-        </DialogHeader>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={mode === "edit" ? t("title_edit") : t("title_create")}
+      size="xl"
+    >
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="locomotive_id">
-                {t("locomotive")} <span className="text-destructive">*</span>
-              </Label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <FieldGrid columns={2}>
+            <Field label={t("locomotive")} htmlFor="locomotive_id" required>
               <Select
                 value={locomotiveId || undefined}
                 onValueChange={(value) => {
@@ -392,12 +376,9 @@ export function PassportInspectionModal({
                   </div>
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="section_id">
-                {t("section")} <span className="text-destructive">*</span>
-              </Label>
+            <Field label={t("section")} htmlFor="section_id" required>
               <Select
                 value={sectionId || undefined}
                 onValueChange={(value) => handleFieldChange("section_id", value)}
@@ -424,8 +405,8 @@ export function PassportInspectionModal({
                   )}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground border-b pb-2">
@@ -446,7 +427,7 @@ export function PassportInspectionModal({
             </div>
           </div>
 
-          <DialogFooter>
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -462,10 +443,9 @@ export function PassportInspectionModal({
                   ? t("save")
                   : t("add")}
             </Button>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }
 

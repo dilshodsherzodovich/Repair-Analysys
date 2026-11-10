@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { uz } from "date-fns/locale";
 import { CalendarIcon, AlertCircle, CheckCircle, X, Clock, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Label } from "@/ui/label";
 import { Button } from "@/ui/button";
 import { Calendar } from "@/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
@@ -156,11 +157,11 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     };
 
     return (
-      <div ref={ref} className={cn("space-y-2", className)} {...props}>
+      <div ref={ref} className={cn("flex flex-col gap-1.5", className)} {...props}>
         {label && (
-          <label className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-muted-foreground mb-1">
+          <Label>
             {label}
-          </label>
+          </Label>
         )}
 
         <Popover open={isOpen} onOpenChange={setIsOpen}>

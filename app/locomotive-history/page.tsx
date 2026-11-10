@@ -20,6 +20,7 @@ import { ExportActions } from "@/ui/export-actions";
 import { PageHeader } from "@/ui/page-header";
 import { Page } from "@/ui/page";
 
+import { Field } from "@/ui/field";
 function LocomotiveHistoryPage() {
   const t = useTranslations("LocomotiveHistory");
   const globalT = useTranslations("Inspects");
@@ -196,10 +197,7 @@ function LocomotiveHistoryPage() {
 
                 {inspectionTypes && inspectionTypes.length > 0 && (
                   <div className="border rounded-lg p-4 bg-surface-muted">
-                    <div className="flex items-center justify-between mb-3">
-                      <Label className="text-sm font-semibold">
-                        {t("filterByInspectionType")}
-                      </Label>
+                    <Field label={t("filterByInspectionType")} className="items-center justify-between mb-3">
                       <Button
                         variant="outline"
                         size="sm"
@@ -210,7 +208,7 @@ function LocomotiveHistoryPage() {
                           ? t("deselectAll")
                           : t("selectAll")}
                       </Button>
-                    </div>
+                    </Field>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                       {inspectionTypes.map((type) => (
                         <div key={type.id} className="flex items-center space-x-2">

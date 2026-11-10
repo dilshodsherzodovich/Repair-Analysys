@@ -2,25 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { Search } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/ui/modal";
 import {
   CreateLocomotiveReplacementOilPayload,
   UpdateLocomotiveReplacementOilPayload,
@@ -31,6 +17,8 @@ import {
   LUBRICANT_TYPE_LABELS,
 } from "@/api/types/locomotive-replacement-oil";
 
+import { Field, FieldGrid } from "@/ui/field";
+import { Modal, ModalFooter } from "@/ui/modal";
 interface ReplacementModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -202,13 +190,12 @@ export function ReplacementModal({
       : "";
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-foreground">
-            {mode === "edit" ? t("title_edit") : t("title_create")}
-          </DialogTitle>
-        </DialogHeader>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={mode === "edit" ? t("title_edit") : t("title_create")}
+      size="lg"
+    >
 
         <form
           ref={formRef}
@@ -216,11 +203,8 @@ export function ReplacementModal({
           onSubmit={handleSubmit}
           className="space-y-6"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="locomotive_id">
-                {t("locomotive")} <span className="text-destructive">*</span>
-              </Label>
+          <FieldGrid columns={2}>
+            <Field label={t("locomotive")} htmlFor="locomotive_id" required>
               <Select
                 value={locomotiveId || undefined}
                 onValueChange={handleLocomotiveChange}
@@ -274,12 +258,9 @@ export function ReplacementModal({
                   </div>
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="section_id">
-                {t("section")} <span className="text-destructive">*</span>
-              </Label>
+            <Field label={t("section")} htmlFor="section_id" required>
               <Select
                 value={sectionId || undefined}
                 onValueChange={handleSectionChange}
@@ -302,12 +283,9 @@ export function ReplacementModal({
                   )}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="maintenance_type">
-                {t("maintenance_type")} <span className="text-destructive">*</span>
-              </Label>
+            <Field label={t("maintenance_type")} htmlFor="maintenance_type" required>
               <Select
                 value={maintenanceType || undefined}
                 onValueChange={setMaintenanceType}
@@ -324,12 +302,9 @@ export function ReplacementModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="lubricant_type">
-                {t("lubricant_type")}
-              </Label>
+            <Field label={t("lubricant_type")} htmlFor="lubricant_type">
               <Select
                 value={lubricantType || undefined}
                 onValueChange={setLubricantType}
@@ -346,12 +321,9 @@ export function ReplacementModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="service_date">
-                {t("service_date")} <span className="text-destructive">*</span>
-              </Label>
+            <Field label={t("service_date")} htmlFor="service_date" required>
               <Input
                 id="service_date"
                 name="service_date"
@@ -360,12 +332,9 @@ export function ReplacementModal({
                 required
                 disabled={isPending}
               />
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="consumption">
-                {t("consumption")}
-              </Label>
+            <Field label={t("consumption")} htmlFor="consumption">
               <Input
                 id="consumption"
                 name="consumption"
@@ -375,10 +344,10 @@ export function ReplacementModal({
                 disabled={isPending}
                 onWheel={(e) => e.currentTarget.blur()}
               />
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
-          <DialogFooter>
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -394,9 +363,8 @@ export function ReplacementModal({
                   ? t("save")
                   : t("add")}
             </Button>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

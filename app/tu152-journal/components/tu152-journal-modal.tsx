@@ -5,13 +5,10 @@ import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { Flame, Camera, Stamp, ClipboardList, Fuel, Check, Plus } from "lucide-react";
 
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
 import { Textarea } from "@/ui/textarea";
-import { Button } from "@/ui/button";
 import { DatePicker } from "@/ui/date-picker";
 import { DateTimePicker } from "@/ui/datetime-picker";
-import { Switch } from "@/ui/switch";
 import {
   Select,
   SelectContent,
@@ -20,13 +17,6 @@ import {
   SelectValue,
   SearchableSelect,
 } from "@/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/tabs";
 import { RailwayStamp } from "./railway-stamp";
 
@@ -42,6 +32,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/ui/alert";
 
+import { Field } from "@/ui/field";
+import { Modal, ModalFooter } from "@/ui/modal";
 interface Tu152JournalModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -423,18 +415,15 @@ export function Tu152JournalModal({
   ];
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100%-0.75rem)] max-w-[calc(100%-0.75rem)] sm:w-full sm:!max-w-4xl max-h-[95vh] md:max-h-[92vh] overflow-x-hidden overflow-y-auto p-3 sm:p-5 md:p-6 gap-3 sm:gap-4">
-        <DialogHeader className="pr-8 min-w-0">
-          <DialogTitle className="text-base sm:text-lg truncate">
-            {editData ? t("title_edit") : t("title")}
-          </DialogTitle>
-          <DialogDescription className="hidden md:block">
-            {t("description")}
-          </DialogDescription>
-        </DialogHeader>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={editData ? t("title_edit") : t("title")}
+      description={t("description")}
+      size="xl"
+    >
 
-        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5 min-w-0">
+        <form onSubmit={handleSubmit} className="space-y-5 min-w-0">
           {/* Inputs / selects / buttons / textareas are responsive globally via ui/* */}
           {lockedLocomotiveId ? (
             <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-1.5 sm:py-2 text-sm flex items-baseline gap-2">
@@ -450,10 +439,7 @@ export function Tu152JournalModal({
               </span>
             </div>
           ) : (
-            <div>
-              <Label htmlFor="locomotive_id">
-                {t("locomotive")} <span className="text-destructive ml-1">*</span>
-              </Label>
+            <Field label={t("locomotive")} htmlFor="locomotive_id" required>
               <SearchableSelect
                 value={locomotiveId}
                 onValueChange={setLocomotiveId}
@@ -469,7 +455,7 @@ export function Tu152JournalModal({
                 disabled={loadingLocomotives || isPending || Boolean(editData)}
                 triggerClassName="w-full mb-0"
               />
-            </div>
+            </Field>
           )}
 
           <Tabs defaultValue={defaultTab}>
@@ -510,8 +496,7 @@ export function Tu152JournalModal({
               />
               {energy.enabled && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
-                  <div>
-                    <Label>{t("energy_type")}</Label>
+                  <Field label={t("energy_type")}>
                     <Select
                       value={energy.type_of_journal}
                       onValueChange={(v) =>
@@ -535,11 +520,10 @@ export function Tu152JournalModal({
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                  </Field>
 
                   {energy.type_of_journal === "FUEL" && (
-                    <div>
-                      <Label>{t("energy_weight")}</Label>
+                    <Field label={t("energy_weight")}>
                       <Input
                         type="number"
                         step="0.01"
@@ -554,12 +538,11 @@ export function Tu152JournalModal({
                         placeholder={t("energy_weight_placeholder")}
                         disabled={isPending}
                       />
-                    </div>
+                    </Field>
                   )}
 
                   {energy.type_of_journal === "ELECTRICITY" && (
-                    <div>
-                      <Label>{t("energy_kv")}</Label>
+                    <Field label={t("energy_kv")}>
                       <Input
                         type="number"
                         step="0.01"
@@ -574,11 +557,10 @@ export function Tu152JournalModal({
                         placeholder={t("energy_kv_placeholder")}
                         disabled={isPending}
                       />
-                    </div>
+                    </Field>
                   )}
 
-                  <div>
-                    <Label>{t("date_of_receipt")}</Label>
+                  <Field label={t("date_of_receipt")}>
                     <DatePicker
                       value={energy.date_of_receipt}
                       onValueChange={(d) =>
@@ -587,10 +569,9 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_date")}
                       disabled={isPending}
                     />
-                  </div>
+                  </Field>
 
-                  <div>
-                    <Label>{t("receiver")}</Label>
+                  <Field label={t("receiver")}>
                     <Input
                       value={energy.receiver}
                       onChange={(e) =>
@@ -602,9 +583,8 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_full_name")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("sender")}</Label>
+                  </Field>
+                  <Field label={t("sender")}>
                     <Input
                       value={energy.sender}
                       onChange={(e) =>
@@ -616,7 +596,7 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_full_name")}
                       disabled={isPending}
                     />
-                  </div>
+                  </Field>
                 </div>
               )}
             </TabsContent>
@@ -634,8 +614,7 @@ export function Tu152JournalModal({
               />
               {fire.enabled && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
-                  <div>
-                    <Label>{t("fire_name")}</Label>
+                  <Field label={t("fire_name")}>
                     <Input
                       value={fire.name}
                       onChange={(e) =>
@@ -644,9 +623,8 @@ export function Tu152JournalModal({
                       placeholder={t("fire_name_placeholder")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("count")}</Label>
+                  </Field>
+                  <Field label={t("count")}>
                     <Input
                       type="number"
                       min={0}
@@ -657,9 +635,8 @@ export function Tu152JournalModal({
                       placeholder={t("count_placeholder")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("receiver")}</Label>
+                  </Field>
+                  <Field label={t("receiver")}>
                     <Input
                       value={fire.receiver}
                       onChange={(e) =>
@@ -671,9 +648,8 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_full_name")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("sender")}</Label>
+                  </Field>
+                  <Field label={t("sender")}>
                     <Input
                       value={fire.sender}
                       onChange={(e) =>
@@ -685,7 +661,7 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_full_name")}
                       disabled={isPending}
                     />
-                  </div>
+                  </Field>
                 </div>
               )}
             </TabsContent>
@@ -703,8 +679,7 @@ export function Tu152JournalModal({
               />
               {camera.enabled && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
-                  <div>
-                    <Label>{t("camera_name")}</Label>
+                  <Field label={t("camera_name")}>
                     <Input
                       value={camera.name}
                       onChange={(e) =>
@@ -713,9 +688,8 @@ export function Tu152JournalModal({
                       placeholder={t("camera_name_placeholder")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("count")}</Label>
+                  </Field>
+                  <Field label={t("count")}>
                     <Input
                       type="number"
                       min={0}
@@ -729,9 +703,8 @@ export function Tu152JournalModal({
                       placeholder={t("count_placeholder")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("receiver")}</Label>
+                  </Field>
+                  <Field label={t("receiver")}>
                     <Input
                       value={camera.receiver}
                       onChange={(e) =>
@@ -743,9 +716,8 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_full_name")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("sender")}</Label>
+                  </Field>
+                  <Field label={t("sender")}>
                     <Input
                       value={camera.sender}
                       onChange={(e) =>
@@ -757,7 +729,7 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_full_name")}
                       disabled={isPending}
                     />
-                  </div>
+                  </Field>
                 </div>
               )}
             </TabsContent>
@@ -807,8 +779,7 @@ export function Tu152JournalModal({
                       className="w-72 sm:w-80"
                     />
                   </div>
-                  <div>
-                    <Label>{t("stamp_applied_at")}</Label>
+                  <Field label={t("stamp_applied_at")}>
                     <DatePicker
                       value={stamp.stamp_applied_at}
                       onValueChange={(d) =>
@@ -817,7 +788,7 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_date")}
                       disabled={isPending}
                     />
-                  </div>
+                  </Field>
                 </div>
               )}
             </TabsContent>
@@ -835,8 +806,7 @@ export function Tu152JournalModal({
               />
               {revision.enabled && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4 [&_[data-slot=input]]:mb-0 [&_[data-slot=textarea]]:mb-0 [&_button[role=combobox]]:mb-0">
-                  <div>
-                    <Label>{t("inspection_type")}</Label>
+                  <Field label={t("inspection_type")}>
                     <Select
                       value={revision.inspection_type}
                       onValueChange={(v) =>
@@ -864,9 +834,8 @@ export function Tu152JournalModal({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div>
-                    <Label>{t("train_driver")}</Label>
+                  </Field>
+                  <Field label={t("train_driver")}>
                     <Input
                       value={revision.train_driver}
                       onChange={(e) =>
@@ -878,9 +847,8 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_full_name")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("table_number")}</Label>
+                  </Field>
+                  <Field label={t("table_number")}>
                     <Input
                       value={revision.table_number}
                       onChange={(e) =>
@@ -892,9 +860,8 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_table_number")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div>
-                    <Label>{t("revision_code")}</Label>
+                  </Field>
+                  <Field label={t("revision_code")}>
                     <Input
                       value={revision.code}
                       onChange={(e) =>
@@ -906,9 +873,8 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_revision_code")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label>{t("revision_date")}</Label>
+                  </Field>
+                  <Field label={t("revision_date")} span="full">
                     <DateTimePicker
                       value={revision.date}
                       onValueChange={(d) =>
@@ -917,9 +883,8 @@ export function Tu152JournalModal({
                       placeholder={t("placeholder_datetime")}
                       disabled={isPending}
                     />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label>{t("revision_issue")}</Label>
+                  </Field>
+                  <Field label={t("revision_issue")} span="full">
                     <Textarea
                       value={revision.issue}
                       onChange={(e) =>
@@ -932,7 +897,7 @@ export function Tu152JournalModal({
                       rows={3}
                       disabled={isPending}
                     />
-                  </div>
+                  </Field>
                 </div>
               )}
             </TabsContent>
@@ -944,27 +909,15 @@ export function Tu152JournalModal({
             </AlertDescription></Alert>
           )}
 
-          <div className="flex flex-row justify-between gap-2 sm:gap-3 pt-2 border-t border-muted">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={isPending}
-              className="w-1/2 sm:w-auto"
-            >
-              {t("cancel")}
-            </Button>
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="w-1/2 sm:w-auto"
-            >
-              {isPending ? t("saving") : editData ? t("update") : t("save")}
-            </Button>
-          </div>
+          <ModalFooter
+            onCancel={onClose}
+            pending={isPending}
+            pendingLabel={t("saving")}
+            submitLabel={editData ? t("update") : t("save")}
+            cancelLabel={t("cancel")}
+          />
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }
 

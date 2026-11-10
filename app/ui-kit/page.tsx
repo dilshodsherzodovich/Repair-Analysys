@@ -26,7 +26,8 @@ import { Checkbox } from "@/ui/checkbox";
 import { EmptyState } from "@/ui/empty-state";
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
+import { Field, FieldGrid } from "@/ui/field";
 import { PageHeader } from "@/ui/page-header";
 import { SearchableSelect } from "@/ui/select";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
@@ -885,7 +886,7 @@ function UiKit() {
       <Section
         id="overlays"
         title="Overlays"
-        description="Modal is the one dialog: sizes sm / md / lg / xl, actions right-aligned, primary last."
+        description="Modal is the one dialog (sm / md / lg / xl / 2xl): title bar, scrolling body, ModalFooter with Cancel then the primary action. Forms: FieldGrid of Field (label, required *, hint or error); all controls 36px."
       >
         <Panel>
           <Button variant="outline" onClick={() => setModalOpen(true)}>
@@ -896,18 +897,32 @@ function UiKit() {
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
           title="Lokomotivni tahrirlash"
-          size="md"
+          description="Zavod ma'lumotlarini yangilang"
+          size="lg"
         >
-          <div className="space-y-1.5">
-            <Label htmlFor="kit-modal-input">Zavod raqami</Label>
-            <Input id="kit-modal-input" defaultValue="36539" />
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setModalOpen(false)}>
-              Bekor qilish
-            </Button>
-            <Button onClick={() => setModalOpen(false)}>Saqlash</Button>
-          </div>
+          <form
+            className="space-y-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setModalOpen(false);
+            }}
+          >
+            <FieldGrid columns={2}>
+              <Field label="Zavod raqami" htmlFor="kit-modal-number" required>
+                <Input id="kit-modal-number" defaultValue="36539" />
+              </Field>
+              <Field label="Ishlab chiqarilgan yili" htmlFor="kit-modal-year" hint="To'rt xonali yil">
+                <Input id="kit-modal-year" type="number" defaultValue="2012" />
+              </Field>
+              <Field label="Seksiya" error="Seksiyani tanlang">
+                <Input aria-invalid placeholder="A / B" />
+              </Field>
+              <Field label="Izoh" span="full">
+                <Textarea rows={3} />
+              </Field>
+            </FieldGrid>
+            <ModalFooter onCancel={() => setModalOpen(false)} submitLabel="Saqlash" />
+          </form>
         </Modal>
       </Section>
     </Page>

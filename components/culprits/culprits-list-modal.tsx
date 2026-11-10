@@ -1,41 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 import { Input } from "@/ui/input";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
-import {
-  Plus,
-  Check,
-  Trash2,
-  X,
-  Lock,
-  Loader2,
-  Pencil,
-  Train,
-  MapPin,
-} from "lucide-react";
+import { Plus, Check, Trash2, X, Lock, Loader2, Pencil, Train, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import {
-  useCulprits,
-  useCreateCulprit,
-  useUpdateCulprit,
-  useDeleteCulprit,
-} from "@/api/hooks/use-culprits";
+import { useCulprits, useCreateCulprit, useUpdateCulprit, useDeleteCulprit } from "@/api/hooks/use-culprits";
 import type { Culprit } from "@/api/types/culprits";
 import type { DelayEntry } from "@/api/types/delays";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 interface CulpritsListModalProps {
   isOpen: boolean;
@@ -650,11 +628,11 @@ export function CulpritsListModal({
             </TableBody>
           </Table>
 
-          <div className="flex justify-end pt-2">
+          <ModalFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("close")}
             </Button>
-          </div>
+          </ModalFooter>
         </div>
       </Modal>
 
