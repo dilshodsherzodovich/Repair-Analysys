@@ -18,6 +18,7 @@ import { PageHeader } from "@/ui/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { ExportActions } from "@/ui/export-actions";
 import { FilterBar } from "@/ui/filter-bar";
+import { Page } from "@/ui/page";
 
 const SUPERVISOR_ROLES = ["admin", "dispatcher", "operator", "rb_admin"];
 
@@ -141,7 +142,7 @@ export default function DelayedReportPage() {
   if (isPending) return <PageLoading />;
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header ─── */}
       <PageHeader
         title={t("delayedReportTitle")}
@@ -265,7 +266,7 @@ export default function DelayedReportPage() {
           );
         })
       )}
-    </div>
+    </Page>
   );
 }
 

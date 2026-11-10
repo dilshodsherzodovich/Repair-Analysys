@@ -36,6 +36,7 @@ import { format } from "date-fns";
 import { FileSpreadsheet } from "lucide-react";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 export default function PantografPage() {
   const t = useTranslations("PantographPage");
@@ -352,7 +353,7 @@ export default function PantografPage() {
   ];
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -379,10 +380,10 @@ export default function PantografPage() {
         locomotiveOptions={statLocomotiveOptions}
       />
 
-      <div className="px-6 py-4">
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -401,7 +402,7 @@ export default function PantografPage() {
           emptyTitle={t("empty_title")}
           emptyDescription={t("empty_description")}
         />
-      </div>
+      </>
 
       <PantographModal
         isOpen={isModalOpen}
@@ -411,6 +412,6 @@ export default function PantografPage() {
         mode={modalMode}
         isPending={isModalPending}
       />
-    </div>
+    </Page>
   );
 }

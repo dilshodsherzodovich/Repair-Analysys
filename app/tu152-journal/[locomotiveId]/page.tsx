@@ -38,6 +38,7 @@ import UnauthorizedPage from "../../unauthorized/page";
 import { Tu152JournalModal } from "../components/tu152-journal-modal";
 import { RailwayStamp } from "../components/railway-stamp";
 import { Alert, AlertDescription } from "@/ui/alert";
+import { Page } from "@/ui/page";
 
 type TabKey = "energy" | "fire" | "camera" | "stamp" | "revision";
 
@@ -243,10 +244,10 @@ export default function Tu152LocomotiveHandbookPage() {
   }
 
   return (
-    <>
+    <Page>
       <PageHeader title={t("hero_label")} />
 
-      <div className="pb-8">
+      <>
         {/* Locomotive line + add button */}
         <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
           <div className="min-w-0">
@@ -324,7 +325,7 @@ export default function Tu152LocomotiveHandbookPage() {
             )}
           </>
         )}
-      </div>
+      </>
 
       <Tu152JournalModal
         isOpen={isModalOpen}
@@ -353,7 +354,7 @@ export default function Tu152LocomotiveHandbookPage() {
         isDoingAction={deleteMutation.isPending}
         isDoingActionText={tList("deleting")}
       />
-    </>
+    </Page>
   );
 }
 

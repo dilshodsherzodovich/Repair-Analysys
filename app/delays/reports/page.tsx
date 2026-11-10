@@ -22,6 +22,7 @@ import { useTranslations } from "next-intl";
 import { authService } from "@/api/services/auth.service";
 import { ExportActions } from "@/ui/export-actions";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
+import { Page } from "@/ui/page";
 
 export default function DelayReportsPage() {
   const t = useTranslations("DelayReportsPage");
@@ -185,7 +186,7 @@ export default function DelayReportsPage() {
   ]);
 
   return (
-    <div className="min-h-screen">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -231,6 +232,6 @@ export default function DelayReportsPage() {
           end_date={end_date}
         />
       )}
-    </div>
+    </Page>
   );
 }

@@ -8,6 +8,7 @@ import { PageHeader } from "@/ui/page-header";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 export default function DepoLocomotives() {
   const t = useTranslations("DepoPage");
@@ -41,7 +42,7 @@ export default function DepoLocomotives() {
   ];
 
   return (
-    <>
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -54,10 +55,10 @@ export default function DepoLocomotives() {
         }
       />
 
-      <div className="mt-4">
-      </div>
+      <>
+      </>
 
       <LocomotivesTable />
-    </>
+    </Page>
   );
 }

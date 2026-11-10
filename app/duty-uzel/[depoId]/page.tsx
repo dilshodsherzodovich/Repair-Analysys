@@ -33,6 +33,7 @@ import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 export default function DutyUzelPage() {
   const t = useTranslations("DutyUzelPage");
@@ -397,7 +398,7 @@ export default function DutyUzelPage() {
   }
 
   return (
-    <>
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -453,7 +454,7 @@ export default function DutyUzelPage() {
             </AlertDescription></Alert>
           )}
 
-          <div className="mt-6">
+          <>
             <ComponentGroupAccordion
               data={visibleOverview}
               isLoading={isLoadingGroupOverview}
@@ -462,11 +463,11 @@ export default function DutyUzelPage() {
               endDate={defectDateEnd}
               locomotiveId={locomotiveIdParam || undefined}
             />
-          </div>
+          </>
         </>
       ) : (
         <>
-          <div className="mt-6">
+          <>
             <PaginatedTable
               columns={columns}
               data={paginatedData}
@@ -483,7 +484,7 @@ export default function DutyUzelPage() {
               emptyTitle={t("empty_title")}
               emptyDescription={t("empty_description")}
             />
-          </div>
+          </>
         </>
       )}
 
@@ -495,6 +496,6 @@ export default function DutyUzelPage() {
         isPending={createEntryMutation.isPending || updateEntryMutation.isPending}
         editData={editEntry}
       />
-    </>
+    </Page>
   );
 }

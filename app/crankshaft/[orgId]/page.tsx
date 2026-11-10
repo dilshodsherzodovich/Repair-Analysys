@@ -39,6 +39,7 @@ import { Check } from "lucide-react";
 import { exportCrankshaftExcel } from "@/utils/crankshaft-excel-export";
 import { Alert, AlertDescription } from "@/ui/alert";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 /** Edited input text per component id, then per field. */
 type Drafts = Record<number, Record<string, string>>;
@@ -478,7 +479,7 @@ function CrankshaftPageContent({
   const columnCount = 5 + valueFields.length + (canEdit ? 1 : 0);
 
   return (
-    <div className="space-y-6">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -597,7 +598,7 @@ function CrankshaftPageContent({
             )}
           </TableBody>
         </GridTable>
-    </div>
+    </Page>
   );
 }
 

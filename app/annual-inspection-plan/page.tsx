@@ -20,6 +20,7 @@ import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { ExportActions } from "@/ui/export-actions";
 import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { SearchableSelect } from "@/ui/select";
+import { Page } from "@/ui/page";
 
 const ALL = "0";
 
@@ -135,7 +136,7 @@ export default function AnnualInspectionPlanPage() {
       : activeOrgs.some((o) => o.inspection_types.some((t) => t.locomotive_models.length > 0));
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* Header */}
       <PageHeader
         title="Texnik ko&apos;riklar yillik rejasi"
@@ -289,6 +290,6 @@ export default function AnnualInspectionPlanPage() {
       ) : (
         <PlanEditGrid key={`${year}-${editOrgId}`} year={year} organization={editOrgId} />
       )}
-    </div>
+    </Page>
   );
 }

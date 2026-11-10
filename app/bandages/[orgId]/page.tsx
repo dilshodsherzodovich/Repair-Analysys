@@ -32,6 +32,7 @@ import { exportBandagesExcel } from "@/utils/bandages-excel-export";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { Alert, AlertDescription } from "@/ui/alert";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 function BandagesPageContent({
   user,
@@ -200,7 +201,7 @@ function BandagesPageContent({
   );
 
   return (
-    <div className="space-y-6">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -237,7 +238,7 @@ function BandagesPageContent({
         onDone={handleDone}
         activeGroup={activeGroup}
       />
-    </div>
+    </Page>
   );
 }
 

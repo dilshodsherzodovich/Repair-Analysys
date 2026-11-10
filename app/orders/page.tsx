@@ -41,6 +41,7 @@ import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { responsibleOrganizations } from "@/data";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 export default function OrdersPage() {
   const t = useTranslations("OrdersPage");
@@ -462,7 +463,7 @@ export default function OrdersPage() {
   ];
 
   return (
-    <div className="min-h-full ">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -522,10 +523,10 @@ export default function OrdersPage() {
         locomotiveOptions={statLocomotiveOptions}
       />
 
-      <div className="px-6 py-4">
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -564,7 +565,7 @@ export default function OrdersPage() {
           emptyTitle={t("empty_title")}
           emptyDescription={t("empty_description")}
         />
-      </div>
+      </>
 
       <OrderModal
         isOpen={isModalOpen}
@@ -601,6 +602,6 @@ export default function OrdersPage() {
         isDoingAction={confirmOrderMutation.isPending}
         isDoingActionText={t("confirm_dialog.confirming")}
       />
-    </div>
+    </Page>
   );
 }

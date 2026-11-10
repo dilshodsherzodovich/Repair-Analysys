@@ -18,6 +18,7 @@ import { ExportActions } from "@/ui/export-actions";
 import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { DateRangeField } from "@/ui/date-range-field";
 import { SearchableSelect } from "@/ui/select";
+import { Page } from "@/ui/page";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -149,7 +150,7 @@ function DelayedRepairDurationReportPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header Card ─── */}
       <PageHeader
         title={t("title")}
@@ -308,7 +309,7 @@ function DelayedRepairDurationReportPage() {
           )}
         </div>
       )}
-    </div>
+    </Page>
   );
 }
 

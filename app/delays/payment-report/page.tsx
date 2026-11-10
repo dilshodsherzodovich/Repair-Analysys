@@ -9,6 +9,7 @@ import {
   SrivPaymentReport,
 } from "@/components/delays/sriv-payment-report";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 export default function SrivPaymentReportPage() {
   const t = useTranslations("SrivPaymentReportPage");
@@ -25,7 +26,7 @@ export default function SrivPaymentReportPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -33,6 +34,6 @@ export default function SrivPaymentReportPage() {
         filters={<SrivPaymentFilters />}
       />
       <SrivPaymentReport />
-    </div>
+    </Page>
   );
 }

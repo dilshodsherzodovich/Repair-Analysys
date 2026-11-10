@@ -15,6 +15,7 @@ import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { SearchableSelect } from "@/ui/select";
+import { Page } from "@/ui/page";
 
 const LOCOMOTIVE_TYPES = [
   "electric_loco",
@@ -94,7 +95,7 @@ function LocomotiveGpsReportPage() {
     setFilters({ locomotive_type: "", service_type: "", locomotive_model: "" });
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header Card ─── */}
       <PageHeader
         title={t("title")}
@@ -167,7 +168,7 @@ function LocomotiveGpsReportPage() {
           ))}
         </div>
       )}
-    </div>
+    </Page>
   );
 }
 

@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ExportActions } from "@/ui/export-actions";
 import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { DateRangeField } from "@/ui/date-range-field";
+import { Page } from "@/ui/page";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -132,7 +133,7 @@ function Txk2ReportPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header Card ─── */}
       <PageHeader
         title={t("title")}
@@ -268,7 +269,7 @@ function Txk2ReportPage() {
           )}
         </div>
       )}
-    </div>
+    </Page>
   );
 }
 

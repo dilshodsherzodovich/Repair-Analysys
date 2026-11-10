@@ -66,6 +66,7 @@ import { authService } from "@/api/services/auth.service";
 import { Button } from "@/ui/button";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 // Stages that still have a "next" awaited step (terminal stages excluded)
 const STAGES_WITH_NEXT: DelayStage[] = [
@@ -759,7 +760,7 @@ export default function DelaysPage() {
   }, [t]);
 
   return (
-    <div className="min-h-full ">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -851,10 +852,10 @@ export default function DelaysPage() {
         }
       />
 
-      <div className="px-6 py-4">
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -1017,7 +1018,7 @@ export default function DelaysPage() {
           deletePermission="delete_delay"
           editPermission="edit_delay"
         />
-      </div>
+      </>
 
       <DelayModal
         isOpen={isModalOpen}
@@ -1114,6 +1115,6 @@ export default function DelaysPage() {
         isDoingAction={deleteMutation.isPending}
         variant="danger"
       />
-    </div>
+    </Page>
   );
 }

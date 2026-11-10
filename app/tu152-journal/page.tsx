@@ -3,10 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Search, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { PageHeader } from "@/ui/page-header";
-import { Input } from "@/ui/input";
 import { EmptyState } from "@/ui/empty-state";
 import { canAccessSection } from "@/lib/permissions";
 import { authService } from "@/api/services/auth.service";
@@ -14,9 +13,12 @@ import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { SortedLocomotiveData } from "@/api/types/locomotive";
 
 import UnauthorizedPage from "../unauthorized/page";
+import { Page } from "@/ui/page";
+import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
 
 export default function Tu152JournalPage() {
   const t = useTranslations("Tu152JournalPage");
+  const tc = useTranslations("Common");
 
   const currentUser = authService.getUser();
   if (!currentUser || !canAccessSection(currentUser, "tu152-journal")) {
@@ -48,22 +50,25 @@ export default function Tu152JournalPage() {
   }, [allLocomotives, searchTerm]);
 
   return (
-    <>
-      <PageHeader title={t("title")} description={t("description")} />
+    <Page>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        filters={
+          <FilterBar>
+            <FilterField label={tc("search")} width="lg">
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={t("locomotive_search_placeholder")}
+              />
+            </FilterField>
+            <FilterReset active={Boolean(searchTerm)} onReset={() => setSearchTerm("")} />
+          </FilterBar>
+        }
+      />
 
-      <div className="pb-6 md:pb-8">
-        <div className="mb-3 md:mb-4 max-w-md">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-subtle pointer-events-none" />
-            <Input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={t("locomotive_search_placeholder")}
-              className="pl-8 mb-0 h-9"
-            />
-          </div>
-        </div>
+      <div>
 
         {isPending && (
           <div className="flex items-center justify-center py-12 text-muted-foreground">
@@ -93,7 +98,7 @@ export default function Tu152JournalPage() {
           </div>
         )}
       </div>
-    </>
+    </Page>
   );
 }
 

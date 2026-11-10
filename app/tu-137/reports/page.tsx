@@ -15,6 +15,7 @@ import { authService, getEmmDepoId } from "@/api/services/auth.service";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { ExportActions } from "@/ui/export-actions";
 import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
+import { Page } from "@/ui/page";
 
 const getProgressBgColor = (percent: number) => {
   if (percent < 50) return "bg-destructive";
@@ -136,7 +137,7 @@ export default function Tu137ReportsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-surface-muted pb-12">
+    <Page>
       <PageHeader
         title={t("reports_title")}
         breadcrumbs={breadcrumbs}
@@ -160,7 +161,7 @@ export default function Tu137ReportsPage() {
         }
       />
 
-      <div className="px-6 py-6 space-y-6">
+      <>
 
         {/* Global Stats Cards */}
         {isLoading ? (
@@ -491,7 +492,7 @@ export default function Tu137ReportsPage() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </>
+    </Page>
   );
 }

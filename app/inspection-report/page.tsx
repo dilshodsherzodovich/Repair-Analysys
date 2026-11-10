@@ -23,6 +23,7 @@ import { ExportActions } from "@/ui/export-actions";
 import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { DateRangeField } from "@/ui/date-range-field";
 import { SearchableSelect } from "@/ui/select";
+import { Page } from "@/ui/page";
 
 export default function InspectionReportPage() {
   const t = useTranslations("Statistics");
@@ -179,7 +180,7 @@ export default function InspectionReportPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header Card ─── */}
       <PageHeader
         icon={FileDown}
@@ -339,6 +340,6 @@ export default function InspectionReportPage() {
           </div>
         )}
       </div>
-    </div>
+    </Page>
   );
 }

@@ -26,6 +26,7 @@ import { PDFExportButton } from "./pdf-export-button";
 import type { PDFExportData } from "@/utils/pdf-export";
 import { PageHeader } from "@/ui/page-header";
 import { FilterBar } from "@/ui/filter-bar";
+import { Page } from "@/ui/page";
 
 export default function ReportDashboard() {
   const t = useTranslations("Reports");
@@ -236,8 +237,8 @@ export default function ReportDashboard() {
     : t("diesel_locs");
 
   return (
-    <div className="min-h-screen">
-      <div className="space-y-4">
+    <Page>
+      <>
 
       {/* ─── Header Card ─── */}
       <PageHeader
@@ -454,8 +455,8 @@ export default function ReportDashboard() {
           )}
         </SectionCard>
       </div>
-      </div>
-    </div>
+      </>
+    </Page>
   );
 }
 

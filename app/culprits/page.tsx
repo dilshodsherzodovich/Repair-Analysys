@@ -26,6 +26,7 @@ import { CulpritFormModal } from "@/components/culprits/culprit-form-modal";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 function formatAmount(amount: string | number): string {
   const value = typeof amount === "string" ? Number(amount) : amount;
@@ -235,7 +236,7 @@ export default function CulpritsPage() {
   );
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -278,10 +279,10 @@ export default function CulpritsPage() {
         }
       />
 
-      <div className="px-6 py-4">
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={data}
@@ -325,7 +326,7 @@ export default function CulpritsPage() {
           emptyTitle={t("empty.title")}
           emptyDescription={t("empty.description")}
         />
-      </div>
+      </>
 
       <CulpritFormModal
         isOpen={isFormOpen}
@@ -350,6 +351,6 @@ export default function CulpritsPage() {
         isDoingAction={deleteMutation.isPending}
         variant="danger"
       />
-    </div>
+    </Page>
   );
 }

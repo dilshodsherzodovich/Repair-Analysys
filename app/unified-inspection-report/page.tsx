@@ -22,6 +22,7 @@ import { SearchableSelect } from "@/ui/select";
 import { ExportActions } from "@/ui/export-actions";
 import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { DateRangeField } from "@/ui/date-range-field";
+import { Page } from "@/ui/page";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -192,7 +193,7 @@ function UnifiedInspectionReportPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header Card ─── */}
       <PageHeader
         title={t("title")}
@@ -283,7 +284,7 @@ function UnifiedInspectionReportPage() {
       {shows("inspections") && <SectionInspections {...data.inspections} />}
       {shows("duration") && <SectionDelayedDuration {...data.delayedDuration} />}
       {shows("entry") && <SectionDelayedEntry {...data.delayedEntry} />}
-    </div>
+    </Page>
   );
 }
 

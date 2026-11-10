@@ -22,6 +22,7 @@ import { FiltersQuery } from "@/ui/filters";
 import { UserData } from "@/api/types/auth";
 import { authService } from "@/api/services/auth.service";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
+import { Page } from "@/ui/page";
 
 type TabValue = "in_progress" | "archive" | "cancelled";
 
@@ -377,7 +378,7 @@ export default function InspectionsPage() {
   );
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
         filters={
@@ -402,7 +403,7 @@ export default function InspectionsPage() {
         }
       />
 
-      <div className="px-6 space-y-4">
+      <>
 
         {isInProgress && (
           <InspectionsGroupedTable
@@ -448,7 +449,7 @@ export default function InspectionsPage() {
             size="md"
           />
         )}
-      </div>
-    </div>
+      </>
+    </Page>
   );
 }

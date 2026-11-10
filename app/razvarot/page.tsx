@@ -28,6 +28,7 @@ import { exportManeuverJournalExcel } from "@/api/services/maneuver-journal";
 import { format } from "date-fns";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 export default function RazvarotPage() {
   const t = useTranslations("ManeuverJournalPage");
@@ -250,7 +251,7 @@ export default function RazvarotPage() {
   ];
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -292,10 +293,10 @@ export default function RazvarotPage() {
         }
       />
 
-      <div className="px-6 py-4">
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -315,7 +316,7 @@ export default function RazvarotPage() {
           emptyTitle={t("empty_title")}
           emptyDescription={t("empty_description")}
         />
-      </div>
+      </>
 
       <ManeuverJournalModal
         isOpen={isModalOpen}
@@ -326,6 +327,6 @@ export default function RazvarotPage() {
         isPending={createMutation.isPending || updateMutation.isPending}
         currentUser={currentUser}
       />
-    </div>
+    </Page>
   );
 }

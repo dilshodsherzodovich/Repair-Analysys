@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { authService } from "@/api/services/auth.service";
 import { CardButton } from "@/ui/card-button";
 import { Chip } from "@/ui/chip";
+import { Page } from "@/ui/page";
 
 const PAGE_SIZE = 20;
 
@@ -201,10 +202,10 @@ export default function Tu152Page() {
   ];
 
   return (
-    <div className="min-h-full bg-surface-muted pb-12">
+    <Page>
       <PageHeader title={t("title")} description="" breadcrumbs={breadcrumbs} />
 
-      <div className="px-6 py-6 space-y-8">
+      <>
         {/* Date badge */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span className="font-semibold text-foreground-secondary">{t("generated_at")}:</span>
@@ -410,7 +411,7 @@ export default function Tu152Page() {
             )}
           </section>
         )}
-      </div>
-    </div>
+      </>
+    </Page>
   );
 }

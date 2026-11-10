@@ -10,6 +10,7 @@ import UnauthorizedPage from "../unauthorized/page";
 import { NosozliklarTab } from "@/components/defective-works/nosozliklar-tab";
 import { TU152Tab } from "@/components/defective-works/tu152-tab";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 export default function DefectiveWorksPage() {
   const t = useTranslations("DefectiveWorksPage");
@@ -43,14 +44,14 @@ export default function DefectiveWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
       />
 
-      <div className="px-6">
+      <>
         <Tabs value={currentMainTab} onValueChange={handleMainTabChange}>
           <TabsList className="bg-muted p-1 gap-0 border-0 rounded-lg inline-flex">
             <TabsTrigger value="nosozliklar">
@@ -61,10 +62,10 @@ export default function DefectiveWorksPage() {
             )}
           </TabsList>
         </Tabs>
-      </div>
+      </>
 
       {currentMainTab === "nosozliklar" && <NosozliklarTab />}
       {!isEchUser && currentMainTab === "tu152" && <TU152Tab />}
-    </div>
+    </Page>
   );
 }

@@ -16,6 +16,7 @@ import { ComponentGroupComponents } from "../../components/component-group-compo
 import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 /** One component group on its own page — opened from the group view's list. */
 export default function DutyUzelGroupPage() {
@@ -115,7 +116,7 @@ export default function DutyUzelGroupPage() {
   }
 
   return (
-    <>
+    <Page>
       <PageHeader
         title={data?.group?.name ?? t("groups_title")}
         description={t("title")}
@@ -136,8 +137,8 @@ export default function DutyUzelGroupPage() {
         actions={<ExportActions onExcel={data ? handleExport : undefined} busy={isExporting ? "excel" : null} />}
       />
 
-      <div className="mt-4">
-      </div>
+      <>
+      </>
 
       {errorMessage && (
         <Alert variant="destructive" className="mt-2"><AlertDescription>
@@ -168,6 +169,6 @@ export default function DutyUzelGroupPage() {
           />
         </div>
       )}
-    </>
+    </Page>
   );
 }

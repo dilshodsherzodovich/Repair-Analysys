@@ -19,6 +19,7 @@ import { RECOVERY_STAGE_VALUES } from "@/api/types/recovery";
 import type { DelayStage } from "@/api/types/delays";
 import { RecoveryCulpritsModal } from "@/components/recovery/recovery-culprits-modal";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 function formatAmount(amount: string | number): string {
   const value = typeof amount === "string" ? Number(amount) : amount;
@@ -233,7 +234,7 @@ export default function RecoveryPage() {
   }, [locomotivesData, t]);
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -283,10 +284,10 @@ export default function RecoveryPage() {
         }
       />
 
-      <div className="px-6 py-4">
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={data}
@@ -302,7 +303,7 @@ export default function RecoveryPage() {
           emptyTitle={t("empty.title")}
           emptyDescription={t("empty.description")}
         />
-      </div>
+      </>
 
       <RecoveryCulpritsModal
         isOpen={isModalOpen}
@@ -313,6 +314,6 @@ export default function RecoveryPage() {
         delay={selected}
         mode={mode}
       />
-    </div>
+    </Page>
   );
 }

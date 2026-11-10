@@ -14,6 +14,7 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 const PAGE_SIZE = 20;
 
@@ -142,7 +143,7 @@ export default function Tu137Page() {
   ];
 
   return (
-    <div className="min-h-full bg-surface-muted pb-12">
+    <Page>
       <PageHeader
         title={t("title")}
         breadcrumbs={breadcrumbs}
@@ -161,7 +162,7 @@ export default function Tu137Page() {
         }
       />
 
-      <div className="px-6 py-6 space-y-6">
+      <>
 
         {/* Records Table */}
         {isLoading ? (
@@ -196,7 +197,7 @@ export default function Tu137Page() {
             />
           </div>
         )}
-      </div>
-    </div>
+      </>
+    </Page>
   );
 }

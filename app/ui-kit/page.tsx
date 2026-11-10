@@ -45,6 +45,7 @@ import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
 import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
 import { DateRangeField, type DateRange } from "@/ui/date-range-field";
+import { Page } from "@/ui/page";
 
 /**
  * The design system reference: every token and the standard component for
@@ -283,7 +284,7 @@ function UiKit() {
   };
 
   return (
-    <div className="space-y-6">
+    <Page>
       <PageHeader
         title="UI kit"
         description="Design tokens and the standard component for each job. Build pages only from these."
@@ -915,7 +916,7 @@ function UiKit() {
           </div>
         </Modal>
       </Section>
-    </div>
+    </Page>
   );
 }
 

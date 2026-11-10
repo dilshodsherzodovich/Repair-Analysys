@@ -159,3 +159,11 @@ strip, buttons or wording.
 - Shared actions and labels come from `Common.*` (add, edit, delete, save,
   cancel, reset, search, all, organization, period, export_*, exporting).
   Pages do not define their own copies of these.
+
+### Page spacing
+
+- Every page's root is `<Page>` (sections 24px apart). The app layout already
+  pads the page and paints the background.
+- Sections never add their own page gutters or gaps (`px-6`, `py-4`, `mt-6`,
+  `mb-4`, `pb-12`, `min-h-screen`, page background). A section that renders
+  several blocks (a tab, a report body) uses `<Page>` as its own root.

@@ -20,6 +20,7 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
 import { Button } from "@/ui/button";
 import { FilterPanel } from "@/ui/filter-bar";
+import { Page } from "@/ui/page";
 
 export function TU152Tab() {
   const t = useTranslations("TU152Tab");
@@ -323,8 +324,8 @@ export function TU152Tab() {
   );
 
   return (
-    <>
-      <div className="px-6 py-4">
+    <Page>
+      <>
         <FilterPanel className="mb-4">
           <PageFilters
             filters={[
@@ -362,9 +363,9 @@ export function TU152Tab() {
             className="!mb-0 flex-nowrap"
           />
         </FilterPanel>
-      </div>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <div className="rounded-lg overflow-hidden ">
           <div className="w-full overflow-x-auto">
             <PaginatedTable
@@ -490,7 +491,7 @@ export function TU152Tab() {
             </div>
           )}
         </div>
-      </div>
+      </>
 
       <TU152Modal
         isOpen={isModalOpen}
@@ -502,6 +503,6 @@ export function TU152Tab() {
         entry={selectedEntry}
         isPending={updateMutation.isPending}
       />
-    </>
+    </Page>
   );
 }

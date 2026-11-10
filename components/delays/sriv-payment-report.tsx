@@ -30,6 +30,7 @@ import {
 } from "@/ui/table";
 import { DateRangeField } from "@/ui/date-range-field";
 import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { Page } from "@/ui/page";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -168,7 +169,7 @@ export function SrivPaymentReport() {
   const rows = data?.rows ?? [];
 
   return (
-    <div className="space-y-5 px-6 pb-8">
+    <Page>
       {isLoading ? (
         <SkeletonState />
       ) : error ? (
@@ -369,7 +370,7 @@ export function SrivPaymentReport() {
         params={drilldown?.params}
         title={drilldown?.title ?? ""}
       />
-    </div>
+    </Page>
   );
 }
 

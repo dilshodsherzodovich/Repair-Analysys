@@ -38,6 +38,7 @@ import { isEchAccount } from "@/lib/permissions";
 import { FilterPanel } from "@/ui/filter-bar";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 export function NosozliklarTab() {
   const t = useTranslations("NosozliklarTab");
@@ -500,7 +501,7 @@ export function NosozliklarTab() {
   }, [remarkGroupsData, remark_group, t]);
 
   return (
-    <>
+    <Page>
       {!isEchUser && (
         <StatsPanel
           title={t("statistics.title")}
@@ -511,7 +512,7 @@ export function NosozliklarTab() {
         />
       )}
 
-      <div className="px-6 py-4">
+      <>
         <FilterPanel
           actions={
             <>
@@ -611,9 +612,9 @@ export function NosozliklarTab() {
             hasDateRangePicker
           />
         </FilterPanel>
-      </div>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -644,7 +645,7 @@ export function NosozliklarTab() {
           deletePermission="delete_defective_work"
           editPermission="edit_defective_work"
         />
-      </div>
+      </>
 
       <DefectiveWorkModal
         isOpen={isModalOpen}
@@ -661,6 +662,6 @@ export function NosozliklarTab() {
           updateMutation.isPending
         }
       />
-    </>
+    </Page>
   );
 }

@@ -22,6 +22,7 @@ import { Txk13Filters } from "./txk13-filters";
 import { authService } from "@/api/services/auth.service";
 import { Input } from "@/ui/input";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
@@ -315,7 +316,7 @@ export default function LocomotiveMileageReportPage() {
   const isEmpty = !isLoadingReport && orgs.length === 0;
 
   return (
-    <div className="space-y-6">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -584,6 +585,6 @@ export default function LocomotiveMileageReportPage() {
         locomotiveId={totalMileageModal?.locomotiveId ?? 0}
         locomotiveName={totalMileageModal?.locomotiveName ?? ""}
       />
-    </div>
+    </Page>
   );
 }

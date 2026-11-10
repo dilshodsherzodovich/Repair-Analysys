@@ -24,6 +24,7 @@ import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 export default function ReplacementSchedulePage() {
   const t = useTranslations("ReplacementSchedulePage");
@@ -257,7 +258,7 @@ export default function ReplacementSchedulePage() {
   );
 
   return (
-    <>
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -276,10 +277,10 @@ export default function ReplacementSchedulePage() {
         }
       />
 
-      <div className="mt-4">
-      </div>
+      <>
+      </>
 
-      <div className="mt-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -298,7 +299,7 @@ export default function ReplacementSchedulePage() {
           editPermission="edit_locomotive_replacement_oil"
           deletePermission="delete_locomotive_replacement_oil"
         />
-      </div>
+      </>
 
       <ReplacementModal
         isOpen={isModalOpen}
@@ -311,7 +312,7 @@ export default function ReplacementSchedulePage() {
         replacement={selectedReplacement}
         mode={modalMode}
       />
-    </>
+    </Page>
   );
 }
 

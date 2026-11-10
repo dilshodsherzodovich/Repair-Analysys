@@ -21,6 +21,7 @@ import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
 import { AddButton } from "@/ui/add-button";
+import { Page } from "@/ui/page";
 
 export default function LocomotivePassportInspectionsPage() {
   const t = useTranslations("LocomotivePassportInspectionsPage");
@@ -316,7 +317,7 @@ export default function LocomotivePassportInspectionsPage() {
   );
 
   return (
-    <>
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -330,10 +331,10 @@ export default function LocomotivePassportInspectionsPage() {
         actions={<AddButton onClick={handleCreate} permission="create_locomotive_passport_inspection" />}
       />
 
-      <div className="mt-4">
-      </div>
+      <>
+      </>
 
-      <div className="mt-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -352,7 +353,7 @@ export default function LocomotivePassportInspectionsPage() {
           editPermission="edit_locomotive_passport_inspection"
           deletePermission="delete_locomotive_passport_inspection"
         />
-      </div>
+      </>
 
       <PassportInspectionModal
         isOpen={isModalOpen}
@@ -365,6 +366,6 @@ export default function LocomotivePassportInspectionsPage() {
         inspection={selectedInspection}
         mode={modalMode}
       />
-    </>
+    </Page>
   );
 }

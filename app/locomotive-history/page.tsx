@@ -18,6 +18,7 @@ import { generateLocomotiveInspectionsPdf } from "@/utils/locomotive-inspections
 import { generateLocomotiveInspectionsDocx } from "@/utils/locomotive-inspections-docx-export";
 import { ExportActions } from "@/ui/export-actions";
 import { PageHeader } from "@/ui/page-header";
+import { Page } from "@/ui/page";
 
 function LocomotiveHistoryPage() {
   const t = useTranslations("LocomotiveHistory");
@@ -142,7 +143,7 @@ function LocomotiveHistoryPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <Page>
       <PageHeader
         title={t("pageTitle")}
         actions={
@@ -249,7 +250,7 @@ function LocomotiveHistoryPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </Page>
   );
 }
 

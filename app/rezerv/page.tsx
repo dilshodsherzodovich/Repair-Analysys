@@ -30,6 +30,7 @@ import {
 } from "@/ui/pagination";
 import { Badge } from "@/ui/badge";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 type TabValue = "current" | "archive";
 
@@ -134,13 +135,13 @@ export default function RezervPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
       />
 
-      <div className="mb-4">
+      <>
         <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList className="bg-background border border-border p-1 gap-2 rounded-md inline-flex">
             <TabsTrigger
@@ -157,7 +158,7 @@ export default function RezervPage() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
+      </>
 
       <div className="rounded-lg border border-border-strong overflow-hidden bg-background">
         {isLoading ? (
@@ -315,6 +316,6 @@ export default function RezervPage() {
           </nav>
         </div>
       )}
-    </div>
+    </Page>
   );
 }
