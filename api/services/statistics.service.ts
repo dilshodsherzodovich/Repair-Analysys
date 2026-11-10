@@ -17,6 +17,7 @@ export const statisticsService = {
         params: {
           locomotive: params?.locomotive,
           locomotive_id: params?.locomotive_id,
+          confirm_status: params?.confirm_status,
         },
       }
     );

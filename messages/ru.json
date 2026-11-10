@@ -125,6 +125,7 @@
     "locomotive": "Локомотив",
     "inspection_type": "Тип осмотра",
     "all": "Все",
+    "status": "Статус",
     "monthly_dynamics": "Динамика по месяцам",
     "table_month": "Месяц",
     "table_total": "Итого",
@@ -1114,7 +1115,8 @@
       "mpr": "МПР",
       "invalid": "Брак",
       "defect": "Дефект",
-      "damage_amount": "Сумма ущерба"
+      "damage_amount": "Сумма ущерба",
+      "all_statuses": "Все статусы"
     },
     "title": "МПР",
     "description": "Межпоездной ремонт электровозов",
@@ -1140,11 +1142,14 @@
       "invalid": "Брак",
       "defect": "Дефект"
     },
+    "status_pending": "Ожидает",
     "status_confirmed": "Подтверждено",
     "status_not_confirmed": "Не подтверждено",
     "filters": {
       "journal_type": "Вид журнала",
       "journal_type_placeholder": "Выберите вид журнала",
+      "status": "Статус",
+      "status_placeholder": "Выберите статус",
       "responsible_department": "Ответственная организация",
       "responsible_department_placeholder": "Выберите ответственную организацию",
       "locomotive": "Локомотив",
@@ -1153,6 +1158,7 @@
       "organization_placeholder": "Выберите организацию"
     },
     "options": {
+      "all_statuses": "Все статусы",
       "all_journal_types": "Все виды журналов",
       "all_locomotives": "Все локомотивы",
       "all_organizations": "Все организации",
@@ -1168,13 +1174,25 @@
       "delete": "Ошибка при удалении приказа МПР",
       "create": "Ошибка при создании приказа МПР",
       "update": "Ошибка при обновлении приказа МПР",
-      "confirm": "Ошибка при подтверждении приказа МПР"
+      "confirm": "Ошибка при подтверждении приказа МПР",
+      "reject": "Ошибка при отклонении MPR"
     },
     "messages": {
       "delete_success": "МПР успешно удалён",
       "create_success": "МПР успешно создан!",
       "update_success": "МПР успешно обновлён!",
-      "confirm_success": "МПР успешно подтверждён"
+      "confirm_success": "МПР успешно подтверждён",
+      "reject_success": "MPR отклонён"
+    },
+    "actions": {
+      "confirm": "Подтвердить",
+      "reject": "Отклонить"
+    },
+    "reject_dialog": {
+      "title": "Отклонение MPR",
+      "message_with_train": "Отклонить приказ по поезду «{trainNumber}»?",
+      "confirm": "Отклонить",
+      "rejecting": "Отклоняется..."
     },
     "confirm_dialog": {
       "title": "Подтверждение приказа МПР",

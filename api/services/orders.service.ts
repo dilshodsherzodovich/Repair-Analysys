@@ -1,6 +1,7 @@
 import api from "../axios";
 import { PaginatedData } from "../types/general";
 import {
+  ConfirmStatus,
   OrderData,
   OrdersGetParams,
   CreateOrderPayload,
@@ -46,6 +47,7 @@ export const ordersService = {
             locomotive: params?.locomotive,
             date: params?.date,
             organization: params?.organization,
+            confirm_status: params?.confirm_status,
           },
         }
       );
@@ -94,14 +96,17 @@ export const ordersService = {
       throw error;
     }
   },
-  confirmOrder: async (id: number | string): Promise<OrderData> => {
+  setConfirmStatus: async (
+    id: number | string,
+    confirm_status: ConfirmStatus,
+  ): Promise<OrderData> => {
     try {
       const response = await api.patch<OrderData>(`/mpr-journal/${id}/`, {
-        confirm: true,
+        confirm_status,
       });
       return response.data;
     } catch (error) {
-      console.error("Error confirming order:", error);
+      console.error("Error changing order confirm status:", error);
       throw error;
     }
   },
@@ -112,6 +117,7 @@ export type OrdersExportParams = {
   locomotive?: string;
   date?: string;
   organization?: string | number;
+  confirm_status?: string;
 };
 
 export const exportOrdersExcel = async (

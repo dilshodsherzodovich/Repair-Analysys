@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import PageFilters from "@/ui/filters";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
 import { OrderData, CreateOrderPayload, UpdateOrderPayload } from "@/api/types/orders";
@@ -14,7 +14,7 @@ import {
   useCreateOrder,
   useUpdateOrder,
   useDeleteOrder,
-  useConfirmOrder,
+  useSetOrderConfirmStatus,
 } from "@/api/hooks/use-orders";
 import { OrderModal } from "@/components/orders/order-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
@@ -26,10 +26,7 @@ import { authService } from "@/api/services/auth.service";
 import { format } from "date-fns";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import { useMprStatistics } from "@/api/hooks/use-statistics";
-import { StatsPanel } from "@/components/statistics/stats-panel";
-import type { StatMetric, StatsHook } from "@/components/statistics/stats-panel";
-import { Wrench, Ban, AlertTriangle, Coins } from "lucide-react";
+import { MprStatusStats } from "@/components/orders/mpr-status-stats";
 import { hasPermission, type Permission } from "@/lib/permissions";
 import { Badge } from "@/ui/badge";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
@@ -62,6 +59,15 @@ export default function OrdersPage() {
     [t],
   );
 
+  const statusOptions = useMemo(
+    () => [
+      { value: "pending", label: t("status_pending") },
+      { value: "confirmed", label: t("status_confirmed") },
+      { value: "rejected", label: t("status_not_confirmed") },
+    ],
+    [t],
+  );
+
   const {
     q,
     page,
@@ -72,6 +78,7 @@ export default function OrdersPage() {
     date,
     organization,
     responsible_department,
+    confirm_status,
   } = getAllQueryValues();
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
@@ -79,13 +86,15 @@ export default function OrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [orderToConfirm, setOrderToConfirm] = useState<OrderData | null>(null);
+  const [statusAction, setStatusAction] = useState<{
+    order: OrderData;
+    status: "confirmed" | "rejected";
+  } | null>(null);
   const { showSuccess, showError } = useSnackbar();
   const createOrderMutation = useCreateOrder();
   const updateOrderMutation = useUpdateOrder();
   const deleteOrderMutation = useDeleteOrder();
-  const confirmOrderMutation = useConfirmOrder();
+  const setStatusMutation = useSetOrderConfirmStatus();
 
   const { data: locomotivesData, isLoading: isLoadingLocomotives } =
     useGetLocomotives();
@@ -168,6 +177,7 @@ export default function OrdersPage() {
     organization: +organization || undefined,
     type_of_journal: type_of_journal || undefined,
     date: date || undefined,
+    confirm_status: confirm_status || undefined,
   });
 
   const paginatedData = apiResponse?.results || [];
@@ -230,25 +240,37 @@ export default function OrdersPage() {
   );
 
   const handleConfirmClick = useCallback((row: OrderData) => {
-    setOrderToConfirm(row);
-    setIsConfirmModalOpen(true);
+    setStatusAction({ order: row, status: "confirmed" });
   }, []);
 
-  const handleConfirmOrder = useCallback(async () => {
-    if (!orderToConfirm) return;
+  const handleRejectClick = useCallback((row: OrderData) => {
+    setStatusAction({ order: row, status: "rejected" });
+  }, []);
+
+  const handleStatusChange = useCallback(async () => {
+    if (!statusAction) return;
     try {
-      await confirmOrderMutation.mutateAsync(orderToConfirm.id);
-      showSuccess(t("messages.confirm_success"));
-      setIsConfirmModalOpen(false);
-      setOrderToConfirm(null);
+      await setStatusMutation.mutateAsync({
+        id: statusAction.order.id,
+        status: statusAction.status,
+      });
+      showSuccess(
+        statusAction.status === "confirmed"
+          ? t("messages.confirm_success")
+          : t("messages.reject_success"),
+      );
+      setStatusAction(null);
     } catch (error: any) {
       showError(
         t("errors.generic"),
-        error?.response?.data?.message || error.message || t("errors.confirm"),
+        error?.response?.data?.message ||
+          error.message ||
+          (statusAction.status === "confirmed"
+            ? t("errors.confirm")
+            : t("errors.reject")),
       );
-      throw error;
     }
-  }, [orderToConfirm, confirmOrderMutation, showError, showSuccess, t]);
+  }, [statusAction, setStatusMutation, showError, showSuccess, t]);
 
   const handleCreate = () => {
     setSelectedOrder(null);
@@ -385,49 +407,22 @@ export default function OrdersPage() {
       key: "confirm",
       header: t("columns.status"),
       accessor: (row) => (
-        <Badge variant={row.confirm ? "success" : "warning"}>
-          {row.confirm ? t("status_confirmed") : t("status_not_confirmed")}
+        <Badge
+          variant={
+            row.confirm_status === "confirmed"
+              ? "success"
+              : row.confirm_status === "rejected"
+                ? "danger"
+                : "warning"
+          }
+        >
+          {row.confirm_status === "confirmed"
+            ? t("status_confirmed")
+            : row.confirm_status === "rejected"
+              ? t("status_not_confirmed")
+              : t("status_pending")}
         </Badge>
       ),
-    },
-  ];
-
-  const mprMetrics: StatMetric[] = [
-    {
-      key: "mpr",
-      totalKey: "total_mpr",
-      label: t("statistics.mpr"),
-      color: "var(--primary)",
-      kind: "count",
-      chart: "bar",
-      icon: Wrench,
-    },
-    {
-      key: "invalid",
-      totalKey: "total_invalid",
-      label: t("statistics.invalid"),
-      color: "var(--warning)",
-      kind: "count",
-      chart: "bar",
-      icon: Ban,
-    },
-    {
-      key: "defect",
-      totalKey: "total_defect",
-      label: t("statistics.defect"),
-      color: "var(--category-violet)",
-      kind: "count",
-      chart: "bar",
-      icon: AlertTriangle,
-    },
-    {
-      key: "damage_amount",
-      totalKey: "total_damage_amount",
-      label: t("statistics.damage_amount"),
-      color: "var(--destructive)",
-      kind: "currency",
-      chart: "line",
-      icon: Coins,
     },
   ];
 
@@ -451,13 +446,18 @@ export default function OrdersPage() {
   return (
     <Page>
       {view === "stats" ? (
-        <StatsPanel
-          title={t("statistics.title")}
-          metrics={mprMetrics}
-          useStats={useMprStatistics as unknown as StatsHook}
-          locomotiveOptions={statLocomotiveOptions}
-          header={(filters) => header(filters, viewSwitch)}
-        />
+        <>
+          {header(null, viewSwitch)}
+          {/* Picking a status filters the list and opens it */}
+          <MprStatusStats
+            title={t("statistics.title")}
+            locomotiveOptions={statLocomotiveOptions}
+            activeStatus={confirm_status || ""}
+            onStatusSelect={(status) =>
+              updateQuery({ confirm_status: status || null, view: null })
+            }
+          />
+        </>
       ) : (
         <>
           {header(
@@ -479,6 +479,17 @@ export default function OrdersPage() {
                   placeholder: t("filters.locomotive_placeholder"),
                   searchable: true,
                   loading: isLoadingLocomotives,
+                },
+                {
+                  name: "confirm_status",
+                  label: t("filters.status"),
+                  isSelect: true,
+                  options: [
+                    { value: "", label: t("options.all_statuses") },
+                    ...statusOptions,
+                  ],
+                  placeholder: t("filters.status_placeholder"),
+                  searchable: false,
                 },
                 ...(canChooseOrganization
                   ? [
@@ -525,14 +536,26 @@ export default function OrdersPage() {
               isAdmin
                 ? [
                     {
-                      label: "",
+                      label: t("actions.confirm"),
                       icon: <CheckCircle className="h-4 w-4" />,
                       onClick: handleConfirmClick,
                       permission: "view_orders" as Permission,
                       variant: "outline" as const,
-                      shouldShow: (row: OrderData) => !row.confirm,
+                      shouldShow: (row: OrderData) =>
+                        row.confirm_status !== "confirmed",
                       className:
                         "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
+                    },
+                    {
+                      label: t("actions.reject"),
+                      icon: <XCircle className="h-4 w-4" />,
+                      onClick: handleRejectClick,
+                      permission: "view_orders" as Permission,
+                      variant: "outline" as const,
+                      shouldShow: (row: OrderData) =>
+                        row.confirm_status !== "rejected",
+                      className:
+                        "border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive/80 hover:border-destructive",
                     },
                   ]
                 : []
@@ -562,25 +585,37 @@ export default function OrdersPage() {
       />
 
       <ConfirmationDialog
-        isOpen={isConfirmModalOpen}
-        onClose={() => {
-          setIsConfirmModalOpen(false);
-          setOrderToConfirm(null);
-        }}
-        onConfirm={handleConfirmOrder}
-        title={t("confirm_dialog.title")}
-        message={
-          orderToConfirm
-            ? t("confirm_dialog.message_with_train", {
-                trainNumber: orderToConfirm.train_number,
-              })
-            : t("confirm_dialog.message_generic")
+        isOpen={!!statusAction}
+        onClose={() => setStatusAction(null)}
+        onConfirm={handleStatusChange}
+        title={
+          statusAction?.status === "rejected"
+            ? t("reject_dialog.title")
+            : t("confirm_dialog.title")
         }
-        confirmText={t("confirm_dialog.confirm")}
+        message={
+          statusAction
+            ? t(
+                statusAction.status === "rejected"
+                  ? "reject_dialog.message_with_train"
+                  : "confirm_dialog.message_with_train",
+                { trainNumber: statusAction.order.train_number },
+              )
+            : ""
+        }
+        confirmText={
+          statusAction?.status === "rejected"
+            ? t("reject_dialog.confirm")
+            : t("confirm_dialog.confirm")
+        }
         cancelText={t("confirm_dialog.cancel")}
-        variant="info"
-        isDoingAction={confirmOrderMutation.isPending}
-        isDoingActionText={t("confirm_dialog.confirming")}
+        variant={statusAction?.status === "rejected" ? "danger" : "info"}
+        isDoingAction={setStatusMutation.isPending}
+        isDoingActionText={
+          statusAction?.status === "rejected"
+            ? t("reject_dialog.rejecting")
+            : t("confirm_dialog.confirming")
+        }
       />
     </Page>
   );
