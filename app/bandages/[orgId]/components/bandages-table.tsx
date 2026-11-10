@@ -222,18 +222,25 @@ const LocomotiveRows = memo(function LocomotiveRows({
     : justSaved
       ? "bg-success-subtle"
       : "bg-background group-hover:bg-surface-muted";
+  // Cells that span the locomotive's rows don't follow the hovered row
+  const spanBg = isEditing
+    ? "bg-primary-subtle"
+    : justSaved
+      ? "bg-success-subtle"
+      : "bg-background";
 
-  // Each locomotive is its own <tbody>: its rows highlight together, so the
-  // cells that span them (No, locomotive, actions) never look half-hovered
+  // Only the hovered row highlights; the cells spanning the locomotive's rows
+  // (No, locomotive, actions) keep their own background
   return (
-    <TableBody className="group">
+    <TableBody>
       {group.sections.map((section, sectionIndex) => (
         <TableRow
           key={section.key}
           className={cn(
-            "duration-700 hover:bg-transparent group-hover:bg-surface-muted",
-            isEditing && "bg-primary-subtle group-hover:bg-primary-subtle",
-            justSaved && "bg-success-subtle group-hover:bg-success-subtle",
+            // Solid hover so it matches the pinned section cell
+            "group duration-700 hover:bg-surface-muted",
+            isEditing && "bg-primary-subtle hover:bg-primary-subtle",
+            justSaved && "bg-success-subtle hover:bg-success-subtle",
           )}
         >
           {sectionIndex === 0 && (
@@ -242,7 +249,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 rowSpan={span}
                 className={cn(
                   stickyNo,
-                  stickyBg,
+                  spanBg,
                   "z-[5] text-muted-foreground align-top",
                 )}
               >
@@ -252,7 +259,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 rowSpan={span}
                 className={cn(
                   stickyLocomotive,
-                  stickyBg,
+                  spanBg,
                   "z-[5] font-medium align-top",
                   justSaved && "border-l-success",
                 )}
@@ -338,9 +345,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           {canEdit && sectionIndex === 0 && (
             <TableCell
               rowSpan={span}
-              // Spanning cells paint their own background: browsers paint a row's
-              // background only over that row, so they would look half-highlighted
-              className={cn("text-center align-middle", stickyBg)}
+              className={cn("text-center align-middle", spanBg)}
             >
               {group.bandages.length > 0 && (
                 <EditActions
