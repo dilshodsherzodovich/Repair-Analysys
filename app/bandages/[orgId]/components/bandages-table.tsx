@@ -225,21 +225,22 @@ const LocomotiveRows = memo(function LocomotiveRows({
   // Every line is a plain row (no merged cells), so hover, borders and pinned
   // columns behave like any table. No, locomotive and the edit button show on
   // the locomotive's first line; below them those cells stay empty with no
-  // line between, and a darker line closes each locomotive.
+  // line between, and a darker line closes each locomotive. Hovering any
+  // line highlights the whole locomotive (its <tbody> is the hover group).
   const isLast = (index: number) => index === span - 1;
   const groupCell = (index: number) => !isLast(index) && "border-b-transparent";
 
   return (
-    <TableBody>
+    <TableBody className="group">
       {group.sections.map((section, sectionIndex) => (
         <TableRow
           key={section.key}
           className={cn(
-            // Solid hover so it matches the pinned section cell
-            "group duration-700 hover:bg-surface-muted",
+            // Solid colour so it matches the pinned cells
+            "duration-700 hover:bg-transparent group-hover:bg-surface-muted",
             isLast(sectionIndex) && "[&>td]:border-b-border-strong",
-            isEditing && "bg-primary-subtle hover:bg-primary-subtle",
-            justSaved && "bg-success-subtle hover:bg-success-subtle",
+            isEditing && "bg-primary-subtle group-hover:bg-primary-subtle",
+            justSaved && "bg-success-subtle group-hover:bg-success-subtle",
           )}
         >
           <TableCell
