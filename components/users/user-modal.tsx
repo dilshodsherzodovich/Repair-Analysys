@@ -18,6 +18,7 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useDepartments } from "@/api/hooks/use-departmants";
 import { userRoles } from "@/lib/users";
 import { getRoleName } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/ui/radio-group";
 
 interface UserModalProps {
   isOpen: boolean;
@@ -274,14 +275,13 @@ export function UserModal({
                 </SelectTrigger>
                 <SelectContent>
                   <div className="p-2 border-b border-border">
-                    <input
+                    <Input variant="compact"
                       type="text"
                       placeholder="Qidirish..."
                       value={orgSearchTerm}
                       onKeyDown={(e) => e.stopPropagation()}
                       onKeyUp={(e) => e.stopPropagation()}
                       onChange={(e) => setOrgSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div className="max-h-60 overflow-y-auto">
@@ -336,14 +336,13 @@ export function UserModal({
                 </SelectTrigger>
                 <SelectContent>
                   <div className="p-2 border-b border-border">
-                    <input
+                    <Input variant="compact"
                       type="text"
                       placeholder="Qidirish..."
                       value={deptSearchTerm}
                       onKeyDown={(e) => e.stopPropagation()}
                       onKeyUp={(e) => e.stopPropagation()}
                       onChange={(e) => setDeptSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                       disabled={!formData.organization}
                     />
                   </div>
@@ -437,34 +436,21 @@ export function UserModal({
             <Label className="text-sm text-muted-foreground">
               Holati
             </Label>
-            <div className="flex items-center gap-6 mt-2">
+            <RadioGroup
+              name={`status-${mode}`}
+              value={formData.status}
+              onValueChange={(status) => setFormData({ ...formData, status })}
+              className="mt-2 flex items-center gap-6"
+            >
               <Label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name={`status-${mode}`}
-                  value="active"
-                  checked={formData.status === "active"}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="w-4 h-4 text-primary border-border-strong focus:ring-primary"
-                />
+                <RadioGroupItem value="active" />
                 <span className="text-foreground text-sm">Faol</span>
               </Label>
               <Label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name={`status-${mode}`}
-                  value="inactive"
-                  checked={formData.status === "inactive"}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="w-4 h-4 text-primary border-border-strong focus:ring-primary"
-                />
+                <RadioGroupItem value="inactive" />
                 <span className="text-foreground text-sm">Nofaol</span>
               </Label>
-            </div>
+            </RadioGroup>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

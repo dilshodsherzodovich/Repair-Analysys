@@ -343,11 +343,7 @@ export default function PublicDefectiveWorkCreatePage() {
           >
             {/* Hidden inputs for form submission */}
             <input type="hidden" name="locomotive" value={selectedLocomotive} />
-            <input
-              type="hidden"
-              name="organization"
-              value={organizationFromUrl ?? selectedOrganization}
-            />
+            <input type="hidden" name="organization" value={organizationFromUrl ?? selectedOrganization} />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>

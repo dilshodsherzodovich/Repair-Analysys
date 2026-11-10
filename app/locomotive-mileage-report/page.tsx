@@ -27,6 +27,7 @@ import { TotalMileageBaselineModal } from "./total-mileage-baseline-modal";
 import { txk13ReportService } from "@/api/services/txk13-report.service";
 import { Txk13Filters } from "./txk13-filters";
 import { authService } from "@/api/services/auth.service";
+import { Input } from "@/ui/input";
 
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
@@ -77,7 +78,7 @@ function BandajCell({ locoId, serverValue }: { locoId: number; serverValue: numb
       {saving ? (
         <Loader2 className="size-3.5 animate-spin text-primary mx-auto my-2" />
       ) : (
-        <input
+        <Input variant="cell" className="absolute inset-0 text-center"
           type="number"
           min={0}
           max={1000}
@@ -87,7 +88,6 @@ function BandajCell({ locoId, serverValue }: { locoId: number; serverValue: numb
           onClick={(e) => e.currentTarget.select()}
           onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
           onBlur={handleBlur}
-          className="absolute inset-0 w-full h-full text-center bg-transparent border border-transparent outline-none focus:bg-background focus:border-primary/40 focus:ring-1 focus:ring-primary/40 px-2 text-xs [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
       )}
     </TableCell>
@@ -145,14 +145,13 @@ function ManufactureDateCell({ locoId, serverValue }: { locoId: number; serverVa
       {saving ? (
         <Loader2 className="size-3.5 animate-spin text-primary" />
       ) : editing ? (
-        <input
+        <Input variant="cell" className="absolute inset-0 bg-background text-foreground-secondary ring-2 ring-inset ring-primary/40"
           ref={inputRef}
           type="date"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onBlur={submit}
           onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
-          className="absolute inset-0 w-full h-full px-2 text-xs bg-background border border-primary/40 ring-1 ring-primary/40 outline-none text-foreground-secondary"
         />
       ) : (
         <span className="text-xs">{toDisplayDate(value) || "—"}</span>

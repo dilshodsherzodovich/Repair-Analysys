@@ -8,6 +8,7 @@ import { SectionCard, EmptyBlock } from "./passport-shared";
 import type { ComponentValue } from "@/api/types/component";
 import type { ReactNode } from "react";
 import { Label } from "@/ui/label";
+import { Input } from "@/ui/input";
 
 type FormValues = Record<
   number,
@@ -34,16 +35,15 @@ function ComponentField({
       <Label className="mb-0.5 block text-2xs font-medium text-muted-foreground">
         {label}
       </Label>
-      <input
+      <Input
+        variant="compact"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         readOnly={!editable}
         placeholder={placeholder}
         className={cn(
-          "h-8 w-full rounded-md px-2.5 text-sm outline-none transition-colors",
-          editable
-            ? "border border-border-strong bg-background text-foreground hover:border-foreground-subtle focus:border-primary"
-            : "cursor-default border border-border bg-surface-muted font-medium text-foreground placeholder:font-normal"
+          !editable &&
+            "cursor-default border-border bg-surface-muted font-medium hover:border-border placeholder:font-normal"
         )}
       />
     </div>

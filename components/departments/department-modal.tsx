@@ -120,14 +120,13 @@ export function DepartmentModal({
                 </SelectTrigger>
                 <SelectContent>
                   <div className="p-2 border-b border-border">
-                    <input
+                    <Input variant="compact"
                       type="text"
                       placeholder="Qidirish..."
                       value={orgSearchTerm}
                       onKeyDown={(e) => e.stopPropagation()}
                       onKeyUp={(e) => e.stopPropagation()}
                       onChange={(e) => setOrgSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div className="max-h-60 overflow-y-auto">

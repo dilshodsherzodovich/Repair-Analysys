@@ -354,14 +354,13 @@ export function PassportInspectionModal({
                   <div className="p-2 border-b border-border">
                     <div className="relative">
                       <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <input
+                      <Input variant="compact" className="pl-8"
                         type="text"
                         placeholder={t("placeholder_search")}
                         value={locomotiveSearchTerm}
                         onChange={(e) => setLocomotiveSearchTerm(e.target.value)}
                         onKeyDown={(e) => e.stopPropagation()}
                         onKeyUp={(e) => e.stopPropagation()}
-                        className="w-full pl-8 pr-2 py-1.5 text-sm border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
                       />
                     </div>
                   </div>

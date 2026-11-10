@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { uz } from "date-fns/locale";
 import { useState, useEffect } from "react";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
+import { Input } from "@/ui/input";
 
 export default function ReportsDateFilter({
   leading,
@@ -164,11 +165,10 @@ function DateBox({
         </Popover>
 
         {/* Time picker */}
-        <input
+        <Input variant="cell" className="w-[125px] cursor-pointer px-3 text-sm font-medium text-foreground-secondary hover:bg-surface-muted"
           type="time"
           value={date ? fmtTime(date) : ""}
           onChange={(e) => onTimeChange(e.target.value)}
-          className="px-3 h-full text-sm font-medium text-foreground-secondary bg-transparent border-0 outline-none w-[125px] cursor-pointer hover:bg-surface-muted transition-colors"
         />
       </div>
     </div>

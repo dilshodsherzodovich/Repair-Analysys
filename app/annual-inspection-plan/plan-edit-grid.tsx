@@ -23,6 +23,7 @@ import {
 import { PlanStatCards } from "./plan-stat-cards";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { Button } from "@/ui/button";
+import { Input } from "@/ui/input";
 
 function getErrorMessage(e: any): string {
   return (
@@ -81,7 +82,7 @@ const EditableCell = memo(function EditableCell({
 
   if (editing) {
     return (
-      <input
+      <Input variant="cell" className="h-9 bg-primary/10 text-center tabular-nums ring-2 ring-inset ring-primary/50"
         ref={inputRef}
         type="number"
         min={0}
@@ -94,7 +95,6 @@ const EditableCell = memo(function EditableCell({
           if (e.key === "Enter") finish();
           else if (e.key === "Escape") setEditing(false);
         }}
-        className="w-full h-9 text-center text-xs tabular-nums bg-primary/10 outline-none ring-2 ring-inset ring-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
     );
   }

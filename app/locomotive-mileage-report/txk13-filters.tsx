@@ -10,6 +10,8 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { Label } from "@/ui/label";
 import { Button } from "@/ui/button";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
+import { Checkbox } from "@/ui/checkbox";
+import { Input } from "@/ui/input";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "", label: "Barchasi" },
@@ -86,12 +88,11 @@ export function Txk13Filters({
     <div className="space-y-3 mb-4">
       {/* Row 1: full-width selects + search + clear */}
       <div className="flex items-center gap-3 w-full">
-        <input
+        <Input variant="compact" className="h-10 flex-1"
           type="number"
           value={searchLocal}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Lokomotiv raqami"
-          className="flex-1 min-w-0 h-10 px-3 border border-border-strong rounded-md bg-background text-sm text-foreground placeholder:text-foreground-subtle focus:outline-none focus:border-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
 
         <PermissionGuard
@@ -190,11 +191,9 @@ export function Txk13Filters({
             key={insp.type_id}
             className="flex items-center gap-1.5 cursor-pointer select-none"
           >
-            <input
-              type="checkbox"
+            <Checkbox
               checked={selectedInspectionIds.includes(insp.type_id)}
-              onChange={() => onToggleInspection(insp.type_id)}
-              className="w-4 h-4 rounded border-border-strong text-primary cursor-pointer accent-primary"
+              onCheckedChange={() => onToggleInspection(insp.type_id)}
             />
             <span className="text-sm text-foreground whitespace-nowrap font-medium">
               {insp.type}
