@@ -243,8 +243,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
           key={component.id}
           className={cn(
             // The hovered line gets the same solid grey as the rest of its
-            // locomotive (and the pinned cells), not the table's lighter hover
-            "duration-700 hover:bg-surface-muted group-hover:bg-surface-muted",
+            // locomotive (and the pinned cells), not the table's lighter hover.
+            // No fade: the pinned cells change instantly, so the row must too
+            "transition-none hover:bg-surface-muted group-hover:bg-surface-muted",
             isLast(componentIndex) && "[&>td]:border-b-border-strong",
             isEditing && "bg-primary-subtle hover:bg-primary-subtle group-hover:bg-primary-subtle",
             justSaved && "bg-success-subtle hover:bg-success-subtle group-hover:bg-success-subtle",
