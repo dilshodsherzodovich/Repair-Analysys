@@ -207,7 +207,6 @@ export default function InspectionReportPage() {
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
       <PageHeader
-        variant="card"
         icon={FileDown}
         title="Texnik ko&apos;riklar hisoboti"
         description={new Date().toLocaleDateString(

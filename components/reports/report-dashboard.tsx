@@ -252,7 +252,6 @@ export default function ReportDashboard() {
 
       {/* ─── Header Card ─── */}
       <PageHeader
-        variant="card"
         data-no-pdf
         icon={Truck}
         title={t("title")}

@@ -1,4 +1,27 @@
 {
+  "Common": {
+    "add": "Qo'shish",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "reset": "Tozalash",
+    "search": "Qidiruv",
+    "search_placeholder": "Qidirish…",
+    "all": "Barchasi",
+    "organization": "Tashkilot",
+    "period": "Davr",
+    "date": "Sana",
+    "select": "Tanlang",
+    "export_excel": "Excel",
+    "export_pdf": "PDF",
+    "export_word": "Word",
+    "exporting": "Yuklanmoqda…",
+    "as_of": "{date} holatiga",
+    "records": "{count} ta yozuv",
+    "time_from": "Boshlanish vaqti",
+    "time_to": "Tugash vaqti"
+  },
   "UnifiedInspectionReport": {
     "title": "Texnik ko'riklar — yagona hisobot",
     "subtitle": "Ko'riklar, kirishga kechikkanlar va davomiylikdan cho'zilganlar",

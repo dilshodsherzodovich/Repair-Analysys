@@ -35,6 +35,9 @@ import type { StatMetric, StatsHook } from "@/components/statistics/stats-panel"
 import { ClipboardCheck, ClipboardX } from "lucide-react";
 import { authService } from "@/api/services/auth.service";
 import { isEchAccount } from "@/lib/permissions";
+import { FilterPanel } from "@/ui/filter-bar";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
 
 export function NosozliklarTab() {
   const t = useTranslations("NosozliklarTab");
@@ -509,101 +512,105 @@ export function NosozliklarTab() {
       )}
 
       <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "locomotive",
-              label: t("filters.locomotive"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotive_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-            {
-              name: "organization_id",
-              label: t("filters.organization"),
-              isSelect: true,
-              options: organizationOptions,
-              placeholder: t("filters.organization_placeholder"),
-              searchable: false,
-              loading: isLoadingOrganizations,
-              permission: "choose_organization",
-            },
-            {
-              name: "inspection_type",
-              label: t("filters.inspection_type"),
-              isSelect: true,
-              options: inspectionTypeOptions,
-              placeholder: t("filters.inspection_type_placeholder"),
-              searchable: false,
-              loading: isLoadingInspectionTypes,
-            },
-            {
-              name: "locomotive_type",
-              label: t("filters.locomotive_type"),
-              isSelect: true,
-              options: locomotiveTypeOptions,
-              placeholder: t("filters.locomotive_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "locomotive_model",
-              label: t("filters.locomotive_model"),
-              isSelect: true,
-              options: locomotiveModelOptions,
-              placeholder: t("filters.locomotive_model_placeholder"),
-              searchable: true,
-              loading: isLoadingModels,
-            },
-            ...(!isEchUser
-              ? [
-                  {
-                    name: "remark_group",
-                    label: t("filters.remark_group"),
-                    isSelect: true,
-                    options: remarkGroupOptions,
-                    placeholder: t("filters.remark_group_placeholder"),
-                    searchable: true,
-                    loading: isLoadingRemarkGroups,
-                  },
-                  {
-                    name: "remark",
-                    label: t("filters.remark"),
-                    isSelect: true,
-                    options: remarkOptions,
-                    placeholder: t("filters.remark_placeholder"),
-                    searchable: true,
-                  },
-                ]
-              : []),
-            {
-              name: "ech_remark_group",
-              label: t("filters.group_ech"),
-              isSelect: true,
-              options: echGroupOptions,
-              placeholder: t("filters.group_ech_placeholder"),
-              searchable: true,
-              loading: isLoadingEchGroups,
-            },
-            {
-              name: "tab",
-              label: t("filters.status"),
-              isSelect: true,
-              options: statusOptions,
-              placeholder: t("filters.status_placeholder"),
-              searchable: false,
-            },
-          ]}
-          hasSearch
-          searchPlaceholder={t("search_placeholder")}
-          hasDateRangePicker
-          addButtonPermittion="create_defective_work"
-          onAdd={handleCreate}
-          onExport={handleExport}
-          exportLoading={isExporting}
-          className="!mb-0"
-        />
+        <FilterPanel
+          actions={
+            <>
+              <AddButton onClick={handleCreate} permission="create_defective_work" />
+              <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />
+            </>
+          }
+        >
+          <PageFilters
+            filters={[
+              {
+                name: "locomotive",
+                label: t("filters.locomotive"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotive_placeholder"),
+                searchable: true,
+                loading: isLoadingLocomotives,
+              },
+              {
+                name: "organization_id",
+                label: t("filters.organization"),
+                isSelect: true,
+                options: organizationOptions,
+                placeholder: t("filters.organization_placeholder"),
+                searchable: false,
+                loading: isLoadingOrganizations,
+                permission: "choose_organization",
+              },
+              {
+                name: "inspection_type",
+                label: t("filters.inspection_type"),
+                isSelect: true,
+                options: inspectionTypeOptions,
+                placeholder: t("filters.inspection_type_placeholder"),
+                searchable: false,
+                loading: isLoadingInspectionTypes,
+              },
+              {
+                name: "locomotive_type",
+                label: t("filters.locomotive_type"),
+                isSelect: true,
+                options: locomotiveTypeOptions,
+                placeholder: t("filters.locomotive_type_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "locomotive_model",
+                label: t("filters.locomotive_model"),
+                isSelect: true,
+                options: locomotiveModelOptions,
+                placeholder: t("filters.locomotive_model_placeholder"),
+                searchable: true,
+                loading: isLoadingModels,
+              },
+              ...(!isEchUser
+                ? [
+                    {
+                      name: "remark_group",
+                      label: t("filters.remark_group"),
+                      isSelect: true,
+                      options: remarkGroupOptions,
+                      placeholder: t("filters.remark_group_placeholder"),
+                      searchable: true,
+                      loading: isLoadingRemarkGroups,
+                    },
+                    {
+                      name: "remark",
+                      label: t("filters.remark"),
+                      isSelect: true,
+                      options: remarkOptions,
+                      placeholder: t("filters.remark_placeholder"),
+                      searchable: true,
+                    },
+                  ]
+                : []),
+              {
+                name: "ech_remark_group",
+                label: t("filters.group_ech"),
+                isSelect: true,
+                options: echGroupOptions,
+                placeholder: t("filters.group_ech_placeholder"),
+                searchable: true,
+                loading: isLoadingEchGroups,
+              },
+              {
+                name: "tab",
+                label: t("filters.status"),
+                isSelect: true,
+                options: statusOptions,
+                placeholder: t("filters.status_placeholder"),
+                searchable: false,
+              },
+            ]}
+            hasSearch
+            searchPlaceholder={t("search_placeholder")}
+            hasDateRangePicker
+          />
+        </FilterPanel>
       </div>
 
       <div className="px-6 pb-6">

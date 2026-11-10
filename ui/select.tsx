@@ -183,7 +183,8 @@ export interface SearchableSelectProps {
   emptyMessage?: string;
   disabled?: boolean;
   name?: string;
-  size?: "sm" | "default";
+  /** `md`: 36px, no bottom margin; the standard size inside FilterBar and toolbars. */
+  size?: "sm" | "md" | "default";
   className?: string;
   triggerClassName?: string;
 }
@@ -268,8 +269,9 @@ function SearchableSelect({
               "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
               "md:text-sm [&>span]:line-clamp-1",
               "[&>span]:text-foreground [&>span]:data-[placeholder]:text-foreground-subtle",
-              "mb-4",
+              size === "default" && "mb-4",
               size === "sm" && "h-8 text-xs",
+              size === "md" && "h-9 mb-0 px-3",
               triggerClassName
             )}
           >
@@ -324,7 +326,9 @@ function SearchableSelect({
           "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground px-4 py-2 text-base",
           "transition-colors outline-none focus:border-primary focus:ring-0 hover:border-foreground-subtle",
           "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
-          "md:text-sm [&>span]:line-clamp-1 mb-4",
+          "md:text-sm [&>span]:line-clamp-1",
+          size === "default" && "mb-4",
+          size === "md" && "h-9 mb-0 px-3",
           "aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:bg-surface-muted",
           size === "sm" && "h-8 text-xs",
           triggerClassName

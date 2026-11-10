@@ -147,7 +147,6 @@ export default function Tu137Page() {
     <div className="min-h-full bg-surface-muted pb-12">
       <PageHeader
         title={t("title")}
-        description={""}
         breadcrumbs={breadcrumbs}
       />
 

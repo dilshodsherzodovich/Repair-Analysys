@@ -34,6 +34,8 @@ import { exportPantographExcel } from "@/api/services/pantograph.service";
 import { authService } from "@/api/services/auth.service";
 import { format } from "date-fns";
 import { FileSpreadsheet } from "lucide-react";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
 
 export default function PantografPage() {
   const t = useTranslations("PantographPage");
@@ -355,6 +357,19 @@ export default function PantografPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
+        actions={
+          <>
+            <AddButton onClick={handleCreate} permission="create_pantograf" />
+            <ExportActions onExcel={handleExport} />
+          </>
+        }
       />
 
       <StatsPanel
@@ -365,18 +380,6 @@ export default function PantografPage() {
       />
 
       <div className="px-6 py-4">
-        <PageFilters
-          filters={pageFilters}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-          onAdd={handleCreate}
-          addButtonText={t("add_button")}
-          addButtonPermittion="create_pantograf"
-          onExport={handleExport}
-          exportButtonText="Export EXCEL"
-          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
-          className="!mb-0"
-        />
       </div>
 
       <div className="px-6 pb-6">

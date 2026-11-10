@@ -32,6 +32,7 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { Permission } from "@/lib/permissions";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
 import { Button } from "@/ui/button";
+import { FilterPanel } from "@/ui/filter-bar";
 
 export function TU152Tab() {
   const t = useTranslations("TU152Tab");
@@ -373,38 +374,40 @@ export function TU152Tab() {
                 placeholder={t("date_to")}
               />
             </div>
-            <PageFilters
-              filters={[
-                {
-                  name: "p_lokomotiv_id",
-                  label: t("filters.locomotive"),
-                  isSelect: true,
-                  options: locomotiveOptions,
-                  placeholder: t("filters.locomotive_placeholder"),
-                  searchable: false,
-                  loading: isLoadingLocomotives,
-                },
-                {
-                  name: "p_lokomotiv_seriya_id",
-                  label: t("filters.seriya"),
-                  isSelect: true,
-                  options: locomotiveModelOptions,
-                  placeholder: t("filters.seriya_placeholder"),
-                  searchable: false,
-                  loading: isLoadingLocomotiveModels,
-                },
-                {
-                  name: "p_status_id",
-                  label: t("filters.status"),
-                  isSelect: true,
-                  options: statusOptions,
-                  placeholder: t("filters.status_placeholder"),
-                  searchable: false,
-                },
-              ]}
-              hasSearch={false}
-              className="!mb-0 flex-nowrap"
-            />
+            <FilterPanel>
+              <PageFilters
+                filters={[
+                  {
+                    name: "p_lokomotiv_id",
+                    label: t("filters.locomotive"),
+                    isSelect: true,
+                    options: locomotiveOptions,
+                    placeholder: t("filters.locomotive_placeholder"),
+                    searchable: false,
+                    loading: isLoadingLocomotives,
+                  },
+                  {
+                    name: "p_lokomotiv_seriya_id",
+                    label: t("filters.seriya"),
+                    isSelect: true,
+                    options: locomotiveModelOptions,
+                    placeholder: t("filters.seriya_placeholder"),
+                    searchable: false,
+                    loading: isLoadingLocomotiveModels,
+                  },
+                  {
+                    name: "p_status_id",
+                    label: t("filters.status"),
+                    isSelect: true,
+                    options: statusOptions,
+                    placeholder: t("filters.status_placeholder"),
+                    searchable: false,
+                  },
+                ]}
+                hasSearch={false}
+                className="!mb-0 flex-nowrap"
+              />
+            </FilterPanel>
           </div>
         </div>
       </div>

@@ -22,6 +22,8 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
 
 export default function ReplacementSchedulePage() {
   const t = useTranslations("ReplacementSchedulePage");
@@ -259,19 +261,22 @@ export default function ReplacementSchedulePage() {
       <PageHeader
         title={t("title")}
         description={t("description")}
+        filters={
+          <PageFilters
+            filters={[]}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
+        actions={
+          <>
+            <AddButton onClick={handleCreate} permission="create_locomotive_replacement_oil" />
+            <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />
+          </>
+        }
       />
 
       <div className="mt-4">
-        <PageFilters
-          filters={[]}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-          addButtonText={t("add_button")}
-          addButtonPermittion="create_locomotive_replacement_oil"
-          onAdd={handleCreate}
-          onExport={handleExport}
-          exportLoading={isExporting}
-        />
       </div>
 
       <div className="mt-6">

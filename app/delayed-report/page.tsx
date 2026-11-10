@@ -157,7 +157,6 @@ export default function DelayedReportPage() {
     <div className="space-y-4">
       {/* ─── Header ─── */}
       <PageHeader
-        variant="card"
         title={t("delayedReportTitle")}
         description={<>
             {t("delayedReportDescription")}

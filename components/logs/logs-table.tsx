@@ -20,6 +20,7 @@ import { useUsers } from "@/api/hooks/use-user";
 import { format, formatDate } from "date-fns";
 import { uz } from "date-fns/locale";
 import { getPageCount } from "@/lib/utils";
+import { FilterPanel } from "@/ui/filter-bar";
 
 interface LogsTableProps {
   logs?: PaginatedData<LogItem>;
@@ -162,9 +163,10 @@ export default function LogsTable({
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-xl">
+      <FilterPanel>
         <PageFilters filters={filters} />
-
+      </FilterPanel>
+      <Card className="rounded-xl">
         <div>
           <Table>
             <TableHeader>

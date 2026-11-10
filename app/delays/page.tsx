@@ -64,6 +64,8 @@ import {
 import { useTranslations } from "next-intl";
 import { authService } from "@/api/services/auth.service";
 import { Button } from "@/ui/button";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
 
 // Stages that still have a "next" awaited step (terminal stages excluded)
 const STAGES_WITH_NEXT: DelayStage[] = [
@@ -762,94 +764,94 @@ export default function DelaysPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "delay_type",
+                label: t("filters.delay_type"),
+                isSelect: true,
+                options: delayTypeOptions,
+                placeholder: t("filters.delay_type_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "train_type",
+                label: t("filters.train_type"),
+                isSelect: true,
+                options: trainTypeOptions,
+                placeholder: t("filters.train_type_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "group_reason",
+                label: t("filters.group_reason"),
+                isSelect: true,
+                options: groupReasonOptions,
+                placeholder: t("filters.group_reason_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "station",
+                label: t("filters.station"),
+                isSelect: false,
+                placeholder: t("filters.station_placeholder"),
+                permission: "filter_delay_station",
+              },
+              {
+                name: "mashinist",
+                label: t("filters.mashinist"),
+                isSelect: false,
+                placeholder: t("filters.mashinist_placeholder"),
+              },
+              {
+                name: "locomotiv",
+                label: t("filters.locomotiv"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotiv_placeholder"),
+                searchable: true,
+                loading: isLoadingLocomotives,
+              },
+              {
+                name: "responsible_org",
+                label: t("filters.responsible_org"),
+                isSelect: true,
+                options: organizationOptions,
+                placeholder: t("filters.responsible_org_placeholder"),
+                searchable: false,
+                loading: isLoadingOrganizations,
+              },
+              {
+                name: "stage",
+                label: t("filters.stage"),
+                isSelect: true,
+                options: stageOptions,
+                placeholder: t("filters.stage_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "protocol_overdue",
+                label: t("filters.protocol_overdue"),
+                isSelect: true,
+                options: protocolOverdueOptions,
+                searchable: false,
+              },
+            ]}
+            hasSearch
+            hasDateRangePicker
+            searchPlaceholder={t("filters.search_placeholder")}
+          />
+        }
+        actions={
+          <>
+            <AddButton onClick={handleCreate} permission="create_delay" />
+            <ExportActions onExcel={canExport ? handleExport : undefined} busy={isExporting ? "excel" : null} />
+          </>
+        }
       />
 
       <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "delay_type",
-              label: t("filters.delay_type"),
-              isSelect: true,
-              options: delayTypeOptions,
-              placeholder: t("filters.delay_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "train_type",
-              label: t("filters.train_type"),
-              isSelect: true,
-              options: trainTypeOptions,
-              placeholder: t("filters.train_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "group_reason",
-              label: t("filters.group_reason"),
-              isSelect: true,
-              options: groupReasonOptions,
-              placeholder: t("filters.group_reason_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "station",
-              label: t("filters.station"),
-              isSelect: false,
-              placeholder: t("filters.station_placeholder"),
-              permission: "filter_delay_station",
-            },
-            {
-              name: "mashinist",
-              label: t("filters.mashinist"),
-              isSelect: false,
-              placeholder: t("filters.mashinist_placeholder"),
-            },
-            {
-              name: "locomotiv",
-              label: t("filters.locomotiv"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotiv_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-            {
-              name: "responsible_org",
-              label: t("filters.responsible_org"),
-              isSelect: true,
-              options: organizationOptions,
-              placeholder: t("filters.responsible_org_placeholder"),
-              searchable: false,
-              loading: isLoadingOrganizations,
-            },
-            {
-              name: "stage",
-              label: t("filters.stage"),
-              isSelect: true,
-              options: stageOptions,
-              placeholder: t("filters.stage_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "protocol_overdue",
-              label: t("filters.protocol_overdue"),
-              isSelect: true,
-              options: protocolOverdueOptions,
-              searchable: false,
-            },
-          ]}
-          hasSearch
-          hasDateRangePicker
-          dateRangePickerLabel=""
-          searchPlaceholder={t("filters.search_placeholder")}
-          addButtonPermittion="create_delay"
-          onAdd={handleCreate}
-          onExport={canExport ? handleExport : undefined}
-          exportButtonText={t("export_button")}
-          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
-          exportLoading={isExporting}
-          className="!mb-0"
-        />
       </div>
 
       <div className="px-6 pb-6">

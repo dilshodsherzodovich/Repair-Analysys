@@ -141,7 +141,6 @@ export default function AnnualInspectionPlanPage() {
     <div className="space-y-4">
       {/* Header */}
       <PageHeader
-        variant="card"
         icon={CalendarRange}
         title="Texnik ko&apos;riklar yillik rejasi"
         description="Grafik raboti — tashkilot, ko&apos;rik turi va rusum bo&apos;yicha yillik reja"

@@ -38,6 +38,7 @@ import { authService } from "@/api/services/auth.service";
 import { Check } from "lucide-react";
 import { exportCrankshaftExcel } from "@/utils/crankshaft-excel-export";
 import { Alert, AlertDescription } from "@/ui/alert";
+import { ExportActions } from "@/ui/export-actions";
 
 /** Edited input text per component id, then per field. */
 type Drafts = Record<number, Record<string, string>>;
@@ -478,14 +479,17 @@ function CrankshaftPageContent({
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t("title")} description={t("description")} />
-
-      <PageFilters
-        filters={pageFilters}
-        hasSearch={true}
-        searchPlaceholder={t("search_placeholder")}
-        onExport={isPending ? undefined : handleExport}
-        exportLoading={isExporting}
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        filters={
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
+        actions={<ExportActions onExcel={isPending ? undefined : handleExport} busy={isExporting ? "excel" : null} />}
       />
 
       {isError && (

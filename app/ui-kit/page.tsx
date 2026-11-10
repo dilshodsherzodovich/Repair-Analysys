@@ -693,7 +693,6 @@ function UiKit() {
         description="CardButton for clickable tiles, Chip for filter pills, DisclosureTrigger for expandable rows, PageHeader variant=card for report pages."
       >
         <PageHeader
-          variant="card"
           icon={FileSpreadsheet}
           title="Texnik ko'riklar hisoboti"
           description="PageHeader variant=&quot;card&quot; with actions and a filters strip"

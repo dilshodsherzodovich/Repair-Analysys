@@ -106,3 +106,56 @@ railway stamp artwork).
 `npm run lint:tokens -- --strict` passes on `app/`, `components/`, `layout/`,
 `ui/`; the removed components no longer exist; every page renders with the
 standard components and no visible regressions.
+
+## Page standards (binding, 2026-11-10)
+
+Every page is built the same way. No page invents its own header, filter
+strip, buttons or wording.
+
+### Anatomy
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ [icon] Title                               [primary] [Excel][PDF] │  PageHeader
+│        one meta line (org · period · "holatiga")                 │
+├──────────────────────────────────────────────────────────────────┤
+│ LABEL          LABEL                        LABEL                │  FilterBar
+│ [control  ▾]   [📅 dd.MM.yyyy – dd.MM.yyyy] [control ▾] [↺ Tozalash]
+└──────────────────────────────────────────────────────────────────┘
+  page content (tables, cards) below, 24px gap
+```
+
+### PageHeader
+
+- One style for every page (list pages and reports): the card. Icon tile
+  (the page's sidebar icon), title, one meta line, actions on the right,
+  FilterBar inside the card. Optional `leading` (Back) and breadcrumbs.
+- Actions order, left to right: page actions (Add, Edit), then exports.
+  Add is `Button` default size sm with a Plus icon and the label
+  `Common.add`.
+
+### FilterBar
+
+- Every filter is a `FilterField` with a label (xs, uppercase, muted). No
+  unlabelled controls, no placeholders standing in for labels.
+- Every control is 36px tall (`h-9`). Widths: sm 140px, md 200px, lg 280px.
+- Controls: `SearchInput` (Common.search), `SearchableSelect`,
+  `DateRangeField` (one control for a period, optional time; never split
+  date / time boxes), `Checkbox` group.
+- Filters apply immediately (text after 400ms debounce, date range when the
+  picker closes). There is no Apply / Yangilash / Qo'llash button.
+- One `FilterReset` button at the end: outline, sm, RotateCcw icon +
+  `Common.reset` ("Tozalash"); shown only when a filter differs from its
+  default.
+
+### Exports
+
+- `ExportActions` only: `Excel` (success), `PDF` / `Word` (outline), size sm,
+  icons FileSpreadsheet / FileDown / FileText, labels `Common.export_excel`
+  / `export_pdf` / `export_word`, spinner while exporting.
+
+### Wording
+
+- Shared actions and labels come from `Common.*` (add, edit, delete, save,
+  cancel, reset, search, all, organization, period, export_*, exporting).
+  Pages do not define their own copies of these.

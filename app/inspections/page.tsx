@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { LayoutGrid } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
-import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import PageFilters from "@/ui/filters";
 import { Badge } from "@/ui/badge";
 import { getPageCount } from "@/lib/utils";
@@ -22,6 +21,7 @@ import { canAccessSection } from "@/lib/permissions";
 import { FiltersQuery } from "@/ui/filters";
 import { UserData } from "@/api/types/auth";
 import { authService } from "@/api/services/auth.service";
+import { SegmentedTabs } from "@/ui/segmented-tabs";
 
 type TabValue = "in_progress" | "archive" | "cancelled";
 
@@ -380,46 +380,29 @@ export default function InspectionsPage() {
     <div className="min-h-full">
       <PageHeader
         title={t("title")}
-
-      />
-
-      <div className="px-6 space-y-4">
-        <div className="mb-6 bg-background border border-border-strong rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
+        filters={
           <PageFilters
             filters={pageFilters}
             hasSearch={isArchive}
             hasDateRangePicker={isArchive}
             searchPlaceholder={t("search_placeholder")}
             dateRangePickerLabel={t("filter_date_range")}
-            className="mb-0 flex-1 min-w-0"
           />
-          <Tabs value={tab} onValueChange={handleTabChange}>
-            <TabsList className="bg-background border border-border p-1 gap-2 rounded-md inline-flex">
-              <TabsTrigger
-                value="in_progress"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong flex items-center gap-2"
-              >
-                <LayoutGrid className="h-4 w-4" />
-                {t("tab_in_progress")}
-              </TabsTrigger>
-              <TabsTrigger
-                value="archive"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong"
-              >
-                {t("tab_archive")}
-              </TabsTrigger>
-              <TabsTrigger
-                value="cancelled"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong"
-              >
-                {t("tab_cancelled")}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        }
+        actions={
+          <SegmentedTabs
+            value={tab}
+            onValueChange={handleTabChange}
+            options={[
+              { value: "in_progress", label: t("tab_in_progress"), icon: <LayoutGrid /> },
+              { value: "archive", label: t("tab_archive") },
+              { value: "cancelled", label: t("tab_cancelled") },
+            ]}
+          />
+        }
+      />
 
-        </div>
-
-
+      <div className="px-6 space-y-4">
 
         {isInProgress && (
           <InspectionsGroupedTable

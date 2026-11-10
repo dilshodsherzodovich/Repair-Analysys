@@ -3,20 +3,13 @@
 import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Input } from "@/ui/input";
+import { format } from "date-fns";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/ui/button";
 import { DatePicker } from "@/ui/date-picker";
-import {
-  Trash2,
-  Plus,
-  Search,
-  FileSpreadsheet,
-  ChevronsUpDown,
-  Check,
-  Loader2,
-} from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { DateRangeField } from "@/ui/date-range-field";
+import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
+import { SearchableSelect } from "@/ui/select";
 import { Permission } from "@/lib/permissions";
 import { PermissionGuard } from "@/components/permission-guard";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
@@ -36,7 +29,8 @@ export interface FiltersQuery {
   searchable?: boolean;
   clearable?: boolean;
   loading?: boolean;
-  minWidth?: string;
+  /** FilterField width; md by default. */
+  width?: "sm" | "md" | "lg";
   permission?: Permission;
 }
 
@@ -50,20 +44,22 @@ interface PageFiltersProps {
   searchPlaceholder?: string;
   datePickerLabel?: string;
   dateRangePickerLabel?: string;
-  onAdd?: () => void;
-  addButtonPermittion?: Permission;
-  addButtonText?: string;
-  addButtonIcon?: React.ReactNode;
-  onExport?: () => void;
-  exportButtonText?: string;
-  exportButtonIcon?: React.ReactNode;
-  exportLoading?: boolean;
   selectedCount?: number;
   onBulkDelete?: () => void;
   bulkDeleteText?: string;
   className?: string;
 }
 
+const DEBOUNCE_MS = 400;
+const toDay = (date: Date | undefined) => (date ? format(date, "yyyy-MM-dd") : "");
+const fromDay = (value: string) => (value ? new Date(value) : undefined);
+
+/**
+ * URL-driven FilterBar for list pages: every filter is a labelled field,
+ * changes write to the query string immediately (text after a debounce), and
+ * "Tozalash" clears them. Put it in PageHeader's `filters` slot (or in a
+ * FilterPanel inside a section); page actions (Add, exports) go in the header.
+ */
 export default function PageFilters({
   filters,
   hasSearch = true,
@@ -74,463 +70,137 @@ export default function PageFilters({
   searchPlaceholder,
   datePickerLabel,
   dateRangePickerLabel,
-  onAdd,
-  addButtonText,
-  addButtonIcon,
-  addButtonPermittion,
-  onExport,
-  exportButtonText,
-  exportButtonIcon,
-  exportLoading = false,
   selectedCount = 0,
   onBulkDelete,
   bulkDeleteText,
   className,
 }: PageFiltersProps) {
   const t = useTranslations("Filters");
+  const tc = useTranslations("Common");
   const { updateQuery, getQueryValue } = useFilterParams();
-
-  const effectiveSearchPlaceholder =
-    searchPlaceholder ?? t("search_placeholder");
-  const effectiveDatePickerLabel = datePickerLabel ?? t("date_label");
-  const effectiveDateRangePickerLabel =
-    dateRangePickerLabel ?? t("date_range_label");
-  const effectiveAddButtonText = addButtonText ?? t("add_button");
-  const effectiveExportButtonText = exportButtonText ?? t("export_button");
-  const effectiveBulkDeleteText = bulkDeleteText ?? t("bulk_delete");
-  const selectPlaceholder = t("select_placeholder");
-
   const searchParams = useSearchParams();
-  const debounceMs = 400;
-  const timersRef = React.useRef<Record<string, ReturnType<typeof setTimeout>>>(
-    {},
-  );
 
-  // Debounced updater per key
-  const scheduleDebounce = (key: string, value: string) => {
-    if (timersRef.current[key]) clearTimeout(timersRef.current[key]);
-    timersRef.current[key] = setTimeout(() => {
-      updateQuery({ [key]: value });
-      delete timersRef.current[key];
-    }, debounceMs);
+  const timers = React.useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const debounce = (key: string, value: string) => {
+    clearTimeout(timers.current[key]);
+    timers.current[key] = setTimeout(() => updateQuery({ [key]: value }), DEBOUNCE_MS);
   };
 
-  // Local state for search input (q)
-  const [searchLocal, setSearchLocal] = React.useState<string>(() =>
-    getQueryValue("q"),
-  );
+  // Text inputs keep local state so typing stays smooth; the URL follows
+  const textKeys = [
+    ...(hasSearch ? ["q"] : []),
+    ...filters.filter((f) => !f.isSelect).map((f) => f.name),
+  ];
+  const readText = () =>
+    Object.fromEntries(textKeys.map((key) => [key, getQueryValue(key)]));
+  const [text, setText] = React.useState<Record<string, string>>(readText);
   React.useEffect(() => {
-    setSearchLocal(getQueryValue("q"));
-  }, [searchParams]);
+    setText(readText());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, filters]);
 
-  // Handle search input
-  const handleSearchChange = (value: string) => {
-    setSearchLocal(value);
-    scheduleDebounce("q", value);
+  const onText = (key: string, value: string) => {
+    setText((prev) => ({ ...prev, [key]: value }));
+    debounce(key, value);
   };
 
-  // Handle filter changes
-  const handleFilterChange = (name: string, value: string) => {
-    updateQuery({ [name]: value });
+  // Every query key this bar owns, for "Tozalash"
+  const ownedKeys = [
+    ...textKeys,
+    ...filters.filter((f) => f.isSelect).map((f) => f.name),
+    ...(hasDatePicker ? ["date"] : []),
+    ...(hasDateRangePicker ? [dateRangeStartKey, dateRangeEndKey] : []),
+  ];
+  const isActive = ownedKeys.some((key) => getQueryValue(key));
+  const reset = () => {
+    Object.values(timers.current).forEach(clearTimeout);
+    setText(Object.fromEntries(textKeys.map((key) => [key, ""])));
+    updateQuery(Object.fromEntries(ownedKeys.map((key) => [key, null])));
   };
 
-  // Local state for text filter inputs (non-select filters)
-  const getInitialTextValues = () => {
-    const map: Record<string, string> = {};
-    filters.forEach((f) => {
-      if (!f.isSelect) {
-        map[f.name] = getQueryValue(f.name);
-      }
-    });
-    return map;
-  };
-  const [textValues, setTextValues] =
-    React.useState<Record<string, string>>(getInitialTextValues);
-
-  // Sync text inputs with URL and filters list changes
-  React.useEffect(() => {
-    setTextValues(getInitialTextValues());
-  }, [filters, searchParams]);
-
-  // Handle date picker changes
-  const handleDateChange = (date: Date | undefined) => {
-    const dateString = date ? format(date, "yyyy-MM-dd") : "";
-    updateQuery({ date: dateString });
-  };
-
-  // Handle date range picker changes
-  const handleDateRangeChange = (
-    startDate: Date | undefined,
-    endDate: Date | undefined,
-  ) => {
-    const startString = startDate ? format(startDate, "yyyy-MM-dd") : "";
-    const endString = endDate ? format(endDate, "yyyy-MM-dd") : "";
-    updateQuery({
-      [dateRangeStartKey]: startString,
-      [dateRangeEndKey]: endString,
-    });
-  };
-
-  // Get current date values
-  const currentDate = getQueryValue("date")
-    ? new Date(getQueryValue("date"))
-    : undefined;
-  const currentStartDate = getQueryValue(dateRangeStartKey)
-    ? new Date(getQueryValue(dateRangeStartKey))
-    : undefined;
-  const currentEndDate = getQueryValue(dateRangeEndKey)
-    ? new Date(getQueryValue(dateRangeEndKey))
-    : undefined;
+  const field = (filter: FiltersQuery) => (
+    <FilterField key={filter.name} label={filter.label} width={filter.width ?? "md"}>
+      {filter.isSelect ? (
+        <SearchableSelect
+          size="md"
+          searchable={filter.searchable !== false}
+          clearable={filter.clearable}
+          loading={filter.loading}
+          placeholder={filter.placeholder || tc("all")}
+          options={filter.options || []}
+          value={getQueryValue(filter.name)}
+          onValueChange={(value) => updateQuery({ [filter.name]: value })}
+        />
+      ) : (
+        <SearchInput
+          value={text[filter.name] ?? ""}
+          placeholder={filter.placeholder}
+          onChange={(value) => onText(filter.name, value)}
+        />
+      )}
+    </FilterField>
+  );
 
   return (
-    <div
-      className={cn(
-        "flex flex-wrap items-stretch gap-3 md:gap-4 mb-4",
-        className,
-      )}
-    >
-      {/* Search Input */}
+    <FilterBar className={className}>
       {hasSearch && (
-        <div className="min-w-[200px] flex-1 max-w-[400px] flex-shrink-0">
-          <div className="relative w-full h-full flex items-center">
-            <input
-              type="text"
-              placeholder={effectiveSearchPlaceholder}
-              className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-md bg-background placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors"
-              value={searchLocal}
-              onChange={(e) => handleSearchChange(e.target.value)}
-            />
-            <Search
-              className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 pointer-events-none text-foreground-subtle"
-              strokeWidth={1.25}
-            />
-          </div>
-        </div>
+        <FilterField label={tc("search")} width="lg">
+          <SearchInput
+            value={text.q ?? ""}
+            placeholder={searchPlaceholder}
+            onChange={(value) => onText("q", value)}
+          />
+        </FilterField>
       )}
 
-      {/* Dynamic Filters */}
       {filters.map((filter) =>
         filter.permission ? (
           <PermissionGuard key={filter.name} permission={filter.permission}>
-            <div className="min-w-[200px] flex-shrink-0">
-              {filter.isSelect ? (
-                <SelectWithSearch
-                  placeholder={filter.placeholder || selectPlaceholder}
-                  searchable={filter.searchable !== false}
-                  loading={filter.loading}
-                  options={filter.options || []}
-                  value={getQueryValue(filter.name)}
-                  onValueChange={(value) =>
-                    handleFilterChange(filter.name, value)
-                  }
-                  triggerClassName="w-full h-10 mb-0 min-w-[200px] max-w-[300px]"
-                />
-              ) : (
-                <Input
-                  placeholder={filter.placeholder || filter.label}
-                  className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-lg bg-background placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors min-w-[200px] max-w-[300px]"
-                  value={textValues[filter.name] ?? ""}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    setTextValues((prev) => ({ ...prev, [filter.name]: v }));
-                    scheduleDebounce(filter.name, v);
-                  }}
-                />
-              )}
-            </div>
+            {field(filter)}
           </PermissionGuard>
         ) : (
-          <div key={filter.name} className="min-w-[200px] flex-shrink-0">
-            {filter.isSelect ? (
-              <SelectWithSearch
-                placeholder={filter.placeholder || selectPlaceholder}
-                searchable={filter.searchable !== false}
-                loading={filter.loading}
-                options={filter.options || []}
-                value={getQueryValue(filter.name)}
-                onValueChange={(value) =>
-                  handleFilterChange(filter.name, value)
-                }
-                triggerClassName="w-full h-10 mb-0 min-w-[200px] max-w-[300px]"
-              />
-            ) : (
-              <Input
-                placeholder={filter.placeholder || filter.label}
-                className="w-full h-full py-2 px-4 mb-0 border border-border-strong rounded-lg bg-background placeholder:text-foreground-subtle text-sm text-foreground focus:border-border-strong focus:outline-none focus:ring-0 hover:border-border-strong transition-colors min-w-[200px] max-w-[300px]"
-                value={textValues[filter.name] ?? ""}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setTextValues((prev) => ({ ...prev, [filter.name]: v }));
-                  scheduleDebounce(filter.name, v);
-                }}
-              />
-            )}
-          </div>
+          field(filter)
         ),
       )}
 
-      {/* Date Picker */}
       {hasDatePicker && (
-        <div className="min-w-[200px] flex-shrink-0">
+        <FilterField label={datePickerLabel ?? tc("date")}>
           <DatePicker
-            placeholder={effectiveDatePickerLabel}
-            value={currentDate}
-            onValueChange={handleDateChange}
-            className="w-full min-w-[200px] max-w-[300px]"
+            value={fromDay(getQueryValue("date"))}
+            onValueChange={(date) => updateQuery({ date: toDay(date) })}
+            className="w-full"
             size="md"
           />
-        </div>
+        </FilterField>
       )}
 
-      {/* Date Range Picker */}
       {hasDateRangePicker && (
-        <div className="min-w-[400px] flex-shrink-0">
-          <div className="grid grid-cols-2 gap-2">
-            <DatePicker
-              placeholder={`${effectiveDateRangePickerLabel} ${t("date_range_from")}`}
-              value={currentStartDate}
-              onValueChange={(date) =>
-                handleDateRangeChange(date, currentEndDate)
-              }
-              className="w-full"
-              size="md"
-            />
-            <DatePicker
-              placeholder={`${effectiveDateRangePickerLabel} ${t("date_range_to")}`}
-              value={currentEndDate}
-              onValueChange={(date) =>
-                handleDateRangeChange(currentStartDate, date)
-              }
-              className="w-full"
-              size="md"
-            />
-          </div>
-        </div>
+        <FilterField label={dateRangePickerLabel ?? tc("period")} width="lg">
+          <DateRangeField
+            value={{
+              from: fromDay(getQueryValue(dateRangeStartKey)),
+              to: fromDay(getQueryValue(dateRangeEndKey)),
+            }}
+            onChange={({ from, to }) =>
+              updateQuery({ [dateRangeStartKey]: toDay(from), [dateRangeEndKey]: toDay(to) })
+            }
+          />
+        </FilterField>
       )}
 
-      {/* Action Buttons */}
-      {(onAdd || onExport) && (
-        <div className="ml-auto shrink-0 flex items-center gap-2 w-full sm:w-auto">
-          {/* Create/Add Button */}
-          {onAdd && (
-            <PermissionGuard permission={addButtonPermittion}>
-              <Button
-                onClick={onAdd}
-                className="h-10 bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap cursor-pointer"
-              >
-                <span className="flex items-center">
-                  {addButtonIcon || <Plus className="w-4 h-4 mr-2" />}
-                  {effectiveAddButtonText}
-                </span>
-              </Button>
-            </PermissionGuard>
-          )}
+      <FilterReset active={isActive} onReset={reset} />
 
-          {/* Export Button */}
-          {onExport && (
-            <Button
-              variant="success"
-              onClick={onExport}
-              disabled={exportLoading}
-              className="h-10 whitespace-nowrap"
-            >
-              <span className="flex items-center">
-                {exportLoading ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  exportButtonIcon || (
-                    <FileSpreadsheet className="w-4 h-4 mr-2" />
-                  )
-                )}
-                {effectiveExportButtonText}
-              </span>
-            </Button>
-          )}
-        </div>
-      )}
-
-      {/* Bulk Actions */}
       {selectedCount > 0 && onBulkDelete && (
-        <div className="ml-auto shrink-0 flex items-center gap-2 w-full sm:w-auto">
+        <div className="ml-auto flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
             {t("selected_count", { count: selectedCount })}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground bg-transparent"
-            onClick={onBulkDelete}
-          >
-            <Trash2 className="w-4 h-4 mr-1" />
-            {effectiveBulkDeleteText}
+          <Button variant="outline-destructive" size="sm" className="h-9" onClick={onBulkDelete}>
+            <Trash2 />
+            {bulkDeleteText ?? tc("delete")}
           </Button>
         </div>
       )}
-    </div>
-  );
-}
-
-// Single-select with search: same pattern as multi-select (custom dropdown + search input + filtered list)
-export function SelectWithSearch({
-  placeholder,
-  options,
-  value,
-  onValueChange,
-  searchable = true,
-  loading,
-  triggerClassName,
-}: {
-  placeholder?: string;
-  options: { label: string; value: string; disabled?: boolean }[];
-  value: string;
-  onValueChange: (v: string) => void;
-  searchable?: boolean;
-  loading?: boolean;
-  triggerClassName?: string;
-  style?: Record<string, string>;
-}) {
-  const t = useTranslations("Filters");
-  const [open, setOpen] = React.useState(false);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [dropdownPosition, setDropdownPosition] = React.useState<
-    "bottom" | "top"
-  >("bottom");
-  const triggerRef = React.useRef<HTMLDivElement>(null);
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
-
-  const selectedOption = React.useMemo(
-    () => options.find((o) => o.value === value),
-    [options, value],
-  );
-
-  const filteredOptions = React.useMemo(() => {
-    if (!searchable || !searchValue.trim()) return options;
-    const term = searchValue.toLowerCase();
-    return options.filter((o) => o.label.toLowerCase().includes(term));
-  }, [options, searchValue, searchable]);
-
-  // Dropdown position when opening
-  React.useEffect(() => {
-    if (open && triggerRef.current) {
-      const triggerRect = triggerRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const dropdownHeight = 300;
-      const spaceBelow = viewportHeight - triggerRect.bottom;
-      const spaceAbove = triggerRect.top;
-      if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
-        setDropdownPosition("top");
-      } else {
-        setDropdownPosition("bottom");
-      }
-    }
-  }, [open]);
-
-  // Close on click outside, clear search
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-        setSearchValue("");
-      }
-    };
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
-
-  const handleSelect = (optionValue: string) => {
-    onValueChange(optionValue);
-    setOpen(false);
-    setSearchValue("");
-  };
-
-  return (
-    <div className="relative w-full">
-      <div
-        ref={triggerRef}
-        className={cn(
-          "flex items-center justify-between border border-border-strong rounded-md bg-background hover:border-foreground-subtle focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary cursor-pointer min-h-10 h-10 px-3 text-sm text-left transition-colors",
-          triggerClassName,
-        )}
-        onClick={() => !loading && setOpen(!open)}
-      >
-        <span
-          className={cn(
-            "truncate flex-1 min-w-0",
-            !selectedOption ? "text-foreground-subtle" : "text-foreground",
-          )}
-        >
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
-      </div>
-
-      {open && (
-        <div
-          ref={dropdownRef}
-          className={cn(
-            "absolute left-0 right-0 bg-background border border-border-strong rounded-lg z-[999999] overflow-hidden min-w-[200px] max-w-[300px]",
-            "animate-in fade-in-0 zoom-in-95 duration-100",
-            dropdownPosition === "top"
-              ? "bottom-full mb-1 slide-in-from-bottom-2"
-              : "top-full mt-1 slide-in-from-top-2",
-          )}
-          style={{ zIndex: 999999 }}
-        >
-          {searchable && (
-            <div className="p-2 border-b border-border">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder={t("search_placeholder")}
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  className="w-full pl-8 pr-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                />
-              </div>
-            </div>
-          )}
-          <div className="max-h-[240px] overflow-y-auto py-0.5">
-            {loading ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                {t("loading")}
-              </div>
-            ) : filteredOptions.length === 0 ? (
-              <div className="py-3 text-center text-sm text-muted-foreground">
-                {t("no_results")}
-              </div>
-            ) : (
-              filteredOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  disabled={opt.disabled}
-                  onClick={() => !opt.disabled && handleSelect(opt.value)}
-                  className={cn(
-                    "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted cursor-pointer transition-colors",
-                    opt.value === value &&
-                      "bg-primary-subtle text-primary-hover font-medium",
-                    opt.disabled && "opacity-50 cursor-not-allowed",
-                  )}
-                >
-                  {opt.value === value && (
-                    <Check className="h-4 w-4 shrink-0 text-primary" />
-                  )}
-                  <span className="truncate">{opt.label}</span>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+    </FilterBar>
   );
 }

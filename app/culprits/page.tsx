@@ -240,45 +240,45 @@ export default function CulpritsPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "organization",
+                label: t("filters.organization"),
+                isSelect: true,
+                options: organizationOptions,
+                placeholder: t("filters.organization_placeholder"),
+                loading: isLoadingOrganizations,
+              },
+              {
+                name: "full_name",
+                label: t("filters.full_name"),
+                isSelect: false,
+                placeholder: t("filters.full_name_placeholder"),
+              },
+              {
+                name: "payroll_confirmed",
+                label: t("filters.payroll_confirmed"),
+                isSelect: true,
+                options: yesNoOptions,
+                searchable: false,
+              },
+              {
+                name: "recovered",
+                label: t("filters.recovered"),
+                isSelect: true,
+                options: yesNoOptions,
+                searchable: false,
+              },
+            ]}
+            hasSearch={false}
+            hasDateRangePicker
+          />
+        }
       />
 
       <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "organization",
-              label: t("filters.organization"),
-              isSelect: true,
-              options: organizationOptions,
-              placeholder: t("filters.organization_placeholder"),
-              loading: isLoadingOrganizations,
-            },
-            {
-              name: "full_name",
-              label: t("filters.full_name"),
-              isSelect: false,
-              placeholder: t("filters.full_name_placeholder"),
-            },
-            {
-              name: "payroll_confirmed",
-              label: t("filters.payroll_confirmed"),
-              isSelect: true,
-              options: yesNoOptions,
-              searchable: false,
-            },
-            {
-              name: "recovered",
-              label: t("filters.recovered"),
-              isSelect: true,
-              options: yesNoOptions,
-              searchable: false,
-            },
-          ]}
-          hasSearch={false}
-          hasDateRangePicker
-          dateRangePickerLabel=""
-          className="!mb-0"
-        />
       </div>
 
       <div className="px-6 pb-6">

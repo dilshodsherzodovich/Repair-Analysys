@@ -31,6 +31,8 @@ import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
 
 export default function DutyUzelPage() {
   const t = useTranslations("DutyUzelPage");
@@ -400,33 +402,51 @@ export default function DutyUzelPage() {
         title={t("title")}
         description={t("description")}
         actions={
-          <SegmentedTabs
-            value={isGroupView ? "group" : "list"}
-            onValueChange={handleViewChange}
-            aria-label={t("view_group")}
-            options={[
-              { value: "list", label: t("view_list"), icon: <List /> },
-              { value: "group", label: t("view_group"), icon: <LayoutList /> },
-            ]}
-          />
+          <>
+            <SegmentedTabs
+              value={isGroupView ? "group" : "list"}
+              onValueChange={handleViewChange}
+              aria-label={t("view_group")}
+              options={[
+                { value: "list", label: t("view_list"), icon: <List /> },
+                { value: "group", label: t("view_group"), icon: <LayoutList /> },
+              ]}
+            />
+            {!isGroupView && (
+              <AddButton onClick={handleCreate} permission="create_duty_uzel_report" />
+            )}
+            <ExportActions
+              onExcel={isGroupView ? (visibleOverview ? handleGroupExport : undefined) : handleExport}
+              busy={isExporting ? "excel" : null}
+            />
+          </>
+        }
+        filters={
+          isGroupView ? (
+            <PageFilters
+              filters={groupViewFilters}
+              hasSearch={false}
+              hasDateRangePicker
+              dateRangeStartKey="defect_date_start"
+              dateRangeEndKey="defect_date_end"
+              dateRangePickerLabel={t("columns.defect_date")}
+            />
+          ) : (
+            <PageFilters
+              filters={[]}
+              hasSearch
+              searchPlaceholder={t("search_placeholder")}
+              hasDateRangePicker
+              dateRangeStartKey="defect_date_start"
+              dateRangeEndKey="defect_date_end"
+              dateRangePickerLabel={t("columns.defect_date")}
+            />
+          )
         }
       />
 
       {isGroupView ? (
         <>
-          <div className="mt-4">
-            <PageFilters
-              filters={groupViewFilters}
-              hasSearch={false}
-              hasDateRangePicker={true}
-              dateRangeStartKey="defect_date_start"
-              dateRangeEndKey="defect_date_end"
-              dateRangePickerLabel={t("columns.defect_date")}
-              onExport={visibleOverview ? handleGroupExport : undefined}
-              exportLoading={isExporting}
-            />
-          </div>
-
           {groupError && (
             <Alert variant="destructive" className="mt-2"><AlertDescription>
               {groupError}
@@ -446,23 +466,6 @@ export default function DutyUzelPage() {
         </>
       ) : (
         <>
-          <div className="mt-4">
-            <PageFilters
-              filters={[]}
-              hasSearch={true}
-              searchPlaceholder={t("search_placeholder")}
-              hasDateRangePicker={true}
-              dateRangeStartKey="defect_date_start"
-              dateRangeEndKey="defect_date_end"
-              dateRangePickerLabel={t("columns.defect_date")}
-              addButtonText={t("add_button")}
-              addButtonPermittion="create_duty_uzel_report"
-              onAdd={handleCreate}
-              onExport={handleExport}
-              exportLoading={isExporting}
-            />
-          </div>
-
           <div className="mt-6">
             <PaginatedTable
               columns={columns}

@@ -181,7 +181,6 @@ function DelayedRepairDurationReportPage() {
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
       <PageHeader
-        variant="card"
         title={t("title")}
         description={t("description")}
         actions={<>

@@ -31,6 +31,7 @@ import { bandageGroupKey } from "./bandage-groups";
 import { exportBandagesExcel } from "@/utils/bandages-excel-export";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { Alert, AlertDescription } from "@/ui/alert";
+import { ExportActions } from "@/ui/export-actions";
 
 function BandagesPageContent({
   user,
@@ -200,14 +201,17 @@ function BandagesPageContent({
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t("title")} description={t("description")} />
-
-      <PageFilters
-        filters={pageFilters}
-        hasSearch={true}
-        searchPlaceholder={t("search_placeholder")}
-        onExport={isLoading ? undefined : handleExport}
-        exportLoading={isExporting}
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        filters={
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
+        actions={<ExportActions onExcel={isLoading ? undefined : handleExport} busy={isExporting ? "excel" : null} />}
       />
 
       {isError && (

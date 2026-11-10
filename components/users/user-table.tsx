@@ -28,6 +28,8 @@ import { userRoles } from "@/lib/users";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useDepartments } from "@/api/hooks/use-departmants";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { FilterPanel } from "@/ui/filter-bar";
+import { AddButton } from "@/ui/add-button";
 
 interface UserTableProps {
   users: PaginatedData<UserData>;
@@ -155,19 +157,16 @@ export function UserTable({
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-xl">
+      <FilterPanel actions={<AddButton onClick={onCreateNew} permission="create_user" />}>
         <PageFilters
           filters={userFilters}
           hasSearch={true}
           searchPlaceholder="Foydalanuvchi nomi yoki login..."
-          onAdd={onCreateNew}
-          addButtonText="Yangi foydalanuvchi"
-          addButtonPermittion="create_user"
           selectedCount={selectedIds.length}
           onBulkDelete={handleBulkDelete}
-          bulkDeleteText="O'chirish"
         />
-
+      </FilterPanel>
+      <Card className="rounded-xl">
         <div className="overflow-hidden">
           <Table>
             <TableHeader>

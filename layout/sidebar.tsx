@@ -4,48 +4,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Zap,
-  FileText,
-  AlertCircle,
-  ChevronRight,
-  ChevronDown,
-  Send,
-  Shield,
-  OctagonMinus,
-  ClipboardMinus,
-  Train,
-  ClipboardCheck,
-  ClipboardList,
-  Calendar,
-  Gauge,
-  type LucideIcon,
-  RotateCw,
-  FormInput,
-  Users,
-  Wallet,
-  Banknote,
-  CalendarRange,
-  FileBarChart,
-  Disc,
-  Cog,
-  Building2,
-} from "lucide-react";
+import { ChevronRight, ChevronDown, Send, Shield, type LucideIcon, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
 import { Button } from "@/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { authService } from "@/api/services/auth.service";
 import { useTranslations } from "next-intl";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import type { UserData } from "@/api/types/auth";
 import type { Organization } from "@/api/types/organizations";
+import { PAGE_ICONS, REPORTS_GROUP_ICON } from "@/lib/page-icons";
 
 interface NavChild {
   name: string;
@@ -185,7 +154,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "pantograph",
         name: t("nav.pantograph"),
-        icon: Zap,
+        icon: PAGE_ICONS["/"],
         section: "pantograf",
         href: "/",
       });
@@ -195,7 +164,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "orders",
         name: t("nav.orders"),
-        icon: FileText,
+        icon: PAGE_ICONS["/orders"],
         section: "orders",
         href: "/orders",
       });
@@ -205,7 +174,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "defective_works",
         name: t("nav.defective_works"),
-        icon: AlertCircle,
+        icon: PAGE_ICONS["/defective-works"],
         section: "defective-works",
         href: "/defective-works",
       });
@@ -219,7 +188,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "depot",
         name: t("nav.depot"),
-        icon: FormInput,
+        icon: PAGE_ICONS["/depo"],
         section: "depo",
         href: orgHref("/depo"),
         activePrefix: "/depo",
@@ -230,7 +199,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "bandages",
         name: t("nav.bandages"),
-        icon: Disc,
+        icon: PAGE_ICONS["/bandages"],
         section: "depo",
         href: orgHref("/bandages"),
         activePrefix: "/bandages",
@@ -238,7 +207,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "crankshaft",
         name: t("nav.crankshaft"),
-        icon: Cog,
+        icon: PAGE_ICONS["/crankshaft"],
         section: "depo",
         href: orgHref("/crankshaft"),
         activePrefix: "/crankshaft",
@@ -249,7 +218,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "duty_uzel",
         name: t("nav.duty_uzel"),
-        icon: Train,
+        icon: PAGE_ICONS["/duty-uzel"],
         section: "duty_uzel",
         href: orgHref("/duty-uzel"),
         activePrefix: "/duty-uzel",
@@ -260,7 +229,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "revision_journal",
         name: t("nav.revision_journal"),
-        icon: FileText,
+        icon: PAGE_ICONS["/revision-journal"],
         section: "revision_journal",
         href: orgHref("/revision-journal"),
         activePrefix: "/revision-journal",
@@ -271,7 +240,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "locomotive_passport_inspections",
         name: t("nav.locomotive_passport_inspections"),
-        icon: ClipboardCheck,
+        icon: PAGE_ICONS["/locomotive-passport-inspections"],
         section: "locomotive_passport_inspections",
         href: "/locomotive-passport-inspections",
       });
@@ -281,7 +250,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "replacement_schedule",
         name: t("nav.replacement_schedule"),
-        icon: Calendar,
+        icon: PAGE_ICONS["/replacement-schedule"],
         section: "replacement_schedule",
         href: "/replacement-schedule",
       });
@@ -291,7 +260,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "inspections",
         name: t("nav.inspections"),
-        icon: ClipboardList,
+        icon: PAGE_ICONS["/inspections"],
         section: "inspections",
         href: "/inspections",
       });
@@ -301,7 +270,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "annual_inspection_plan",
         name: t("nav.annual_inspection_plan"),
-        icon: CalendarRange,
+        icon: PAGE_ICONS["/annual-inspection-plan"],
         section: "inspections",
         href: "/annual-inspection-plan",
       });
@@ -311,7 +280,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "locomotive_mileage_report",
         name: t("nav.locomotive_mileage_report"),
-        icon: Gauge,
+        icon: PAGE_ICONS["/locomotive-mileage-report"],
         section: "inspections",
         href: "/locomotive-mileage-report",
       });
@@ -321,7 +290,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "rezerv",
         name: t("nav.rezerv"),
-        icon: ClipboardList,
+        icon: PAGE_ICONS["/rezerv"],
         section: "inspections",
         href: "/rezerv",
       });
@@ -331,7 +300,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "delays",
         name: t("nav.delays"),
-        icon: OctagonMinus,
+        icon: PAGE_ICONS["/delays"],
         section: "delays",
         href: "/delays",
       });
@@ -341,7 +310,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "delay_reports",
         name: t("nav.delay_reports"),
-        icon: ClipboardMinus,
+        icon: PAGE_ICONS["/delays/reports"],
         section: "delays-reports",
         href: "/delays/reports",
       });
@@ -351,7 +320,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "sriv_payment_report",
         name: t("nav.sriv_payment_report"),
-        icon: Banknote,
+        icon: PAGE_ICONS["/delays/payment-report"],
         section: "sriv-payment-report",
         href: "/delays/payment-report",
       });
@@ -361,7 +330,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "culprits",
         name: t("nav.culprits"),
-        icon: Users,
+        icon: PAGE_ICONS["/culprits"],
         section: "culprits",
         href: "/culprits",
       });
@@ -371,7 +340,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "recovery",
         name: t("nav.recovery"),
-        icon: Wallet,
+        icon: PAGE_ICONS["/recovery"],
         section: "recovery",
         href: "/recovery",
       });
@@ -381,7 +350,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "razvarot",
         name: t("nav.razvarot"),
-        icon: RotateCw,
+        icon: PAGE_ICONS["/razvarot"],
         section: "razvarot",
         href: "/razvarot",
       });
@@ -391,7 +360,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "tu-137",
         name: t("nav.tu-137"),
-        icon: ClipboardList,
+        icon: PAGE_ICONS["/tu-137"],
         section: "tu-137",
         children: [
           { name: t("nav.tu-137"), href: "/tu-137" },
@@ -404,7 +373,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "tu-152",
         name: t("nav.tu-152"),
-        icon: ClipboardList,
+        icon: PAGE_ICONS["/tu-152"],
         section: "tu-152",
         href: "/tu-152",
       });
@@ -414,7 +383,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "tu152-journal",
         name: t("nav.tu152-journal"),
-        icon: ClipboardList,
+        icon: PAGE_ICONS["/tu152-journal"],
         section: "tu152-journal",
         href: "/tu152-journal",
       });
@@ -485,7 +454,7 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       items.push({
         key: "reports",
         name: t("nav.reports"),
-        icon: FileBarChart,
+        icon: REPORTS_GROUP_ICON,
         section: "reports",
         children: reportsChildren,
       });

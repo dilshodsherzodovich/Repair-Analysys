@@ -23,6 +23,8 @@ import { PermissionGuard } from "../permission-guard";
 import { Pagination } from "@/ui/pagination";
 import { getPageCount } from "@/lib/utils";
 import PageFilters from "@/ui/filters";
+import { FilterPanel } from "@/ui/filter-bar";
+import { AddButton } from "@/ui/add-button";
 
 interface DepartmentTableProps {
   departments: PaginatedData<Department>;
@@ -76,18 +78,16 @@ export function DepartmentTable({
 
   return (
     <div className="space-y-4">
-      <Card>
+      <FilterPanel actions={<AddButton onClick={onCreateNew} permission="create_department" />}>
         <PageFilters
           filters={[]}
           hasSearch={true}
           searchPlaceholder="Quyi tashkilot nomi"
-          onAdd={onCreateNew}
-          addButtonText="Yangi quyi tashkilot"
-          addButtonPermittion="create_department"
           selectedCount={selectedIds.length}
           onBulkDelete={handleBulkDelete}
-          bulkDeleteText="O'chirish"
         />
+      </FilterPanel>
+      <Card>
         <div className="overflow-hidden">
           <Table>
             <TableHeader>

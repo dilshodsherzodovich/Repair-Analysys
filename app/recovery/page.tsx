@@ -238,52 +238,52 @@ export default function RecoveryPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "stage",
+                label: t("filters.recovery_status"),
+                isSelect: true,
+                options: stageOptions,
+                placeholder: t("filters.recovery_status_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "train_number",
+                label: t("filters.train_number"),
+                isSelect: false,
+                placeholder: t("filters.train_number_placeholder"),
+              },
+              {
+                name: "station",
+                label: t("filters.station"),
+                isSelect: false,
+                placeholder: t("filters.station_placeholder"),
+              },
+              {
+                name: "mashinist",
+                label: t("filters.mashinist"),
+                isSelect: false,
+                placeholder: t("filters.mashinist_placeholder"),
+              },
+              {
+                name: "locomotiv",
+                label: t("filters.locomotiv"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotiv_placeholder"),
+                searchable: true,
+                loading: isLoadingLocomotives,
+              },
+            ]}
+            hasSearch={false}
+            hasDateRangePicker
+          />
+        }
       />
 
       <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "stage",
-              label: t("filters.recovery_status"),
-              isSelect: true,
-              options: stageOptions,
-              placeholder: t("filters.recovery_status_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "train_number",
-              label: t("filters.train_number"),
-              isSelect: false,
-              placeholder: t("filters.train_number_placeholder"),
-            },
-            {
-              name: "station",
-              label: t("filters.station"),
-              isSelect: false,
-              placeholder: t("filters.station_placeholder"),
-            },
-            {
-              name: "mashinist",
-              label: t("filters.mashinist"),
-              isSelect: false,
-              placeholder: t("filters.mashinist_placeholder"),
-            },
-            {
-              name: "locomotiv",
-              label: t("filters.locomotiv"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotiv_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-          ]}
-          hasSearch={false}
-          hasDateRangePicker
-          dateRangePickerLabel=""
-          className="!mb-0"
-        />
       </div>
 
       <div className="px-6 pb-6">

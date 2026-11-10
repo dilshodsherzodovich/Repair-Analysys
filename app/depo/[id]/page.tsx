@@ -45,14 +45,16 @@ export default function DepoLocomotives() {
       <PageHeader
         title={t("title")}
         description={t("description")}
+        filters={
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
       />
 
       <div className="mt-4">
-        <PageFilters
-          filters={pageFilters}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-        />
       </div>
 
       <LocomotivesTable />

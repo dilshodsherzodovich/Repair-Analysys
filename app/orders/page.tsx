@@ -39,6 +39,8 @@ import { hasPermission, type Permission } from "@/lib/permissions";
 import { Badge } from "@/ui/badge";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { responsibleOrganizations } from "@/data";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
 
 export default function OrdersPage() {
   const t = useTranslations("OrdersPage");
@@ -465,6 +467,52 @@ export default function OrdersPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "type_of_journal",
+                label: t("filters.journal_type"),
+                isSelect: true,
+                options: journalTypeOptions,
+                placeholder: t("filters.journal_type_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "locomotive",
+                label: t("filters.locomotive"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotive_placeholder"),
+                searchable: true,
+                loading: isLoadingLocomotives,
+              },
+              ...(canChooseOrganization
+                ? [
+                    {
+                      name: "organization",
+                      label: t("filters.organization"),
+                      isSelect: true,
+                      options: organizationOptions,
+                      placeholder: t("filters.organization_placeholder"),
+                      searchable: false,
+                      loading: isLoadingOrganizations,
+                    },
+                  ]
+                : []),
+            ]}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+            hasDatePicker={true}
+            datePickerLabel={t("date_label")}
+          />
+        }
+        actions={
+          <>
+            <AddButton onClick={isAdmin ? undefined : handleCreate} permission={isAdmin ? undefined : "create_order"} />
+            <ExportActions onExcel={handleExport} />
+          </>
+        }
       />
 
       <StatsPanel
@@ -475,50 +523,6 @@ export default function OrdersPage() {
       />
 
       <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "type_of_journal",
-              label: t("filters.journal_type"),
-              isSelect: true,
-              options: journalTypeOptions,
-              placeholder: t("filters.journal_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "locomotive",
-              label: t("filters.locomotive"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotive_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-            ...(canChooseOrganization
-              ? [
-                  {
-                    name: "organization",
-                    label: t("filters.organization"),
-                    isSelect: true,
-                    options: organizationOptions,
-                    placeholder: t("filters.organization_placeholder"),
-                    searchable: false,
-                    loading: isLoadingOrganizations,
-                  },
-                ]
-              : []),
-          ]}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-          hasDatePicker={true}
-          datePickerLabel={t("date_label")}
-          addButtonPermittion={isAdmin ? undefined : "create_order"}
-          onAdd={isAdmin ? undefined : handleCreate}
-          onExport={handleExport}
-          exportButtonText="Export EXCEL"
-          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
-          className="!mb-0"
-        />
       </div>
 
       <div className="px-6 pb-6">

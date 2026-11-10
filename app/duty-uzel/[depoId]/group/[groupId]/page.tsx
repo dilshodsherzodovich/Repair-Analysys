@@ -15,6 +15,7 @@ import { exportComponentGroupDetailsExcel } from "@/utils/duty-uzel-excel-export
 import { ComponentGroupComponents } from "../../components/component-group-components";
 import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
+import { ExportActions } from "@/ui/export-actions";
 
 /** One component group on its own page — opened from the group view's list. */
 export default function DutyUzelGroupPage() {
@@ -122,19 +123,20 @@ export default function DutyUzelGroupPage() {
           { label: t("title"), href: `/duty-uzel/${depoId}?view=group` },
           { label: data?.group?.name ?? `#${groupId}`, current: true },
         ]}
+        filters={
+          <PageFilters
+            filters={filters}
+            hasSearch={false}
+            hasDateRangePicker={true}
+            dateRangeStartKey="defect_date_start"
+            dateRangeEndKey="defect_date_end"
+            dateRangePickerLabel={t("columns.defect_date")}
+          />
+        }
+        actions={<ExportActions onExcel={data ? handleExport : undefined} busy={isExporting ? "excel" : null} />}
       />
 
       <div className="mt-4">
-        <PageFilters
-          filters={filters}
-          hasSearch={false}
-          hasDateRangePicker={true}
-          dateRangeStartKey="defect_date_start"
-          dateRangeEndKey="defect_date_end"
-          dateRangePickerLabel={t("columns.defect_date")}
-          onExport={data ? handleExport : undefined}
-          exportLoading={isExporting}
-        />
       </div>
 
       {errorMessage && (

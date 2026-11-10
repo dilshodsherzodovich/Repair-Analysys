@@ -125,7 +125,6 @@ function LocomotiveGpsReportPage() {
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
       <PageHeader
-        variant="card"
         icon={Satellite}
         title={t("title")}
         description={t("description")}

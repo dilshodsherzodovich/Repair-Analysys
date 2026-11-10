@@ -1,4 +1,27 @@
 {
+  "Common": {
+    "add": "Добавить",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "reset": "Сбросить",
+    "search": "Поиск",
+    "search_placeholder": "Поиск…",
+    "all": "Все",
+    "organization": "Организация",
+    "period": "Период",
+    "date": "Дата",
+    "select": "Выберите",
+    "export_excel": "Excel",
+    "export_pdf": "PDF",
+    "export_word": "Word",
+    "exporting": "Загрузка…",
+    "as_of": "на {date}",
+    "records": "Записей: {count}",
+    "time_from": "Время начала",
+    "time_to": "Время окончания"
+  },
   "UnifiedInspectionReport": {
     "title": "Технические осмотры — единый отчёт",
     "subtitle": "Осмотры, задержки на заход и превышение длительности",

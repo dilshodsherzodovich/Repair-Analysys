@@ -3,15 +3,14 @@
 import { useRef, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { SelectWithSearch } from "@/ui/filters";
+import { SearchableSelect } from "@/ui/select";
+import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
 import { PermissionGuard } from "@/components/permission-guard";
 import type { Permission } from "@/lib/permissions";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { Label } from "@/ui/label";
-import { Button } from "@/ui/button";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { Checkbox } from "@/ui/checkbox";
-import { Input } from "@/ui/input";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "", label: "Barchasi" },
@@ -57,6 +56,7 @@ export function Txk13Filters({
   onUnitChange,
 }: Txk13FiltersProps) {
   const t = useTranslations("LocomotiveMileageReportPage");
+  const tc = useTranslations("Common");
   const { updateQuery, getQueryValue } = useFilterParams();
   const searchParams = useSearchParams();
 
@@ -84,123 +84,122 @@ export function Txk13Filters({
     searchLocal
   );
 
+  const resetFilters = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setSearchLocal("");
+    updateQuery({
+      service_type: "",
+      locomotive_type: "",
+      locomotive_model: "",
+      search: "",
+    });
+  };
+
   return (
-    <div className="space-y-3 mb-4">
-      {/* Row 1: full-width selects + search + clear */}
-      <div className="flex items-center gap-3 w-full">
-        <Input variant="compact" className="h-10 flex-1"
-          type="number"
-          value={searchLocal}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          placeholder="Lokomotiv raqami"
-        />
+    <div className="space-y-3">
+      <FilterBar>
+        <FilterField label="Lokomotiv raqami">
+          <SearchInput
+            value={searchLocal}
+            onChange={handleSearchChange}
+            placeholder="Raqamni kiriting"
+          />
+        </FilterField>
 
         <PermissionGuard
           permission={"choose_inspection_organization" as Permission}
         >
-          <div className="flex-1 min-w-0">
-            <SelectWithSearch
+          <FilterField label={tc("organization")} width="lg">
+            <SearchableSelect
+              size="md"
+              searchable
+              loading={isLoadingOrganizations}
               value={organizationParam}
               onValueChange={(v) => updateQuery({ organization: v })}
-              options={[
-                ...organizations.map((o) => ({
-                  value: String(o.id),
-                  label: o.name,
-                })),
-              ]}
+              options={organizations.map((o) => ({
+                value: String(o.id),
+                label: o.name,
+              }))}
               placeholder={t("choose_organization")}
-              loading={isLoadingOrganizations}
-              triggerClassName="h-10 mb-0"
             />
-          </div>
+          </FilterField>
         </PermissionGuard>
 
-        <div className="flex-1 min-w-0">
-          <SelectWithSearch
+        <FilterField label="Xizmat turi">
+          <SearchableSelect
+            size="md"
+            searchable
             value={serviceTypeParam}
             onValueChange={(v) => updateQuery({ service_type: v })}
             options={SERVICE_TYPE_OPTIONS}
-            placeholder="Barcha xizmat turlari"
-            triggerClassName="h-10 mb-0"
+            placeholder={tc("all")}
           />
-        </div>
+        </FilterField>
 
-        <div className="flex-1 min-w-0">
-          <SelectWithSearch
+        <FilterField label="Lokomotiv turi">
+          <SearchableSelect
+            size="md"
+            searchable
             value={locomotiveTypeParam}
             onValueChange={(v) => updateQuery({ locomotive_type: v })}
             options={LOCOMOTIVE_TYPE_OPTIONS}
-            placeholder="Barcha lokomotiv turlari"
-            triggerClassName="h-10 mb-0"
+            placeholder={tc("all")}
           />
-        </div>
+        </FilterField>
 
-        <div className="flex-1 min-w-0">
-          <SelectWithSearch
+        <FilterField label="Model">
+          <SearchableSelect
+            size="md"
+            searchable
             value={locomotiveModelParam}
             onValueChange={(v) => updateQuery({ locomotive_model: v })}
             options={[
-              { value: "", label: "Barchasi" },
+              { value: "", label: tc("all") },
               ...locomotiveModels.map((m) => ({
                 value: String(m.id),
                 label: m.name,
               })),
             ]}
-            placeholder="Barcha modellar"
-            triggerClassName="h-10 mb-0"
+            placeholder={tc("all")}
           />
-        </div>
+        </FilterField>
 
-        {hasActiveFilters && (
-          <Button variant="outline-destructive" className="h-10"
-            type="button"
-            onClick={() => {
-              updateQuery({
-                service_type: "",
-                locomotive_type: "",
-                locomotive_model: "",
-                search: "",
-              });
-              setSearchLocal("");
-            }}
-          >
-            Filtrlarni tozalash
-          </Button>
-        )}
-      </div>
+        <FilterReset active={hasActiveFilters} onReset={resetFilters} />
+      </FilterBar>
 
-      {/* Row 2: unit tabs + inspection checkboxes */}
-      <div className="flex flex-wrap items-center gap-3">
-        <SegmentedTabs
-          size="sm"
-          value={activeUnit}
-          onValueChange={(v) => onUnitChange(v as typeof activeUnit)}
-          options={[
-            { value: "all", label: "Barchasi" },
-            { value: "km", label: "Km" },
-            { value: "hours", label: "Soat" },
-          ]}
-        />
+      <FilterBar>
+        <FilterField label="O'lchov birligi" width="auto">
+          <SegmentedTabs
+            size="sm"
+            value={activeUnit}
+            onValueChange={(v) => onUnitChange(v as typeof activeUnit)}
+            options={[
+              { value: "all", label: tc("all") },
+              { value: "km", label: "Km" },
+              { value: "hours", label: "Soat" },
+            ]}
+          />
+        </FilterField>
 
         {inspectionTypes.length > 0 && (
-          <div className="h-8 w-px bg-border shrink-0" />
+          <FilterField label="Ko'rik turlari" width="auto">
+            <div className="flex h-9 flex-wrap items-center gap-x-4 gap-y-1">
+              {inspectionTypes.map((insp) => (
+                <Label
+                  key={insp.type_id}
+                  className="mb-0 flex cursor-pointer items-center gap-1.5 text-sm text-foreground select-none sm:mb-0"
+                >
+                  <Checkbox
+                    checked={selectedInspectionIds.includes(insp.type_id)}
+                    onCheckedChange={() => onToggleInspection(insp.type_id)}
+                  />
+                  {insp.type}
+                </Label>
+              ))}
+            </div>
+          </FilterField>
         )}
-
-        {inspectionTypes.map((insp) => (
-          <Label
-            key={insp.type_id}
-            className="flex items-center gap-1.5 cursor-pointer select-none"
-          >
-            <Checkbox
-              checked={selectedInspectionIds.includes(insp.type_id)}
-              onCheckedChange={() => onToggleInspection(insp.type_id)}
-            />
-            <span className="text-sm text-foreground whitespace-nowrap font-medium">
-              {insp.type}
-            </span>
-          </Label>
-        ))}
-      </div>
+      </FilterBar>
     </div>
   );
 }
