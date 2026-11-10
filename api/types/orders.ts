@@ -1,10 +1,14 @@
 import type { LocomotiveData } from "./locomotive";
 
 // Order data type based on API response
+export type ConfirmStatus = "pending" | "confirmed" | "rejected";
+
 export interface OrderData {
   id: number;
   train_number: string;
-  confirm: boolean;
+  confirm: boolean; // legacy: true only when confirm_status === "confirmed"
+  confirm_status: ConfirmStatus;
+  confirm_status_display?: string;
   responsible_department: string;
   responsible_person: string;
   damage_amount: string;
@@ -50,6 +54,7 @@ export interface UpdateOrderPayload {
   file?: File | null;
   organization?: number;
   confirm?: boolean;
+  confirm_status?: ConfirmStatus;
 }
 
 // Parameters for getting orders
@@ -64,4 +69,5 @@ export interface OrdersGetParams {
   responsible_department?: string;
   date?: string; // Format: yyyy-MM-dd
   organization?: number | string;
+  confirm_status?: string; // one or comma-separated ConfirmStatus values
 }

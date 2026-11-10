@@ -22,6 +22,7 @@ export interface JournalStatisticsParams {
   locomotive?: number;
   locomotive_id?: number;
   inspection_type?: number; // revision only
+  confirm_status?: string; // MPR only: one or comma-separated pending|confirmed|rejected
 }
 
 // --- MPR ---

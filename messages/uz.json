@@ -92,6 +92,7 @@
     "locomotive": "Lokomotiv",
     "inspection_type": "Ko'rik turi",
     "all": "Barchasi",
+    "status": "Holati",
     "monthly_dynamics": "Oylar bo'yicha dinamika",
     "table_month": "Oy",
     "table_total": "Jami",
@@ -1082,7 +1083,8 @@
       "mpr": "MPR",
       "invalid": "Brak",
       "defect": "Defekt",
-      "damage_amount": "Zarar summasi"
+      "damage_amount": "Zarar summasi",
+      "all_statuses": "Barcha holatlar"
     },
     "title": "MPR",
     "description": "Elektrovozlarni poezdlararo ta'mirlash",
@@ -1108,11 +1110,14 @@
       "invalid": "Brak",
       "defect": "Defekt"
     },
+    "status_pending": "Kutilmoqda",
     "status_confirmed": "Tasdiqlangan",
-    "status_not_confirmed": "Tasdiqlanmagan",
+    "status_not_confirmed": "Rad etilgan",
     "filters": {
       "journal_type": "Jurnal turi",
       "journal_type_placeholder": "Jurnal turini tanlang",
+      "status": "Holati",
+      "status_placeholder": "Holatni tanlang",
       "responsible_department": "Mas'ul tashkilot",
       "responsible_department_placeholder": "Mas'ul tashkilotni tanlang",
       "locomotive": "Lokomotiv",
@@ -1121,6 +1126,7 @@
       "organization_placeholder": "Tashkilotni tanlang"
     },
     "options": {
+      "all_statuses": "Barcha holatlar",
       "all_journal_types": "Barcha jurnal turlari",
       "all_locomotives": "Barcha lokomotivlar",
       "all_organizations": "Barcha tashkilotlar",
@@ -1136,13 +1142,25 @@
       "delete": "MPR o'chirishda xatolik",
       "create": "MPR yaratishda xatolik",
       "update": "MPR yangilashda xatolik",
-      "confirm": "MPR ni tasdiqlashda xatolik"
+      "confirm": "MPR ni tasdiqlashda xatolik",
+      "reject": "MPR ni rad etishda xatolik"
     },
     "messages": {
       "delete_success": "MPR muvaffaqiyatli o'chirildi",
       "create_success": "MPR muvaffaqiyatli yaratildi!",
       "update_success": "MPR muvaffaqiyatli yangilandi!",
-      "confirm_success": "MPR muvaffaqiyatli tasdiqlandi"
+      "confirm_success": "MPR muvaffaqiyatli tasdiqlandi",
+      "reject_success": "MPR rad etildi"
+    },
+    "actions": {
+      "confirm": "Tasdiqlash",
+      "reject": "Rad etish"
+    },
+    "reject_dialog": {
+      "title": "MPR ni rad etish",
+      "message_with_train": "\"{trainNumber}\" poyezd raqamli buyruqni rad etishni xohlaysizmi?",
+      "confirm": "Rad etish",
+      "rejecting": "Rad etilmoqda..."
     },
     "confirm_dialog": {
       "title": "MPR ni tasdiqlash",

@@ -2,6 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ordersService } from "../services/orders.service";
 import {
+  ConfirmStatus,
   OrdersGetParams,
   CreateOrderPayload,
   UpdateOrderPayload,
@@ -62,13 +63,21 @@ export function useDeleteOrder() {
   });
 }
 
-export function useConfirmOrder() {
+export function useSetOrderConfirmStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number | string) => ordersService.confirmOrder(id),
+    mutationFn: ({
+      id,
+      status,
+    }: {
+      id: number | string;
+      status: ConfirmStatus;
+    }) => ordersService.setConfirmStatus(id, status),
     mutationKey: [queryKeys.orders.confirm],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKeys.orders.all] });
+      // status counts feed the statistics tiles
+      queryClient.invalidateQueries({ queryKey: [queryKeys.statistics.mpr] });
     },
   });
 }
