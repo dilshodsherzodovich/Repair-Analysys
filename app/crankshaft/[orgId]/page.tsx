@@ -25,6 +25,9 @@ import { Page } from "@/ui/page";
 
 import { EmptyState, TableStateRow } from "@/ui/empty-state";
 import { Badge } from "@/ui/badge";
+import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { CrankshaftGroupCards } from "./components/crankshaft-group-cards";
+import { crankshaftGroupKey } from "./crankshaft-groups";
 /** Edited input text per component id, then per field. */
 type Drafts = Record<number, Record<string, string>>;
 /** 400 messages per component id, keyed by field name like the API returns them. */
@@ -85,6 +88,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
   isEditing,
   onEdit,
   onDone,
+  activeGroup,
 }: {
   group: LocomotiveGroup;
   valueFields: string[];
@@ -92,6 +96,8 @@ const LocomotiveRows = memo(function LocomotiveRows({
   isEditing: boolean;
   onEdit: (locomotiveId: number) => void;
   onDone: () => void;
+  /** The value group picked in the cards: its cells stand out, others fade. */
+  activeGroup: string | null;
 }) {
   const t = useTranslations("CrankshaftPage");
   const tModal = useTranslations("SpecialComponentsModal");
@@ -296,13 +302,22 @@ const LocomotiveRows = memo(function LocomotiveRows({
             const autoFocus = editable && isFirstInput;
             if (editable) isFirstInput = false;
             const wasSaved = !!savedCells?.has(`${component.id}-${field}`);
+            const inActiveGroup =
+              !isInfo &&
+              !!activeGroup &&
+              crankshaftGroupKey(component[field]) === activeGroup;
             return (
               <TableCell
                 key={field}
                 className={cn(
                   "duration-700",
                   isInfo ? "" : "text-center",
-                  editable && "",
+                  !editable &&
+                    !isInfo &&
+                    activeGroup &&
+                    (inActiveGroup
+                      ? "bg-primary-subtle font-semibold text-primary-hover"
+                      : "text-foreground-subtle"),
                   // Changed values stand out while the highlight lasts
                   wasSaved && "bg-success-subtle font-semibold text-success",
                 )}
@@ -368,6 +383,8 @@ function CrankshaftPageContent({
   const { showError } = useSnackbar();
   const searchParams = useSearchParams();
   const { q, locModel } = Object.fromEntries(searchParams.entries());
+  const activeGroup = searchParams.get("group") || null;
+  const { updateQuery } = useFilterParams();
 
   // Editing is limited to the user's own organization
   const canEdit =
@@ -388,6 +405,13 @@ function CrankshaftPageContent({
   // Stable so memoized rows don't re-render when the page does
   const handleEdit = useCallback((id: number) => setEditingId(id), []);
   const handleDone = useCallback(() => setEditingId(null), []);
+  const handleGroupSelect = useCallback(
+    (key: string | null) => {
+      setEditingId(null);
+      updateQuery({ group: key });
+    },
+    [updateQuery],
+  );
 
   // Only locomotives that have a crankshaft; one table row per section
   const { groups, korenFields, shatunFields, valueFields } = useMemo(() => {
@@ -424,6 +448,29 @@ function CrankshaftPageContent({
       valueFields: [...korenSorted, ...shatunSorted],
     };
   }, [data]);
+
+  // Cards count what the filters left; the table also narrows to the picked group
+  const listedComponents = useMemo(
+    () => groups.flatMap((group) => group.components),
+    [groups],
+  );
+  const visibleGroups = useMemo(
+    () =>
+      activeGroup
+        ? groups
+            .filter((group) =>
+              group.components.some((component) =>
+                valueFields.some(
+                  (field) =>
+                    crankshaftGroupKey(component[field as keyof SpecialComponent]) ===
+                    activeGroup,
+                ),
+              ),
+            )
+            .map((group, i) => ({ ...group, index: i + 1 }))
+        : groups,
+    [groups, valueFields, activeGroup],
+  );
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -486,6 +533,14 @@ function CrankshaftPageContent({
           {t("error_load")}
         </AlertDescription></Alert>
       )}
+
+      <CrankshaftGroupCards
+        components={listedComponents}
+        valueFields={valueFields}
+        activeGroup={activeGroup}
+        onSelect={handleGroupSelect}
+        isLoading={isPending}
+      />
 
       <Table frame maxHeight="75vh" bordered>
           {/* Header stays pinned while the rows scroll inside the box */}
@@ -555,7 +610,7 @@ function CrankshaftPageContent({
             </TableRow>
           </TableHeader>
 
-          {isPending || groups.length === 0 ? (
+          {isPending || visibleGroups.length === 0 ? (
             <TableBody>
               {isPending ? (
               <TableSkeleton
@@ -568,7 +623,7 @@ function CrankshaftPageContent({
               )}
             </TableBody>
           ) : (
-              groups.map((group) => (
+              visibleGroups.map((group) => (
                 <LocomotiveRows
                   key={group.locomotiveId}
                   group={group}
@@ -577,6 +632,7 @@ function CrankshaftPageContent({
                   isEditing={editingId === group.locomotiveId}
                   onEdit={handleEdit}
                   onDone={handleDone}
+                  activeGroup={activeGroup}
                 />
               ))
           )}
