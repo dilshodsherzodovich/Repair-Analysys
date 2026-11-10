@@ -20,9 +20,12 @@ import { DelayReportsTableByDelayType } from "@/components/delays/delay-reports-
 import { DelayReportsTableFreight } from "@/components/delays/delay-reports-table-freight";
 import { useTranslations } from "next-intl";
 import { authService } from "@/api/services/auth.service";
+import { ExportActions } from "@/ui/export-actions";
+import { SegmentedTabs } from "@/ui/segmented-tabs";
 
 export default function DelayReportsPage() {
   const t = useTranslations("DelayReportsPage");
+  const tf = useTranslations("DelayReportsFilters");
   const { getAllQueryValues, updateQuery } = useFilterParams();
   const {
     start_date,
@@ -187,9 +190,21 @@ export default function DelayReportsPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        actions={
+          <>
+            <SegmentedTabs
+              value={activeServiceType}
+              onValueChange={(value) => updateQuery({ service_type: value })}
+              options={[
+                { value: "passenger", label: tf("tab_passenger") },
+                { value: "freight", label: tf("tab_freight") },
+              ]}
+            />
+            <ExportActions onWord={handleExport} />
+          </>
+        }
+        filters={<DelayReportsFilters />}
       />
-
-      <DelayReportsFilters onExport={handleExport} />
 
       {/* Show table for passenger trains */}
       {activeServiceType === "passenger" && (

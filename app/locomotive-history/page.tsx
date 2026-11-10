@@ -10,13 +10,14 @@ import { useLocale } from "next-intl";
 import CircularProgress from "@/components/circular-progress";
 import { format } from "date-fns";
 import { Button } from "@/ui/button";
-import { FileDown, Loader2 } from "lucide-react";
 import { LocomotiveHistoryForm } from "@/components/locomotive-history/LocomotiveHistoryForm";
 import { LocomotiveInspectionsTimeline } from "@/components/locomotive-history/LocomotiveInspectionsTimeline";
 import { Checkbox } from "@/ui/checkbox";
 import { Label } from "@/ui/label";
 import { generateLocomotiveInspectionsPdf } from "@/utils/locomotive-inspections-pdf-export";
 import { generateLocomotiveInspectionsDocx } from "@/utils/locomotive-inspections-docx-export";
+import { ExportActions } from "@/ui/export-actions";
+import { PageHeader } from "@/ui/page-header";
 
 function LocomotiveHistoryPage() {
   const t = useTranslations("LocomotiveHistory");
@@ -51,17 +52,11 @@ function LocomotiveHistoryPage() {
 
   const { data: inspectionTypes } = useGetInspectionTypes();
 
-  const handleFormSubmit = (
-    locomotive: number | undefined,
-    start: Date | undefined,
-    end: Date | undefined
-  ) => {
-    if (locomotive && start && end) {
-      setLocomotiveId(locomotive);
-      setStartDate(start);
-      setEndDate(end);
-      setShouldFetch(true);
-    }
+  const handleFormSubmit = (locomotive: number, start: Date, end: Date) => {
+    setLocomotiveId(locomotive);
+    setStartDate(start);
+    setEndDate(end);
+    setShouldFetch(true);
   };
 
   const filteredInspections = useMemo(() => {
@@ -148,59 +143,29 @@ function LocomotiveHistoryPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("pageTitle")}</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <PageHeader
+        title={t("pageTitle")}
+        actions={
+          shouldFetch && inspectionsData && filteredInspections.length > 0 ? (
+            <ExportActions
+              onWord={handleExportDocx}
+              onPdf={handleExportPdf}
+              busy={isExportingDocx ? "word" : isExporting ? "pdf" : null}
+            />
+          ) : undefined
+        }
+        filters={
           <LocomotiveHistoryForm
             onSubmit={handleFormSubmit}
-            isLoading={isLoading}
+            onClear={() => setShouldFetch(false)}
           />
-        </CardContent>
-      </Card>
+        }
+      />
 
       {shouldFetch && locomotiveId && startDate && endDate && (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardHeader>
             <CardTitle>{t("timelineTitle")}</CardTitle>
-            {inspectionsData && filteredInspections.length > 0 && (
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleExportDocx}
-                  disabled={isExportingDocx}
-                  variant="success"
-                >
-                  {isExportingDocx ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t("exporting")}
-                    </>
-                  ) : (
-                    <>
-                      <FileDown className="w-4 h-4 mr-2" />
-                      {t("exportDocx")}
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={handleExportPdf}
-                  disabled={isExporting}
-                >
-                  {isExporting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t("exporting")}
-                    </>
-                  ) : (
-                    <>
-                      <FileDown className="w-4 h-4 mr-2" />
-                      {t("exportPdf")}
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
           </CardHeader>
           <CardContent>
             {isLoading && !inspectionsData ? (

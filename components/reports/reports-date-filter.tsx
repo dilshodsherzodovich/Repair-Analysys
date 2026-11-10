@@ -1,176 +1,62 @@
 "use client";
 
-import { Button } from "@/ui/button";
-import { Calendar } from "@/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/ui/popover";
-import { CalendarIcon, ArrowRight, RotateCcw, Check } from "lucide-react";
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { format } from "date-fns";
-import { uz } from "date-fns/locale";
-import { useState, useEffect } from "react";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
-import { Input } from "@/ui/input";
+import { DateRangeField } from "@/ui/date-range-field";
+import { FilterField, FilterReset } from "@/ui/filter-bar";
 
-export default function ReportsDateFilter({
-  leading,
-}: {
-  /**
-   * Rendered as the first field of the row. Taking it as a slot (rather than
-   * letting the page place it beside this component) keeps it a direct sibling
-   * of the date fields, so `items-end` aligns them against each other.
-   */
-  leading?: React.ReactNode;
-}) {
-  const t = useTranslations("Reports");
+const DEFAULT_HOURS = 12;
+
+const defaultRange = () => {
+  const now = new Date();
+  return { from: new Date(now.getTime() - DEFAULT_HOURS * 60 * 60 * 1000), to: now };
+};
+
+/**
+ * Period filter for the reports dashboard: the standard DateRangeField with
+ * times (default: the last 12 hours), applied when the picker closes, and the
+ * standard reset. Place it inside the page's FilterBar.
+ */
+export default function ReportsDateFilter() {
+  const tc = useTranslations("Common");
   const { filters, setFilters } = useReportFilters();
 
-  const [fromDateTime, setFromDateTime] = useState<Date | undefined>(() =>
-    filters.fromDate ? new Date(filters.fromDate) : undefined
-  );
-  const [toDateTime, setToDateTime] = useState<Date | undefined>(() =>
-    filters.toDate ? new Date(filters.toDate) : undefined
-  );
-
+  // A fresh page starts on the last 12 hours
   useEffect(() => {
     if (!filters.fromDate || !filters.toDate) {
-      const now = new Date();
-      const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
-      setFromDateTime((prev) => prev ?? twelveHoursAgo);
-      setToDateTime((prev) => prev ?? now);
-      setFilters({ fromDate: twelveHoursAgo.toISOString(), toDate: now.toISOString() });
+      const { from, to } = defaultRange();
+      setFilters({ fromDate: from.toISOString(), toDate: to.toISOString() });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleApply = () => {
-    if (fromDateTime && toDateTime) {
-      setFilters({ fromDate: fromDateTime.toISOString(), toDate: toDateTime.toISOString() });
-    }
-  };
-
-  const handleReset = () => {
-    const now = new Date();
-    const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
-    setFromDateTime(twelveHoursAgo);
-    setToDateTime(now);
-    setFilters({ fromDate: twelveHoursAgo.toISOString(), toDate: now.toISOString() });
-  };
-
-  const handleDateChange = (date: Date | undefined, isFrom: boolean) => {
-    if (isFrom) setFromDateTime(date);
-    else setToDateTime(date);
-  };
-
-  const handleTimeChange = (timeString: string, isFrom: boolean) => {
-    const [hours, minutes] = timeString.split(":").map(Number);
-    const base = isFrom ? fromDateTime : toDateTime;
-    if (base) {
-      const updated = new Date(base);
-      updated.setHours(hours, minutes, 0, 0);
-      if (isFrom) setFromDateTime(updated);
-      else setToDateTime(updated);
-    }
-  };
-
-  const fmt = (d: Date) => format(d, "dd.MM.yyyy");
-  const fmtTime = (d: Date) => format(d, "HH:mm");
+  const from = filters.fromDate ? new Date(filters.fromDate) : undefined;
+  const to = filters.toDate ? new Date(filters.toDate) : undefined;
+  // "Active" once the range is anything but the default window's length
+  const isCustom =
+    !!from && !!to && Math.abs(to.getTime() - from.getTime() - DEFAULT_HOURS * 3600_000) > 60_000;
 
   return (
-    <div className="flex flex-wrap items-end gap-3">
-      {leading}
-
-      {/* From */}
-      <DateBox
-        label={t("fromDate")}
-        date={fromDateTime}
-        onDateChange={(d) => handleDateChange(d, true)}
-        onTimeChange={(v) => handleTimeChange(v, true)}
-        fmt={fmt}
-        fmtTime={fmtTime}
-      />
-
-      <ArrowRight className="w-4 h-4 text-foreground-subtle shrink-0 mb-2.5" />
-
-      {/* To */}
-      <DateBox
-        label={t("toDate")}
-        date={toDateTime}
-        onDateChange={(d) => handleDateChange(d, false)}
-        onTimeChange={(v) => handleTimeChange(v, false)}
-        fmt={fmt}
-        fmtTime={fmtTime}
-      />
-
-      {/* Apply */}
-      <Button
-        onClick={handleApply}
-        className="h-9 px-4 text-sm gap-1.5 mb-0"
-      >
-        <Check className="w-3.5 h-3.5" />
-        {t("apply")}
-      </Button>
-
-      {/* Reset */}
-      <Button variant="outline" size="icon"
-        onClick={handleReset}
-        title={t("reset")}
-      >
-        <RotateCcw className="w-3.5 h-3.5" />
-      </Button>
-    </div>
-  );
-}
-
-function DateBox({
-  label,
-  date,
-  onDateChange,
-  onTimeChange,
-  fmt,
-  fmtTime,
-}: {
-  label: string;
-  date: Date | undefined;
-  onDateChange: (d: Date | undefined) => void;
-  onTimeChange: (v: string) => void;
-  fmt: (d: Date) => string;
-  fmtTime: (d: Date) => string;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wider pl-1">
-        {label}
-      </span>
-      <div className="flex items-center gap-0 h-9 border border-border bg-background rounded-lg overflow-hidden shadow-sm hover:border-primary/30 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-subtle transition-all">
-        {/* Date picker */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" className="h-full rounded-none border-r border-border font-normal">
-              <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
-              {date ? fmt(date) : "—"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={onDateChange}
-              captionLayout="dropdown"
-              locale={uz}
-            />
-          </PopoverContent>
-        </Popover>
-
-        {/* Time picker */}
-        <Input variant="cell" className="w-[125px] cursor-pointer px-3 text-sm font-medium text-foreground-secondary hover:bg-surface-muted"
-          type="time"
-          value={date ? fmtTime(date) : ""}
-          onChange={(e) => onTimeChange(e.target.value)}
+    <>
+      <FilterField label={tc("period")} width="lg">
+        <DateRangeField
+          showTime
+          value={{ from, to }}
+          onChange={(range) => {
+            if (range.from && range.to) {
+              setFilters({ fromDate: range.from.toISOString(), toDate: range.to.toISOString() });
+            }
+          }}
         />
-      </div>
-    </div>
+      </FilterField>
+      <FilterReset
+        active={isCustom}
+        onReset={() => {
+          const { from: f, to: t } = defaultRange();
+          setFilters({ fromDate: f.toISOString(), toDate: t.toISOString() });
+        }}
+      />
+    </>
   );
 }

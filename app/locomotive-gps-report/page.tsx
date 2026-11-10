@@ -5,44 +5,16 @@ import { withRole } from "@/components/withRole";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations } from "next-intl";
-import {
-  useLocomotiveGpsReport,
-  GpsReportOrganization,
-  GpsReportModel,
-  GpsReportLocomotive,
-} from "@/api/hooks/use-locomotive-gps-report";
+import { useLocomotiveGpsReport, GpsReportOrganization, GpsReportModel } from "@/api/hooks/use-locomotive-gps-report";
 import { useTrainTypes } from "@/api/hooks/use-locomotives";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import {
-  Loader2,
-  Satellite,
-  RotateCcw,
-  CheckCircle2,
-  XCircle,
-  MinusCircle,
-} from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, MinusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "@/components/reports/report-organization-select";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
-import { Button } from "@/ui/button";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { SearchableSelect } from "@/ui/select";
 
 const LOCOMOTIVE_TYPES = [
   "electric_loco",
@@ -125,77 +97,53 @@ function LocomotiveGpsReportPage() {
     <div className="space-y-4">
       {/* ─── Header Card ─── */}
       <PageHeader
-        icon={Satellite}
         title={t("title")}
         description={t("description")}
-        filters={<>
+        filters={
+          <FilterBar>
             <ReportOrganizationSelect />
-            <Select
-              value={filters.locomotive_type || "all"}
-              onValueChange={(value) =>
-                setFilters({ locomotive_type: value === "all" ? "" : value })
-              }
-            >
-              <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
-                <SelectValue placeholder={t("locomotiveType")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("allTypes")}</SelectItem>
-                {LOCOMOTIVE_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {localeTypeLabel(type)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={filters.service_type || "all"}
-              onValueChange={(value) =>
-                setFilters({ service_type: value === "all" ? "" : value })
-              }
-            >
-              <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
-                <SelectValue placeholder={t("serviceType")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("allServiceTypes")}</SelectItem>
-                {SERVICE_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {serviceTypeLabel(type)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={filters.locomotive_model || "all"}
-              onValueChange={(value) =>
-                setFilters({ locomotive_model: value === "all" ? "" : value })
-              }
-            >
-              <SelectTrigger className="h-9 w-[220px] bg-background text-sm mb-0 sm:mb-0">
-                <SelectValue placeholder={t("model")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("allModels")}</SelectItem>
-                {locomotiveModels?.results?.map((model) => (
-                  <SelectItem key={model.id} value={model.id.toString()}>
-                    {model.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {hasActiveFilters && (
-              <Button variant="outline" size="icon"
-                onClick={resetFilters}
-                title={t("reset")}
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </Button>
-            )}
-          </>}
+            <FilterField label={t("locomotiveType")}>
+              <SearchableSelect
+                size="md"
+                searchable
+                value={filters.locomotive_type || ""}
+                onValueChange={(value) => setFilters({ locomotive_type: value })}
+                placeholder={t("allTypes")}
+                options={[
+                  { value: "", label: t("allTypes") },
+                  ...LOCOMOTIVE_TYPES.map((type) => ({ value: type, label: localeTypeLabel(type) })),
+                ]}
+              />
+            </FilterField>
+            <FilterField label={t("serviceType")}>
+              <SearchableSelect
+                size="md"
+                searchable
+                value={filters.service_type || ""}
+                onValueChange={(value) => setFilters({ service_type: value })}
+                placeholder={t("allServiceTypes")}
+                options={[
+                  { value: "", label: t("allServiceTypes") },
+                  ...SERVICE_TYPES.map((type) => ({ value: type, label: serviceTypeLabel(type) })),
+                ]}
+              />
+            </FilterField>
+            <FilterField label={t("model")}>
+              <SearchableSelect
+                size="md"
+                searchable
+                value={filters.locomotive_model || ""}
+                onValueChange={(value) => setFilters({ locomotive_model: value })}
+                placeholder={t("allModels")}
+                options={[
+                  { value: "", label: t("allModels") },
+                  ...(locomotiveModels?.results ?? []).map((model) => ({ value: model.id.toString(), label: model.name })),
+                ]}
+              />
+            </FilterField>
+            <FilterReset active={hasActiveFilters} onReset={resetFilters} />
+          </FilterBar>
+        }
       />
 
       {/* Content */}

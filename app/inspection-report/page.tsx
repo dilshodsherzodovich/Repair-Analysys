@@ -6,27 +6,7 @@ import { useInspectionCountStats } from "@/api/hooks/use-report-inspections";
 import { useBranches } from "@/api/hooks/use-branches";
 import { format } from "date-fns";
 import { uz } from "date-fns/locale";
-import { Calendar } from "@/ui/calendar";
-import { Button } from "@/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import {
-  CalendarIcon,
-  Download,
-  FileDown,
-  FileSpreadsheet,
-  Loader2,
-} from "lucide-react";
+import { FileDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useInspectionsReport } from "@/api/hooks/use-report-inspections";
@@ -34,24 +14,19 @@ import { formatDate } from "@/utils/formatDate";
 import { Inspection } from "@/api/types/report-inspection";
 import { generateInspectionsPDF } from "@/utils/inspections-pdf-export";
 import { generateInspectionReportExcel } from "@/utils/inspection-report-excel-export";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "@/components/reports/report-organization-select";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
 import { CardButton } from "@/ui/card-button";
 import { Chip } from "@/ui/chip";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { DateRangeField } from "@/ui/date-range-field";
+import { SearchableSelect } from "@/ui/select";
 
 export default function InspectionReportPage() {
   const t = useTranslations("Statistics");
+  const tc = useTranslations("Common");
   const globalT = useTranslations();
   const inspectsT = useTranslations("Inspects");
   const locale = useLocale();
@@ -213,106 +188,49 @@ export default function InspectionReportPage() {
             locale === "ru" ? "ru-RU" : "uz-UZ",
             { weekday: "long", year: "numeric", month: "long", day: "numeric" }
           )}
-        actions={<>
-            <Button variant="success"
-              onClick={handleDownloadExcel}
-              disabled={isDownloadingExcel || !Object.keys(visibleInspectionsByType).length}
-            >
-              {isDownloadingExcel ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileSpreadsheet className="w-4 h-4" />
-              )}
-              {isDownloadingExcel ? t("downloading") : t("downloadExcel")}
-            </Button>
-            <Button
-              onClick={handleDownloadPdf}
-              disabled={isDownloadingPdf || !Object.keys(visibleInspectionsByType).length}
-            >
-              {isDownloadingPdf ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4" />
-              )}
-              {isDownloadingPdf ? t("downloading") : t("downloadPdf")}
-            </Button>
-          </>}
-        filters={<>
+        actions={
+          <ExportActions
+            onExcel={handleDownloadExcel}
+            onPdf={handleDownloadPdf}
+            busy={isDownloadingExcel ? "excel" : isDownloadingPdf ? "pdf" : null}
+            disabled={!Object.keys(visibleInspectionsByType).length}
+          />
+        }
+        filters={
+          <FilterBar>
             <ReportOrganizationSelect />
-            {/* Start date */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "h-9 w-[140px] justify-start text-left font-normal text-xs",
-                    !startDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-3 w-3" />
-                  {startDate ? format(startDate, "dd/MM/yyyy") : t("selectDate")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={(d) =>
-                    setFilters({ fromDate: d ? format(d, "yyyy-MM-dd") : "" })
-                  }
-                  captionLayout="dropdown"
-                  locale={uz}
-                />
-              </PopoverContent>
-            </Popover>
-
-            {/* End date */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "h-9 w-[140px] justify-start text-left font-normal text-xs",
-                    !endDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-3 w-3" />
-                  {endDate ? format(endDate, "dd/MM/yyyy") : t("selectDate")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={(d) =>
-                    setFilters({ toDate: d ? format(d, "yyyy-MM-dd") : "" })
-                  }
-                  captionLayout="dropdown"
-                  locale={uz}
-                />
-              </PopoverContent>
-            </Popover>
-
-            {/* Branch */}
+            <FilterField label={tc("period")} width="lg">
+              <DateRangeField
+                value={{ from: startDate, to: new Date(`${toDateStr}T00:00:00`) }}
+                onChange={({ from, to }) =>
+                  setFilters({
+                    fromDate: from ? format(from, "yyyy-MM-dd") : "",
+                    toDate: to ? format(to, "yyyy-MM-dd") : "",
+                  })
+                }
+              />
+            </FilterField>
             {filteredBranches.length > 0 && (
-              <Select
-                value={branch}
-                onValueChange={(v) => setFilters({ branch: v === "all" ? "" : v })}
-              >
-                <SelectTrigger className="w-[200px] h-9 text-xs mb-0 sm:mb-0">
-                  <SelectValue placeholder={t("branch")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("all")}</SelectItem>
-                  {filteredBranches.map((b) => (
-                    <SelectItem key={b.id} value={b.id.toString()}>
-                      {b.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FilterField label={t("branch")}>
+                <SearchableSelect
+                  size="md"
+                  searchable
+                  value={branch === "all" ? "" : branch}
+                  onValueChange={(v) => setFilters({ branch: v })}
+                  placeholder={tc("all")}
+                  options={[
+                    { value: "", label: tc("all") },
+                    ...filteredBranches.map((b) => ({ value: b.id.toString(), label: b.name })),
+                  ]}
+                />
+              </FilterField>
             )}
-          </>}
+            <FilterReset
+              active={Boolean(globalFilters.fromDate || globalFilters.toDate || globalFilters.branch)}
+              onReset={() => setFilters({ fromDate: "", toDate: "", branch: "" })}
+            />
+          </FilterBar>
+        }
       />
 
       {/* ─── Counts by type ─── */}

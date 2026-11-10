@@ -2,38 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { withRole } from "@/components/withRole";
-import {
-  useTxk2Report,
-  Txk2ReportRow,
-  NextInspectionType,
-} from "@/api/hooks/use-txk2-report";
-import { Loader2, CalendarIcon, Check, RotateCcw, ArrowRight, FileDown } from "lucide-react";
+import { useTxk2Report, Txk2ReportRow, NextInspectionType } from "@/api/hooks/use-txk2-report";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations, useLocale } from "next-intl";
-import { Button } from "@/ui/button";
-import { Calendar } from "@/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/ui/popover";
 import { format } from "date-fns";
-import { uz } from "date-fns/locale";
 import { generateTxk2ReportExcel } from "@/utils/txk2-report-excel-export";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "@/components/reports/report-organization-select";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { DateRangeField } from "@/ui/date-range-field";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -72,6 +53,7 @@ function Txk2ReportPage() {
   const t = useTranslations("Txk2Report");
   const tReason = useTranslations("Inspects.detail.delayReason");
   const locale = useLocale();
+  const tc = useTranslations("Common");
   const { filters, setFilters } = useReportFilters();
 
   // delay_reason_code is one of the known DelayReason codes; fall back to the raw
@@ -155,22 +137,40 @@ function Txk2ReportPage() {
       <PageHeader
         title={t("title")}
         description={t("description")}
-        actions={<>
-            <Button variant="success"
-              onClick={handleExportExcel}
-              disabled={isExporting || organizationId == null || rows.length === 0}
-            >
-              {isExporting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileDown className="w-4 h-4" />
-              )}
-              {isExporting ? t("generatingExcel") : t("exportExcel")}
-            </Button>
-          </>}
-        filters={<>
-            <Txk2DateFilter dateFrom={dateFrom} dateTo={dateTo} />
-          </>}
+        actions={
+          <ExportActions
+            onExcel={handleExportExcel}
+            busy={isExporting ? "excel" : null}
+            disabled={organizationId == null || rows.length === 0}
+          />
+        }
+        filters={
+          <FilterBar>
+            <ReportOrganizationSelect />
+            <FilterField label={tc("period")} width="lg">
+              <DateRangeField
+                value={{ from: new Date(dateFrom), to: new Date(dateTo) }}
+                onChange={({ from, to }) => {
+                  if (from && to) {
+                    setFilters({ dateFrom: format(from, DATE_FMT), dateTo: format(to, DATE_FMT) });
+                  }
+                }}
+              />
+            </FilterField>
+            <FilterReset
+              active={
+                dateFrom !== format(firstOfMonth(today), DATE_FMT) ||
+                dateTo !== format(firstOfNextMonth(today), DATE_FMT)
+              }
+              onReset={() =>
+                setFilters({
+                  dateFrom: format(firstOfMonth(today), DATE_FMT),
+                  dateTo: format(firstOfNextMonth(today), DATE_FMT),
+                })
+              }
+            />
+          </FilterBar>
+        }
       />
 
       {/* Content */}
@@ -268,95 +268,6 @@ function Txk2ReportPage() {
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-function Txk2DateFilter({
-  dateFrom,
-  dateTo,
-}: {
-  dateFrom: string;
-  dateTo: string;
-}) {
-  const t = useTranslations("Txk2Report");
-  const { setFilters } = useReportFilters();
-
-  const [from, setFrom] = useState<Date | undefined>(() => new Date(dateFrom));
-  const [to, setTo] = useState<Date | undefined>(() => new Date(dateTo));
-
-  const handleApply = () => {
-    if (from && to) {
-      setFilters({
-        dateFrom: format(from, DATE_FMT),
-        dateTo: format(to, DATE_FMT),
-      });
-    }
-  };
-
-  const handleReset = () => {
-    const today = new Date();
-    const f = firstOfMonth(today);
-    const tt = firstOfNextMonth(today);
-    setFrom(f);
-    setTo(tt);
-    setFilters({ dateFrom: format(f, DATE_FMT), dateTo: format(tt, DATE_FMT) });
-  };
-
-  return (
-    <div className="flex flex-wrap items-end gap-3">
-      <ReportOrganizationSelect label={t("organization")} />
-      <DateBox label={t("fromDate")} date={from} onSelect={setFrom} />
-      <ArrowRight className="w-4 h-4 text-foreground-subtle shrink-0 mb-2.5" />
-      <DateBox label={t("toDate")} date={to} onSelect={setTo} />
-      <Button
-        onClick={handleApply}
-        className="h-9 px-4 text-sm gap-1.5 mb-0"
-      >
-        <Check className="w-3.5 h-3.5" />
-        {t("apply")}
-      </Button>
-      <Button variant="outline" size="icon"
-        onClick={handleReset}
-        title={t("reset")}
-      >
-        <RotateCcw className="w-3.5 h-3.5" />
-      </Button>
-    </div>
-  );
-}
-
-function DateBox({
-  label,
-  date,
-  onSelect,
-}: {
-  label: string;
-  date: Date | undefined;
-  onSelect: (d: Date | undefined) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wider pl-1">
-        {label}
-      </span>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="font-normal">
-            <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
-            {date ? format(date, "dd.MM.yyyy") : "—"}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={onSelect}
-            captionLayout="dropdown"
-            locale={uz}
-          />
-        </PopoverContent>
-      </Popover>
     </div>
   );
 }

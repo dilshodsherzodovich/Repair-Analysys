@@ -7,15 +7,13 @@ import UnauthorizedPage from "../unauthorized/page";
 import { PageHeader } from "@/ui/page-header";
 import { useTu137Records } from "@/api/hooks/use-tu137";
 import { exportTu137ToDocx } from "@/lib/export-tu137-docx";
-import { Button } from "@/ui/button";
-import { Download } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import { Tu137Record } from "@/api/types/tu137";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
-import { cn } from "@/lib/utils";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
+import { ExportActions } from "@/ui/export-actions";
 
 const PAGE_SIZE = 20;
 
@@ -148,25 +146,22 @@ export default function Tu137Page() {
       <PageHeader
         title={t("title")}
         breadcrumbs={breadcrumbs}
+        actions={
+          <>
+            <SegmentedTabs
+              value={tab}
+              onValueChange={(v) => updateQuery({ tab: v, page: "1" })}
+              options={tabs.map(({ key, label }) => ({ value: key, label }))}
+            />
+            <ExportActions
+              onWord={() => exportTu137ToDocx(records)}
+              disabled={isLoading || !records.length}
+            />
+          </>
+        }
       />
 
       <div className="px-6 py-6 space-y-6">
-        {/* Tabs + Export Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-background p-4 rounded-xl border border-border/60 shadow-sm">
-          <SegmentedTabs
-            value={tab}
-            onValueChange={(v) => updateQuery({ tab: v, page: "1" })}
-            options={tabs.map(({ key, label }) => ({ value: key, label }))}
-          />
-          <Button
-            onClick={() => (records.length ? exportTu137ToDocx(records) : null)}
-            disabled={isLoading || !records.length}
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">{t("export_docx")}</span>
-          </Button>
-        </div>
 
         {/* Records Table */}
         {isLoading ? (

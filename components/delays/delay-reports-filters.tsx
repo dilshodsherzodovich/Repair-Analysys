@@ -5,26 +5,16 @@ import { useTranslations } from "next-intl";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { MultiSelect } from "@/ui/multi-select";
-import { DatePicker } from "@/ui/date-picker";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import { Button } from "@/ui/button";
-import { SegmentedTabs } from "@/ui/segmented-tabs";
+import { SearchableSelect } from "@/ui/select";
 import { format, subDays, startOfMonth, endOfDay } from "date-fns";
-import { Download } from "lucide-react";
 import { authService } from "@/api/services/auth.service";
+import { DateRangeField } from "@/ui/date-range-field";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 
-interface DelayReportsFiltersProps {
-  onExport?: () => void;
-}
-
-export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
+/** The delay reports FilterBar: period, year / month presets and organizations. */
+export function DelayReportsFilters() {
   const t = useTranslations("DelayReportsFilters");
+  const tc = useTranslations("Common");
   const { getAllQueryValues, updateQuery } = useFilterParams();
 
   // sriv_moderator only ever sees its own depo — the backend scopes the
@@ -38,11 +28,8 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     organizations: organizationsParam,
     year: yearParam,
     month: monthParam,
-    service_type: serviceTypeParam,
   } = getAllQueryValues();
 
-  // Get active service type (default to "passenger")
-  const activeServiceType = serviceTypeParam || "passenger";
 
   // Initialize default dates (last 30 days) if not set
   useEffect(() => {
@@ -160,12 +147,6 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     [updateQuery]
   );
 
-  const handleServiceTypeChange = useCallback(
-    (value: string) => {
-      updateQuery({ service_type: value });
-    },
-    [updateQuery]
-  );
 
   const activeQuickFilter = useMemo(() => {
     if (!startDate || !endDate || !start_date || !end_date) return null;
@@ -195,107 +176,72 @@ export function DelayReportsFilters({ onExport }: DelayReportsFiltersProps) {
     return null;
   }, [startDate, endDate, start_date, end_date]);
 
+  const resetFilters = () => {
+    const today = new Date();
+    updateQuery({
+      start_date: format(subDays(today, 30), "yyyy-MM-dd"),
+      end_date: format(today, "yyyy-MM-dd"),
+      organizations: null,
+      year: null,
+      month: null,
+    });
+  };
+
   return (
-    <div className="px-6 py-4">
-      <div className="mb-6">
-        <SegmentedTabs
-          value={activeServiceType}
-          onValueChange={handleServiceTypeChange}
-          options={[
-            { value: "passenger", label: t("tab_passenger") },
-            { value: "freight", label: t("tab_freight") },
-          ]}
+    <FilterBar>
+      <FilterField label={tc("period")} width="lg">
+        <DateRangeField
+          value={{ from: startDate, to: endDate }}
+          onChange={({ from, to }) =>
+            updateQuery({
+              start_date: from ? format(from, "yyyy-MM-dd") : "",
+              end_date: to ? format(to, "yyyy-MM-dd") : "",
+              year: null,
+              month: null,
+            })
+          }
         />
-      </div>
+      </FilterField>
 
-      <div className="bg-background border rounded-lg p-4 mb-4 flex justify-between items-center">
-        <div className="flex flex-wrap items-end gap-4">
-          <div className="min-w-[200px] flex-shrink-0">
-            <DatePicker
-              placeholder={t("date_start")}
-              value={startDate}
-              onValueChange={handleStartDateChange}
-              className="w-full"
-              size="md"
-            />
-          </div>
-          <div className="min-w-[200px] flex-shrink-0">
-            <DatePicker
-              placeholder={t("date_end")}
-              value={endDate}
-              onValueChange={handleEndDateChange}
-              className="w-full"
-              size="md"
-            />
-          </div>
+      <FilterField label={t("year_placeholder")} width="sm">
+        <SearchableSelect
+          size="md"
+          value={String(selectedYear)}
+          onValueChange={handleYearChange}
+          options={years.map((year) => ({ value: String(year), label: String(year) }))}
+        />
+      </FilterField>
 
-          {/* Organization Multiselect — hidden for depo-scoped roles */}
-          {!isOrgScoped && (
-            <div className="min-w-[300px] flex-1 max-w-[400px] flex-shrink-0">
-              <MultiSelect
-                options={organizationOptions}
-                selectedValues={selectedOrganizations}
-                onSelectionChange={handleOrganizationsChange}
-                placeholder={t("organizations_placeholder")}
-                searchPlaceholder={t("organizations_search")}
-                emptyMessage={t("organizations_empty")}
-                disabled={isLoadingOrganizations}
-                className="border-border-strong hover:border-border-strong focus:border-border-strong focus:ring-0 py-0 min-h-auto"
-              />
-            </div>
-          )}
-        </div>
+      <FilterField label={t("month_placeholder")} width="sm">
+        <SearchableSelect
+          size="md"
+          value={selectedMonthValue ?? ""}
+          onValueChange={handleMonthChange}
+          placeholder={tc("all")}
+          options={[{ value: "", label: tc("all") }, ...months]}
+        />
+      </FilterField>
 
-        <div className="flex flex-wrap gap-2 items-center">
-         
-          
-          {/* Year Select */}
-          <div className="min-w-[120px] flex-shrink-0">
-            <Select
-              value={String(selectedYear)}
-              onValueChange={handleYearChange}
-            >
-              <SelectTrigger className="w-full h-10 mb-0">
-                <SelectValue placeholder={t("year_placeholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((year) => (
-                  <SelectItem key={year} value={String(year)}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* Depo-scoped roles only ever see their own depo */}
+      {!isOrgScoped && (
+        <FilterField label={tc("organization")} width="lg">
+          <MultiSelect
+            options={organizationOptions}
+            selectedValues={selectedOrganizations}
+            onSelectionChange={handleOrganizationsChange}
+            placeholder={tc("all")}
+            searchPlaceholder={t("organizations_search")}
+            emptyMessage={t("organizations_empty")}
+            disabled={isLoadingOrganizations}
+            className="min-h-9 py-0"
+          />
+        </FilterField>
+      )}
 
-          {/* Month Select */}
-          <div className="min-w-[150px] flex-shrink-0">
-            <Select
-              value={selectedMonthValue || undefined}
-              onValueChange={handleMonthChange}
-            >
-              <SelectTrigger className="w-full h-10 mb-0">
-                <SelectValue placeholder={t("month_placeholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                {months.map((month) => (
-                  <SelectItem key={month.value} value={month.value}>
-                    {month.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-           {/* Export Button */}
-           {onExport && (
-            <Button size="md" onClick={onExport}>
-              <Download />
-              {t("export_button")}
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+      <FilterReset
+        active={Boolean(organizationsParam || yearParam || monthParam || activeQuickFilter !== "30days")}
+        onReset={resetFilters}
+      />
+    </FilterBar>
   );
 }

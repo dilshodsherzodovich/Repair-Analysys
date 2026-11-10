@@ -7,29 +7,14 @@ import UnauthorizedPage from "../../unauthorized/page";
 import { PageHeader } from "@/ui/page-header";
 import { useTu137Records } from "@/api/hooks/use-tu137";
 import { exportTu137ToDocx } from "@/lib/export-tu137-docx";
-import { Button } from "@/ui/button";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 
-import {
-  Users,
-  FileText,
-  Clock,
-  CheckCircle,
-  ChevronDown,
-  ChevronRight,
-  Download,
-} from "lucide-react";
-import { Input } from "@/ui/input";
+import { Users, FileText, Clock, CheckCircle, ChevronDown, ChevronRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
 
 const getProgressBgColor = (percent: number) => {
   if (percent < 50) return "bg-destructive";
@@ -55,6 +40,7 @@ interface MashinistStats {
 
 export default function Tu137ReportsPage() {
   const t = useTranslations("Tu137Page");
+  const tc = useTranslations("Common");
   const { getQueryValue, updateQuery } = useFilterParams();
   const searchQuery = getQueryValue("search");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -154,33 +140,27 @@ export default function Tu137ReportsPage() {
       <PageHeader
         title={t("reports_title")}
         breadcrumbs={breadcrumbs}
+        actions={
+          <ExportActions
+            onWord={() => exportTu137ToDocx(allRecords)}
+            disabled={isLoading || !allRecords.length}
+          />
+        }
+        filters={
+          <FilterBar>
+            <FilterField label={tc("search")} width="lg">
+              <SearchInput
+                value={searchQuery}
+                placeholder={t("search_placeholder")}
+                onChange={(value) => updateQuery({ search: value || null })}
+              />
+            </FilterField>
+            <FilterReset active={Boolean(searchQuery)} onReset={() => updateQuery({ search: null })} />
+          </FilterBar>
+        }
       />
 
       <div className="px-6 py-6 space-y-6">
-        {/* Actions / Search Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-background p-4 rounded-xl border border-border/60 shadow-sm">
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
-            <div className="w-full max-w-md">
-              <Input
-                type="text"
-                placeholder={t("search_placeholder")}
-                value={searchQuery}
-                onChange={(e) =>
-                  updateQuery({ search: e.target.value || null })
-                }
-                className="w-full bg-surface-muted border-border text-foreground mb-0"
-              />
-            </div>
-          </div>
-          <Button
-            onClick={() => (allRecords.length ? exportTu137ToDocx(allRecords) : null)}
-            disabled={isLoading || !allRecords.length}
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">{t("export_docx")}</span>
-          </Button>
-        </div>
 
         {/* Global Stats Cards */}
         {isLoading ? (

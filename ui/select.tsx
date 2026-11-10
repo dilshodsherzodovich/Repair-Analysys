@@ -179,6 +179,13 @@ export interface SearchableSelectProps {
   clearable?: boolean;
   /** Shows a spinner and blocks opening while options load. */
   loading?: boolean;
+  /**
+   * Server-side search: called with the typed text (the caller debounces and
+   * refetches `options`). When set, options are not filtered locally.
+   */
+  onSearch?: (query: string) => void;
+  /** Label for the current value when it is not in `options` (server search). */
+  selectedLabel?: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
   disabled?: boolean;
@@ -197,6 +204,8 @@ function SearchableSelect({
   searchable = false,
   clearable = false,
   loading = false,
+  onSearch,
+  selectedLabel,
   searchPlaceholder = "Search...",
   emptyMessage = "No results found.",
   disabled = false,
@@ -213,10 +222,10 @@ function SearchableSelect({
 
   const selectedOption = options.find((o) => o.value === value);
   const filteredOptions = React.useMemo(() => {
-    if (!searchable || !searchValue.trim()) return options;
+    if (onSearch || !searchable || !searchValue.trim()) return options;
     const q = searchValue.toLowerCase();
     return options.filter((o) => o.label.toLowerCase().includes(q));
-  }, [options, searchValue, searchable]);
+  }, [options, searchValue, searchable, onSearch]);
 
   React.useEffect(() => {
     if (open && triggerRef.current) {
@@ -247,7 +256,8 @@ function SearchableSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const isDisabled = disabled || loading;
+  // With server search the list reloads while typing; keep the field usable
+  const isDisabled = disabled || (loading && !onSearch);
 
   const handleSelect = (optionValue: string) => {
     onValueChange?.(optionValue);
@@ -339,10 +349,10 @@ function SearchableSelect({
         <span
           className={cn(
             "min-w-0 flex-1 truncate text-left",
-            selectedOption ? "text-foreground" : "text-foreground-subtle"
+            selectedOption || (value && selectedLabel) ? "text-foreground" : "text-foreground-subtle"
           )}
         >
-          {selectedOption ? selectedOption.label : placeholder}
+          {selectedOption?.label ?? (value ? selectedLabel : undefined) ?? placeholder}
         </span>
         {loading ? (
           <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
@@ -386,7 +396,10 @@ function SearchableSelect({
                 type="text"
                 placeholder={searchPlaceholder}
                 value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                  onSearch?.(e.target.value);
+                }}
                 onKeyDown={(e) => e.stopPropagation()}
                 className="w-full rounded-md border border-border-strong bg-background text-foreground py-2 pl-8 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />

@@ -3,40 +3,13 @@
 import { useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { format } from "date-fns";
-import { uz } from "date-fns/locale";
-import {
-  CalendarIcon,
-  FileDown,
-  FileSpreadsheet,
-  Loader2,
-  RotateCcw,
-} from "lucide-react";
 import { withRole } from "@/components/withRole";
-import { Calendar } from "@/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
 import { useBranches } from "@/api/hooks/use-branches";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-  REPORT_FILTER_LABEL,
-} from "@/components/reports/report-organization-select";
-import {
-  useUnifiedReportData,
-  EXCLUDED_INSPECTION_TYPE_IDS,
-} from "@/components/reports/unified/use-unified-report-data";
-import {
-  KpiStrip,
-  type UnifiedSection,
-} from "@/components/reports/unified/kpi-strip";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
+import { useUnifiedReportData, EXCLUDED_INSPECTION_TYPE_IDS } from "@/components/reports/unified/use-unified-report-data";
+import { KpiStrip, type UnifiedSection } from "@/components/reports/unified/kpi-strip";
 import { TypeBreakdown } from "@/components/reports/unified/type-breakdown";
 import { SectionInspections } from "@/components/reports/unified/section-inspections";
 import { SectionDelayedEntry } from "@/components/reports/unified/section-delayed-entry";
@@ -45,7 +18,10 @@ import { generateUnifiedReportExcel } from "@/utils/unified-inspection-report-ex
 import { generateUnifiedReportPDF } from "@/utils/unified-inspection-report-pdf-export";
 import type { UnifiedReportExportData } from "@/utils/unified-inspection-report-export-data";
 import { PageHeader } from "@/ui/page-header";
-import { Button } from "@/ui/button";
+import { SearchableSelect } from "@/ui/select";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { DateRangeField } from "@/ui/date-range-field";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -63,6 +39,7 @@ function UnifiedInspectionReportPage() {
   const globalT = useTranslations();
   const tReason = useTranslations("Inspects.detail.delayReason");
   const locale = useLocale();
+  const tc = useTranslations("Common");
   const { filters, setFilters } = useReportFilters();
   const { organizationId } = useReportOrganization();
 
@@ -224,103 +201,70 @@ function UnifiedInspectionReportPage() {
             {format(new Date(`${fromDate}T00:00:00`), "dd.MM.yyyy")} –{" "}
             {format(new Date(`${toDate}T00:00:00`), "dd.MM.yyyy")}
           </>}
-        actions={<>
-            <Button variant="success"
-              onClick={() => runExport("excel")}
-              disabled={busy !== null}
-            >
-              {busy === "excel" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileSpreadsheet className="w-4 h-4" />
-              )}
-              {busy === "excel" ? t("generating") : t("exportExcel")}
-            </Button>
-            <Button
-              onClick={() => runExport("pdf")}
-              disabled={busy !== null}
-            >
-              {busy === "pdf" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileDown className="w-4 h-4" />
-              )}
-              {busy === "pdf" ? t("generating") : t("exportPdf")}
-            </Button>
-          </>}
-        filters={<>
-            <ReportOrganizationSelect label={t("organization")} />
-
-            <DateBox
-              label={t("period")}
-              date={new Date(`${fromDate}T00:00:00`)}
-              onSelect={(d) =>
-                setFilters({ fromDate: d ? format(d, DATE_FMT) : "" })
-              }
-            />
-            <DateBox
-              label="—"
-              date={new Date(`${toDate}T00:00:00`)}
-              onSelect={(d) => setFilters({ toDate: d ? format(d, DATE_FMT) : "" })}
-            />
-
-            <div className="flex flex-col gap-1">
-              <span className={REPORT_FILTER_LABEL}>{t("branch")}</span>
-              <Select
-                value={branch}
-                onValueChange={(v) => setFilters({ branch: v === "all" ? "" : v })}
-              >
-                <SelectTrigger className="w-[190px] h-9 text-sm mb-0 sm:mb-0">
-                  <SelectValue placeholder={t("branch")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("all")}</SelectItem>
-                  {filteredBranches.map((b) => (
-                    <SelectItem key={b.id} value={String(b.id)}>
-                      {b.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <span className={REPORT_FILTER_LABEL}>{t("inspectionType")}</span>
-              <Select
-                value={inspectionType}
-                onValueChange={(v) =>
-                  setFilters({ inspectionType: v === "all" ? "" : v })
+        actions={
+          <ExportActions
+            onExcel={() => runExport("excel")}
+            onPdf={() => runExport("pdf")}
+            busy={busy}
+          />
+        }
+        filters={
+          <FilterBar>
+            <ReportOrganizationSelect />
+            <FilterField label={tc("period")} width="lg">
+              <DateRangeField
+                value={{
+                  from: new Date(`${fromDate}T00:00:00`),
+                  to: new Date(`${toDate}T00:00:00`),
+                }}
+                onChange={({ from, to }) =>
+                  setFilters({
+                    fromDate: from ? format(from, DATE_FMT) : "",
+                    toDate: to ? format(to, DATE_FMT) : "",
+                  })
                 }
-              >
-                <SelectTrigger className="w-[170px] h-9 text-sm mb-0 sm:mb-0">
-                  <SelectValue placeholder={t("inspectionType")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("all")}</SelectItem>
-                  {inspectionTypes.map((it) => (
-                    <SelectItem key={it.id} value={String(it.id)}>
-                      {typeName(it)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button variant="outline" size="icon"
-              onClick={() =>
-                setFilters({
-                  fromDate: "",
-                  toDate: "",
-                  branch: "",
-                  inspectionType: "",
-                  section: "",
-                })
+              />
+            </FilterField>
+            <FilterField label={t("branch")}>
+              <SearchableSelect
+                size="md"
+                searchable
+                value={branch === "all" ? "" : branch}
+                onValueChange={(v) => setFilters({ branch: v })}
+                placeholder={tc("all")}
+                options={[
+                  { value: "", label: tc("all") },
+                  ...filteredBranches.map((b) => ({ value: String(b.id), label: b.name })),
+                ]}
+              />
+            </FilterField>
+            <FilterField label={t("inspectionType")}>
+              <SearchableSelect
+                size="md"
+                searchable
+                value={inspectionType === "all" ? "" : inspectionType}
+                onValueChange={(v) => setFilters({ inspectionType: v })}
+                placeholder={tc("all")}
+                options={[
+                  { value: "", label: tc("all") },
+                  ...inspectionTypes.map((it) => ({ value: String(it.id), label: typeName(it) })),
+                ]}
+              />
+            </FilterField>
+            <FilterReset
+              active={Boolean(
+                filters.fromDate ||
+                  filters.toDate ||
+                  filters.branch ||
+                  filters.inspectionType ||
+                  filters.section
+              )}
+              onReset={() =>
+                setFilters({ fromDate: "", toDate: "", branch: "", inspectionType: "", section: "" })
               }
-              title={t("reset")}
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </Button>
-          </>}
+            />
+          </FilterBar>
+        }
       />
 
       <KpiStrip
@@ -339,39 +283,6 @@ function UnifiedInspectionReportPage() {
       {shows("inspections") && <SectionInspections {...data.inspections} />}
       {shows("duration") && <SectionDelayedDuration {...data.delayedDuration} />}
       {shows("entry") && <SectionDelayedEntry {...data.delayedEntry} />}
-    </div>
-  );
-}
-
-function DateBox({
-  label,
-  date,
-  onSelect,
-}: {
-  label: string;
-  date: Date;
-  onSelect: (d: Date | undefined) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className={REPORT_FILTER_LABEL}>{label}</span>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="font-normal">
-            <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
-            {format(date, "dd.MM.yyyy")}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={onSelect}
-            captionLayout="dropdown"
-            locale={uz}
-          />
-        </PopoverContent>
-      </Popover>
     </div>
   );
 }

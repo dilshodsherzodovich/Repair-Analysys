@@ -2,25 +2,17 @@
 
 import React, { useMemo, useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Settings2, Loader2, FileSpreadsheet } from "lucide-react";
+import { Settings2, Loader2 } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
 import { Button } from "@/ui/button";
-import { PermissionGuard } from "@/components/permission-guard";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useTxk13Report } from "@/api/hooks/use-txk13-report";
 import { useGetLocomotiveModels } from "@/api/hooks/use-locomotives";
 import type { Txk13Inspection, Txk13Locomotive } from "@/api/types/txk13-report";
-import { canAccessSection, type Permission } from "@/lib/permissions";
+import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import type { UserData } from "@/api/types/auth";
 import { BaselineModal } from "./baseline-modal";
@@ -29,6 +21,7 @@ import { txk13ReportService } from "@/api/services/txk13-report.service";
 import { Txk13Filters } from "./txk13-filters";
 import { authService } from "@/api/services/auth.service";
 import { Input } from "@/ui/input";
+import { ExportActions } from "@/ui/export-actions";
 
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
@@ -323,36 +316,28 @@ export default function LocomotiveMileageReportPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <PageHeader title={t("title")} description={t("description")} />
-        <Button
-          onClick={handleExport}
-          disabled={
-            !reportData?.data?.length ||
-            selectedInspectionTypes.length === 0 ||
-            isExporting ||
-            isLoadingReport
-          }
-          className="shrink-0 gap-2"
-        >
-          {isExporting ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <FileSpreadsheet className="size-4" />
-          )}
-          {isExporting ? t("exporting") : t("export_button")}
-        </Button>
-      </div>
-
-      <Txk13Filters
-        organizations={organizations}
-        isLoadingOrganizations={isLoadingOrganizations}
-        locomotiveModels={locomotiveModels}
-        inspectionTypes={inspectionTypes}
-        selectedInspectionIds={selectedInspectionIds}
-        onToggleInspection={toggleInspection}
-        activeUnit={activeUnit}
-        onUnitChange={setActiveUnit}
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={
+          <ExportActions
+            onExcel={handleExport}
+            busy={isExporting ? "excel" : null}
+            disabled={!reportData?.data?.length || selectedInspectionTypes.length === 0 || isLoadingReport}
+          />
+        }
+        filters={
+          <Txk13Filters
+            organizations={organizations}
+            isLoadingOrganizations={isLoadingOrganizations}
+            locomotiveModels={locomotiveModels}
+            inspectionTypes={inspectionTypes}
+            selectedInspectionIds={selectedInspectionIds}
+            onToggleInspection={toggleInspection}
+            activeUnit={activeUnit}
+            onUnitChange={setActiveUnit}
+          />
+        }
       />
 
       <div className="sticky top-0 rounded-lg border border-border-strong overflow-x-auto overflow-y-auto max-h-[80vh] bg-background">

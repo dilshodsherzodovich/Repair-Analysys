@@ -10,7 +10,6 @@ import {
 import type {
   InspectionTypeGroup,
   InspectionTypeLocomotive,
-  InspectionTypeLocomotivesResponse,
   DelayedLocomotivesResponse,
   DelayedInspectionType,
   DelayedLocomotive,
@@ -19,24 +18,14 @@ import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations, useLocale } from "next-intl";
 import PageLoading from "../page-loading";
 import ReportsDateFilter from "./reports-date-filter";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "./report-organization-select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { ReportOrganizationSelect, useReportOrganization } from "./report-organization-select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { formatDate } from "@/utils/formatDate";
 import { defineGridColsCount } from "@/lib/utils";
 import { PDFExportButton } from "./pdf-export-button";
 import type { PDFExportData } from "@/utils/pdf-export";
-import { Truck } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
+import { FilterBar } from "@/ui/filter-bar";
 
 export default function ReportDashboard() {
   const t = useTranslations("Reports");
@@ -253,20 +242,18 @@ export default function ReportDashboard() {
       {/* ─── Header Card ─── */}
       <PageHeader
         data-no-pdf
-        icon={Truck}
         title={t("title")}
         description={new Date().toLocaleDateString(
             locale === "ru" ? "ru-RU" : "uz-UZ",
             { weekday: "long", year: "numeric", month: "long", day: "numeric" }
           )}
-        actions={<>
-            <PDFExportButton data={preparePDFData()} className="shrink-0" />
-          </>}
-        filters={<>
-            <ReportsDateFilter
-              leading={<ReportOrganizationSelect label={t("organization")} />}
-            />
-          </>}
+        actions={<PDFExportButton data={preparePDFData()} />}
+        filters={
+          <FilterBar>
+            <ReportOrganizationSelect />
+            <ReportsDateFilter />
+          </FilterBar>
+        }
       />
 
       <div className="space-y-4 border p-5 rounded-xl shadow-md">

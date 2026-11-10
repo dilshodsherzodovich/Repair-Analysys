@@ -4,14 +4,8 @@ import { useTranslations } from "next-intl";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import type { Organization } from "@/api/types/organizations";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import { cn } from "@/lib/utils";
+import { SearchableSelect } from "@/ui/select";
+import { FilterField } from "@/ui/filter-bar";
 
 /**
  * Organization used when the URL carries no selection. Every report is always
@@ -42,65 +36,31 @@ export function useReportOrganization() {
   };
 }
 
-/** Label styling shared by the report filter rows that caption their fields. */
-export const REPORT_FILTER_LABEL =
-  "text-2xs font-semibold text-foreground-subtle uppercase tracking-wider pl-1";
-
-export function ReportOrganizationSelect({
-  className,
-  triggerClassName,
-  label,
-  labelClassName,
-  disabled,
-}: {
-  className?: string;
-  triggerClassName?: string;
-  /**
-   * Omit on rows whose other controls are uncaptioned. `true` uses the
-   * component's own translated caption.
-   */
-  label?: string | boolean;
-  labelClassName?: string;
-  disabled?: boolean;
-}) {
-  const t = useTranslations("Reports");
+/**
+ * The organization filter of every report: a labelled FilterField with the
+ * kit select. No styling options; it looks the same on every report.
+ */
+export function ReportOrganizationSelect({ disabled }: { disabled?: boolean }) {
+  const tc = useTranslations("Common");
   const { value, setOrganization } = useReportOrganization();
 
-  const { data } = useOrganizations({ no_page: true });
+  const { data, isLoading } = useOrganizations({ no_page: true });
   const organizations: Organization[] = Array.isArray(data)
     ? data
     : ((data as { results?: Organization[] } | undefined)?.results ?? []);
 
-  // h-9 matches every other control in the report filter rows, so the select
-  // sits on the same line at the same height.
-  const select = (
-    <Select value={value} onValueChange={setOrganization} disabled={disabled}>
-      {/* SelectTrigger ships with `mb-3 sm:mb-4`, which lifts it off the row's
-          baseline. twMerge scopes responsive variants separately, so both the
-          base and the `sm:` margin have to be cleared. */}
-      <SelectTrigger
-        className={cn("h-9 w-[220px] text-sm mb-0 sm:mb-0", triggerClassName)}
-      >
-        <SelectValue placeholder={t("organization")} />
-      </SelectTrigger>
-      <SelectContent>
-        {organizations.map((org) => (
-          <SelectItem key={org.id} value={String(org.id)}>
-            {org.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-
-  if (!label) return <div className={className}>{select}</div>;
-
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
-      <span className={cn(REPORT_FILTER_LABEL, labelClassName)}>
-        {label === true ? t("organization") : label}
-      </span>
-      {select}
-    </div>
+    <FilterField label={tc("organization")} width="lg">
+      <SearchableSelect
+        size="md"
+        searchable
+        loading={isLoading}
+        disabled={disabled}
+        value={value}
+        onValueChange={setOrganization}
+        placeholder={tc("organization")}
+        options={organizations.map((org) => ({ value: String(org.id), label: org.name }))}
+      />
+    </FilterField>
   );
 }

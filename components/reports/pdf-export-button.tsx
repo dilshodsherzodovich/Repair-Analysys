@@ -1,13 +1,11 @@
 "use client";
 
-import { Button } from "@/ui/button";
-import { FileDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { generatePDFFromElement } from "@/utils/pdf-export";
 import type { PDFExportData } from "@/utils/pdf-export";
 import { generateReportsPDF } from "@/utils/reports-pdf-export";
 import { useTranslations } from "next-intl";
-import { useRef } from "react";
+import { ExportActions } from "@/ui/export-actions";
 
 interface PDFExportButtonProps {
   data?: PDFExportData;
@@ -49,18 +47,5 @@ export function PDFExportButton({
     }
   };
 
-  return (
-    <Button
-      onClick={handleExport}
-      disabled={isGenerating}
-      className={className}
-    >
-      {isGenerating ? (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-      ) : (
-        <FileDown className="w-4 h-4 mr-2" />
-      )}
-      {isGenerating ? t("generatingPDF") : t("exportPDF")}
-    </Button>
-  );
+  return <ExportActions onPdf={handleExport} busy={isGenerating ? "pdf" : null} />;
 }

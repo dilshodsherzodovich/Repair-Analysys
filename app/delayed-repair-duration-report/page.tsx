@@ -2,52 +2,22 @@
 
 import { useMemo, useState } from "react";
 import { withRole } from "@/components/withRole";
-import {
-  useDelayedRepairDurationReport,
-  DelayedRepairDurationRow,
-} from "@/api/hooks/use-delayed-repair-duration-report";
+import { useDelayedRepairDurationReport, DelayedRepairDurationRow } from "@/api/hooks/use-delayed-repair-duration-report";
 import { useBranches } from "@/api/hooks/use-branches";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
-import {
-  Loader2,
-  CalendarIcon,
-  RotateCcw,
-  ArrowRight,
-  FileDown,
-} from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations, useLocale } from "next-intl";
-import { Button } from "@/ui/button";
-import { Calendar } from "@/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
 import { format } from "date-fns";
-import { uz } from "date-fns/locale";
 import { generateDelayedRepairDurationExcel } from "@/utils/delayed-repair-duration-report-excel-export";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "@/components/reports/report-organization-select";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { DateRangeField } from "@/ui/date-range-field";
+import { SearchableSelect } from "@/ui/select";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -84,6 +54,7 @@ function DelayedRepairDurationReportPage() {
   const { organizationId: organization } = useReportOrganization();
 
   const today = useMemo(() => new Date(), []);
+  const tc = useTranslations("Common");
   const [from, setFrom] = useState<Date | undefined>(() => firstOfMonth(today));
   const [to, setTo] = useState<Date | undefined>(() => today);
   const [branch, setBranch] = useState<string>("all");
@@ -183,80 +154,74 @@ function DelayedRepairDurationReportPage() {
       <PageHeader
         title={t("title")}
         description={t("description")}
-        actions={<>
-            <Button variant="success"
-              onClick={handleExportExcel}
-              disabled={isExporting || rows.length === 0}
-            >
-              {isExporting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileDown className="w-4 h-4" />
-              )}
-              {isExporting ? t("generatingExcel") : t("exportExcel")}
-            </Button>
-          </>}
-        filters={<>
-            <ReportOrganizationSelect label={t("organization")} />
-            <DateBox label={t("fromDate")} date={from} onSelect={setFrom} />
-            <ArrowRight className="w-4 h-4 text-foreground-subtle shrink-0 mb-2.5" />
-            <DateBox label={t("toDate")} date={to} onSelect={setTo} />
-
-            {/* Branch */}
+        actions={
+          <ExportActions
+            onExcel={handleExportExcel}
+            busy={isExporting ? "excel" : null}
+            disabled={rows.length === 0}
+          />
+        }
+        filters={
+          <FilterBar>
+            <ReportOrganizationSelect />
+            <FilterField label={tc("period")} width="lg">
+              <DateRangeField
+                value={{ from, to }}
+                onChange={(range) => {
+                  setFrom(range.from);
+                  setTo(range.to);
+                }}
+              />
+            </FilterField>
             <FilterField label={t("branch")}>
-              <Select value={branch} onValueChange={setBranch}>
-                <SelectTrigger className="w-[190px] h-9 text-sm mb-0 sm:mb-0">
-                  <SelectValue placeholder={t("branch")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("all")}</SelectItem>
-                  {filteredBranches.map((b) => (
-                    <SelectItem key={b.id} value={b.id.toString()}>
-                      {b.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                size="md"
+                value={branch === "all" ? "" : branch}
+                onValueChange={(v) => setBranch(v || "all")}
+                placeholder={tc("all")}
+                options={[
+                  { value: "", label: tc("all") },
+                  ...filteredBranches.map((b) => ({ value: b.id.toString(), label: b.name })),
+                ]}
+              />
             </FilterField>
-
-            {/* Inspection type */}
             <FilterField label={t("inspectionType")}>
-              <Select value={inspectionType} onValueChange={setInspectionType}>
-                <SelectTrigger className="w-[160px] h-9 text-sm mb-0 sm:mb-0">
-                  <SelectValue placeholder={t("inspectionType")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("all")}</SelectItem>
-                  {inspectionTypes?.map((it) => (
-                    <SelectItem key={it.id} value={it.id.toString()}>
-                      {typeName(it)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                size="md"
+                value={inspectionType === "all" ? "" : inspectionType}
+                onValueChange={(v) => setInspectionType(v || "all")}
+                placeholder={tc("all")}
+                options={[
+                  { value: "", label: tc("all") },
+                  ...(inspectionTypes ?? []).map((it) => ({ value: it.id.toString(), label: typeName(it) })),
+                ]}
+              />
             </FilterField>
-
-            {/* Status */}
             <FilterField label={t("status")}>
-              <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger className="w-[150px] h-9 text-sm mb-0 sm:mb-0">
-                  <SelectValue placeholder={t("status")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("all")}</SelectItem>
-                  <SelectItem value="closed">{t("statusClosed")}</SelectItem>
-                  <SelectItem value="open">{t("statusOpen")}</SelectItem>
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                size="md"
+                value={status === "all" ? "" : status}
+                onValueChange={(v) => setStatus(v || "all")}
+                placeholder={tc("all")}
+                options={[
+                  { value: "", label: tc("all") },
+                  { value: "closed", label: t("statusClosed") },
+                  { value: "open", label: t("statusOpen") },
+                ]}
+              />
             </FilterField>
-
-            <Button variant="outline" size="icon"
-              onClick={handleReset}
-              title={t("reset")}
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </Button>
-          </>}
+            <FilterReset
+              active={
+                branch !== "all" ||
+                inspectionType !== "all" ||
+                status !== "all" ||
+                from?.getTime() !== firstOfMonth(today).getTime() ||
+                to?.toDateString() !== today.toDateString()
+              }
+              onReset={handleReset}
+            />
+          </FilterBar>
+        }
       />
 
       {/* Content */}
@@ -343,58 +308,6 @@ function DelayedRepairDurationReportPage() {
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-function FilterField({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wider pl-1">
-        {label}
-      </span>
-      {children}
-    </div>
-  );
-}
-
-function DateBox({
-  label,
-  date,
-  onSelect,
-}: {
-  label: string;
-  date: Date | undefined;
-  onSelect: (d: Date | undefined) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wider pl-1">
-        {label}
-      </span>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="font-normal">
-            <CalendarIcon className="w-3.5 h-3.5 text-primary shrink-0" />
-            {date ? format(date, "dd.MM.yyyy") : "—"}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={onSelect}
-            captionLayout="dropdown"
-            locale={uz}
-          />
-        </PopoverContent>
-      </Popover>
     </div>
   );
 }

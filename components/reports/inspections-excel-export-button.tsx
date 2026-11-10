@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/ui/button";
-import { FileDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import api from "@/api/axios";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
@@ -9,6 +7,7 @@ import { generateInspectionsExcel } from "@/utils/inspections-excel-export";
 import { format } from "date-fns";
 import { InspectionResponse } from "@/api/types/report-inspection";
 import { useTranslations } from "next-intl";
+import { ExportActions } from "@/ui/export-actions";
 
 export function InspectionsExcelExportButton() {
   const [isExporting, setIsExporting] = useState(false);
@@ -93,18 +92,5 @@ export function InspectionsExcelExportButton() {
     }
   };
 
-  return (
-    <Button
-      onClick={handleExport}
-      disabled={isExporting}
-      variant="success"
-    >
-      {isExporting ? (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-      ) : (
-        <FileDown className="w-4 h-4 mr-2" />
-      )}
-      {isExporting ? tRoot("loading") : tRoot("excelExport")}
-    </Button>
-  );
+  return <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />;
 }

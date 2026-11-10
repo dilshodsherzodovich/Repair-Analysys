@@ -1,20 +1,13 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { CalendarRange, Download, Loader2, Pencil, Table2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Loader2, Pencil, Table2 } from "lucide-react";
 import { authService } from "@/api/services/auth.service";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useLocomotiveModels } from "@/api/hooks/use-locomotive-models";
 import { useAnnualInspectionPlanReport } from "@/api/hooks/use-annual-inspection-plans";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import { cn } from "@/lib/utils";
 import { Organization } from "@/api/types/organizations";
 import { AnnualPlanReport } from "@/api/types/annual-inspection-plan";
 import { exportAnnualPlanExcel } from "@/utils/annual-plan-excel-export";
@@ -23,8 +16,10 @@ import { PlanReportGrid } from "./plan-report-grid";
 import { PlanEditGrid } from "./plan-edit-grid";
 import { PlanCompareGrid } from "./plan-compare-grid";
 import { PageHeader } from "@/ui/page-header";
-import { Button } from "@/ui/button";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { SearchableSelect } from "@/ui/select";
 
 const ALL = "0";
 
@@ -47,6 +42,8 @@ export default function AnnualInspectionPlanPage() {
   );
 
   const ownOrgId = user?.branch?.organization?.id ?? 0;
+
+  const tc = useTranslations("Common");
 
   const [mode, setMode] = useState<"view" | "edit">("view");
   // Within view mode: plan / fact / compare.
@@ -141,10 +138,10 @@ export default function AnnualInspectionPlanPage() {
     <div className="space-y-4">
       {/* Header */}
       <PageHeader
-        icon={CalendarRange}
         title="Texnik ko&apos;riklar yillik rejasi"
         description="Grafik raboti — tashkilot, ko&apos;rik turi va rusum bo&apos;yicha yillik reja"
-        actions={<>
+        actions={
+          <>
             <SegmentedTabs
               size="sm"
               value={mode}
@@ -154,95 +151,95 @@ export default function AnnualInspectionPlanPage() {
                 { value: "edit", label: "Tahrirlash", icon: <Pencil /> },
               ]}
             />
-          </>}
-      >
-        <div className="px-5 py-3 bg-muted/30 flex flex-wrap items-center gap-2">
-          {/* Year */}
-          <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-            <SelectTrigger className="w-[110px] h-8 sm:h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((y) => (
-                <SelectItem key={y} value={String(y)}>{y}-yil</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {mode === "view" && (
+              <ExportActions
+                onExcel={handleExcel}
+                busy={isExporting ? "excel" : null}
+                disabled={!hasData}
+              />
+            )}
+          </>
+        }
+        filters={
+          <FilterBar>
+            <FilterField label="Yil" width="sm">
+              <SearchableSelect
+                size="md"
+                value={String(year)}
+                onValueChange={(v) => setYear(Number(v))}
+                options={years.map((y) => ({ value: String(y), label: `${y}-yil` }))}
+              />
+            </FilterField>
 
-          {/* Organization */}
-          <Select
-            value={orgFilter}
-            onValueChange={setOrgFilter}
-            disabled={!isAdmin}
-          >
-            <SelectTrigger className="w-[220px] h-8 sm:h-8 text-xs">
-              <SelectValue placeholder="Tashkilot" />
-            </SelectTrigger>
-            <SelectContent>
-              {mode === "view" && <SelectItem value={ALL}>Barcha tashkilotlar</SelectItem>}
-              {organizations.map((o) => (
-                <SelectItem key={o.id} value={String(o.id)}>{o.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {mode === "view" && (
-            <>
-              {/* Source: plan / fact / compare */}
-              <SegmentedTabs
-                size="sm"
-                className="mb-3 sm:mb-4"
-                value={source}
-                onValueChange={(v) => setSource(v as typeof source)}
+            <FilterField label={tc("organization")} width="lg">
+              <SearchableSelect
+                size="md"
+                searchable
+                disabled={!isAdmin}
+                value={orgFilter}
+                onValueChange={setOrgFilter}
+                placeholder={tc("organization")}
                 options={[
-                  { value: "reja", label: "Reja" },
-                  { value: "fakt", label: "Fakt" },
-                  { value: "compare", label: "Taqqoslash" },
+                  ...(mode === "view" ? [{ value: ALL, label: "Barcha tashkilotlar" }] : []),
+                  ...organizations.map((o) => ({ value: String(o.id), label: o.name })),
                 ]}
               />
+            </FilterField>
 
-              {/* Inspection type */}
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[160px] h-8 sm:h-8 text-xs">
-                  <SelectValue placeholder="Ko'rik turi" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL}>Barcha turlar</SelectItem>
-                  {inspectionTypes
-                    ?.filter((t) => t.is_interval)
-                    .map((t) => (
-                      <SelectItem key={t.id} value={String(t.id)}>{t.name}</SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+            {mode === "view" && (
+              <>
+                <FilterField label="Ko'rinish" width="auto">
+                  <SegmentedTabs
+                    size="sm"
+                    value={source}
+                    onValueChange={(v) => setSource(v as typeof source)}
+                    options={[
+                      { value: "reja", label: "Reja" },
+                      { value: "fakt", label: "Fakt" },
+                      { value: "compare", label: "Taqqoslash" },
+                    ]}
+                  />
+                </FilterField>
 
-              {/* Locomotive model */}
-              <Select value={modelFilter} onValueChange={setModelFilter}>
-                <SelectTrigger className="w-[160px] h-8 sm:h-8 text-xs">
-                  <SelectValue placeholder="Rusum" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL}>Barcha rusumlar</SelectItem>
-                  {models.map((m) => (
-                    <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <FilterField label="Ko'rik turi">
+                  <SearchableSelect
+                    size="md"
+                    value={typeFilter}
+                    onValueChange={setTypeFilter}
+                    options={[
+                      { value: ALL, label: "Barcha turlar" },
+                      ...(inspectionTypes ?? [])
+                        .filter((t) => t.is_interval)
+                        .map((t) => ({ value: String(t.id), label: t.name })),
+                    ]}
+                  />
+                </FilterField>
 
-              <div className="ml-auto flex items-center gap-2 mb-3 sm:mb-4">
-                {activeFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-                <Button variant="success" size="sm"
-                  onClick={handleExcel}
-                  disabled={!hasData || isExporting}
-                >
-                  {isExporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
-                  Excel
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
-      </PageHeader>
+                <FilterField label="Rusum">
+                  <SearchableSelect
+                    size="md"
+                    searchable
+                    value={modelFilter}
+                    onValueChange={setModelFilter}
+                    options={[
+                      { value: ALL, label: "Barcha rusumlar" },
+                      ...models.map((m) => ({ value: String(m.id), label: m.name })),
+                    ]}
+                  />
+                </FilterField>
+
+                <FilterReset
+                  active={typeFilter !== ALL || modelFilter !== ALL}
+                  onReset={() => {
+                    setTypeFilter(ALL);
+                    setModelFilter(ALL);
+                  }}
+                />
+              </>
+            )}
+          </FilterBar>
+        }
+      />
 
       {/* Content */}
       {mode === "view" ? (

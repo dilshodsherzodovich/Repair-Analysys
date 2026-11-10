@@ -14,21 +14,11 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { useGetLocomotiveDetail } from "@/api/hooks/use-locomotives";
-import {
-  Loader2,
-  Save,
-  X,
-  ArrowLeft,
-  FileDown,
-  ExternalLink,
-} from "lucide-react";
+import { Loader2, Save, X, ArrowLeft, ExternalLink } from "lucide-react";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { Card } from "@/ui/card";
-import {
-  useComponents,
-  useBulkUpdateComponentValues,
-} from "@/api/hooks/use-component";
+import { useComponents, useBulkUpdateComponentValues } from "@/api/hooks/use-component";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { ComponentValue } from "@/api/types/component";
 import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
@@ -36,6 +26,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { authService } from "@/api/services/auth.service";
 import { Label } from "@/ui/label";
 import { PageHeader } from "@/ui/page-header";
+import { ExportActions } from "@/ui/export-actions";
 
 interface LocomotivePassportClassicProps {
   depotId: string;
@@ -296,29 +287,6 @@ export default function LocomotivePassportClassic({
         }
         actions={
           <>
-            <Button
-              onClick={handleExportPDF}
-              variant="outline"
-              className="border-border-strong"
-              disabled={
-                isExportingPDF ||
-                !locomotiveDetail ||
-                activeSectionId === null ||
-                componentList.length === 0
-              }
-            >
-              {isExportingPDF ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t("exporting")}
-                </>
-              ) : (
-                <>
-                  <FileDown className="mr-2 h-4 w-4" />
-                  {t("export_pdf")}
-                </>
-              )}
-            </Button>
             {canEdit && (
               <>
                 {!isEditing ? (
@@ -374,6 +342,11 @@ export default function LocomotivePassportClassic({
               <ExternalLink className="mr-2 h-4 w-4" />
               {t("details")}
             </Button>
+            <ExportActions
+              onPdf={handleExportPDF}
+              busy={isExportingPDF ? "pdf" : null}
+              disabled={!locomotiveDetail || activeSectionId === null || componentList.length === 0}
+            />
 
           </>
         }

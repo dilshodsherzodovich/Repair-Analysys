@@ -3,34 +3,21 @@
 import { useTranslations, useLocale } from "next-intl";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useState } from "react";
-import DelayedReportFilters from "@/components/reports/delayed-report-filters";
 import { useDelayedLocomotives } from "@/api/hooks/use-reports";
 import type { DelayedLocomotivesResponse, DelayedLocomotive } from "@/api/types/reports";
 import PageLoading from "@/components/page-loading";
-import { FileDown, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { generateDelayedReportPDF } from "@/utils/delayed-report-pdf-export";
 import type { DelayedReportPDFData } from "@/utils/delayed-report-pdf-export";
 import { generateDelayedReportExcel } from "@/utils/delayed-report-excel-export";
 import { useOrganization } from "@/api/hooks/use-organizations";
-import {
-  delayedTrainTypeCount,
-  delayedTrainTypeName,
-} from "@/utils/delayed-report-train-types";
+import { delayedTrainTypeCount, delayedTrainTypeName } from "@/utils/delayed-report-train-types";
 import { format } from "date-fns";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "@/components/reports/report-organization-select";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
-import { Button } from "@/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar } from "@/ui/filter-bar";
 
 const SUPERVISOR_ROLES = ["admin", "dispatcher", "operator", "rb_admin"];
 
@@ -168,42 +155,18 @@ export default function DelayedReportPage() {
               <Loader2 className="inline w-3 h-3 ml-1.5 animate-spin text-foreground-subtle align-[-1px]" />
             )}
           </>}
-        actions={<>
-            <Button variant="success"
-              onClick={handleExportExcel}
-              disabled={isExportingExcel}
-            >
-              {isExportingExcel ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileDown className="w-4 h-4" />
-              )}
-              {isExportingExcel ? t("generatingExcel") : t("exportExcel")}
-            </Button>
-            <Button
-              onClick={handleExportPDF}
-              disabled={isExporting}
-            >
-              {isExporting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileDown className="w-4 h-4" />
-              )}
-              {isExporting ? t("generatingPDF") : t("exportPDF")}
-            </Button>
-          </>}
-        filters={<>
-            <DelayedReportFilters
-              onRefresh={() => refetch()}
-              leading={
-                <ReportOrganizationSelect
-                  label
-                  labelClassName="text-sm font-normal normal-case tracking-normal text-foreground pl-0"
-                  className="gap-2"
-                />
-              }
-            />
-          </>}
+        actions={
+          <ExportActions
+            onExcel={handleExportExcel}
+            onPdf={handleExportPDF}
+            busy={isExportingExcel ? "excel" : isExporting ? "pdf" : null}
+          />
+        }
+        filters={
+          <FilterBar>
+            <ReportOrganizationSelect />
+          </FilterBar>
+        }
       />
 
       {/* ─── Summary: the total leads, the breakdown follows ─── */}
