@@ -25,12 +25,12 @@ const statusFromRemaining = (remaining: number, norm: number): Status => {
 
 const statusColors: Record<Status, { bar: string; text: string; badge: string }> = {
   ok: {
-    bar: "bg-emerald-500",
-    text: "text-emerald-600",
-    badge: "bg-emerald-500",
+    bar: "bg-success",
+    text: "text-success",
+    badge: "bg-success",
   },
-  warning: { bar: "bg-amber-500", text: "text-amber-600", badge: "bg-amber-500" },
-  critical: { bar: "bg-red-500", text: "text-red-600", badge: "bg-red-500" },
+  warning: { bar: "bg-warning", text: "text-warning", badge: "bg-warning" },
+  critical: { bar: "bg-destructive", text: "text-destructive", badge: "bg-destructive" },
 };
 
 /** One metric (hours or km) progress line inside an inspection card. */
@@ -63,7 +63,7 @@ function Meter({
           <Icon className="h-3.5 w-3.5" />
           {label}
         </span>
-        <span className="font-medium text-[#0F172B]">
+        <span className="font-medium text-foreground">
           {fmtNumber(value)} / {fmtNumber(norm)} {unit}
         </span>
       </div>
@@ -102,9 +102,9 @@ function IntervalPill({
   const ratio = norm > 0 ? actual / norm : 0;
   const tone = ratio <= 1 ? "ok" : ratio <= 1.15 ? "warning" : "critical";
   const styles: Record<string, string> = {
-    ok: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    warning: "bg-amber-50 text-amber-700 ring-amber-200",
-    critical: "bg-red-50 text-red-700 ring-red-200",
+    ok: "bg-success-subtle text-success ring-success/30",
+    warning: "bg-warning-subtle text-warning ring-warning/30",
+    critical: "bg-destructive-subtle text-destructive ring-destructive/30",
   };
   return (
     <div
@@ -138,7 +138,7 @@ function IntervalCard({
 
   return (
     <div className="rounded-xl border bg-card p-3">
-      <h3 className="truncate text-center text-sm font-semibold text-[#0F172B]">
+      <h3 className="truncate text-center text-sm font-semibold text-foreground">
         {detail.inspection_type}
       </h3>
       <div className="mt-2.5 space-y-1.5">
@@ -195,7 +195,7 @@ function InspectionCard({ inspection }: { inspection: Txk13Inspection }) {
     <div className="rounded-xl border bg-card p-4 space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-[#0F172B]">
+          <h3 className="text-sm font-semibold text-foreground">
             {inspection.type}
           </h3>
           <p className="text-xs text-muted-foreground">
@@ -205,7 +205,7 @@ function InspectionCard({ inspection }: { inspection: Txk13Inspection }) {
         {applicable.length > 0 && (
           <Badge
             className={cn(
-              "border-transparent text-white",
+              "border-transparent text-primary-foreground",
               statusColors[worst].badge
             )}
           >

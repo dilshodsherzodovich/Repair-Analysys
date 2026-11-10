@@ -1,17 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent, useRef } from "react";
-import { Card } from "@/ui/card";
-import { Modal } from "@/ui/modal";
-import { Label } from "@/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import { EnhancedSelect } from "@/ui/enhanced-select";
+import { Modal, ModalFooter } from "@/ui/modal";
+import { SearchableSelect } from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
 import { DatePicker } from "@/ui/date-picker";
@@ -33,6 +25,7 @@ import type { UserData } from "@/api/types/auth";
 import type { Organization } from "@/api/types/organizations";
 import { useTranslations } from "next-intl";
 
+import { Field, FieldGrid } from "@/ui/field";
 interface DelayModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -131,8 +124,7 @@ function OrganizationSelectField({
   const t = useTranslations("DelayModal");
 
   return (
-    <div>
-      <Label htmlFor="responsible_org">{t("fields.responsible_org")}</Label>
+    <Field label={t("fields.responsible_org")} htmlFor="responsible_org">
       <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
         <SelectTrigger id="responsible_org">
           <SelectValue placeholder={t("fields.responsible_org_placeholder")} />
@@ -155,7 +147,7 @@ function OrganizationSelectField({
           )}
         </SelectContent>
       </Select>
-    </div>
+    </Field>
   );
 }
 
@@ -351,16 +343,14 @@ export function DelayModal({
       onClose={handleClose}
       title={modalTexts.title}
       size="lg"
-      ariaDescribedBy="delay-modal"
     >
-      <Card className="border-none p-0 mt-4">
-        <form
+      <form
           key={formKey}
           ref={formRef}
           onSubmit={handleSubmit}
           className="space-y-4"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FieldGrid columns={2}>
             <FormField
               id="train_number"
               name="train_number"
@@ -370,8 +360,7 @@ export function DelayModal({
               required
             />
 
-            <div>
-              <Label htmlFor="train_type">{t("fields.train_type")}</Label>
+            <Field label={t("fields.train_type")} htmlFor="train_type">
               <Select
                 name="train_type"
                 defaultValue={formDefaults.train_type}
@@ -390,10 +379,9 @@ export function DelayModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="delay_type">{t("fields.delay_type")}</Label>
+            <Field label={t("fields.delay_type")} htmlFor="delay_type">
               <Select
                 name="delay_type"
                 defaultValue={formDefaults.delay_type}
@@ -412,7 +400,7 @@ export function DelayModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
             <FormField
               id="station"
@@ -432,9 +420,8 @@ export function DelayModal({
               placeholder={t("fields.mashinist_placeholder")}
             />
 
-            <div>
-              <Label htmlFor="locomotiv">{t("fields.locomotiv")}</Label>
-              <EnhancedSelect
+            <Field label={t("fields.locomotiv")} htmlFor="locomotiv">
+              <SearchableSelect
                 options={locomotiveOptions}
                 value={locomotivValue}
                 onValueChange={setLocomotivValue}
@@ -443,7 +430,7 @@ export function DelayModal({
                 clearable
                 loading={isLoadingLocomotives}
               />
-            </div>
+            </Field>
 
             <FormField
               id="delay_time"
@@ -456,8 +443,7 @@ export function DelayModal({
               required
             />
 
-            <div>
-              <Label htmlFor="group_reason">{t("fields.group_reason")}</Label>
+            <Field label={t("fields.group_reason")} htmlFor="group_reason">
               <Select
                 name="group_reason"
                 defaultValue={formDefaults.group_reason}
@@ -476,7 +462,7 @@ export function DelayModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
             {!orgIsServerAssigned && (
               <OrganizationSelectField
@@ -504,7 +490,7 @@ export function DelayModal({
               onValueChange={setSelectedDate}
               placeholder="DD/MM/YYYY"
             />
-          </div>
+          </FieldGrid>
 
           <FormField
             id="reason"
@@ -516,7 +502,7 @@ export function DelayModal({
             placeholder={t("fields.reason_placeholder")}
           />
 
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -528,9 +514,8 @@ export function DelayModal({
             <Button type="submit" disabled={isPending}>
               {isPending ? modalTexts.pending : modalTexts.submit}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

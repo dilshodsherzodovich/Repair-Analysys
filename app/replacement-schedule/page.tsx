@@ -22,7 +22,11 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
+import { formatNumber as formatNumberShared } from "@/lib/format";
 export default function ReplacementSchedulePage() {
   const t = useTranslations("ReplacementSchedulePage");
   const searchParams = useSearchParams();
@@ -89,8 +93,7 @@ export default function ReplacementSchedulePage() {
 
   // Format number helper
   const formatNumber = (value: number | null | undefined): string => {
-    if (value === null || value === undefined) return "—";
-    return new Intl.NumberFormat("uz-UZ").format(value);
+    return formatNumberShared(value, { digits: 3 });
   };
 
   // Handle export
@@ -255,26 +258,29 @@ export default function ReplacementSchedulePage() {
   );
 
   return (
-    <>
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
+        filters={
+          <PageFilters
+            filters={[]}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
+        actions={
+          <>
+            <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />
+            <AddButton onClick={handleCreate} permission="create_locomotive_replacement_oil" />
+          </>
+        }
       />
 
-      <div className="mt-4">
-        <PageFilters
-          filters={[]}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-          addButtonText={t("add_button")}
-          addButtonPermittion="create_locomotive_replacement_oil"
-          onAdd={handleCreate}
-          onExport={handleExport}
-          exportLoading={isExporting}
-        />
-      </div>
+      <>
+      </>
 
-      <div className="mt-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -293,7 +299,7 @@ export default function ReplacementSchedulePage() {
           editPermission="edit_locomotive_replacement_oil"
           deletePermission="delete_locomotive_replacement_oil"
         />
-      </div>
+      </>
 
       <ReplacementModal
         isOpen={isModalOpen}
@@ -306,7 +312,7 @@ export default function ReplacementSchedulePage() {
         replacement={selectedReplacement}
         mode={modalMode}
       />
-    </>
+    </Page>
   );
 }
 

@@ -1,34 +1,22 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 import { Input } from "@/ui/input";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
-import {
-  Plus,
-  Check,
-  Trash2,
-  X,
-  Lock,
-  Loader2,
-  Pencil,
-  Train,
-  MapPin,
-} from "lucide-react";
+import { Plus, Check, Trash2, X, Lock, Loader2, Pencil, Train, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import {
-  useCulprits,
-  useCreateCulprit,
-  useUpdateCulprit,
-  useDeleteCulprit,
-} from "@/api/hooks/use-culprits";
+import { useCulprits, useCreateCulprit, useUpdateCulprit, useDeleteCulprit } from "@/api/hooks/use-culprits";
 import type { Culprit } from "@/api/types/culprits";
 import type { DelayEntry } from "@/api/types/delays";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { LoadingState, EmptyState, TableStateRow } from "@/ui/empty-state";
+import { formatMoney } from "@/lib/format";
 interface CulpritsListModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -55,13 +43,7 @@ function parseThousands(formatted: string): number {
 }
 
 function formatAmount(amount: string | number): string {
-  const value = typeof amount === "string" ? Number(amount) : amount;
-  if (!value) return "0";
-  return new Intl.NumberFormat("uz-UZ", {
-    style: "currency",
-    currency: "UZS",
-    minimumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(amount);
 }
 
 export function CulpritsListModal({
@@ -278,9 +260,9 @@ export function CulpritsListModal({
       return <Badge variant="success">{t("status.recovered")}</Badge>;
     }
     if (culprit.payroll_confirmed) {
-      return <Badge variant="info">{t("status.payroll_confirmed")}</Badge>;
+      return <Badge variant="primary">{t("status.payroll_confirmed")}</Badge>;
     }
-    return <Badge variant="outline">{t("status.pending")}</Badge>;
+    return <Badge variant="neutral">{t("status.pending")}</Badge>;
   };
 
   const colSpan = canManage ? 4 : 3;
@@ -292,7 +274,6 @@ export function CulpritsListModal({
         onClose={onClose}
         title={t("title")}
         size="lg"
-        ariaDescribedBy="culprits-list-modal"
       >
         <div className="mt-2 space-y-4">
           {delay && (
@@ -309,7 +290,7 @@ export function CulpritsListModal({
                   </span>
                 </div>
                 <div className="text-right">
-                  <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <div className="text-2xs uppercase tracking-wide text-muted-foreground">
                     {t("zarar")}
                   </div>
                   <div className="text-base font-semibold tabular-nums">
@@ -324,7 +305,7 @@ export function CulpritsListModal({
                     className={cn(
                       "h-full rounded-full transition-all",
                       over
-                        ? "bg-red-500"
+                        ? "bg-destructive"
                         : percent >= 100
                           ? "bg-success"
                           : "bg-primary"
@@ -342,7 +323,7 @@ export function CulpritsListModal({
                   </span>
                   <span
                     className={
-                      over ? "font-medium text-red-600" : "text-muted-foreground"
+                      over ? "font-medium text-destructive" : "text-muted-foreground"
                     }
                   >
                     {over
@@ -363,154 +344,233 @@ export function CulpritsListModal({
             </div>
           )}
 
-          <div className="overflow-hidden rounded-xl border">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/40 text-muted-foreground">
-                <tr>
-                  <th className="px-3 py-2 text-left font-medium">
-                    {t("columns.full_name")}
-                  </th>
-                  <th className="px-3 py-2 text-left font-medium">
-                    {t("columns.amount")}
-                  </th>
-                  <th className="px-3 py-2 text-left font-medium">
-                    {t("columns.status")}
-                  </th>
-                  {canManage && (
-                    <th className="px-3 py-2 text-right font-medium">
-                      {t("columns.actions")}
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={colSpan} className="px-3 py-6">
-                      <div className="flex justify-center">
-                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                      </div>
-                    </td>
-                  </tr>
-                ) : culprits.length === 0 && drafts.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={colSpan}
-                      className="px-3 py-6 text-center text-muted-foreground"
-                    >
-                      {t("empty")}
-                    </td>
-                  </tr>
-                ) : null}
+          <Table frame>
+            <TableHeader className="text-muted-foreground">
+              <TableRow>
+                <TableHead className="text-left">
+                  {t("columns.full_name")}
+                </TableHead>
+                <TableHead className="text-left">
+                  {t("columns.amount")}
+                </TableHead>
+                <TableHead className="text-left">
+                  {t("columns.status")}
+                </TableHead>
+                {canManage && (
+                  <TableHead className="text-right">
+                    {t("columns.actions")}
+                  </TableHead>
+                )}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableStateRow colSpan={colSpan}><LoadingState /></TableStateRow>
+              ) : culprits.length === 0 && drafts.length === 0 ? (
+                <TableStateRow colSpan={colSpan}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
+              ) : null}
 
-                {/* Existing culprits */}
-                {culprits.map((culprit) => {
-                  const locked = culprit.payroll_confirmed;
-                  const values = editValues[culprit.id] ?? {
-                    full_name: culprit.full_name ?? "",
-                    amount: formatThousands(String(culprit.amount ?? "")),
-                  };
-                  const saving = savingId === culprit.id;
+              {/* Existing culprits */}
+              {culprits.map((culprit) => {
+                const locked = culprit.payroll_confirmed;
+                const values = editValues[culprit.id] ?? {
+                  full_name: culprit.full_name ?? "",
+                  amount: formatThousands(String(culprit.amount ?? "")),
+                };
+                const saving = savingId === culprit.id;
 
-                  if (!canManage || locked) {
-                    return (
-                      <tr key={culprit.id} className="border-t hover:bg-muted/20">
-                        <td className="px-3 py-2">{culprit.full_name}</td>
-                        <td className="px-3 py-2">
-                          {formatAmount(culprit.amount)}
-                        </td>
-                        <td className="px-3 py-2">{statusBadge(culprit)}</td>
-                        {canManage && (
-                          <td className="px-3 py-2">
-                            <div className="flex items-center justify-end">
-                              <span
-                                className="inline-flex items-center gap-1 text-xs text-muted-foreground"
-                                title={t("locked_hint")}
-                              >
-                                <Lock className="h-3.5 w-3.5" />
-                              </span>
-                            </div>
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  }
-
-                  // Default: plain text row with Edit/Delete
-                  if (editingId !== culprit.id) {
-                    return (
-                      <tr key={culprit.id} className="border-t hover:bg-muted/20">
-                        <td className="px-3 py-2">{culprit.full_name}</td>
-                        <td className="px-3 py-2">
-                          {formatAmount(culprit.amount)}
-                        </td>
-                        <td className="px-3 py-2">{statusBadge(culprit)}</td>
-                        <td className="px-3 py-2">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 w-7 p-0"
-                              onClick={() => startEdit(culprit)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 w-7 p-0 border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10"
-                              onClick={() => setDeleting(culprit)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  }
-
-                  // Edit mode: inline inputs + Save/Cancel
+                if (!canManage || locked) {
                   return (
-                    <tr key={culprit.id} className="border-t hover:bg-muted/20">
-                      <td className="px-3 py-2">
-                        <Input
-                          className="mb-0 h-8"
-                          value={values.full_name}
-                          onChange={(e) =>
-                            setEditValues((prev) => ({
-                              ...prev,
-                              [culprit.id]: {
-                                ...values,
-                                full_name: e.target.value,
-                              },
-                            }))
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-2">
-                        <Input
-                          className="mb-0 h-8"
-                          value={values.amount}
-                          onChange={(e) =>
-                            setEditValues((prev) => ({
-                              ...prev,
-                              [culprit.id]: {
-                                ...values,
-                                amount: formatThousands(e.target.value),
-                              },
-                            }))
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-2">{statusBadge(culprit)}</td>
-                      <td className="px-3 py-2">
+                    <TableRow key={culprit.id}>
+                      <TableCell>{culprit.full_name}</TableCell>
+                      <TableCell>
+                        {formatAmount(culprit.amount)}
+                      </TableCell>
+                      <TableCell>{statusBadge(culprit)}</TableCell>
+                      {canManage && (
+                        <TableCell>
+                          <div className="flex items-center justify-end">
+                            <span
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground"
+                              title={t("locked_hint")}
+                            >
+                              <Lock className="h-3.5 w-3.5" />
+                            </span>
+                          </div>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                }
+
+                // Default: plain text row with Edit/Delete
+                if (editingId !== culprit.id) {
+                  return (
+                    <TableRow key={culprit.id}>
+                      <TableCell>{culprit.full_name}</TableCell>
+                      <TableCell>
+                        {formatAmount(culprit.amount)}
+                      </TableCell>
+                      <TableCell>{statusBadge(culprit)}</TableCell>
+                      <TableCell>
                         <div className="flex items-center justify-end gap-2">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-7 w-7 p-0 border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success"
+                            className="h-7 w-7 p-0"
+                            onClick={() => startEdit(culprit)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 w-7 p-0 border-destructive text-destructive hover:text-destructive hover:border-destructive hover:bg-destructive/10"
+                            onClick={() => setDeleting(culprit)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+
+                // Edit mode: inline inputs + Save/Cancel
+                return (
+                  <TableRow key={culprit.id}>
+                    <TableCell>
+                      <Input
+                        className="mb-0 h-8"
+                        value={values.full_name}
+                        onChange={(e) =>
+                          setEditValues((prev) => ({
+                            ...prev,
+                            [culprit.id]: {
+                              ...values,
+                              full_name: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        className="mb-0 h-8"
+                        value={values.amount}
+                        onChange={(e) =>
+                          setEditValues((prev) => ({
+                            ...prev,
+                            [culprit.id]: {
+                              ...values,
+                              amount: formatThousands(e.target.value),
+                            },
+                          }))
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>{statusBadge(culprit)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 w-7 p-0 border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success"
+                          disabled={saving}
+                          onClick={() => saveExisting(culprit)}
+                        >
+                          {saving ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Check className="h-4 w-4" />
+                          )}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 w-7 p-0"
+                          disabled={saving}
+                          onClick={() => cancelEdit(culprit)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+
+              {/* Draft rows (new culprits being typed inline) */}
+              {canManage &&
+                drafts.map((row) => {
+                  const saving = savingDraftId === row.tempId;
+                  const max = maxForDraft(row.tempId);
+                  const maxStr = max > 0 ? formatThousands(String(max)) : "";
+                  return (
+                    <TableRow key={`draft-${row.tempId}`} className="bg-primary/5">
+                      <TableCell>
+                        <Input
+                          className="mb-0 h-8"
+                          autoFocus
+                          placeholder={t("form.full_name_placeholder")}
+                          value={row.full_name}
+                          onChange={(e) =>
+                            updateDraft(row.tempId, {
+                              full_name: e.target.value,
+                            })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className="relative">
+                          <Input
+                            className="mb-0 h-8 pr-12"
+                            placeholder={
+                              maxStr || t("form.amount_placeholder")
+                            }
+                            title={
+                              max > 0
+                                ? t("max_hint", { amount: maxStr })
+                                : undefined
+                            }
+                            value={row.amount}
+                            onChange={(e) => {
+                              let next = formatThousands(e.target.value);
+                              if (max > 0 && parseThousands(next) > max) {
+                                next = maxStr;
+                              }
+                              updateDraft(row.tempId, { amount: next });
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                submitDraft(row);
+                                return;
+                              }
+                              if (e.key === "Tab" && !row.amount && max > 0) {
+                                e.preventDefault();
+                                updateDraft(row.tempId, { amount: maxStr });
+                              }
+                            }}
+                          />
+                          {!row.amount && max > 0 && (
+                            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border bg-muted px-1 text-2xs font-medium text-muted-foreground">
+                              Tab
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="neutral">{t("status.pending")}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-xs border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success"
                             disabled={saving}
-                            onClick={() => saveExisting(culprit)}
+                            onClick={() => submitDraft(row)}
                           >
                             {saving ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -523,133 +583,38 @@ export function CulpritsListModal({
                             variant="outline"
                             className="h-7 w-7 p-0"
                             disabled={saving}
-                            onClick={() => cancelEdit(culprit)}
+                            onClick={() => removeDraft(row.tempId)}
                           >
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
 
-                {/* Draft rows (new culprits being typed inline) */}
-                {canManage &&
-                  drafts.map((row) => {
-                    const saving = savingDraftId === row.tempId;
-                    const max = maxForDraft(row.tempId);
-                    const maxStr = max > 0 ? formatThousands(String(max)) : "";
-                    return (
-                      <tr key={`draft-${row.tempId}`} className="border-t bg-primary/5">
-                        <td className="px-3 py-2">
-                          <Input
-                            className="mb-0 h-8"
-                            autoFocus
-                            placeholder={t("form.full_name_placeholder")}
-                            value={row.full_name}
-                            onChange={(e) =>
-                              updateDraft(row.tempId, {
-                                full_name: e.target.value,
-                              })
-                            }
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <div className="relative">
-                            <Input
-                              className="mb-0 h-8 pr-12"
-                              placeholder={
-                                maxStr || t("form.amount_placeholder")
-                              }
-                              title={
-                                max > 0
-                                  ? t("max_hint", { amount: maxStr })
-                                  : undefined
-                              }
-                              value={row.amount}
-                              onChange={(e) => {
-                                let next = formatThousands(e.target.value);
-                                if (max > 0 && parseThousands(next) > max) {
-                                  next = maxStr;
-                                }
-                                updateDraft(row.tempId, { amount: next });
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
-                                  submitDraft(row);
-                                  return;
-                                }
-                                if (e.key === "Tab" && !row.amount && max > 0) {
-                                  e.preventDefault();
-                                  updateDraft(row.tempId, { amount: maxStr });
-                                }
-                              }}
-                            />
-                            {!row.amount && max > 0 && (
-                              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border bg-muted px-1 text-[10px] font-medium text-muted-foreground">
-                                Tab
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2">
-                          <Badge variant="outline">{t("status.pending")}</Badge>
-                        </td>
-                        <td className="px-3 py-2">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 px-2 text-xs border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success"
-                              disabled={saving}
-                              onClick={() => submitDraft(row)}
-                            >
-                              {saving ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Check className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 w-7 p-0"
-                              disabled={saving}
-                              onClick={() => removeDraft(row.tempId)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+              {/* Persistent "+ add" row, always last */}
+              {canAdd && (
+                <TableRow>
+                  <TableCell colSpan={colSpan}>
+                    <Button variant="link" className="h-auto p-0"
+                      type="button"
+                      onClick={addDraft}
+                    >
+                      <Plus className="h-4 w-4" />
+                      {t("add_button")}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
 
-                {/* Persistent "+ add" row, always last */}
-                {canAdd && (
-                  <tr className="border-t">
-                    <td colSpan={colSpan} className="px-3 py-2">
-                      <button
-                        type="button"
-                        onClick={addDraft}
-                        className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                      >
-                        <Plus className="h-4 w-4" />
-                        {t("add_button")}
-                      </button>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex justify-end pt-2">
+          <ModalFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("close")}
             </Button>
-          </div>
+          </ModalFooter>
         </div>
       </Modal>
 

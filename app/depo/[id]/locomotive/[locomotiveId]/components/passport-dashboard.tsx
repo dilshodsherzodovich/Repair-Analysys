@@ -35,6 +35,7 @@ import type {
   Txk13Inspection,
 } from "@/api/types/txk13-report";
 
+import { Skeleton } from "@/ui/skeleton";
 export type PassportView =
   "inspections" | "oil" | "location" | "crew" | "components" | "journals";
 
@@ -45,28 +46,28 @@ const tones: Record<
   { stroke: string; text: string; dot: string; chip: string }
 > = {
   ok: {
-    stroke: "stroke-emerald-500",
-    text: "text-emerald-600",
-    dot: "bg-emerald-500",
-    chip: "bg-emerald-50 text-emerald-600",
+    stroke: "stroke-success",
+    text: "text-success",
+    dot: "bg-success",
+    chip: "bg-success-subtle text-success",
   },
   warn: {
-    stroke: "stroke-amber-500",
-    text: "text-amber-600",
-    dot: "bg-amber-500",
-    chip: "bg-amber-50 text-amber-600",
+    stroke: "stroke-warning",
+    text: "text-warning",
+    dot: "bg-warning",
+    chip: "bg-warning-subtle text-warning",
   },
   crit: {
-    stroke: "stroke-red-500",
-    text: "text-red-600",
-    dot: "bg-red-500",
-    chip: "bg-red-50 text-red-600",
+    stroke: "stroke-destructive",
+    text: "text-destructive",
+    dot: "bg-destructive",
+    chip: "bg-destructive-subtle text-destructive",
   },
   muted: {
-    stroke: "stroke-slate-300",
+    stroke: "stroke-border-strong",
     text: "text-muted-foreground",
-    dot: "bg-slate-300",
-    chip: "bg-slate-100 text-muted-foreground",
+    dot: "bg-border-strong",
+    chip: "bg-muted text-muted-foreground",
   },
 };
 
@@ -103,27 +104,27 @@ function Tile({
         }
       }}
       className={cn(
-        "group flex cursor-pointer flex-col gap-3 rounded-2xl border bg-card p-4 transition-all",
-        "hover:-translate-y-0.5 hover:border-[#2354BF]/45 hover:shadow-[0_18px_40px_-26px_rgba(35,84,191,0.55)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2354BF]",
+        "group flex cursor-pointer flex-col gap-3 rounded-xl border bg-card p-4 transition-all",
+        "hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-md",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         className,
       )}
     >
       <div className="flex items-center gap-2.5">
-        <div className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-[9px] bg-[#2354BF]/10 text-[#2354BF]">
+        <div className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
           <Icon className="h-[17px] w-[17px]" />
         </div>
         <div className="min-w-0">
-          <div className="text-[13px] font-semibold leading-tight text-[#0F172B]">
+          <div className="text-sm font-semibold leading-tight text-foreground">
             {title}
           </div>
           {sub && (
-            <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+            <div className="mt-0.5 truncate text-2xs text-muted-foreground">
               {sub}
             </div>
           )}
         </div>
-        <ChevronRight className="ml-auto h-[18px] w-[18px] shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-[#2354BF]" />
+        <ChevronRight className="ml-auto h-[18px] w-[18px] shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
       </div>
       {children}
     </article>
@@ -132,11 +133,11 @@ function Tile({
 
 function Kv({ k, v, tone }: { k: ReactNode; v: ReactNode; tone?: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-t border-dashed border-border/70 py-1.5 text-[12.5px] first:border-t-0">
+    <div className="flex items-center justify-between gap-3 border-t border-dashed border-border/70 py-1.5 text-xs first:border-t-0">
       <span className="min-w-0 truncate text-muted-foreground">{k}</span>
       <span
         className={cn(
-          "shrink-0 font-semibold tabular-nums text-[#0F172B]",
+          "shrink-0 font-semibold tabular-nums text-foreground",
           tone,
         )}
       >
@@ -150,7 +151,7 @@ function TileSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-5 animate-pulse rounded bg-muted/60" />
+        <Skeleton key={i} className="h-5" />
       ))}
     </div>
   );
@@ -181,7 +182,7 @@ function CheckRow({
       >
         <Icon className="h-4 w-4" />
       </div>
-      <span className="flex-1 text-[13px] font-medium text-[#26304a]">
+      <span className="flex-1 text-sm font-medium text-foreground">
         {name}
       </span>
       <span
@@ -286,10 +287,10 @@ function ReadinessTile({
           >
             <OverallIcon className="h-8 w-8 shrink-0" />
             <div className="min-w-0">
-              <div className="text-[15px] font-bold leading-tight">
+              <div className="text-base font-bold leading-tight">
                 {verdict}
               </div>
-              <div className="text-[11px] font-medium opacity-80">
+              <div className="text-2xs font-medium opacity-80">
                 {summary}
               </div>
             </div>
@@ -459,12 +460,12 @@ function NextRepairTile({
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <div
-                className="truncate text-[30px] font-extrabold leading-none tracking-tight text-[#0F172B]"
+                className="truncate text-3xl font-bold leading-none tracking-tight text-foreground"
                 title={urgent.insp.type}
               >
                 {urgent.insp.type}
               </div>
-              <div className="mt-1.5 text-[11px] text-muted-foreground">
+              <div className="mt-1.5 text-2xs text-muted-foreground">
                 {urgent.byHours
                   ? t("nextRepair.byHours")
                   : t("nextRepair.byMileage")}
@@ -486,21 +487,21 @@ function NextRepairTile({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-[12px]">
+            <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">
                 {t("nextRepair.sinceRepair")}
               </span>
-              <span className="font-semibold tabular-nums text-[#0F172B]">
+              <span className="font-semibold tabular-nums text-foreground">
                 {fmtNumber(urgent.value)} / {fmtNumber(urgent.norm)} {unit}
               </span>
             </div>
-            <div className="h-[7px] overflow-hidden rounded-full bg-[#0F172B]/[0.07]">
+            <div className="h-[7px] overflow-hidden rounded-full bg-foreground/[0.07]">
               <div
                 className={cn("h-full rounded-full", tones[tone].dot)}
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <div className="flex justify-between text-[11px]">
+            <div className="flex justify-between text-2xs">
               <span className={cn("font-semibold", tones[tone].text)}>
                 {urgent.remaining <= 0
                   ? t("nextRepair.overdue", {
@@ -546,7 +547,7 @@ function GpsTile({
       onOpen={onOpen}
       className="lg:col-span-4"
     >
-      <div className="relative h-[184px] overflow-hidden rounded-xl border bg-[#fbfcfe]">
+      <div className="relative h-[184px] overflow-hidden rounded-xl border bg-surface-muted">
         {imei && !isLoading && location ? (
           <>
             <iframe
@@ -571,8 +572,8 @@ function GpsTile({
         <div className="flex flex-wrap gap-2">
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold",
-              moving ? tones.ok.chip : "bg-slate-100 text-muted-foreground",
+              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-2xs font-bold",
+              moving ? tones.ok.chip : "bg-muted text-muted-foreground",
             )}
           >
             <Navigation className="h-3 w-3" />
@@ -580,10 +581,10 @@ function GpsTile({
           </span>
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold",
+              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-2xs font-bold",
               engineOn
-                ? "bg-[#2354BF]/12 text-[#2354BF]"
-                : "bg-slate-100 text-muted-foreground",
+                ? "bg-primary/12 text-primary"
+                : "bg-muted text-muted-foreground",
             )}
           >
             <Power className="h-3 w-3" />
@@ -668,7 +669,7 @@ function OilTile({
                   key={e.analysis}
                   title={tType(e.analysis)}
                   className={cn(
-                    "grid aspect-square place-items-center rounded-lg font-mono text-[9px] font-bold",
+                    "grid aspect-square place-items-center rounded-lg font-mono text-2xs font-bold",
                     tones[tone].chip,
                   )}
                 >
@@ -683,7 +684,7 @@ function OilTile({
               v={fmtDate(diesel.status.exchange_date)}
               tone={
                 diesel.status.validation !== "VALID"
-                  ? "text-red-600"
+                  ? "text-destructive"
                   : undefined
               }
             />
@@ -706,7 +707,7 @@ const initials = (name?: string) =>
     .map((w) => w[0]?.toUpperCase())
     .join("") || "?";
 
-const AV_COLORS = ["#2f6fed", "#0ea968", "#8b5cf6", "#e0932a"];
+const AV_COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"];
 
 function CrewTile({
   locomotiveNumber,
@@ -749,7 +750,7 @@ function CrewTile({
             {shown.map((d, i) => (
               <div
                 key={d.emm_id ?? i}
-                className="-ml-2 grid h-9 w-9 place-items-center rounded-full border-2 border-card text-[13px] font-bold text-white first:ml-0"
+                className="-ml-2 grid h-9 w-9 place-items-center rounded-full border-2 border-card text-sm font-bold text-primary-foreground first:ml-0"
                 style={{ background: AV_COLORS[i % AV_COLORS.length] }}
                 title={d.mashinist_fio}
               >
@@ -757,7 +758,7 @@ function CrewTile({
               </div>
             ))}
             {extra > 0 && (
-              <div className="-ml-2 grid h-9 w-9 place-items-center rounded-full border-2 border-card bg-slate-400 text-[11px] font-bold text-white">
+              <div className="-ml-2 grid h-9 w-9 place-items-center rounded-full border-2 border-card bg-foreground-subtle text-2xs font-bold text-primary-foreground">
                 +{extra}
               </div>
             )}

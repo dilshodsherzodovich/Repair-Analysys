@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { LayoutGrid } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
-import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import PageFilters from "@/ui/filters";
 import { Badge } from "@/ui/badge";
 import { getPageCount } from "@/lib/utils";
@@ -22,6 +21,8 @@ import { canAccessSection } from "@/lib/permissions";
 import { FiltersQuery } from "@/ui/filters";
 import { UserData } from "@/api/types/auth";
 import { authService } from "@/api/services/auth.service";
+import { SegmentedTabs } from "@/ui/segmented-tabs";
+import { Page } from "@/ui/page";
 
 type TabValue = "in_progress" | "archive" | "cancelled";
 
@@ -360,14 +361,14 @@ export default function InspectionsPage() {
         accessor: (row) => {
           if (row.is_cancelled)
             return (
-              <Badge variant="destructive_outline">{t("status_cancelled")}</Badge>
+              <Badge variant="danger">{t("status_cancelled")}</Badge>
             );
           if (row.is_closed)
             return (
-              <Badge variant="success_outline">{t("status_archive")}</Badge>
+              <Badge variant="success">{t("status_archive")}</Badge>
             );
           return (
-            <Badge variant="warning_outline">{t("status_in_progress")}</Badge>
+            <Badge variant="warning">{t("status_in_progress")}</Badge>
           );
         },
         className: "w-[140px]",
@@ -377,49 +378,32 @@ export default function InspectionsPage() {
   );
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
-
-      />
-
-      <div className="px-6 space-y-4">
-        <div className="mb-6 bg-white border border-[#CAD5E2] rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
+        filters={
           <PageFilters
             filters={pageFilters}
             hasSearch={isArchive}
             hasDateRangePicker={isArchive}
             searchPlaceholder={t("search_placeholder")}
             dateRangePickerLabel={t("filter_date_range")}
-            className="mb-0 flex-1 min-w-0"
           />
-          <Tabs value={tab} onValueChange={handleTabChange}>
-            <TabsList className="bg-white border border-gray-200 p-1 gap-2 rounded-md inline-flex">
-              <TabsTrigger
-                value="in_progress"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300 flex items-center gap-2"
-              >
-                <LayoutGrid className="h-4 w-4" />
-                {t("tab_in_progress")}
-              </TabsTrigger>
-              <TabsTrigger
-                value="archive"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
-              >
-                {t("tab_archive")}
-              </TabsTrigger>
-              <TabsTrigger
-                value="cancelled"
-                className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
-              >
-                {t("tab_cancelled")}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        }
+        actions={
+          <SegmentedTabs
+            value={tab}
+            onValueChange={handleTabChange}
+            options={[
+              { value: "in_progress", label: t("tab_in_progress"), icon: <LayoutGrid /> },
+              { value: "archive", label: t("tab_archive") },
+              { value: "cancelled", label: t("tab_cancelled") },
+            ]}
+          />
+        }
+      />
 
-        </div>
-
-
+      <>
 
         {isInProgress && (
           <InspectionsGroupedTable
@@ -465,7 +449,7 @@ export default function InspectionsPage() {
             size="md"
           />
         )}
-      </div>
-    </div>
+      </>
+    </Page>
   );
 }

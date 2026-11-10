@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AnnualPlanReportOrganization,
@@ -10,6 +9,16 @@ import {
   cellCount,
 } from "@/api/types/annual-inspection-plan";
 import { GRID_COLUMNS, MONTHS_SHORT, QUARTER_LABELS, accentFor } from "./plan-grid-shared";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import { CardButton } from "@/ui/card-button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 const mVal = (row: AnnualPlanReportRow | undefined, m: number) => cellCount(row?.months[String(m)]);
 const qVal = (row: AnnualPlanReportRow | undefined, q: number) => cellCount(row?.quarters[String(q)]);
@@ -19,10 +28,10 @@ const yVal = (row: AnnualPlanReportRow | undefined) => cellCount(row?.yearly_cou
 function status(plan: number, fact: number) {
   if (plan === 0 && fact === 0) return { bg: "", text: "text-muted-foreground/25", empty: true };
   if (plan === 0 && fact > 0)
-    return { bg: "bg-blue-50 dark:bg-blue-950/40", text: "text-blue-700 dark:text-blue-300" }; // rejadan tashqari
-  if (fact >= plan) return { bg: "bg-emerald-50 dark:bg-emerald-950/40", text: "text-emerald-700 dark:text-emerald-300" }; // bajarildi
-  if (fact > 0) return { bg: "bg-amber-50 dark:bg-amber-950/40", text: "text-amber-700 dark:text-amber-300" }; // qisman
-  return { bg: "bg-rose-50 dark:bg-rose-950/40", text: "text-rose-700 dark:text-rose-300" }; // bajarilmadi
+    return { bg: "bg-primary-subtle", text: "text-primary-hover" }; // rejadan tashqari
+  if (fact >= plan) return { bg: "bg-success-subtle", text: "text-success" }; // bajarildi
+  if (fact > 0) return { bg: "bg-warning-subtle", text: "text-warning" }; // qisman
+  return { bg: "bg-category-rose/10", text: "text-category-rose" }; // bajarilmadi
 }
 
 function Cell({ plan, fact }: { plan: number; fact: number }) {
@@ -34,7 +43,7 @@ function Cell({ plan, fact }: { plan: number; fact: number }) {
       ) : (
         <>
           <span className={cn("font-bold tabular-nums", s.text)}>{fact}</span>
-          <span className="text-[9px] text-muted-foreground tabular-nums">/{plan}</span>
+          <span className="text-2xs text-muted-foreground tabular-nums">/{plan}</span>
         </>
       )}
     </div>
@@ -107,10 +116,10 @@ function buildTypes(
 }
 
 function pctColor(pct: number) {
-  if (pct >= 100) return "bg-emerald-500";
-  if (pct >= 50) return "bg-blue-500";
-  if (pct > 0) return "bg-amber-500";
-  return "bg-rose-400";
+  if (pct >= 100) return "bg-success";
+  if (pct >= 50) return "bg-primary";
+  if (pct > 0) return "bg-warning";
+  return "bg-category-rose/60";
 }
 
 /** Plan-vs-fact comparison for one organization. */
@@ -150,11 +159,11 @@ export function PlanCompareGrid({
       {/* Org header + legend */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
         <h3 className="text-sm font-semibold text-foreground">{org?.organization.name}</h3>
-        <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-400" /> Bajarildi</span>
-          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-amber-400" /> Qisman</span>
-          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-rose-400" /> Bajarilmadi</span>
-          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-blue-400" /> Rejadan tashqari</span>
+        <div className="flex items-center gap-3 text-2xs text-muted-foreground">
+          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-success" /> Bajarildi</span>
+          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-warning" /> Qisman</span>
+          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-category-rose/60" /> Bajarilmadi</span>
+          <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Rejadan tashqari</span>
           <span className="ml-1">
             Jami <span className="font-semibold tabular-nums text-foreground">{totalFact}</span>
             <span className="text-muted-foreground">/{totalPlan}</span>
@@ -169,15 +178,9 @@ export function PlanCompareGrid({
           const pct = t.planYearly > 0 ? Math.round((t.factYearly / t.planYearly) * 100) : t.factYearly > 0 ? 100 : 0;
           const selected = selectedId === t.id;
           return (
-            <button
+            <CardButton selected={selected} selectedClassName={cn("border-transparent", accent.ringColor, accent.soft)} className="px-3.5 py-3"
               key={t.id}
-              type="button"
-              aria-pressed={selected}
               onClick={() => setSelectedId(selected ? null : t.id)}
-              className={cn(
-                "text-left rounded-xl border bg-card shadow-sm px-3.5 py-3 transition-all",
-                selected ? cn("ring-2 ring-offset-1 ring-offset-background border-transparent", accent.ringColor, accent.soft) : "border-border hover:border-foreground/20 hover:shadow"
-              )}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
@@ -201,10 +204,10 @@ export function PlanCompareGrid({
                   const f = t.factQ[qi + 1] || 0;
                   const qpct = p > 0 ? f / p : f > 0 ? 1 : 0;
                   return (
-                    <div key={q} className="rounded-md bg-muted/50 dark:bg-muted/30 px-1 py-1 text-center">
-                      <div className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground">{q} kv</div>
+                    <div key={q} className="rounded-md bg-muted/50 px-1 py-1 text-center">
+                      <div className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">{q} kv</div>
                       <div className="text-xs font-semibold tabular-nums leading-tight">
-                        <span className={cn(qpct >= 1 ? "text-emerald-600 dark:text-emerald-400" : f > 0 ? "text-amber-600 dark:text-amber-400" : "text-foreground")}>
+                        <span className={cn(qpct >= 1 ? "text-success" : f > 0 ? "text-warning" : "text-foreground")}>
                           {f}
                         </span>
                         <span className="text-muted-foreground font-normal">/{p}</span>
@@ -213,7 +216,7 @@ export function PlanCompareGrid({
                   );
                 })}
               </div>
-            </button>
+            </CardButton>
           );
         })}
       </div>
@@ -225,63 +228,61 @@ export function PlanCompareGrid({
         const pct = t.planYearly > 0 ? Math.round((t.factYearly / t.planYearly) * 100) : t.factYearly > 0 ? 100 : 0;
         return (
           <div key={t.id} className={cn("rounded-xl border bg-card shadow-sm overflow-hidden", accent.ring)}>
-            <button
-              type="button"
+            <DisclosureTrigger
+              open={open}
+              chevronSide="end"
               onClick={() => toggleCard(t.id)}
-              className={cn("w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30", open && "border-b border-border")}
+              className={cn("px-4 py-3", open && "border-b border-border")}
             >
               <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-foreground leading-tight">{t.name}</div>
-                <div className="text-[11px] text-muted-foreground">Fakt / Reja</div>
+                <div className="text-2xs text-muted-foreground">Fakt / Reja</div>
               </div>
               <div className="ml-auto flex items-center gap-3">
                 <span className="text-sm font-bold tabular-nums text-foreground">
                   {t.factYearly}<span className="text-muted-foreground font-normal">/{t.planYearly}</span>
                 </span>
                 <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-md", accent.soft, accent.text)}>{pct}%</span>
-                <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")} />
               </div>
-            </button>
+            </DisclosureTrigger>
 
             {open && (
-              <div className="overflow-x-auto">
-                <table className="w-full table-fixed min-w-[1080px] border-collapse text-xs">
-                  <colgroup>
-                    <col style={{ width: 150 }} />
-                    {GRID_COLUMNS.map((c, i) => <col key={i} />)}
-                    <col style={{ width: 84 }} />
-                  </colgroup>
-                  <thead>
-                    <tr className="text-muted-foreground bg-muted/40">
-                      <th className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</th>
+              <Table bordered density="compact" className="table-fixed min-w-[1080px]">
+                <colgroup>
+                  <col style={{ width: 150 }} />
+                  {GRID_COLUMNS.map((c, i) => <col key={i} />)}
+                  <col style={{ width: 84 }} />
+                </colgroup>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-left">Rusum</TableHead>
+                    {GRID_COLUMNS.map((col) =>
+                      col.kind === "month" ? (
+                        <TableHead key={`m${col.month}`} className="text-center">{MONTHS_SHORT[col.month - 1]}</TableHead>
+                      ) : (
+                        <TableHead key={`q${col.quarter}`} className="text-center text-success">{QUARTER_LABELS[col.quarter - 1]}</TableHead>
+                      )
+                    )}
+                    <TableHead className="text-center">Σ</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {t.models.map((m) => (
+                    <TableRow key={m.id}>
+                      <TableCell className="text-left font-medium whitespace-nowrap">{m.name}</TableCell>
                       {GRID_COLUMNS.map((col) =>
                         col.kind === "month" ? (
-                          <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">{MONTHS_SHORT[col.month - 1]}</th>
+                          <TableCell key={`m${col.month}`}><Cell plan={mVal(m.plan, col.month)} fact={mVal(m.fact, col.month)} /></TableCell>
                         ) : (
-                          <th key={`q${col.quarter}`} className="border border-border px-1 py-2.5 text-center font-semibold text-emerald-700 dark:text-emerald-300">{QUARTER_LABELS[col.quarter - 1]}</th>
+                          <TableCell key={`q${col.quarter}`}><Cell plan={qVal(m.plan, col.quarter)} fact={qVal(m.fact, col.quarter)} /></TableCell>
                         )
                       )}
-                      <th className="border border-border px-2 py-2.5 text-center font-semibold text-foreground">Σ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {t.models.map((m) => (
-                      <tr key={m.id}>
-                        <td className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">{m.name}</td>
-                        {GRID_COLUMNS.map((col) =>
-                          col.kind === "month" ? (
-                            <td key={`m${col.month}`} className="border border-border p-0"><Cell plan={mVal(m.plan, col.month)} fact={mVal(m.fact, col.month)} /></td>
-                          ) : (
-                            <td key={`q${col.quarter}`} className="border border-border p-0"><Cell plan={qVal(m.plan, col.quarter)} fact={qVal(m.fact, col.quarter)} /></td>
-                          )
-                        )}
-                        <td className="border border-border p-0"><Cell plan={yVal(m.plan)} fact={yVal(m.fact)} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                      <TableCell><Cell plan={yVal(m.plan)} fact={yVal(m.fact)} /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </div>
         );

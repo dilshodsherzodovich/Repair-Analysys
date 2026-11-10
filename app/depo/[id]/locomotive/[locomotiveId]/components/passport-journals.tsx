@@ -4,16 +4,12 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
 import { ClipboardList, FileText, Zap } from "lucide-react";
-import {
-  SectionCard,
-  EmptyBlock,
-  LoadingBlock,
-  fmtDate,
-} from "./passport-shared";
+import { SectionCard, EmptyBlock, LoadingBlock, fmtDate } from "./passport-shared";
 import { useRevisionJournal } from "@/api/hooks/use-revision-journal";
 import { useOrders } from "@/api/hooks/use-orders";
 import { usePantographJournal } from "@/api/hooks/use-pantograph";
 import type { ReactNode } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 /* -------------------------------------------------------------------------- */
 /*  Bordered table primitives — every cell is boxed so columns never merge     */
@@ -35,27 +31,24 @@ function BorderedTable({
   children: ReactNode;
 }) {
   return (
-    <div className="overflow-x-auto rounded-lg border">
-      <table className="w-full border-collapse text-sm">
-        <thead>
-          <tr className="bg-muted/60">
-            {columns.map((c) => (
-              <th
-                key={c.key}
-                className={cn(
-                  "border-b border-r border-border px-3 py-2.5 font-semibold text-[#0F172B] last:border-r-0",
-                  c.align === "right" ? "text-right" : "text-left",
-                  c.width
-                )}
-              >
-                {c.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>{children}</tbody>
-      </table>
-    </div>
+    <Table bordered frame>
+      <TableHeader>
+        <TableRow>
+          {columns.map((c) => (
+            <TableHead
+              key={c.key}
+              className={cn(
+                c.align === "right" ? "text-right" : "text-left",
+                c.width
+              )}
+            >
+              {c.header}
+            </TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>{children}</TableBody>
+    </Table>
   );
 }
 
@@ -67,21 +60,21 @@ function Row({
   cells: Record<string, ReactNode>;
 }) {
   return (
-    <tr className="even:bg-muted/20">
+    <TableRow className="even:bg-muted/20">
       {columns.map((c) => (
-        <td
+        <TableCell
           key={c.key}
           className={cn(
-            "border-b border-r border-border px-3 py-2.5 align-top text-[#334155] last:border-r-0",
+            "align-top",
             c.align === "right" ? "text-right tabular-nums" : "text-left",
             c.wrap ? "whitespace-normal break-words" : "whitespace-nowrap",
             c.width
           )}
         >
           {cells[c.key] ?? "—"}
-        </td>
+        </TableCell>
       ))}
-    </tr>
+    </TableRow>
   );
 }
 
@@ -225,7 +218,7 @@ function RevisionJournalSection({ locomotiveId }: { locomotiveId: number }) {
                 status: r.table_number ? (
                   <Badge variant="success">{t("done")}</Badge>
                 ) : (
-                  <Badge variant="destructive">{t("notDone")}</Badge>
+                  <Badge variant="danger">{t("notDone")}</Badge>
                 ),
               }}
             />

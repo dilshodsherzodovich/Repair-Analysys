@@ -14,27 +14,21 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { useGetLocomotiveDetail } from "@/api/hooks/use-locomotives";
-import {
-  Loader2,
-  Save,
-  X,
-  ArrowLeft,
-  FileDown,
-  ExternalLink,
-} from "lucide-react";
+import { Loader2, Save, X, ArrowLeft, ExternalLink } from "lucide-react";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { Card } from "@/ui/card";
-import {
-  useComponents,
-  useBulkUpdateComponentValues,
-} from "@/api/hooks/use-component";
-import { toast } from "@/ui/use-toast";
+import { useComponents, useBulkUpdateComponentValues } from "@/api/hooks/use-component";
+import { useSnackbar } from "@/providers/snackbar-provider";
 import { ComponentValue } from "@/api/types/component";
 import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { authService } from "@/api/services/auth.service";
+import { PageHeader } from "@/ui/page-header";
+import { ExportActions } from "@/ui/export-actions";
 
+import { Field, FieldGrid } from "@/ui/field";
+import { EmptyState } from "@/ui/empty-state";
 interface LocomotivePassportClassicProps {
   depotId: string;
   locomotiveId: string;
@@ -74,6 +68,7 @@ export default function LocomotivePassportClassic({
   locomotiveId,
 }: LocomotivePassportClassicProps) {
   const t = useTranslations("LocomotivePassportForm");
+  const { showSuccess, showError } = useSnackbar();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
@@ -150,26 +145,19 @@ export default function LocomotivePassportClassic({
 
   useEffect(() => {
     if (componentsQuery.isSuccess && !hasShownSuccessToast) {
-      toast({
-        title: t("toast_components_loaded"),
-        description: `${componentList.length} ${t("toast_components_found")}`,
-      });
+      showSuccess(t("toast_components_loaded"), `${componentList.length} ${t("toast_components_found")}`);
       setHasShownSuccessToast(true);
     }
-  }, [componentList.length, componentsQuery.isSuccess, hasShownSuccessToast, t]);
+  }, [componentList.length, componentsQuery.isSuccess, hasShownSuccessToast, t, showSuccess]);
 
   useEffect(() => {
     if (componentsQuery.isError) {
       const errorMessage =
         (componentsQuery.error as { message?: string })?.message ||
         t("toast_components_error_desc");
-      toast({
-        variant: "destructive",
-        title: t("toast_components_error"),
-        description: errorMessage,
-      });
+      showError(t("toast_components_error"), errorMessage);
     }
-  }, [componentsQuery.error, componentsQuery.isError, t]);
+  }, [componentsQuery.error, componentsQuery.isError, t, showError]);
 
   const handleExportPDF = async () => {
     if (
@@ -177,11 +165,7 @@ export default function LocomotivePassportClassic({
       activeSectionId === null ||
       componentList.length === 0
     ) {
-      toast({
-        variant: "destructive",
-        title: t("toast_export_error"),
-        description: t("toast_export_error_desc"),
-      });
+      showError(t("toast_export_error"), t("toast_export_error_desc"));
       return;
     }
 
@@ -195,17 +179,10 @@ export default function LocomotivePassportClassic({
         componentList,
         activeSection?.name
       );
-      toast({
-        title: t("toast_export_success"),
-        description: t("toast_export_success_desc"),
-      });
+      showSuccess(t("toast_export_success"), t("toast_export_success_desc"));
     } catch (error) {
       console.error("Failed to export PDF:", error);
-      toast({
-        variant: "destructive",
-        title: t("toast_export_failed"),
-        description: t("toast_export_failed_desc"),
-      });
+      showError(t("toast_export_failed"), t("toast_export_failed_desc"));
     } finally {
       setIsExportingPDF(false);
     }
@@ -265,21 +242,13 @@ export default function LocomotivePassportClassic({
 
   const handleSave = async () => {
     if (!componentList.length) {
-      toast({
-        variant: "destructive",
-        title: t("toast_no_components"),
-        description: t("toast_no_components_desc"),
-      });
+      showError(t("toast_no_components"), t("toast_no_components_desc"));
       return;
     }
 
     const payload = buildComponentPayload();
     if (!payload.length) {
-      toast({
-        variant: "destructive",
-        title: t("toast_invalid_data"),
-        description: t("toast_invalid_data_desc"),
-      });
+      showError(t("toast_invalid_data"), t("toast_invalid_data_desc"));
       return;
     }
 
@@ -294,157 +263,122 @@ export default function LocomotivePassportClassic({
       ) {
         syncComponentFormValues(refetchResult.data.results);
       }
-      toast({
-        title: t("toast_saved"),
-        description: t("toast_saved_desc"),
-      });
+      showSuccess(t("toast_saved"), t("toast_saved_desc"));
       setIsEditing(false);
       router.push("?", { scroll: false });
     } catch (error) {
       console.error("Failed to save component values:", error);
-      toast({
-        variant: "destructive",
-        title: t("toast_save_error"),
-        description: t("toast_save_error_desc"),
-      });
+      showError(t("toast_save_error"), t("toast_save_error_desc"));
     }
   };
 
   return (
     <div className="space-y-6 pb-4 max-w-full overflow-x-hidden">
-      <div className="flex justify-between gap-3 items-center">
-        <div className="flex items-center gap-3">
+      <PageHeader
+        title={`${locomotiveDetail?.name ?? ""} - ${locomotiveDetail?.model_name ?? ""}`}
+        leading={
           <Button
             variant="outline"
             onClick={() => router.push(`/depo/${depotId}`)}
-            className="border-gray-300"
+            className="border-border-strong"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t("back")}
           </Button>
-          <h1 className="text-2xl font-bold">
-            {locomotiveDetail?.name} - {locomotiveDetail?.model_name}
-          </h1>
-        </div>
-        <div className="flex gap-3">
-          <Button
-            onClick={handleExportPDF}
-            variant="outline"
-            className="border-gray-300"
-            disabled={
-              isExportingPDF ||
-              !locomotiveDetail ||
-              activeSectionId === null ||
-              componentList.length === 0
-            }
-          >
-            {isExportingPDF ? (
+        }
+        actions={
+          <>
+            {canEdit && (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t("exporting")}
-              </>
-            ) : (
-              <>
-                <FileDown className="mr-2 h-4 w-4" />
-                {t("export_pdf")}
+                {!isEditing ? (
+                  <Button
+                    onClick={handleEdit}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    {t("edit")}
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handleCancel}
+                      variant="outline"
+                      className="border-border-strong"
+                      disabled={isSavingComponents}
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      {t("cancel")}
+                    </Button>
+                    <Button
+                      onClick={handleSave}
+                      disabled={isSavingComponents}
+                    >
+                      {isSavingComponents ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {t("saving")}
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          {t("save")}
+                        </>
+                      )}
+                    </Button>
+                  </>
+                )}
               </>
             )}
-          </Button>
-          {canEdit && (
-            <>
-              {!isEditing ? (
-                <Button
-                  onClick={handleEdit}
-                  className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  {t("edit")}
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    onClick={handleCancel}
-                    variant="outline"
-                    className="border-gray-300"
-                    disabled={isSavingComponents}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    {t("cancel")}
-                  </Button>
-                  <Button
-                    onClick={handleSave}
-                    className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
-                    disabled={isSavingComponents}
-                  >
-                    {isSavingComponents ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t("saving")}
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-4 w-4" />
-                        {t("save")}
-                      </>
-                    )}
-                  </Button>
-                </>
-              )}
-            </>
-          )}
-          {/* Opens the detailed dashboard as its own page — it has no
-              navigation of its own, so it is closed rather than exited. */}
-          <Button
-            onClick={() =>
-              window.open(
-                `/depo/${depotId}/locomotive/${locomotiveId}?design=new`,
-                "_blank"
-              )
-            }
-            variant="outline"
-            className="border-gray-300"
-          >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            {t("details")}
-          </Button>
-        </div>
-      </div>
+            {/* Opens the detailed dashboard as its own page — it has no
+                navigation of its own, so it is closed rather than exited. */}
+            <Button
+              onClick={() =>
+                window.open(
+                  `/depo/${depotId}/locomotive/${locomotiveId}?design=new`,
+                  "_blank"
+                )
+              }
+              variant="outline"
+              className="border-border-strong"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              {t("details")}
+            </Button>
+            <ExportActions
+              onPdf={handleExportPDF}
+              busy={isExportingPDF ? "pdf" : null}
+              disabled={!locomotiveDetail || activeSectionId === null || componentList.length === 0}
+            />
+
+          </>
+        }
+      />
 
       <form className="space-y-6 pb-4 max-w-full overflow-x-hidden">
         <Card className="gap-4">
-          <h1 className="text-lg font-semibold">{t("locomotive_info")}</h1>
+          <h2 className="text-lg font-semibold">{t("locomotive_info")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-0">
-            <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                {t("depot")}
-              </label>
+            <Field label={t("depot")}>
               <Input value={depotId} disabled />
-            </div>
-            <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                {t("locomotive")}
-              </label>
+            </Field>
+            <Field label={t("locomotive")}>
               <Input value={locomotiveDetail?.name ?? ""} disabled />
-            </div>
-            <div className="min-w-0">
-              <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                {t("model")}
-              </label>
+            </Field>
+            <Field label={t("model")}>
               <Input value={locomotiveDetail?.model_name ?? ""} disabled />
-            </div>
+            </Field>
           </div>
         </Card>
 
         {locomotiveDetail?.sections && locomotiveDetail.sections.length > 0 && (
           <Card className="gap-4">
             <div className="space-y-3">
-              <h1 className="text-lg font-semibold">{t("active_section")}</h1>
+              <h2 className="text-lg font-semibold">{t("active_section")}</h2>
               <Tabs
                 value={activeSectionId?.toString() ?? ""}
                 onValueChange={(value) => setActiveSectionId(Number(value))}
                 className="flex w-full flex-col"
               >
-                <TabsList className="bg-[#F1F5F9] p-2 gap-0 border-0 rounded-lg w-full flex">
+                <TabsList>
                   {locomotiveDetail.sections.map((section) => (
                     <TabsTrigger
                       key={section.id}
@@ -462,7 +396,7 @@ export default function LocomotivePassportClassic({
 
         <Card className="gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold">{t("components")}</h1>
+            <h2 className="text-lg font-semibold">{t("components")}</h2>
             {isFetchingComponents && (
               <span className="text-xs text-muted-foreground flex items-center gap-2">
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -474,11 +408,9 @@ export default function LocomotivePassportClassic({
           {activeSectionId === null ? (
             <p className="text-sm text-muted-foreground">{t("select_section")}</p>
           ) : !componentList.length && !isFetchingComponents ? (
-            <p className="text-sm text-muted-foreground">
-              {t("no_components")}
-            </p>
+            <EmptyState title={t("no_components")} />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <FieldGrid columns={4}>
               {componentList.map((component) => {
                 const currentValues = componentFormValues[component.id] || {
                   factory_number: "",
@@ -491,10 +423,7 @@ export default function LocomotivePassportClassic({
                     className="border border-border rounded-lg p-4 space-y-4"
                   >
                     <div className="space-y-4">
-                      <div className="min-w-0">
-                        <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                          {component.component}
-                        </label>
+                      <Field label={component.component}>
                         <Input
                           value={currentValues.factory_number}
                           onChange={(event) =>
@@ -507,11 +436,8 @@ export default function LocomotivePassportClassic({
                           disabled={!isEditing}
                           placeholder={t("factory_number")}
                         />
-                      </div>
-                      <div className="min-w-0">
-                        <label className="mb-2 block text-sm font-medium text-[#0F172B]">
-                          {component.component} {t("year_manufactured")}
-                        </label>
+                      </Field>
+                      <Field label={<>{component.component} {t("year_manufactured")}</>}>
                         <Input
                           value={currentValues.date_info}
                           onChange={(event) =>
@@ -524,12 +450,12 @@ export default function LocomotivePassportClassic({
                           disabled={!isEditing}
                           placeholder={t("year_placeholder")}
                         />
-                      </div>
+                      </Field>
                     </div>
                   </div>
                 );
               })}
-            </div>
+            </FieldGrid>
           )}
         </Card>
       </form>

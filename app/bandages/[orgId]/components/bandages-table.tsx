@@ -2,26 +2,18 @@
 
 import { memo, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
-import { toast } from "@/ui/use-toast";
+import { useSnackbar } from "@/providers/snackbar-provider";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useBulkUpdateBandages } from "@/api/hooks/use-bandages";
 import { Bandage, UpdateBandagePayload } from "@/api/types/bandage";
-import {
-  CellInput,
-  EditActions,
-  firstMessage,
-} from "@/components/locomotive-values/inline-edit";
+import { CellInput, EditActions, firstMessage } from "@/ui/inline-edit";
 import { bandageGroupKey, hasSideMismatch } from "../bandage-groups";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
+import { Badge } from "@/ui/badge";
 type Side = "left" | "right";
 
 /** How long the cells changed by a save stay highlighted. */
@@ -47,13 +39,6 @@ const toNumberOrNull = (value: string) =>
 export const naturalCompare = (a: string, b: string) =>
   a.localeCompare(b, undefined, { numeric: true });
 
-// border-separate (not collapse) so the borders stick with the pinned header;
-// every cell draws its own right/bottom border
-const headClass =
-  "py-3 px-3 bg-[#F8FAFC] text-[#475569] font-medium border-r border-b border-[#E2E8F0] whitespace-nowrap";
-const cellClass =
-  "py-2.5 px-3 border-r border-b border-[#E2E8F0] whitespace-nowrap";
-
 export interface SectionRow {
   key: string;
   sectionName: string;
@@ -67,7 +52,7 @@ const stickyNo = "sticky left-0 w-[48px] min-w-[48px] max-w-[48px]";
 const stickyLocomotive =
   "sticky left-[48px] w-[160px] min-w-[160px] max-w-[160px] whitespace-normal break-words";
 const stickySection =
-  "sticky left-[208px] w-[96px] min-w-[96px] max-w-[96px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]";
+  "sticky left-[208px] w-[96px] min-w-[96px] max-w-[96px] shadow-pin-start";
 
 export interface LocomotiveGroup {
   locomotiveId: number;
@@ -103,6 +88,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
 }) {
   const t = useTranslations("BandagesPage");
   const tModal = useTranslations("BandagesModal");
+  const { showSuccess, showError } = useSnackbar();
   const { mutateAsync: bulkUpdateBandages } = useBulkUpdateBandages();
 
   const [drafts, setDrafts] = useState<Drafts>({});
@@ -196,7 +182,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
         ),
       );
       onDone();
-      toast({ title: t("success_updated") });
+      showSuccess(t("success_updated"));
     } catch (error) {
       setIsSaving(false);
       // Nothing was saved, so every edit stays. Per-item errors come back as
@@ -220,15 +206,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
       }
       setErrors(nextErrors);
       const firstError = Object.values(nextErrors)[0];
-      toast({
-        variant: "destructive",
-        title: t("error_save"),
-        description:
-          firstError?.left ||
+      showError(t("error_save"), firstError?.left ||
           firstError?.right ||
           firstError?.detail ||
-          (!Array.isArray(body) ? firstMessage(body?.detail) : undefined),
-      });
+          (!Array.isArray(body) ? firstMessage(body?.detail) : undefined));
     }
   };
 
@@ -237,61 +218,67 @@ const LocomotiveRows = memo(function LocomotiveRows({
   const justSaved = !!savedCells;
   // Pinned cells need a solid background or scrolled cells show through
   const stickyBg = isEditing
-    ? "bg-[#F0F7FF]"
+    ? "bg-primary-subtle"
     : justSaved
-      ? "bg-[#F0FDF4]"
-      : "bg-white group-hover:bg-[#F8FAFC]";
+      ? "bg-success-subtle"
+      : "bg-background group-hover:bg-row-hover";
+  // Every line is a plain row (no merged cells), so hover, borders and pinned
+  // columns behave like any table. No, locomotive and the edit button show on
+  // the locomotive's first line; below them those cells stay empty with no
+  // line between, and a darker line closes each locomotive. Hovering any
+  // line highlights the whole locomotive (its <tbody> is the hover group).
+  const isLast = (index: number) => index === span - 1;
+  const groupCell = (index: number) => !isLast(index) && "border-b-transparent";
 
   return (
-    <>
+    <TableBody className="group">
       {group.sections.map((section, sectionIndex) => (
         <TableRow
           key={section.key}
           className={cn(
-            "group hover:bg-[#F8FAFC] transition-colors duration-700",
-            isEditing && "bg-[#F0F7FF] hover:bg-[#F0F7FF]",
-            justSaved && "bg-[#F0FDF4] hover:bg-[#F0FDF4]",
+            // The hovered line takes the same colour as the rest of its locomotive
+            "hover:bg-row-hover group-hover:bg-row-hover",
+            isLast(sectionIndex) && "[&>td]:border-b-border-strong",
+            isEditing && "bg-primary-subtle hover:bg-primary-subtle group-hover:bg-primary-subtle",
+            justSaved && "bg-success-subtle hover:bg-success-subtle group-hover:bg-success-subtle",
           )}
         >
-          {sectionIndex === 0 && (
-            <>
-              <TableCell
-                rowSpan={span}
-                className={cn(
-                  cellClass,
-                  stickyNo,
-                  stickyBg,
-                  "z-[5] text-[#64748B] align-top",
-                )}
-              >
-                {group.index}
-              </TableCell>
-              <TableCell
-                rowSpan={span}
-                className={cn(
-                  cellClass,
-                  stickyLocomotive,
-                  stickyBg,
-                  "z-[5] text-[#0F172B] font-medium align-top",
-                  justSaved && "border-l-2 border-l-green-500",
-                )}
-              >
-                {group.name}-{group.modelName}
-                {justSaved && (
-                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                    <Check className="h-3 w-3" />
-                    {t("just_saved")}
-                  </span>
-                )}
-              </TableCell>
-            </>
-          )}
           <TableCell
             className={cn(
-              cellClass,
+              stickyNo,
+              stickyBg,
+              "z-[5]",
+              groupCell(sectionIndex),
+            )}
+          >
+            {sectionIndex === 0 && group.index}
+          </TableCell>
+          <TableCell
+            className={cn(
+              stickyLocomotive,
+              stickyBg,
+              "z-[5] font-medium",
+              groupCell(sectionIndex),
+              justSaved && "border-l-success",
+            )}
+          >
+            {sectionIndex === 0 && (
+              <>
+                {group.name}-{group.modelName}
+                {justSaved && (
+                  <Badge variant="success" className="mt-1 w-fit">
+                    <Check className="h-3 w-3" />
+                    {t("just_saved")}
+                  </Badge>
+                )}
+              </>
+            )}
+          </TableCell>
+          <TableCell
+            className={cn(
               stickySection,
               stickyBg,
-              "z-[5] text-[#0F172B]",
+              "z-[5]",
             )}
           >
             {section.sectionName}
@@ -311,20 +298,19 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 <TableCell
                   key={`${name}-${side}`}
                   className={cn(
-                    cellClass,
-                    "text-center text-[#0F172B] transition-colors duration-700",
-                    editable && "px-1 py-1.5",
+                    "text-center duration-700",
+                    editable && "",
                     !editable &&
                       activeGroup &&
                       (inActiveGroup
-                        ? "bg-[#EFF6FF] font-semibold text-blue-700"
-                        : "text-[#CBD5E1]"),
+                        ? "bg-primary-subtle font-semibold text-primary-hover"
+                        : "text-foreground-subtle"),
                     // Left and right too far apart; shown even outside the picked group
                     !editable &&
                       isUneven &&
-                      "bg-red-50 font-semibold text-red-600",
+                      "bg-destructive-subtle font-semibold text-destructive",
                     // Changed values win over the group highlight while it lasts
-                    wasSaved && "bg-green-100 font-semibold text-green-800",
+                    wasSaved && "bg-success-subtle font-semibold text-success",
                   )}
                 >
                   {editable ? (
@@ -352,12 +338,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
               );
             }),
           )}
-          {canEdit && sectionIndex === 0 && (
-            <TableCell
-              rowSpan={span}
-              className={`${cellClass} text-center align-top border-r-0`}
-            >
-              {group.bandages.length > 0 && (
+          {canEdit && (
+            <TableCell className={cn("text-center", groupCell(sectionIndex))}>
+              {sectionIndex === 0 && group.bandages.length > 0 && (
                 <EditActions
                   isEditing={isEditing}
                   isSaving={isSaving}
@@ -375,7 +358,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           )}
         </TableRow>
       ))}
-    </>
+    </TableBody>
   );
 });
 
@@ -404,23 +387,22 @@ export function BandagesTable({
   const columnCount = 3 + componentNames.length * 2 + (canEdit ? 1 : 0);
 
   return (
-    <div className="rounded-lg border border-[#CAD5E2] overflow-auto max-h-[75vh] bg-white">
-      <table className="w-full caption-bottom text-sm border-separate border-spacing-0">
+    <Table frame maxHeight="75vh" bordered>
         {/* Header stays pinned while the rows scroll inside the box */}
         <TableHeader className="sticky top-0 z-10">
-          <TableRow className="hover:bg-transparent">
-            <TableHead rowSpan={2} className={`${headClass} ${stickyNo} z-20`}>
+          <TableRow>
+            <TableHead rowSpan={2} className={`${stickyNo} z-20`}>
               {t("columns.no")}
             </TableHead>
             <TableHead
               rowSpan={2}
-              className={`${headClass} ${stickyLocomotive} z-20`}
+              className={`${stickyLocomotive} z-20`}
             >
               {t("columns.locomotive")}
             </TableHead>
             <TableHead
               rowSpan={2}
-              className={`${headClass} ${stickySection} z-20`}
+              className={`${stickySection} z-20`}
             >
               {t("columns.section")}
             </TableHead>
@@ -428,7 +410,7 @@ export function BandagesTable({
               <TableHead
                 key={name}
                 colSpan={2}
-                className={`${headClass} text-center`}
+                className={`text-center`}
               >
                 {name}
               </TableHead>
@@ -436,18 +418,18 @@ export function BandagesTable({
             {canEdit && (
               <TableHead
                 rowSpan={2}
-                className={`${headClass} text-center border-r-0`}
+                className={`text-center`}
               >
                 {t("columns.actions")}
               </TableHead>
             )}
           </TableRow>
-          <TableRow className="hover:bg-transparent">
+          <TableRow>
             {componentNames.flatMap((name) =>
               SIDES.map((side) => (
                 <TableHead
                   key={`${name}-${side}`}
-                  className={`${headClass} text-center text-xs`}
+                  className={cn("text-center", canEdit && "last:border-r")}
                 >
                   {tModal(side)}
                 </TableHead>
@@ -456,23 +438,19 @@ export function BandagesTable({
           </TableRow>
         </TableHeader>
 
-        <TableBody>
-          {isLoading ? (
+        {isLoading || groups.length === 0 ? (
+          <TableBody>
+            {isLoading ? (
             <TableSkeleton
               rows={8}
               columns={Math.max(columnCount, 6)}
               cellClassName="py-3 px-3"
             />
-          ) : groups.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={columnCount}
-                className="py-8 text-center text-[#64748B]"
-              >
-                {t("empty")}
-              </TableCell>
-            </TableRow>
-          ) : (
+            ) : (
+            <TableStateRow colSpan={columnCount}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
+            )}
+          </TableBody>
+        ) : (
             groups.map((group) => (
               <LocomotiveRows
                 key={group.locomotiveId}
@@ -485,9 +463,7 @@ export function BandagesTable({
                 activeGroup={activeGroup}
               />
             ))
-          )}
-        </TableBody>
-      </table>
-    </div>
+        )}
+      </Table>
   );
 }

@@ -6,6 +6,7 @@ import "./globals.css";
 import ClientLayout from "./client-layout";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
+import { LoadingScreen } from "@/ui/empty-state";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,11 +40,11 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
-        <Suspense fallback={<div className="p-6">Yuklanmoqda...</div>}>
-          <NextIntlClientProvider messages={messages} locale={locale}>
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <Suspense fallback={<LoadingScreen />}>
             <ClientLayout>{children}</ClientLayout>
-          </NextIntlClientProvider>
-        </Suspense>
+          </Suspense>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

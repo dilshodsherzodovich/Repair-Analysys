@@ -33,12 +33,7 @@ export default function LocomotivePassportPage() {
       permission="view_locomotive_passport"
       showError={true}
       fallback={
-        <div className="mt-6">
-          <PageHeader
-            title={t("title")}
-            description={t("description")}
-          />
-        </div>
+        <PageHeader title={t("title")} description={t("description")} />
       }
     >
       <div>

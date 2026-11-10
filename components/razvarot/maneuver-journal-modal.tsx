@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Card } from "@/ui/card";
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import {
@@ -14,7 +12,6 @@ import {
   SelectValue,
   SearchableSelect,
 } from "@/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/ui/dialog";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { INSPECTION_SECTION_OPTIONS } from "@/components/inspections/inspection-grouped-table";
 import {
@@ -24,6 +21,8 @@ import {
 } from "@/api/types/maneuver-journal";
 import type { UserData } from "@/api/types/auth";
 
+import { Field, FieldGrid } from "@/ui/field";
+import { Modal, ModalFooter } from "@/ui/modal";
 interface ManeuverJournalModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -116,21 +115,20 @@ export function ManeuverJournalModal({
   const initialStation = entry && mode === "edit" ? (entry.station ?? "") : "";
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{modalTitle}</DialogTitle>
-        </DialogHeader>
-        <Card className="border-none p-0 mt-2">
-          <form
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={modalTitle}
+      size="lg"
+    >
+        <form
             ref={formRef}
             key={isOpen ? (entry?.id ?? "new") : "closed"}
             onSubmit={handleSubmit}
             className="space-y-5"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="date">{t("fields.date")}</Label>
+            <FieldGrid columns={2}>
+              <Field label={t("fields.date")} htmlFor="date">
                 <Input
                   id="date"
                   name="date"
@@ -138,10 +136,9 @@ export function ManeuverJournalModal({
                   defaultValue={initialDate}
                   required
                 />
-              </div>
+              </Field>
 
-              <div>
-                <Label htmlFor="locomotive">{t("fields.locomotive")}</Label>
+              <Field label={t("fields.locomotive")} htmlFor="locomotive">
                 <SearchableSelect
                   name="locomotive"
                   value={locomotive}
@@ -158,10 +155,9 @@ export function ManeuverJournalModal({
                     isLoadingLocomotives || locomotiveOptions.length === 0
                   }
                 />
-              </div>
+              </Field>
 
-              <div>
-                <Label htmlFor="station">{t("fields.station")}</Label>
+              <Field label={t("fields.station")} htmlFor="station">
                 <Input
                   id="station"
                   name="station"
@@ -170,12 +166,11 @@ export function ManeuverJournalModal({
                   placeholder={t("fields.station_placeholder")}
                   required
                 />
-              </div>
+              </Field>
 
               <div></div>
 
-              <div>
-                <Label htmlFor="from_section">{t("fields.from_section")}</Label>
+              <Field label={t("fields.from_section")} htmlFor="from_section">
                 <Select
                   value={fromSection}
                   onValueChange={setFromSection}
@@ -194,10 +189,9 @@ export function ManeuverJournalModal({
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </Field>
 
-              <div>
-                <Label htmlFor="to_section">{t("fields.to_section")}</Label>
+              <Field label={t("fields.to_section")} htmlFor="to_section">
                 <Select value={toSection} onValueChange={setToSection} required>
                   <SelectTrigger id="to_section">
                     <SelectValue
@@ -212,10 +206,10 @@ export function ManeuverJournalModal({
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-            </div>
+              </Field>
+            </FieldGrid>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <ModalFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -227,10 +221,8 @@ export function ManeuverJournalModal({
               <Button type="submit" disabled={isPending}>
                 {isPending ? t("pending") : submitLabel}
               </Button>
-            </div>
+            </ModalFooter>
           </form>
-        </Card>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

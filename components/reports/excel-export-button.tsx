@@ -1,9 +1,8 @@
 "use client";
 
-import { Button } from "@/ui/button";
-import { FileDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { generateExcel, type ExcelExportData } from "@/utils/excel-export";
+import { ExportActions } from "@/ui/export-actions";
 
 interface ExcelExportButtonProps {
   data: ExcelExportData;
@@ -24,18 +23,5 @@ export function ExcelExportButton({ data, className }: ExcelExportButtonProps) {
     }
   };
 
-  return (
-    <Button
-      onClick={handleExport}
-      disabled={isGenerating}
-      className={`bg-green-600 hover:bg-green-700 text-white ${className}`}
-    >
-      {isGenerating ? (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-      ) : (
-        <FileDown className="w-4 h-4 mr-2" />
-      )}
-      {isGenerating ? "Generating..." : "Export Excel"}
-    </Button>
-  );
+  return <ExportActions onExcel={handleExport} busy={isGenerating ? "excel" : null} />;
 }

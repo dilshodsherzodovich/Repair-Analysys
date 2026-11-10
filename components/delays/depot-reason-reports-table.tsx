@@ -2,10 +2,12 @@
 
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { ErrorCard } from "@/ui/error-card";
+import { ErrorState } from "@/ui/empty-state";
 import { useDepotReasonReports } from "@/api/hooks/use-delays";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { Skeleton } from "@/ui/skeleton";
 export function DepotReasonReportsTable() {
   const { getAllQueryValues } = useFilterParams();
   const {
@@ -41,83 +43,69 @@ export function DepotReasonReportsTable() {
   return (
     <div className="mt-8">
       {error && (
-        <ErrorCard
-          title="Произошла ошибка"
-          message={error.message || "Произошла ошибка"}
-          onRetry={() => { }}
-          showRetry={false}
-          showBack={false}
-          className="mb-4"
-        />
+        <ErrorState message={error.message} />
       )}
 
       {isLoading && (
-        <div className="mt-6 bg-white rounded-md overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100 border-b border-gray-300">
-                  {Array.from({ length: skeletonColumnCount }).map((_, index) => (
-                    <th
-                      key={index}
-                      className={cn(
-                        "border border-gray-300 px-4 py-3 text-center font-semibold text-sm",
-                        index === skeletonColumnCount - 1 && "bg-gray-200"
-                      )}
-                    >
-                      <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: 8 }).map((_, rowIndex) => (
-                  <tr
-                    key={rowIndex}
+        <Table bordered frame>
+          <TableHeader>
+            <TableRow>
+              {Array.from({ length: skeletonColumnCount }).map((_, index) => (
+                <TableHead
+                  key={index}
+                  className={cn(
+                    "text-center",
+                    index === skeletonColumnCount - 1 && ""
+                  )}
+                >
+                  <Skeleton className="h-4" />
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 8 }).map((_, rowIndex) => (
+              <TableRow
+                key={rowIndex}
+                
+              >
+                {Array.from({ length: skeletonColumnCount }).map((_, colIndex) => (
+                  <TableCell
+                    key={colIndex}
                     className={cn(
-                      "border-b border-gray-200",
-                      rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                      "text-center",
+                      colIndex === skeletonColumnCount - 1 && "bg-surface-muted font-semibold"
                     )}
                   >
-                    {Array.from({ length: skeletonColumnCount }).map((_, colIndex) => (
-                      <td
-                        key={colIndex}
-                        className={cn(
-                          "border border-gray-300 px-4 py-3 text-center",
-                          colIndex === skeletonColumnCount - 1 && "bg-gray-200"
-                        )}
-                      >
-                        <div className="h-4 bg-gray-200 rounded animate-pulse mx-auto w-12" />
-                      </td>
-                    ))}
-                  </tr>
+                    <Skeleton className="h-4 mx-auto w-12" />
+                  </TableCell>
                 ))}
-                {/* Skeleton Total Row */}
-                <tr className="bg-gray-200 border-t-2 border-gray-400">
-                  {Array.from({ length: skeletonColumnCount }).map((_, colIndex) => (
-                    <td
-                      key={colIndex}
-                      className={cn(
-                        "border border-gray-300 px-4 py-3 text-center",
-                        colIndex === skeletonColumnCount - 1 && "bg-gray-200"
-                      )}
-                    >
-                      <div className="h-4 bg-gray-300 rounded animate-pulse mx-auto w-12" />
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+              </TableRow>
+            ))}
+            {/* Skeleton Total Row */}
+            <TableRow className="border-foreground-subtle">
+              {Array.from({ length: skeletonColumnCount }).map((_, colIndex) => (
+                <TableCell
+                  key={colIndex}
+                  className={cn(
+                    "text-center",
+                    colIndex === skeletonColumnCount - 1 && "bg-surface-muted font-semibold"
+                  )}
+                >
+                  <Skeleton className="h-4 mx-auto w-12" />
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableBody>
+        </Table>
       )}
 
       {!isLoading && !error && data && (
-        <div className="mt-6 bg-white rounded-md overflow-hidden">
+        <div className="mt-6 bg-background rounded-md overflow-hidden">
           <div className="overflow-x-auto">
 
             {data?.summary && (
-              <div className="mb-2 border-gray-200 bg-gray-50 text-md text-gray-700 flex justify-center">
+              <div className="mb-2 border-border bg-surface-muted text-md text-foreground-secondary flex justify-center">
                 <div className="font-semibold flex items-center gap-1">
                   Всего по вине локомотивных депо:
                   <span>
@@ -130,60 +118,59 @@ export function DepotReasonReportsTable() {
               </div>
             )}
 
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100 border-b border-gray-300">
+            <Table bordered wrapper={false}>
+              <TableHeader>
+                <TableRow>
                   {headers?.map((header, index) => (
-                    <th
+                    <TableHead
                       key={header}
                       className={cn(
-                        "border border-gray-300 px-4 py-3 text-center font-semibold text-sm",
-                        index === headers?.length - 1 && "bg-gray-200"
+                        "text-center",
+                        index === headers?.length - 1 && ""
                       )}
                     >
                       {header}
-                    </th>
+                    </TableHead>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {data?.rows?.map((row, index) => (
-                  <tr
+                  <TableRow
                     key={row?.reason}
-                    className="border-b border-gray-200 hover:bg-gray-50"
                   >
                     {Object.entries(row).slice(1).map(([key, value], index) => (
-                      <td
+                      <TableCell
                         key={key}
                         className={cn(
-                          "border border-gray-300 px-4 py-3 text-sm text-center font-bold",
-                          index === headers?.length - 1 && "bg-gray-200"
+                          "text-center font-bold",
+                          index === headers?.length - 1 && "bg-surface-muted font-semibold"
                         )}
                       >
                         {value ?? 0}
-                      </td>
+                      </TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 ))}
 
                 {/* Total Row */}
                 {data?.total && (
-                  <tr className="bg-gray-200 border-t-2 border-gray-400 font-semibold">
+                  <TableRow className="border-foreground-subtle">
                     {Object.entries(data?.total).slice(1).map(([key, value], index) => (
-                      <td
+                      <TableCell
                         key={key}
                         className={cn(
-                          "border border-gray-300 px-4 py-3 text-sm text-center font-bold",
-                          index === headers?.length - 1 && "bg-gray-200"
+                          "text-center font-bold",
+                          index === headers?.length - 1 && "bg-surface-muted font-semibold"
                         )}
                       >
                         {value ?? 0}
-                      </td>
+                      </TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}

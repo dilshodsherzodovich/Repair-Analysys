@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AnnualPlanReportOrganization,
@@ -16,6 +15,15 @@ import {
   computeOrgTotals,
 } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 function num(v: number) {
   return v ? (
@@ -50,94 +58,87 @@ function PlanTypeCard({
   return (
     <div className={cn("rounded-xl border bg-card shadow-sm overflow-hidden", accent.ring)}>
       {/* Header (toggles) */}
-      <button
-        type="button"
+      <DisclosureTrigger
+        open={open}
+        chevronSide="end"
         onClick={() => setOpen((v) => !v)}
-        className={cn(
-          "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30",
-          open && "border-b border-border"
-        )}
+        className={cn("px-4 py-3", open && "border-b border-border")}
       >
         <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
         <div className="min-w-0">
           <div className="text-sm font-semibold text-foreground leading-tight">
             {type.inspection_type.name}
           </div>
-          <div className="text-[11px] text-muted-foreground">Texnik ko&apos;rik</div>
+          <div className="text-2xs text-muted-foreground">Texnik ko&apos;rik</div>
         </div>
 
         <div className="ml-auto hidden md:flex items-center gap-1.5">
           {QUARTER_LABELS.map((q, i) => (
             <div key={q} className="flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1">
-              <span className="text-[10px] font-medium text-muted-foreground">{q} kv</span>
+              <span className="text-2xs font-medium text-muted-foreground">{q} kv</span>
               <span className="text-xs font-semibold tabular-nums text-foreground">{quarters[i + 1] || 0}</span>
             </div>
           ))}
         </div>
 
         <div className={cn("flex items-center gap-1.5 rounded-lg px-3 py-1.5 shrink-0", accent.soft)}>
-          <span className={cn("text-[10px] font-medium uppercase tracking-wide", accent.text)}>Yillik</span>
+          <span className={cn("text-2xs font-medium uppercase tracking-wide", accent.text)}>Yillik</span>
           <span className={cn("text-base font-bold tabular-nums", accent.text)}>{yearly}</span>
         </div>
 
-        <ChevronDown
-          className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")}
-        />
-      </button>
+      </DisclosureTrigger>
 
       {/* Table */}
       {open && (
-        <div className="overflow-x-auto">
-          <table className="w-full table-fixed min-w-[900px] border-collapse text-xs">
-            <colgroup>
-              <col style={{ width: 150 }} />
-              {GRID_COLUMNS.map((c, i) => (
-                <col key={i} />
-              ))}
-              <col style={{ width: 72 }} />
-            </colgroup>
-            <thead>
-              <tr className="text-muted-foreground bg-muted/40">
-                <th className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</th>
+        <Table bordered density="compact" className="table-fixed min-w-[900px]">
+          <colgroup>
+            <col style={{ width: 150 }} />
+            {GRID_COLUMNS.map((c, i) => (
+              <col key={i} />
+            ))}
+            <col style={{ width: 72 }} />
+          </colgroup>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-left">Rusum</TableHead>
+              {GRID_COLUMNS.map((col) =>
+                col.kind === "month" ? (
+                  <TableHead key={`m${col.month}`} className="text-center">
+                    {MONTHS_SHORT[col.month - 1]}
+                  </TableHead>
+                ) : (
+                  <TableHead key={`q${col.quarter}`} className={cn("text-center", accent.soft, accent.text)}>
+                    {QUARTER_LABELS[col.quarter - 1]}
+                  </TableHead>
+                )
+              )}
+              <TableHead className={cn("text-center", accent.soft, accent.text)}>Σ</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {type.locomotive_models.map((row, rowIndex) => (
+              <TableRow key={row.locomotive_model?.id ?? `x-${rowIndex}`}>
+                <TableCell className="text-left font-medium whitespace-nowrap">
+                  {row.locomotive_model?.name ?? "—"}
+                </TableCell>
                 {GRID_COLUMNS.map((col) =>
                   col.kind === "month" ? (
-                    <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">
-                      {MONTHS_SHORT[col.month - 1]}
-                    </th>
+                    <TableCell key={`m${col.month}`} className="text-center">
+                      {num(cellCount(row.months[String(col.month)]))}
+                    </TableCell>
                   ) : (
-                    <th key={`q${col.quarter}`} className={cn("border border-border px-1 py-2.5 text-center font-semibold", accent.soft, accent.text)}>
-                      {QUARTER_LABELS[col.quarter - 1]}
-                    </th>
+                    <TableCell key={`q${col.quarter}`} className={cn("text-center font-semibold tabular-nums", accent.soft, accent.text)}>
+                      {cellCount(row.quarters[String(col.quarter)])}
+                    </TableCell>
                   )
                 )}
-                <th className={cn("border border-border px-2 py-2.5 text-center font-semibold", accent.soft, accent.text)}>Σ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {type.locomotive_models.map((row, rowIndex) => (
-                <tr key={row.locomotive_model?.id ?? `x-${rowIndex}`} className="hover:bg-muted/30 transition-colors">
-                  <td className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">
-                    {row.locomotive_model?.name ?? "—"}
-                  </td>
-                  {GRID_COLUMNS.map((col) =>
-                    col.kind === "month" ? (
-                      <td key={`m${col.month}`} className="border border-border px-1 py-2 text-center">
-                        {num(cellCount(row.months[String(col.month)]))}
-                      </td>
-                    ) : (
-                      <td key={`q${col.quarter}`} className={cn("border border-border px-1 py-2 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
-                        {cellCount(row.quarters[String(col.quarter)])}
-                      </td>
-                    )
-                  )}
-                  <td className={cn("border border-border px-2 py-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
-                    {cellCount(row.yearly_count)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                <TableCell className={cn("text-center font-bold tabular-nums", accent.soft, accent.text)}>
+                  {cellCount(row.yearly_count)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   );

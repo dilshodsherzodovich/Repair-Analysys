@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
 import { DatePicker } from "@/ui/date-picker";
 import {
@@ -15,24 +14,13 @@ import {
   SearchableSelect,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
-import {
-  useGetLocomotives,
-  useGetLocomotiveDetail,
-} from "@/api/hooks/use-locomotives";
+import { useGetLocomotives, useGetLocomotiveDetail } from "@/api/hooks/use-locomotives";
 import { useInspectionTypes } from "@/api/hooks/use-inspection";
 import { useComponents } from "@/api/hooks/use-component";
-import {
-  ComponentRegistryEntry,
-  CreateComponentRegistryPayload,
-} from "@/api/types/component-registry";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/ui/dialog";
+import { ComponentRegistryEntry, CreateComponentRegistryPayload } from "@/api/types/component-registry";
 
+import { Field, FieldGrid } from "@/ui/field";
+import { Modal, ModalFooter } from "@/ui/modal";
 interface ComponentRegistryModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -223,12 +211,13 @@ export function ComponentRegistryModal({
   const formKey = editData?.id ? `edit-${editData.id}` : "create";
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[calc(100%-2rem)] sm:!max-w-5xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{editData ? t("title_edit") : t("title")}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
-        </DialogHeader>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={editData ? t("title_edit") : t("title")}
+      description={t("description")}
+      size="2xl"
+    >
 
         <form
           ref={formRef}
@@ -236,11 +225,8 @@ export function ComponentRegistryModal({
           onSubmit={handleSubmit}
           className="space-y-4"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="locomotive_id">
-                {t("locomotive")} <span className="text-red-500 ml-1">*</span>
-              </Label>
+          <FieldGrid columns={2}>
+            <Field label={t("locomotive")} htmlFor="locomotive_id" required>
               <SearchableSelect
                 value={selects.locomotive_id}
                 onValueChange={(value: string) =>
@@ -258,12 +244,9 @@ export function ComponentRegistryModal({
                 disabled={loadingLocomotives || isPending}
                 triggerClassName="w-full mb-0"
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="section_id">
-                {t("section")} <span className="text-red-500 ml-1">*</span>
-              </Label>
+            <Field label={t("section")} htmlFor="section_id" required>
               <Select
                 value={selects.section_id}
                 onValueChange={(value) =>
@@ -303,12 +286,9 @@ export function ComponentRegistryModal({
                       )}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="component_id">
-                {t("uzel")} <span className="text-red-500 ml-1">*</span>
-              </Label>
+            <Field label={t("uzel")} htmlFor="component_id" required>
               <Select
                 value={selects.component_id}
                 onValueChange={(value) =>
@@ -351,13 +331,9 @@ export function ComponentRegistryModal({
                   )}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="inspection_id">
-                {t("inspection_type")}{" "}
-                <span className="text-red-500 ml-1">*</span>
-              </Label>
+            <Field label={<>{t("inspection_type")}{" "}</>} htmlFor="inspection_id" required>
               <Select
                 value={selects.inspection_id}
                 onValueChange={(value) =>
@@ -382,10 +358,9 @@ export function ComponentRegistryModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="reason">{t("reason")}</Label>
+            <Field label={t("reason")} htmlFor="reason">
               <Input
                 id="reason"
                 name="reason"
@@ -394,10 +369,9 @@ export function ComponentRegistryModal({
                 placeholder={t("placeholder_reason")}
                 className="w-full"
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label>{t("defect_date")}</Label>
+            <Field label={t("defect_date")}>
               <DatePicker
                 value={defectDate}
                 onValueChange={setDefectDate}
@@ -407,10 +381,9 @@ export function ComponentRegistryModal({
                 fromYear={1990}
                 toYear={new Date().getFullYear() + 1}
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label>{t("removed_manufacture_year")}</Label>
+            <Field label={t("removed_manufacture_year")}>
               <Input
                 type="number"
                 min={1900}
@@ -421,12 +394,9 @@ export function ComponentRegistryModal({
                 disabled={isPending}
                 className="w-full"
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="removed_manufacture_factory">
-                {t("removed_manufacture_factory")}
-              </Label>
+            <Field label={t("removed_manufacture_factory")} htmlFor="removed_manufacture_factory">
               <Input
                 id="removed_manufacture_factory"
                 name="removed_manufacture_factory"
@@ -436,10 +406,9 @@ export function ComponentRegistryModal({
                 disabled={!selects.component_id}
                 className="w-full"
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label>{t("installed_manufacture_year")}</Label>
+            <Field label={t("installed_manufacture_year")}>
               <Input
                 type="number"
                 min={1900}
@@ -450,12 +419,9 @@ export function ComponentRegistryModal({
                 disabled={isPending}
                 className="w-full"
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="installed_manufacture_factory">
-                {t("installed_manufacture_factory")}
-              </Label>
+            <Field label={t("installed_manufacture_factory")} htmlFor="installed_manufacture_factory">
               <Input
                 id="installed_manufacture_factory"
                 name="installed_manufacture_factory"
@@ -465,10 +431,10 @@ export function ComponentRegistryModal({
                 disabled={!selects.component_id}
                 className="w-full"
               />
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -480,9 +446,8 @@ export function ComponentRegistryModal({
             <Button type="submit" disabled={isPending}>
               {isPending ? t("saving") : editData ? t("update") : t("save")}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

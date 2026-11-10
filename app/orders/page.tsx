@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -8,11 +8,7 @@ import PageFilters from "@/ui/filters";
 import { CheckCircle } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
-import {
-  OrderData,
-  CreateOrderPayload,
-  UpdateOrderPayload,
-} from "@/api/types/orders";
+import { OrderData, CreateOrderPayload, UpdateOrderPayload } from "@/api/types/orders";
 import {
   useOrders,
   useCreateOrder,
@@ -28,7 +24,6 @@ import { truncateFilename } from "@/utils/format-filename";
 import { exportOrdersExcel } from "@/api/services/orders.service";
 import { authService } from "@/api/services/auth.service";
 import { format } from "date-fns";
-import { FileSpreadsheet } from "lucide-react";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useMprStatistics } from "@/api/hooks/use-statistics";
@@ -38,8 +33,12 @@ import { Wrench, Ban, AlertTriangle, Coins } from "lucide-react";
 import { hasPermission, type Permission } from "@/lib/permissions";
 import { Badge } from "@/ui/badge";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
-import { responsibleOrganizations } from "@/data";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
+import { ListStatsSwitch, useListStatsView } from "@/ui/view-switch";
 
+import { formatDateTime, formatNumber } from "@/lib/format";
 export default function OrdersPage() {
   const t = useTranslations("OrdersPage");
   const { updateQuery, getAllQueryValues } = useFilterParams();
@@ -313,31 +312,9 @@ export default function OrdersPage() {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      return `${day}.${month}.${year} ${hours}:${minutes}`;
-    } catch {
-      return dateString;
-    }
-  };
+  const formatDate = (dateString: string): string => formatDateTime(dateString, dateString);
 
-  const formatDamageAmount = (amount: string): string => {
-    try {
-      const numAmount = parseFloat(amount);
-      return numAmount.toLocaleString("uz-UZ", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } catch {
-      return amount;
-    }
-  };
+  const formatDamageAmount = (amount: string): string => formatNumber(amount, { digits: 2, fallback: amount });
 
   const columns: TableColumn<OrderData>[] = [
     {
@@ -408,7 +385,7 @@ export default function OrdersPage() {
       key: "confirm",
       header: t("columns.status"),
       accessor: (row) => (
-        <Badge variant={row.confirm ? "success_outline" : "warning_outline"}>
+        <Badge variant={row.confirm ? "success" : "warning"}>
           {row.confirm ? t("status_confirmed") : t("status_not_confirmed")}
         </Badge>
       ),
@@ -420,7 +397,7 @@ export default function OrdersPage() {
       key: "mpr",
       totalKey: "total_mpr",
       label: t("statistics.mpr"),
-      color: "#2563eb",
+      color: "var(--primary)",
       kind: "count",
       chart: "bar",
       icon: Wrench,
@@ -429,7 +406,7 @@ export default function OrdersPage() {
       key: "invalid",
       totalKey: "total_invalid",
       label: t("statistics.invalid"),
-      color: "#f59e0b",
+      color: "var(--warning)",
       kind: "count",
       chart: "bar",
       icon: Ban,
@@ -438,7 +415,7 @@ export default function OrdersPage() {
       key: "defect",
       totalKey: "total_defect",
       label: t("statistics.defect"),
-      color: "#8b5cf6",
+      color: "var(--category-violet)",
       kind: "count",
       chart: "bar",
       icon: AlertTriangle,
@@ -447,7 +424,7 @@ export default function OrdersPage() {
       key: "damage_amount",
       totalKey: "total_damage_amount",
       label: t("statistics.damage_amount"),
-      color: "#dc2626",
+      color: "var(--destructive)",
       kind: "currency",
       chart: "line",
       icon: Coins,
@@ -459,108 +436,116 @@ export default function OrdersPage() {
     { label: t("breadcrumbs.current"), current: true },
   ];
 
+  const [view, setView] = useListStatsView();
+  const viewSwitch = <ListStatsSwitch value={view} onValueChange={setView} />;
+  const header = (filters: React.ReactNode, actions: React.ReactNode) => (
+    <PageHeader
+      title={t("title")}
+      description={t("description")}
+      breadcrumbs={breadcrumbs}
+      filters={filters}
+      actions={actions}
+    />
+  );
+
   return (
-    <div className="min-h-full ">
-      <PageHeader
-        title={t("title")}
-        description={t("description")}
-        breadcrumbs={breadcrumbs}
-      />
-
-      <StatsPanel
-        title={t("statistics.title")}
-        metrics={mprMetrics}
-        useStats={useMprStatistics as unknown as StatsHook}
-        locomotiveOptions={statLocomotiveOptions}
-      />
-
-      <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "type_of_journal",
-              label: t("filters.journal_type"),
-              isSelect: true,
-              options: journalTypeOptions,
-              placeholder: t("filters.journal_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "locomotive",
-              label: t("filters.locomotive"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotive_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-            ...(canChooseOrganization
-              ? [
-                  {
-                    name: "organization",
-                    label: t("filters.organization"),
-                    isSelect: true,
-                    options: organizationOptions,
-                    placeholder: t("filters.organization_placeholder"),
-                    searchable: false,
-                    loading: isLoadingOrganizations,
-                  },
-                ]
-              : []),
-          ]}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-          hasDatePicker={true}
-          datePickerLabel={t("date_label")}
-          addButtonPermittion={isAdmin ? undefined : "create_order"}
-          onAdd={isAdmin ? undefined : handleCreate}
-          onExport={handleExport}
-          exportButtonText="Export EXCEL"
-          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
-          className="!mb-0"
+    <Page>
+      {view === "stats" ? (
+        <StatsPanel
+          title={t("statistics.title")}
+          metrics={mprMetrics}
+          useStats={useMprStatistics as unknown as StatsHook}
+          locomotiveOptions={statLocomotiveOptions}
+          header={(filters) => header(filters, viewSwitch)}
         />
-      </div>
+      ) : (
+        <>
+          {header(
+            <PageFilters
+              filters={[
+                {
+                  name: "type_of_journal",
+                  label: t("filters.journal_type"),
+                  isSelect: true,
+                  options: journalTypeOptions,
+                  placeholder: t("filters.journal_type_placeholder"),
+                  searchable: false,
+                },
+                {
+                  name: "locomotive",
+                  label: t("filters.locomotive"),
+                  isSelect: true,
+                  options: locomotiveOptions,
+                  placeholder: t("filters.locomotive_placeholder"),
+                  searchable: true,
+                  loading: isLoadingLocomotives,
+                },
+                ...(canChooseOrganization
+                  ? [
+                      {
+                        name: "organization",
+                        label: t("filters.organization"),
+                        isSelect: true,
+                        options: organizationOptions,
+                        placeholder: t("filters.organization_placeholder"),
+                        searchable: false,
+                        loading: isLoadingOrganizations,
+                      },
+                    ]
+                  : []),
+              ]}
+              hasSearch={true}
+              searchPlaceholder={t("search_placeholder")}
+              hasDatePicker={true}
+              datePickerLabel={t("date_label")}
+            />,
+            <>
+              {viewSwitch}
+              <ExportActions onExcel={handleExport} />
+              <AddButton onClick={isAdmin ? undefined : handleCreate} permission={isAdmin ? undefined : "create_order"} />
+            </>,
+          )}
 
-      <div className="px-6 pb-6">
-        <PaginatedTable
-          columns={columns}
-          data={paginatedData}
-          getRowId={(row) => row.id}
-          isLoading={isLoading}
-          error={error}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          updateQueryParams={true}
-          onEdit={isAdmin ? undefined : handleEdit}
-          onDelete={isAdmin ? undefined : handleDelete}
-          deletePermission="delete_order"
-          editPermission="edit_order"
-          isDeleting={deleteOrderMutation.isPending}
-          actionsDisplayMode="row"
-          extraActions={
-            isAdmin
-              ? [
-                  {
-                    label: "",
-                    icon: <CheckCircle className="h-4 w-4" />,
-                    onClick: handleConfirmClick,
-                    permission: "view_orders" as Permission,
-                    variant: "outline" as const,
-                    shouldShow: (row: OrderData) => !row.confirm,
-                    className:
-                      "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
-                  },
-                ]
-              : []
-          }
-          selectable={true}
-          size="sm"
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          emptyTitle={t("empty_title")}
-          emptyDescription={t("empty_description")}
-        />
-      </div>
+          <PaginatedTable
+            columns={columns}
+            data={paginatedData}
+            getRowId={(row) => row.id}
+            isLoading={isLoading}
+            error={error}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            updateQueryParams={true}
+            onEdit={isAdmin ? undefined : handleEdit}
+            onDelete={isAdmin ? undefined : handleDelete}
+            deletePermission="delete_order"
+            editPermission="edit_order"
+            isDeleting={deleteOrderMutation.isPending}
+            actionsDisplayMode="row"
+            extraActions={
+              isAdmin
+                ? [
+                    {
+                      label: "",
+                      icon: <CheckCircle className="h-4 w-4" />,
+                      onClick: handleConfirmClick,
+                      permission: "view_orders" as Permission,
+                      variant: "outline" as const,
+                      shouldShow: (row: OrderData) => !row.confirm,
+                      className:
+                        "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
+                    },
+                  ]
+                : []
+            }
+            selectable={true}
+            size="sm"
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            emptyTitle={t("empty_title")}
+            emptyDescription={t("empty_description")}
+          />
+        </>
+      )}
 
       <OrderModal
         isOpen={isModalOpen}
@@ -597,6 +582,6 @@ export default function OrdersPage() {
         isDoingAction={confirmOrderMutation.isPending}
         isDoingActionText={t("confirm_dialog.confirming")}
       />
-    </div>
+    </Page>
   );
 }

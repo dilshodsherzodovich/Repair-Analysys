@@ -7,17 +7,20 @@ import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useTranslations } from "next-intl";
 import { withRole } from "@/components/withRole";
 import { useLocale } from "next-intl";
-import CircularProgress from "@/components/circular-progress";
 import { format } from "date-fns";
 import { Button } from "@/ui/button";
-import { FileDown, Loader2 } from "lucide-react";
 import { LocomotiveHistoryForm } from "@/components/locomotive-history/LocomotiveHistoryForm";
 import { LocomotiveInspectionsTimeline } from "@/components/locomotive-history/LocomotiveInspectionsTimeline";
 import { Checkbox } from "@/ui/checkbox";
 import { Label } from "@/ui/label";
 import { generateLocomotiveInspectionsPdf } from "@/utils/locomotive-inspections-pdf-export";
 import { generateLocomotiveInspectionsDocx } from "@/utils/locomotive-inspections-docx-export";
+import { ExportActions } from "@/ui/export-actions";
+import { PageHeader } from "@/ui/page-header";
+import { Page } from "@/ui/page";
 
+import { Field } from "@/ui/field";
+import { EmptyState, LoadingState } from "@/ui/empty-state";
 function LocomotiveHistoryPage() {
   const t = useTranslations("LocomotiveHistory");
   const globalT = useTranslations("Inspects");
@@ -51,17 +54,11 @@ function LocomotiveHistoryPage() {
 
   const { data: inspectionTypes } = useGetInspectionTypes();
 
-  const handleFormSubmit = (
-    locomotive: number | undefined,
-    start: Date | undefined,
-    end: Date | undefined
-  ) => {
-    if (locomotive && start && end) {
-      setLocomotiveId(locomotive);
-      setStartDate(start);
-      setEndDate(end);
-      setShouldFetch(true);
-    }
+  const handleFormSubmit = (locomotive: number, start: Date, end: Date) => {
+    setLocomotiveId(locomotive);
+    setStartDate(start);
+    setEndDate(end);
+    setShouldFetch(true);
   };
 
   const filteredInspections = useMemo(() => {
@@ -147,67 +144,34 @@ function LocomotiveHistoryPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("pageTitle")}</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <Page>
+      <PageHeader
+        title={t("pageTitle")}
+        actions={
+          shouldFetch && inspectionsData && filteredInspections.length > 0 ? (
+            <ExportActions
+              onWord={handleExportDocx}
+              onPdf={handleExportPdf}
+              busy={isExportingDocx ? "word" : isExporting ? "pdf" : null}
+            />
+          ) : undefined
+        }
+        filters={
           <LocomotiveHistoryForm
             onSubmit={handleFormSubmit}
-            isLoading={isLoading}
+            onClear={() => setShouldFetch(false)}
           />
-        </CardContent>
-      </Card>
+        }
+      />
 
       {shouldFetch && locomotiveId && startDate && endDate && (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardHeader>
             <CardTitle>{t("timelineTitle")}</CardTitle>
-            {inspectionsData && filteredInspections.length > 0 && (
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleExportDocx}
-                  disabled={isExportingDocx}
-                  className="bg-green-700 hover:bg-green-800 text-white"
-                >
-                  {isExportingDocx ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t("exporting")}
-                    </>
-                  ) : (
-                    <>
-                      <FileDown className="w-4 h-4 mr-2" />
-                      {t("exportDocx")}
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={handleExportPdf}
-                  disabled={isExporting}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  {isExporting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t("exporting")}
-                    </>
-                  ) : (
-                    <>
-                      <FileDown className="w-4 h-4 mr-2" />
-                      {t("exportPdf")}
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
           </CardHeader>
           <CardContent>
             {isLoading && !inspectionsData ? (
-              <div className="flex justify-center items-center h-64">
-                <CircularProgress />
-              </div>
+              <LoadingState />
             ) : inspectionsData && inspectionsData.results.length > 0 ? (
               <div className="space-y-4">
                 <div className="rounded-lg border bg-muted/40 p-4">
@@ -230,11 +194,8 @@ function LocomotiveHistoryPage() {
                 </div>
 
                 {inspectionTypes && inspectionTypes.length > 0 && (
-                  <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
-                    <div className="flex items-center justify-between mb-3">
-                      <Label className="text-sm font-semibold">
-                        {t("filterByInspectionType")}
-                      </Label>
+                  <div className="border rounded-lg p-4 bg-surface-muted">
+                    <Field label={t("filterByInspectionType")} className="items-center justify-between mb-3">
                       <Button
                         variant="outline"
                         size="sm"
@@ -245,7 +206,7 @@ function LocomotiveHistoryPage() {
                           ? t("deselectAll")
                           : t("selectAll")}
                       </Button>
-                    </div>
+                    </Field>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                       {inspectionTypes.map((type) => (
                         <div key={type.id} className="flex items-center space-x-2">
@@ -278,14 +239,12 @@ function LocomotiveHistoryPage() {
                 )}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                {t("noData")}
-              </div>
+              <EmptyState title={t("noData")} />
             )}
           </CardContent>
         </Card>
       )}
-    </div>
+    </Page>
   );
 }
 

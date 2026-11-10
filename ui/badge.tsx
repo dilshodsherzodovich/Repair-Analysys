@@ -2,37 +2,39 @@ import type * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+/**
+ * Status pills (see "Badges" in the design-system spec). Statuses use the
+ * subtle variants (neutral, primary, success, warning, danger); the solid
+ * ones are for counts and strong emphasis. `size="sm"` for pills inside
+ * dense table cells.
+ */
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1 rounded-full border border-transparent font-semibold whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
-        primary: "border-transparent bg-primary text-white hover:bg-primary/80",
-        default:
-          "border-transparent bg-[#f3f4f6] text-[#374151] hover:bg-[#e5e7eb]",
-        outline: "text-[#374151] border-[#d1d5db]",
-        secondary: "border-transparent bg-[#6b7280] text-white",
-        secondary_outline:
-          "border-transparent border-[#6b7280] bg-[#6b7280] text-white hover:bg-[#555e70]",
-        destructive:
-          "border-transparent bg-[#dc2626] text-white hover:bg-[#b91c1c]",
-        destructive_outline:
-          "border-transparent border-[#dc2626] bg-[#dc2626]/10 text-[#dc2626] hover:bg-[#b91c1c]/20 hover:text-[#b91c1c]",
-        success:
-          "border-transparent bg-[#10b981] text-white hover:bg-[#059669]",
-        success_outline:
-          "border-transparent border-[#10b981] bg-[#10b981]/10 text-[#10b981] hover:bg-[#059669]/20 hover:text-[#059669]",
-        warning:
-          "border-transparent bg-[#f59e0b] text-white hover:bg-[#d97706]",
-        warning_outline:
-          "border-transparent border-[#f59e0b] bg-[#f59e0b]/10 text-[#f59e0b] hover:bg-[#f59e0b]/20 hover:text-[#d97706]",
-        info: "border-transparent bg-[#2354bf] text-white hover:bg-[#1d4ed8]",
-        info_outline:
-          "border-transparent border-[#2354bf] bg-[#2354bf] text-white hover:bg-[#1d4ed8]",
+        // Subtle: light fill, coloured text
+        neutral: "bg-muted text-foreground-secondary",
+        primary: "bg-primary-subtle text-primary",
+        success: "bg-success-subtle text-success",
+        warning: "bg-warning-subtle text-warning",
+        danger: "bg-destructive-subtle text-destructive",
+
+        // Solid: filled, white text
+        neutral_solid: "bg-muted-foreground text-primary-foreground",
+        primary_solid: "bg-primary text-primary-foreground",
+        success_solid: "bg-success text-success-foreground",
+        warning_solid: "bg-warning text-warning-foreground",
+        danger_solid: "bg-destructive text-destructive-foreground",
+      },
+      size: {
+        default: "px-2.5 py-0.5 text-xs",
+        sm: "px-2 py-0.5 text-2xs",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "neutral",
+      size: "default",
     },
   }
 );
@@ -41,9 +43,9 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, size, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant, size }), className)} {...props} />
   );
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -34,7 +34,12 @@ import { exportPantographExcel } from "@/api/services/pantograph.service";
 import { authService } from "@/api/services/auth.service";
 import { format } from "date-fns";
 import { FileSpreadsheet } from "lucide-react";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
+import { ListStatsSwitch, useListStatsView } from "@/ui/view-switch";
 
+import { formatDate as formatDateShared, formatNumber } from "@/lib/format";
 export default function PantografPage() {
   const t = useTranslations("PantographPage");
   const { updateQuery, getAllQueryValues, getQueryValue } = useFilterParams();
@@ -252,27 +257,9 @@ export default function PantografPage() {
     [createEntryMutation.isPending, updateEntryMutation.isPending],
   );
 
-  const formatDate = (dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}.${month}.${year}`;
-    } catch {
-      return dateString;
-    }
-  };
+  const formatDate = (dateString: string): string => formatDateShared(dateString, dateString);
 
-  const formatDamage = (amount: string): string => {
-    if (!amount) return "-";
-    const parsed = Number(amount);
-    if (Number.isNaN(parsed)) return amount;
-    return parsed.toLocaleString("uz-UZ", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
+  const formatDamage = (amount: string): string => formatNumber(amount, { digits: 2, fallback: amount || "-" });
 
   const columns: TableColumn<PantographJournalEntry>[] = [
     {
@@ -328,7 +315,7 @@ export default function PantografPage() {
       key: "damage",
       totalKey: "total_damage",
       label: t("statistics.damage"),
-      color: "#dc2626",
+      color: "var(--destructive)",
       kind: "currency",
       chart: "line",
       icon: Coins,
@@ -349,56 +336,63 @@ export default function PantografPage() {
     { label: t("breadcrumbs.current"), current: true },
   ];
 
+  const [view, setView] = useListStatsView();
+  const viewSwitch = <ListStatsSwitch value={view} onValueChange={setView} />;
+  const header = (filters: React.ReactNode, actions: React.ReactNode) => (
+    <PageHeader
+      title={t("title")}
+      description={t("description")}
+      breadcrumbs={breadcrumbs}
+      filters={filters}
+      actions={actions}
+    />
+  );
+
   return (
-    <div className="min-h-full">
-      <PageHeader
-        title={t("title")}
-        description={t("description")}
-        breadcrumbs={breadcrumbs}
-      />
-
-      <StatsPanel
-        title={t("statistics.title")}
-        metrics={pantographMetrics}
-        useStats={usePantographStatistics as unknown as StatsHook}
-        locomotiveOptions={statLocomotiveOptions}
-      />
-
-      <div className="px-6 py-4">
-        <PageFilters
-          filters={pageFilters}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-          onAdd={handleCreate}
-          addButtonText={t("add_button")}
-          addButtonPermittion="create_pantograf"
-          onExport={handleExport}
-          exportButtonText="Export EXCEL"
-          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
-          className="!mb-0"
+    <Page>
+      {view === "stats" ? (
+        <StatsPanel
+          title={t("statistics.title")}
+          metrics={pantographMetrics}
+          useStats={usePantographStatistics as unknown as StatsHook}
+          locomotiveOptions={statLocomotiveOptions}
+          header={(filters) => header(filters, viewSwitch)}
         />
-      </div>
+      ) : (
+        <>
+          {header(
+            <PageFilters
+              filters={pageFilters}
+              hasSearch={true}
+              searchPlaceholder={t("search_placeholder")}
+            />,
+            <>
+              {viewSwitch}
+              <ExportActions onExcel={handleExport} />
+              <AddButton onClick={handleCreate} permission="create_pantograf" />
+            </>,
+          )}
 
-      <div className="px-6 pb-6">
-        <PaginatedTable
-          columns={columns}
-          data={paginatedData}
-          getRowId={(row) => row.id}
-          isLoading={isLoading}
-          error={error}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          updateQueryParams={true}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          isDeleting={deleteEntryMutation.isPending}
-          selectable={true}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          emptyTitle={t("empty_title")}
-          emptyDescription={t("empty_description")}
-        />
-      </div>
+          <PaginatedTable
+            columns={columns}
+            data={paginatedData}
+            getRowId={(row) => row.id}
+            isLoading={isLoading}
+            error={error}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            updateQueryParams={true}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            isDeleting={deleteEntryMutation.isPending}
+            selectable={true}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            emptyTitle={t("empty_title")}
+            emptyDescription={t("empty_description")}
+          />
+        </>
+      )}
 
       <PantographModal
         isOpen={isModalOpen}
@@ -408,6 +402,6 @@ export default function PantografPage() {
         mode={modalMode}
         isPending={isModalPending}
       />
-    </div>
+    </Page>
   );
 }

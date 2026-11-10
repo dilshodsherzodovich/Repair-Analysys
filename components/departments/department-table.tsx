@@ -13,7 +13,6 @@ import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
 import { Badge } from "@/ui/badge";
 import { Edit, Trash2 } from "lucide-react";
-import { DepartmentsFilters } from "@/components/departments/department-filters";
 import { Card } from "@/ui/card";
 import { PaginatedData } from "@/api/types/general";
 import { Department } from "@/api/types/deparments";
@@ -23,6 +22,8 @@ import { PermissionGuard } from "../permission-guard";
 import { Pagination } from "@/ui/pagination";
 import { getPageCount } from "@/lib/utils";
 import PageFilters from "@/ui/filters";
+import { FilterPanel } from "@/ui/filter-bar";
+import { AddButton } from "@/ui/add-button";
 
 interface DepartmentTableProps {
   departments: PaginatedData<Department>;
@@ -76,23 +77,21 @@ export function DepartmentTable({
 
   return (
     <div className="space-y-4">
-      <Card>
+      <FilterPanel actions={<AddButton onClick={onCreateNew} permission="create_department" />}>
         <PageFilters
           filters={[]}
           hasSearch={true}
           searchPlaceholder="Quyi tashkilot nomi"
-          onAdd={onCreateNew}
-          addButtonText="Yangi quyi tashkilot"
-          addButtonPermittion="create_department"
           selectedCount={selectedIds.length}
           onBulkDelete={handleBulkDelete}
-          bulkDeleteText="O'chirish"
         />
+      </FilterPanel>
+      <Card>
         <div className="overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 text-[var(--table-header-fg)] sticky top-0 z-10 ">
-                <TableHead className="w-12 p-3 ">
+              <TableRow className="bg-muted/50 sticky top-0 z-10">
+                <TableHead className="w-12">
                   <Checkbox
                     checked={
                       selectedIds.length === departments?.results?.length &&
@@ -101,11 +100,11 @@ export function DepartmentTable({
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
-                <TableHead className="w-16 p-3 ">#</TableHead>
-                <TableHead className="p-3">Quyi tashkilot</TableHead>
-                <TableHead className="p-3">Tashkilot</TableHead>
-                <TableHead className="p-3">Yaratilgan sana</TableHead>
-                <TableHead className="w-32 p-3">Amallar</TableHead>
+                <TableHead className="w-16">#</TableHead>
+                <TableHead>Quyi tashkilot</TableHead>
+                <TableHead>Tashkilot</TableHead>
+                <TableHead>Yaratilgan sana</TableHead>
+                <TableHead className="w-32">Amallar</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -116,9 +115,8 @@ export function DepartmentTable({
                   {departments?.results?.map((department, index) => (
                     <TableRow
                       key={department.id}
-                      className={" transition-colors hover:bg-muted/50 "}
                     >
-                      <TableCell className="p-3">
+                      <TableCell>
                         <Checkbox
                           checked={selectedIds.includes(department.id)}
                           onCheckedChange={(checked) =>
@@ -126,31 +124,31 @@ export function DepartmentTable({
                           }
                         />
                       </TableCell>
-                      <TableCell className="font-semibold text-[var(--primary)] p-3">
+                      <TableCell className="font-semibold text-primary">
                         {index + 1}
                       </TableCell>
-                      <TableCell className="p-3">
+                      <TableCell>
                         <span className="font-medium">{department.name}</span>
                       </TableCell>
-                      <TableCell className="p-3 text-[var(--muted-foreground)]">
+                      <TableCell>
                         {department.organization}
                       </TableCell>
-                      <TableCell className="p-3 text-[var(--muted-foreground)]">
+                      <TableCell>
                         {department.created
                           ? format(department.created, "dd.MM.yyyy HH:mm")
                           : ""}
                       </TableCell>
-                      <TableCell className="p-3">
+                      <TableCell>
                         <div className="flex items-center gap-2">
                           <PermissionGuard permission="edit_department">
                             <Button
                               variant="outline"
                               size="icon"
                               onClick={() => onEdit(department)}
-                              className="h-8 w-8 p-0 border border-[var(--border)] hover:bg-[var(--primary)]/10"
+                              className="h-8 w-8 p-0 border border-border hover:bg-primary/10"
                               aria-label="Tahrirlash"
                             >
-                              <Edit className="h-4 w-4 text-[var(--primary)]" />
+                              <Edit className="h-4 w-4 text-primary" />
                             </Button>
                           </PermissionGuard>
                           <PermissionGuard permission="delete_department">
@@ -158,10 +156,10 @@ export function DepartmentTable({
                               variant="outline"
                               size="icon"
                               onClick={() => onDelete(department)}
-                              className="h-8 w-8 p-0 border border-[var(--border)] hover:bg-[var(--destructive)]/10"
+                              className="h-8 w-8 p-0 border border-border hover:bg-destructive/10"
                               aria-label="O'chirish"
                             >
-                              <Trash2 className="h-4 w-4 text-[var(--destructive)]" />
+                              <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </PermissionGuard>
                         </div>
@@ -173,7 +171,7 @@ export function DepartmentTable({
             </TableBody>
           </Table>
           {totalPages > 1 && (
-            <div className="p-4 border-t border-[var(--border)]">
+            <div className="p-4 border-t border-border">
               <Pagination
                 currentPage={currentPage}
                 totalPages={getPageCount(totalPages, 10)}

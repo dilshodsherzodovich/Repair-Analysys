@@ -10,6 +10,7 @@ import UnauthorizedPage from "../unauthorized/page";
 import { NosozliklarTab } from "@/components/defective-works/nosozliklar-tab";
 import { TU152Tab } from "@/components/defective-works/tu152-tab";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 export default function DefectiveWorksPage() {
   const t = useTranslations("DefectiveWorksPage");
@@ -32,7 +33,7 @@ export default function DefectiveWorksPage() {
     (value: string) => {
       if (isEchUser && value !== "nosozliklar") return;
       setCurrentMainTab(value);
-      updateQuery({ mainTab: value, page: "1" });
+      updateQuery({ mainTab: value, page: "1", view: null });
     },
     [isEchUser, updateQuery],
   );
@@ -43,28 +44,24 @@ export default function DefectiveWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
       />
 
-      <div className="px-6">
+      {!isEchUser && (
         <Tabs value={currentMainTab} onValueChange={handleMainTabChange}>
-          <TabsList className="bg-[#F1F5F9] p-1 gap-0 border-0 rounded-lg inline-flex">
-            <TabsTrigger value="nosozliklar">
-              {t("tab_nosozliklar")}
-            </TabsTrigger>
-            {!isEchUser && (
-              <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
-            )}
+          <TabsList>
+            <TabsTrigger value="nosozliklar">{t("tab_nosozliklar")}</TabsTrigger>
+            <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
+      )}
 
       {currentMainTab === "nosozliklar" && <NosozliklarTab />}
       {!isEchUser && currentMainTab === "tu152" && <TU152Tab />}
-    </div>
+    </Page>
   );
 }

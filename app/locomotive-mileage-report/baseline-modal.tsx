@@ -5,17 +5,9 @@ import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useQueryClient } from "@tanstack/react-query";
 import { txk13ReportService } from "@/api/services/txk13-report.service";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/ui/modal";
 import { DatePicker } from "@/ui/date-picker";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
-import { Label } from "@/ui/label";
 import {
   useLocomotiveMileageBaseline,
   useCreateLocomotiveMileageBaseline,
@@ -23,6 +15,9 @@ import {
   useDeleteLocomotiveMileageBaseline,
 } from "@/api/hooks/use-locomotive-mileage-baselines";
 
+import { Field } from "@/ui/field";
+import { Modal, ModalFooter } from "@/ui/modal";
+import { LoadingState } from "@/ui/empty-state";
 interface BaselineModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -162,18 +157,15 @@ export function BaselineModal({
     (!!baselineDate && baselineKm !== "" && !isNaN(Number(baselineKm)));
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle className="text-base font-semibold text-[#0F172B]">
-            {t("title", { locomotiveName, inspectionTypeName })}
-          </DialogTitle>
-        </DialogHeader>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={<>{t("title", { locomotiveName, inspectionTypeName })}</>}
+      size="sm"
+    >
 
         {isLoading ? (
-          <div className="py-6 text-center text-sm text-[#64748B]">
-            {t("loading")}
-          </div>
+          <LoadingState size="compact" shape="lines" />
         ) : (
           <div className="space-y-4 py-2">
             {/* Hidden per request — kept mounted so its logic/state stays intact */}
@@ -212,8 +204,7 @@ export function BaselineModal({
               toYear={new Date().getFullYear()}
             />
 
-            <div className="space-y-1.5">
-              <Label htmlFor="baseline-km">{t("km_label")}</Label>
+            <Field label={t("km_label")} htmlFor="baseline-km">
               <Input
                 id="baseline-km"
                 type="text"
@@ -226,19 +217,18 @@ export function BaselineModal({
                 disabled={isPending}
                 placeholder={t("km_placeholder")}
               />
-            </div>
+            </Field>
           </div>
         )}
 
-        <DialogFooter className="gap-2">
+        <ModalFooter>
           {existing && !confirmDelete && (
             <Button
               type="button"
               variant="ghost"
-              size="sm"
               disabled={isPending}
               onClick={() => setConfirmDelete(true)}
-              className="text-[#DC2626] hover:text-[#DC2626] hover:bg-red-50 mr-auto"
+              className="text-destructive hover:text-destructive hover:bg-destructive-subtle mr-auto"
             >
               <Trash2 className="size-4" />
               {t("delete")}
@@ -246,11 +236,10 @@ export function BaselineModal({
           )}
           {existing && confirmDelete && (
             <div className="flex items-center gap-2 mr-auto">
-              <span className="text-xs text-[#DC2626]">{t("confirm_delete")}</span>
+              <span className="text-xs text-destructive">{t("confirm_delete")}</span>
               <Button
                 type="button"
                 variant="destructive"
-                size="sm"
                 disabled={isPending}
                 onClick={handleDelete}
               >
@@ -259,7 +248,6 @@ export function BaselineModal({
               <Button
                 type="button"
                 variant="ghost"
-                size="sm"
                 disabled={isPending}
                 onClick={() => setConfirmDelete(false)}
               >
@@ -273,7 +261,6 @@ export function BaselineModal({
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
                 onClick={onClose}
                 disabled={isPending}
               >
@@ -281,7 +268,6 @@ export function BaselineModal({
               </Button>
               <Button
                 type="button"
-                size="sm"
                 onClick={handleSave}
                 disabled={isPending || !canSave || isLoading}
               >
@@ -289,8 +275,7 @@ export function BaselineModal({
               </Button>
             </>
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+    </Modal>
   );
 }

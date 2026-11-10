@@ -2,19 +2,16 @@
 
 import { useEffect, useMemo, useState, type FormEvent, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Card } from "@/ui/card";
-import { Modal } from "@/ui/modal";
-import { Label } from "@/ui/label";
+import { Modal, ModalFooter } from "@/ui/modal";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SearchableSelect,
 } from "@/ui/select";
 import { Button } from "@/ui/button";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { FormField } from "@/ui/form-field";
 import { DatePicker } from "@/ui/date-picker";
 import { TimePicker } from "@/ui/time-picker";
@@ -25,16 +22,14 @@ import {
 } from "@/api/types/defective-works";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
-import {
-  useEchRemarkGroups,
-  useRevisionRemarkGroups,
-} from "@/api/hooks/use-defective-works";
+import { useEchRemarkGroups, useRevisionRemarkGroups } from "@/api/hooks/use-defective-works";
 import { LocomotiveData } from "@/api/types/locomotive";
 import { InspectionType } from "@/api/types/inspectionTypes";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { authService } from "@/api/services/auth.service";
 import { isEchAccount } from "@/lib/permissions";
 
+import { Field, FieldGrid } from "@/ui/field";
 type LocomotiveOption = {
   id: number;
   label: string;
@@ -95,171 +90,39 @@ function LocomotiveSelectField({
   noResultsText?: string;
   onSelect?: (id: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
   const [selectedValue, setSelectedValue] = useState(defaultValue ?? "");
-  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
-    "bottom"
-  );
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Sync selectedValue when defaultValue changes (e.g. form reset / edit mode)
   useEffect(() => {
     setSelectedValue(defaultValue ?? "");
   }, [defaultValue]);
 
-  const filteredLocomotives = useMemo(() => {
-    if (!searchValue.trim()) return locomotives;
-    const q = searchValue.toLowerCase();
-    return locomotives.filter(
-      (loc) =>
-        loc.name?.toLowerCase().includes(q) ||
-        loc.model_name?.toLowerCase().includes(q) ||
-        loc.id.toString().includes(q)
-    );
-  }, [locomotives, searchValue]);
-
-  const selectedLocomotive = locomotives.find(
-    (l) => l.id.toString() === selectedValue
+  const options = useMemo(
+    () =>
+      locomotives.map((loc) => ({
+        value: loc.id.toString(),
+        label: `${loc.name} (${loc.model_name})`,
+      })),
+    [locomotives]
   );
-  const selectedLabel = selectedLocomotive
-    ? `${selectedLocomotive.name} (${selectedLocomotive.model_name})`
-    : null;
-
-  useEffect(() => {
-    if (open && triggerRef.current) {
-      const triggerRect = triggerRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const dropdownHeight = 300;
-      const spaceBelow = viewportHeight - triggerRect.bottom;
-      const spaceAbove = triggerRect.top;
-      if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
-        setDropdownPosition("top");
-      } else {
-        setDropdownPosition("bottom");
-      }
-    }
-  }, [open]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-        setSearchValue("");
-      }
-    };
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [open]);
-
-  const handleSelect = (optionId: string) => {
-    setSelectedValue(optionId);
-    setOpen(false);
-    setSearchValue("");
-    onSelect?.(optionId);
-  };
 
   return (
-    <div className="relative w-full mb-4">
-      <Label htmlFor="locomotive">{label}</Label>
-      <input type="hidden" name={name} value={selectedValue} readOnly />
-      <div
-        ref={triggerRef}
-        id="locomotive"
-        role="combobox"
-        aria-expanded={open}
-        className={cn(
-          "flex h-10 w-full items-center justify-between gap-2 cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
-          "transition-colors outline-none focus:border-blue-500 hover:border-gray-400",
-          "md:text-sm",
-          isLoading &&
-            "pointer-events-none opacity-50 cursor-not-allowed bg-gray-50"
-        )}
-        onClick={() => !isLoading && setOpen(!open)}
-      >
-        <span
-          className={cn(
-            "min-w-0 flex-1 truncate text-left",
-            selectedLabel ? "text-[#0F172B]" : "text-muted-foreground"
-          )}
-        >
-          {selectedLabel ?? placeholder}
-        </span>
-        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
-      </div>
-
-      {open && (
-        <div
-          ref={dropdownRef}
-          className={cn(
-            "absolute left-0 right-0 bg-white border border-gray-300 rounded-md z-[999999] max-h-[300px] overflow-hidden",
-            "animate-in fade-in-0 zoom-in-95",
-            dropdownPosition === "top"
-              ? "bottom-full mb-1 slide-in-from-bottom-2"
-              : "top-full mt-1 slide-in-from-top-2"
-          )}
-          style={{ zIndex: 999999 }}
-        >
-          {isLoading ? (
-            <div className="py-3 px-3 text-sm text-muted-foreground">
-              {loadingText}
-            </div>
-          ) : locomotives.length === 0 ? (
-            <div className="py-3 px-3 text-sm text-muted-foreground">
-              {emptyText}
-            </div>
-          ) : (
-            <>
-              <div className="p-2 border-b border-gray-200">
-                <input
-                  type="text"
-                  placeholder={searchPlaceholder}
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="max-h-[200px] overflow-y-auto">
-                {filteredLocomotives.length === 0 ? (
-                  <div className="py-3 text-center text-sm text-muted-foreground">
-                    {noResultsText}
-                  </div>
-                ) : (
-                  <div className="py-0.5">
-                    {filteredLocomotives.map((option) => (
-                      <button
-                        key={option.id}
-                        type="button"
-                        onClick={() => handleSelect(option.id.toString())}
-                        className={cn(
-                          "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-gray-100 cursor-pointer transition-colors bg-white rounded-sm",
-                          option.id.toString() === selectedValue &&
-                            "bg-blue-50 text-blue-700"
-                        )}
-                      >
-                        <span className="truncate">
-                          {option.name} ({option.model_name})
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+    <Field label={label} htmlFor="locomotive">
+      <SearchableSelect
+        name={name}
+        searchable
+        loading={isLoading}
+        value={selectedValue}
+        onValueChange={(id) => {
+          setSelectedValue(id);
+          onSelect?.(id);
+        }}
+        options={options}
+        placeholder={isLoading ? loadingText : placeholder}
+        searchPlaceholder={searchPlaceholder}
+        emptyMessage={locomotives.length ? noResultsText : emptyText}
+      />
+    </Field>
   );
 }
 
@@ -283,8 +146,7 @@ function InspectionTypesSelectField({
   emptyText: string;
 }) {
   return (
-    <div>
-      <Label htmlFor="inspection-types">{label}</Label>
+    <Field label={label} htmlFor="inspection-types">
       <Select name={name} defaultValue={defaultValue} disabled={isLoading}>
         <SelectTrigger id="inspection-types">
           <SelectValue placeholder={placeholder} />
@@ -307,7 +169,7 @@ function InspectionTypesSelectField({
           )}
         </SelectContent>
       </Select>
-    </div>
+    </Field>
   );
 }
 
@@ -460,10 +322,8 @@ export function DefectiveWorkModal({
         onClose={handleClose}
         title={modalTexts.title}
         size="sm"
-        ariaDescribedBy="defective-works-resolution-modal"
       >
-        <Card className="border-none p-0 mt-4">
-          <form
+        <form
             key={formKey}
             onSubmit={(event) => {
               event.preventDefault();
@@ -483,7 +343,7 @@ export function DefectiveWorkModal({
               required
             />
 
-            <div className="flex justify-end gap-3 pt-4">
+            <ModalFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -495,9 +355,8 @@ export function DefectiveWorkModal({
               <Button type="submit" disabled={isPending}>
                 {isPending ? modalTexts.pending : modalTexts.submit}
               </Button>
-            </div>
+            </ModalFooter>
           </form>
-        </Card>
       </Modal>
     );
   }
@@ -508,16 +367,14 @@ export function DefectiveWorkModal({
       onClose={handleClose}
       title={modalTexts.title}
       size="lg"
-      ariaDescribedBy="defective-works-modal"
     >
-      <Card className="border-none p-0 mt-4">
-        <form
+      <form
           key={formKey}
           ref={formRef}
           onSubmit={handleSubmit}
           className="space-y-2"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FieldGrid columns={2}>
             <LocomotiveSelectField
               name="locomotive"
               defaultValue={formDefaults.locomotive}
@@ -546,8 +403,7 @@ export function DefectiveWorkModal({
             />
 
             {/* ECH group */}
-            {isEchUser && <div className="mb-4">
-              <Label htmlFor="group_ech">{t("group_ech")}</Label>
+            {isEchUser && <Field label={t("group_ech")} htmlFor="group_ech" className="mb-4">
               <Select
                 value={selectedEchGroup}
                 onValueChange={setSelectedEchGroup}
@@ -572,12 +428,11 @@ export function DefectiveWorkModal({
                   ))}
                 </SelectContent>
               </Select>
-            </div>}
+            </Field>}
 
             {!isEchUser && (
               <>
-                <div className="mb-4">
-                  <Label htmlFor="remark_group">{t("remark_group")}</Label>
+                <Field label={t("remark_group")} htmlFor="remark_group" className="mb-4">
                   <Select
                     value={selectedGroup}
                     onValueChange={(value) => {
@@ -609,10 +464,9 @@ export function DefectiveWorkModal({
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
 
-                <div className="mb-4">
-                  <Label htmlFor="remark">{t("remark")}</Label>
+                <Field label={t("remark")} htmlFor="remark" className="mb-4">
                   <Select
                     value={selectedRemark}
                     onValueChange={setSelectedRemark}
@@ -639,7 +493,7 @@ export function DefectiveWorkModal({
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
               </>
             )}
 
@@ -689,7 +543,7 @@ export function DefectiveWorkModal({
               value={selectedDate}
               onValueChange={(date) => setSelectedDate(date)}
             />
-          </div>
+          </FieldGrid>
 
           <FormField
             id="issue"
@@ -702,7 +556,7 @@ export function DefectiveWorkModal({
             required
           />
 
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -714,9 +568,8 @@ export function DefectiveWorkModal({
             <Button type="submit" disabled={isPending}>
               {isPending ? modalTexts.pending : modalTexts.submit}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

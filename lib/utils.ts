@@ -13,13 +13,8 @@ export function getPageCount(
   return Math.ceil(totalItems / itemsPerPage);
 }
 
-export const formatDate = (dateString: string) => {
-  try {
-    return new Date(dateString).toLocaleDateString("uz-UZ");
-  } catch {
-    return dateString;
-  }
-};
+/** Kept for existing imports; the date format lives in lib/format. */
+export { formatDate } from "@/lib/format";
 
 export const getRoleName = (roleName: UserRole): string => {
   switch (roleName) {

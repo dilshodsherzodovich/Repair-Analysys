@@ -5,14 +5,10 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
 import { AlertTriangle, History } from "lucide-react";
-import {
-  SectionCard,
-  EmptyBlock,
-  LoadingBlock,
-  fmtDateTime,
-} from "./passport-shared";
+import { SectionCard, EmptyBlock, LoadingBlock, fmtDateTime } from "./passport-shared";
 import { useInspections } from "@/api/hooks/use-inspections";
 import type { Inspection } from "@/api/types/inspections";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 /* -------------------------------------------------------------------------- */
 /*  Interval + duration helpers (ported from dejurniy)                         */
@@ -72,7 +68,7 @@ function IntervalBadge({ inspection }: { inspection: Inspection }) {
     <Badge
       variant={
         status === "critical"
-          ? "destructive"
+          ? "danger"
           : status === "warning"
           ? "warning"
           : "success"
@@ -100,7 +96,7 @@ function DurationTrack({
     <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
       {maneuverPct > 0 && (
         <div
-          className="absolute inset-y-0 right-0 bg-amber-200/80"
+          className="absolute inset-y-0 right-0 bg-warning/80"
           style={{ width: `${maneuverPct}%` }}
         />
       )}
@@ -118,8 +114,8 @@ function DurationTrack({
 function OvertimeTrack() {
   return (
     <div className="relative flex h-2 w-full overflow-hidden rounded-full">
-      <div className="h-full flex-1 rounded-l-full bg-emerald-500" />
-      <div className="h-full w-3 shrink-0 rounded-r-full bg-red-500" />
+      <div className="h-full flex-1 rounded-l-full bg-success" />
+      <div className="h-full w-3 shrink-0 rounded-r-full bg-destructive" />
     </div>
   );
 }
@@ -145,7 +141,7 @@ function ProgressCell({
       {t("norm")}{" "}
       <span className="font-medium text-foreground">{inspection.duration}h</span>
       {maneuverMs > 0 && (
-        <span className="font-medium text-amber-600"> +{inspection.maneuver_time}m</span>
+        <span className="font-medium text-warning"> +{inspection.maneuver_time}m</span>
       )}
     </span>
   );
@@ -176,18 +172,18 @@ function ProgressCell({
         <DurationTrack
           percent={percent}
           maneuverPct={maneuverPct}
-          fillClass={inManeuver ? "bg-amber-500" : "bg-emerald-500"}
+          fillClass={inManeuver ? "bg-warning" : "bg-success"}
         />
       )}
-      <div className="flex flex-col text-[10px] leading-tight">
+      <div className="flex flex-col text-2xs leading-tight">
         {norma}
         {isOvertime ? (
-          <span className="flex items-center gap-0.5 font-semibold text-red-600">
+          <span className="flex items-center gap-0.5 font-semibold text-destructive">
             <AlertTriangle className="h-2.5 w-2.5" />
             +{overH}h {overM}m
           </span>
         ) : inspection.is_closed ? (
-          <span className="font-medium text-emerald-600">✓</span>
+          <span className="font-medium text-success">✓</span>
         ) : (
           <span className="text-muted-foreground">
             {t("remaining")}{" "}
@@ -208,7 +204,7 @@ function ProgressCell({
 function StatusBadge({ inspection }: { inspection: Inspection }) {
   const t = useTranslations("locomotivePassport.history");
   if (inspection.is_cancelled)
-    return <Badge variant="destructive">{t("statusCancelled")}</Badge>;
+    return <Badge variant="danger">{t("statusCancelled")}</Badge>;
   if (inspection.is_closed)
     return <Badge variant="success">{t("statusClosed")}</Badge>;
   return <Badge variant="warning">{t("statusInProgress")}</Badge>;
@@ -235,9 +231,9 @@ export function PassportInspectionHistory({
   }, []);
 
   const thBase =
-    "border-b border-r border-border px-3 py-2.5 text-left font-semibold text-[#0F172B] last:border-r-0";
+    "border-b border-r border-border px-3 py-2.5 text-left font-semibold text-foreground last:border-r-0";
   const tdBase =
-    "border-b border-r border-border px-3 py-2.5 align-top text-[#334155] last:border-r-0";
+    "border-b border-r border-border px-3 py-2.5 align-top text-foreground-secondary last:border-r-0";
 
   return (
     <SectionCard
@@ -251,57 +247,55 @@ export function PassportInspectionHistory({
       ) : rows.length === 0 ? (
         <EmptyBlock icon={History} message={t("empty")} />
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full min-w-[900px] table-fixed border-collapse text-sm">
-            <colgroup>
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "9%" }} />
-              <col style={{ width: "23%" }} />
-              <col style={{ width: "11%" }} />
-              <col style={{ width: "19%" }} />
-              <col style={{ width: "10%" }} />
-            </colgroup>
-            <thead>
-              <tr className="bg-muted/60">
-                <th className={thBase}>{t("columns.createdTime")}</th>
-                <th className={thBase}>{t("columns.kanavaEntry")}</th>
-                <th className={thBase}>{t("columns.inspectionType")}</th>
-                <th className={thBase}>{t("columns.xkp")}</th>
-                <th className={thBase}>{t("columns.interval")}</th>
-                <th className={thBase}>{t("columns.progress")}</th>
-                <th className={thBase}>{t("columns.status")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id} className="even:bg-muted/20">
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
-                    {fmtDateTime(r.created_time)}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
-                    {r.kanava_entry_time ? fmtDateTime(r.kanava_entry_time) : "—"}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-nowrap font-medium")}>
-                    {r.inspection_type?.name ?? "—"}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-normal break-words")}>
-                    {r.branch?.name ?? "—"}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
-                    <IntervalBadge inspection={r} />
-                  </td>
-                  <td className={tdBase}>
-                    <ProgressCell inspection={r} now={now} />
-                  </td>
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
-                    <StatusBadge inspection={r} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table frame className="min-w-[900px] table-fixed">
+          <colgroup>
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "9%" }} />
+            <col style={{ width: "23%" }} />
+            <col style={{ width: "11%" }} />
+            <col style={{ width: "19%" }} />
+            <col style={{ width: "10%" }} />
+          </colgroup>
+          <TableHeader>
+            <TableRow>
+              <TableHead className={thBase}>{t("columns.createdTime")}</TableHead>
+              <TableHead className={thBase}>{t("columns.kanavaEntry")}</TableHead>
+              <TableHead className={thBase}>{t("columns.inspectionType")}</TableHead>
+              <TableHead className={thBase}>{t("columns.xkp")}</TableHead>
+              <TableHead className={thBase}>{t("columns.interval")}</TableHead>
+              <TableHead className={thBase}>{t("columns.progress")}</TableHead>
+              <TableHead className={thBase}>{t("columns.status")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((r) => (
+              <TableRow key={r.id} className="even:bg-muted/20">
+                <TableCell className={cn(tdBase, "whitespace-nowrap")}>
+                  {fmtDateTime(r.created_time)}
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-nowrap")}>
+                  {r.kanava_entry_time ? fmtDateTime(r.kanava_entry_time) : "—"}
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-nowrap font-medium")}>
+                  {r.inspection_type?.name ?? "—"}
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-normal break-words")}>
+                  {r.branch?.name ?? "—"}
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-nowrap")}>
+                  <IntervalBadge inspection={r} />
+                </TableCell>
+                <TableCell className={tdBase}>
+                  <ProgressCell inspection={r} now={now} />
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-nowrap")}>
+                  <StatusBadge inspection={r} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </SectionCard>
   );

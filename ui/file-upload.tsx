@@ -163,14 +163,14 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
 
     const getFileIcon = (file: File) => {
       if (file.type.startsWith("image/"))
-        return <ImageIcon className="h-5 w-5 text-blue-500" />;
+        return <ImageIcon className="h-5 w-5 text-primary" />;
       if (file.type.includes("pdf"))
-        return <FileText className="h-5 w-5 text-red-500" />;
+        return <FileText className="h-5 w-5 text-destructive" />;
       if (file.type.includes("word") || file.type.includes("document"))
-        return <FileText className="h-5 w-5 text-blue-600" />;
+        return <FileText className="h-5 w-5 text-primary" />;
       if (file.type.includes("excel") || file.type.includes("spreadsheet"))
-        return <FileText className="h-5 w-5 text-green-600" />;
-      return <File className="h-5 w-5 text-gray-500" />;
+        return <FileText className="h-5 w-5 text-success" />;
+      return <File className="h-5 w-5 text-muted-foreground" />;
     };
 
     const formatFileSize = (bytes: number) => {
@@ -186,7 +186,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     return (
       <div ref={ref} className={cn("space-y-2", className)} {...props}>
         {label && (
-          <label className="text-sm font-medium text-[#374151] leading-none">
+          <label className="text-sm font-medium text-foreground-secondary leading-none">
             {label}
           </label>
         )}
@@ -195,12 +195,12 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           className={cn(
             "relative border-1 border-dashed rounded-lg p-6 transition-colors",
             dragActive && !disabled
-              ? "border-[#2354bf] bg-[#2354bf]/5"
+              ? "border-primary bg-primary/5"
               : hasError
-              ? "border-[#ff5959] bg-[#ff5959]/5"
+              ? "border-destructive bg-destructive/5"
               : hasSuccess
-              ? "border-[#10b981] bg-[#10b981]/5"
-              : "border-[#d1d5db] hover:border-[#2354bf] hover:bg-[#f9fafb]",
+              ? "border-success bg-success/5"
+              : "border-border-strong hover:border-primary hover:bg-surface-muted",
             disabled && "opacity-50 cursor-not-allowed"
           )}
         >
@@ -221,14 +221,14 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
                 disabled={disabled}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
               />
-              <Upload className="mx-auto h-8 w-8 text-[#6b7280] mb-2" />
-              <p className="text-sm text-[#374151] mb-1">
-                <span className="font-medium text-[#2354bf]">
+              <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+              <p className="text-sm text-foreground-secondary mb-1">
+                <span className="font-medium text-primary">
                   {t("cta_main")}
                 </span>{" "}
                 {t("cta_hint")}
               </p>
-              <p className="text-xs text-[#6b7280]">
+              <p className="text-xs text-muted-foreground">
                 {accept && t("formats", { accept })}
                 {maxSize && <> • {t("max_size", { maxSize })}</>}
                 {multiple && maxFiles && <> • {t("max_files", { maxFiles })}</>}
@@ -237,7 +237,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           ) : (
             <div className="space-y-4">
               <div className="text-center">
-                <p className="text-sm font-medium text-[#374151] mb-3">
+                <p className="text-sm font-medium text-foreground-secondary mb-3">
                   {t("selected_files_title", { count: files.length })}
                 </p>
               </div>
@@ -246,15 +246,15 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
                 {files.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
+                    className="flex items-center justify-between p-3 bg-background rounded-lg border border-border"
                   >
                     <div className="flex items-center space-x-3">
                       {getFileIcon(file)}
                       <div>
-                        <p className="text-sm font-medium text-[#374151]">
+                        <p className="text-sm font-medium text-foreground-secondary">
                           {truncate(file.name, { length: 30 })}
                         </p>
-                        <p className="text-xs text-[#6b7280]">
+                        <p className="text-xs text-muted-foreground">
                           {formatFileSize(file.size)}
                         </p>
                       </div>
@@ -263,7 +263,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
                       <button
                         type="button"
                         onClick={() => removeFile(index)}
-                        className="text-[#6b7280] hover:text-[#ff5959] transition-colors cursor-pointer p-1"
+                        className="text-muted-foreground hover:text-destructive transition-colors cursor-pointer p-1"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -276,16 +276,16 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
         </div>
 
         {hint && !hasError && !hasSuccess && !hasFiles && (
-          <p className="text-xs text-[#6b7280]">{hint}</p>
+          <p className="text-xs text-muted-foreground">{hint}</p>
         )}
         {(error || uploadError) && (
-          <p className="text-xs text-[#ff5959] flex items-center gap-1">
+          <p className="text-xs text-destructive flex items-center gap-1">
             <AlertCircle className="h-3 w-3" />
             {error || uploadError}
           </p>
         )}
         {success && (
-          <p className="text-xs text-[#10b981] flex items-center gap-1">
+          <p className="text-xs text-success flex items-center gap-1">
             <CheckCircle className="h-3 w-3" />
             {success}
           </p>

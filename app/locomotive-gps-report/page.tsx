@@ -5,35 +5,19 @@ import { withRole } from "@/components/withRole";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useTranslations } from "next-intl";
-import {
-  useLocomotiveGpsReport,
-  GpsReportOrganization,
-  GpsReportModel,
-  GpsReportLocomotive,
-} from "@/api/hooks/use-locomotive-gps-report";
+import { useLocomotiveGpsReport, GpsReportOrganization, GpsReportModel } from "@/api/hooks/use-locomotive-gps-report";
 import { useTrainTypes } from "@/api/hooks/use-locomotives";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import {
-  Loader2,
-  Satellite,
-  ChevronDown,
-  RotateCcw,
-  CheckCircle2,
-  XCircle,
-  MinusCircle,
-} from "lucide-react";
+import { CheckCircle2, XCircle, MinusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "@/components/reports/report-organization-select";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
+import { PageHeader } from "@/ui/page-header";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { SearchableSelect } from "@/ui/select";
+import { Page } from "@/ui/page";
 
+import { LoadingState, EmptyState } from "@/ui/empty-state";
 const LOCOMOTIVE_TYPES = [
   "electric_loco",
   "diesel_loco",
@@ -112,104 +96,63 @@ function LocomotiveGpsReportPage() {
     setFilters({ locomotive_type: "", service_type: "", locomotive_model: "" });
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header Card ─── */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
-              <Satellite className="w-4 h-4 text-white" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-gray-900 dark:text-gray-100 font-semibold text-base leading-tight">
-                {t("title")}
-              </h1>
-              <p className="text-gray-400 text-xs mt-0.5">{t("description")}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="px-5 py-3 bg-gray-50/60 dark:bg-gray-800/30 flex flex-wrap items-end gap-3">
-          <ReportOrganizationSelect />
-          <Select
-            value={filters.locomotive_type || "all"}
-            onValueChange={(value) =>
-              setFilters({ locomotive_type: value === "all" ? "" : value })
-            }
-          >
-            <SelectTrigger className="h-9 w-[220px] bg-white dark:bg-gray-800/50 text-sm mb-0 sm:mb-0">
-              <SelectValue placeholder={t("locomotiveType")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allTypes")}</SelectItem>
-              {LOCOMOTIVE_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {localeTypeLabel(type)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={filters.service_type || "all"}
-            onValueChange={(value) =>
-              setFilters({ service_type: value === "all" ? "" : value })
-            }
-          >
-            <SelectTrigger className="h-9 w-[220px] bg-white dark:bg-gray-800/50 text-sm mb-0 sm:mb-0">
-              <SelectValue placeholder={t("serviceType")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allServiceTypes")}</SelectItem>
-              {SERVICE_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {serviceTypeLabel(type)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={filters.locomotive_model || "all"}
-            onValueChange={(value) =>
-              setFilters({ locomotive_model: value === "all" ? "" : value })
-            }
-          >
-            <SelectTrigger className="h-9 w-[220px] bg-white dark:bg-gray-800/50 text-sm mb-0 sm:mb-0">
-              <SelectValue placeholder={t("model")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allModels")}</SelectItem>
-              {locomotiveModels?.results?.map((model) => (
-                <SelectItem key={model.id} value={model.id.toString()}>
-                  {model.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {hasActiveFilters && (
-            <button
-              onClick={resetFilters}
-              title={t("reset")}
-              className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        filters={
+          <FilterBar>
+            <ReportOrganizationSelect />
+            <FilterField label={t("locomotiveType")}>
+              <SearchableSelect
+                size="md"
+                searchable
+                value={filters.locomotive_type || ""}
+                onValueChange={(value) => setFilters({ locomotive_type: value })}
+                placeholder={t("allTypes")}
+                options={[
+                  { value: "", label: t("allTypes") },
+                  ...LOCOMOTIVE_TYPES.map((type) => ({ value: type, label: localeTypeLabel(type) })),
+                ]}
+              />
+            </FilterField>
+            <FilterField label={t("serviceType")}>
+              <SearchableSelect
+                size="md"
+                searchable
+                value={filters.service_type || ""}
+                onValueChange={(value) => setFilters({ service_type: value })}
+                placeholder={t("allServiceTypes")}
+                options={[
+                  { value: "", label: t("allServiceTypes") },
+                  ...SERVICE_TYPES.map((type) => ({ value: type, label: serviceTypeLabel(type) })),
+                ]}
+              />
+            </FilterField>
+            <FilterField label={t("model")}>
+              <SearchableSelect
+                size="md"
+                searchable
+                value={filters.locomotive_model || ""}
+                onValueChange={(value) => setFilters({ locomotive_model: value })}
+                placeholder={t("allModels")}
+                options={[
+                  { value: "", label: t("allModels") },
+                  ...(locomotiveModels?.results ?? []).map((model) => ({ value: model.id.toString(), label: model.name })),
+                ]}
+              />
+            </FilterField>
+            <FilterReset active={hasActiveFilters} onReset={resetFilters} />
+          </FilterBar>
+        }
+      />
 
       {/* Content */}
       {!ready || (isFetching && !data) ? (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <LoadingState size="page" />
       ) : orgs.length === 0 ? (
-        <div className="flex items-center justify-center py-24 text-muted-foreground text-sm border rounded-lg">
-          {t("noData")}
-        </div>
+        <EmptyState title={t("noData")} size="page" />
       ) : (
         <div className="space-y-4">
           {orgs.map((org) => (
@@ -222,7 +165,7 @@ function LocomotiveGpsReportPage() {
           ))}
         </div>
       )}
-    </div>
+    </Page>
   );
 }
 
@@ -238,10 +181,10 @@ function OrganizationCard({
   const t = useTranslations("LocomotiveGpsReport");
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
       {/* Org header */}
-      <div className="px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+      <div className="px-5 py-3.5 border-b border-muted flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-semibold text-sm text-foreground">
           {org.organization_name}
         </h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -254,11 +197,9 @@ function OrganizationCard({
       </div>
 
       {/* Models */}
-      <div className="py-2 divide-y divide-gray-100 dark:divide-gray-800">
+      <div className="py-2 divide-y divide-muted">
         {org.locomotive_models.length === 0 ? (
-          <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-            {t("noData")}
-          </div>
+          <EmptyState title={t("noData")} />
         ) : (
           org.locomotive_models.map((model) => (
             <ModelSection
@@ -288,18 +229,13 @@ function ModelSection({
 
   return (
     <div>
-      <button
+      <DisclosureTrigger
+        open={open}
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between gap-3 px-5 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors text-left"
+        className="justify-between px-5 py-3"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 text-gray-400 transition-transform",
-              open && "rotate-180",
-            )}
-          />
-          <span className="font-medium text-sm text-gray-800 dark:text-gray-200 truncate">
+          <span className="font-medium text-sm text-foreground truncate">
             {model.model_name}
           </span>
           <span className="text-xs text-muted-foreground shrink-0">
@@ -313,66 +249,61 @@ function ModelSection({
           <Stat label={t("valid")} value={model.valid_count} tone="blue" />
           <Stat label={t("invalid")} value={model.invalid_count} tone="amber" />
         </div>
-      </button>
+      </DisclosureTrigger>
 
       {open && (
-        <div className="overflow-x-auto border-t border-gray-100 dark:border-gray-800">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-muted/40 text-[11px] font-semibold text-muted-foreground tracking-wide">
-                <th className="border-b px-2 py-2 text-center w-8">#</th>
-                <th className="border-b px-3 py-2 text-left whitespace-nowrap">
-                  {t("locomotive")}
-                </th>
-                <th className="border-b px-3 py-2 text-left whitespace-nowrap">
-                  {t("serviceType")}
-                </th>
-                <th className="border-b px-3 py-2 text-center whitespace-nowrap">
-                  {t("imei")}
-                </th>
-                <th className="border-b px-3 py-2 text-center whitespace-nowrap">
-                  {t("gpsStatus")}
-                </th>
-                <th className="border-b px-3 py-2 text-left whitespace-nowrap">
-                  {t("statusDetail")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {model.locomotives.map((loco, idx) => (
-                <tr
-                  key={loco.id}
-                  className={cn(
-                    "hover:bg-muted/30 transition-colors",
-                    idx % 2 === 0 ? "bg-background" : "bg-muted/10",
-                  )}
-                >
-                  <td className="border-b px-2 py-2 text-center text-muted-foreground text-xs">
-                    {idx + 1}
-                  </td>
-                  <td className="border-b px-3 py-2 font-medium whitespace-nowrap">
-                    {loco.name}
-                  </td>
-                  <td className="border-b px-3 py-2 text-xs whitespace-nowrap">
-                    {serviceTypeLabel(loco.service_type)}
-                  </td>
-                  <td className="border-b px-3 py-2 text-center text-xs font-mono">
-                    {loco.gps_imei_code || "—"}
-                  </td>
-                  <td className="border-b px-3 py-2 text-center">
-                    <GpsStatusBadge
-                      hasGps={loco.has_gps}
-                      status={loco.gps_status}
-                    />
-                  </td>
-                  <td className="border-b px-3 py-2 text-xs text-muted-foreground">
-                    {loco.gps_status_detail || "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table frame>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center w-8">#</TableHead>
+              <TableHead className="text-left">
+                {t("locomotive")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("serviceType")}
+              </TableHead>
+              <TableHead className="text-center">
+                {t("imei")}
+              </TableHead>
+              <TableHead className="text-center">
+                {t("gpsStatus")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("statusDetail")}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {model.locomotives.map((loco, idx) => (
+              <TableRow
+                key={loco.id}
+                
+              >
+                <TableCell className="text-center">
+                  {idx + 1}
+                </TableCell>
+                <TableCell className="font-medium whitespace-nowrap">
+                  {loco.name}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {serviceTypeLabel(loco.service_type)}
+                </TableCell>
+                <TableCell className="text-center font-mono">
+                  {loco.gps_imei_code || "—"}
+                </TableCell>
+                <TableCell className="text-center">
+                  <GpsStatusBadge
+                    hasGps={loco.has_gps}
+                    status={loco.gps_status}
+                  />
+                </TableCell>
+                <TableCell>
+                  {loco.gps_status_detail || "—"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   );
@@ -389,7 +320,7 @@ function GpsStatusBadge({
 
   if (!hasGps) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-rose-600 dark:text-rose-400">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-destructive">
         <MinusCircle className="w-3.5 h-3.5" />
         {t("noGps")}
       </span>
@@ -397,7 +328,7 @@ function GpsStatusBadge({
   }
   if (status === "valid") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-success">
         <CheckCircle2 className="w-3.5 h-3.5" />
         {t("statusValid")}
       </span>
@@ -405,7 +336,7 @@ function GpsStatusBadge({
   }
   if (status === "invalid") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-warning">
         <XCircle className="w-3.5 h-3.5" />
         {t("statusInvalid")}
       </span>
@@ -415,11 +346,11 @@ function GpsStatusBadge({
 }
 
 const toneMap = {
-  slate: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  emerald: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400",
-  rose: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-400",
-  blue: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400",
-  amber: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400",
+  slate: "bg-muted text-foreground-secondary",
+  emerald: "bg-success-subtle text-success",
+  rose: "bg-destructive-subtle text-destructive",
+  blue: "bg-primary-subtle text-primary-hover",
+  amber: "bg-warning-subtle text-warning",
 };
 
 function Stat({
@@ -434,7 +365,7 @@ function Stat({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium",
+        "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-2xs font-medium",
         toneMap[tone],
       )}
     >

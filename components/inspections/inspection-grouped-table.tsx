@@ -2,14 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { Skeleton } from "@/ui/skeleton";
 import { Badge } from "@/ui/badge";
@@ -19,13 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { MoreVertical, Pencil, Loader2 } from "lucide-react";
 import { Inspection } from "@/api/types/inspections";
 import { format } from "date-fns";
@@ -34,6 +21,7 @@ import { hasPermission } from "@/lib/permissions";
 import { useUpdateInspectionSection } from "@/api/hooks/use-inspections";
 import type { UserData } from "@/api/types/auth";
 import { authService } from "@/api/services/auth.service";
+import { Button } from "@/ui/button";
 
 export const INSPECTION_SECTION_OPTIONS = [
   { value: "A", labelKey: "A" },
@@ -171,18 +159,17 @@ export function InspectionsGroupedTable({
         {[1, 2].map((groupKey) => (
           <div
             key={groupKey}
-            className="rounded-lg border border-[#CAD5E2] overflow-hidden"
+            className="rounded-lg border border-border-strong overflow-hidden bg-background"
           >
-            <div className="bg-[#EFF6FF] px-4 py-3 border-b border-[#CAD5E2]">
+            <div className="bg-primary-subtle px-4 py-3 border-b border-border-strong">
               <Skeleton className="h-5 w-24 rounded-md" />
             </div>
-            <Table className="w-full min-w-[900px]">
+            <Table bordered className="min-w-[900px]">
               <TableHeader>
-                <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                <TableRow>
                   {Array.from({ length: columnCount }).map((_, i) => (
                     <TableHead
                       key={i}
-                      className="py-3 px-4 border-r border-[#E2E8F0] last:border-r-0"
                     >
                       <Skeleton className="h-4 w-full max-w-[80px] rounded-md" />
                     </TableHead>
@@ -205,11 +192,11 @@ export function InspectionsGroupedTable({
 
   if (!inspections.length) {
     return (
-      <div className="rounded-lg border border-[#CAD5E2] bg-white p-8 text-center">
-        <p className="font-medium text-[#0F172B]">
+      <div className="rounded-lg border border-border-strong bg-background p-8 text-center">
+        <p className="font-medium text-foreground">
           {emptyTitle ?? t("empty_title")}
         </p>
-        <p className="text-sm text-[#64748B] mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           {emptyDescription ?? t("empty_description")}
         </p>
       </div>
@@ -221,48 +208,48 @@ export function InspectionsGroupedTable({
       {groupedByType?.map((group) => (
         <div
           key={group.id}
-          className="rounded-lg border border-[#CAD5E2] overflow-hidden"
+          className="rounded-lg border border-border-strong overflow-hidden bg-background"
         >
-          <div className="bg-[#EFF6FF] px-4 py-2 border-b border-[#CAD5E2]">
-            <h3 className="text-xl font-semibold text-[#0F172B]">
+          <div className="bg-primary-subtle px-4 py-2 border-b border-border-strong">
+            <h3 className="text-xl font-semibold text-foreground">
               {group?.name}
             </h3>
           </div>
-          <Table className="w-full min-w-[900px]">
+          <Table bordered className="min-w-[900px]">
             <TableHeader>
-              <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+              <TableRow>
+                <TableHead className="w-14 min-w-[3.5rem]">
                   {t("columns.no")}
                 </TableHead>
-                <TableHead className="min-w-[140px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[140px]">
                   {t("columns.locomotive")}
                 </TableHead>
-                <TableHead className="min-w-[160px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[160px]">
                   {t("columns.xkp")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[120px]">
                   {t("columns.inspection_type")}
                 </TableHead>
-                <TableHead className="min-w-[80px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[80px]">
                   {t("columns.section")}
                 </TableHead>
-                <TableHead className="min-w-[100px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[100px]">
                   {t("columns.comment")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[120px]">
                   {t("columns.author")}
                 </TableHead>
-                <TableHead className="min-w-[130px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[130px]">
                   {t("columns.opened_time")}
                 </TableHead>
-                <TableHead className="min-w-[100px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[100px]">
                   {t("columns.interval")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[120px]">
                   {t("columns.status")}
                 </TableHead>
                 {onAction && (
-                  <TableHead className="w-[100px] min-w-[100px] py-3 px-4 text-center text-[#475569] font-medium">
+                  <TableHead className="w-[100px] min-w-[100px] text-center">
                     {t("columns.actions")}
                   </TableHead>
                 )}
@@ -274,23 +261,22 @@ export function InspectionsGroupedTable({
                 return (
                   <TableRow
                     key={inspection.id}
-                    className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0"
                   >
-                    <TableCell className="py-3 px-4 text-[#0F172B] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell className="font-medium">
                       {index + 1}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#0F172B] border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       {getLocomotiveDisplay(inspection)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       {getBranchName(inspection)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       {inspection?.inspection_type?.name ?? "—"}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       {isSectionCellUpdating(inspection.id) ? (
-                        <span className="inline-flex items-center gap-2 text-[#64748B]">
+                        <span className="inline-flex items-center gap-2 text-muted-foreground">
                           <Loader2 className="h-4 w-4 animate-spin shrink-0" />
                           <span className="text-sm">
                             {t("section_updating")}
@@ -314,7 +300,7 @@ export function InspectionsGroupedTable({
                           }}
                           disabled={updateSectionMutation.isPending}
                         >
-                          <SelectTrigger className="h-8 min-w-[120px] border-[#E2E8F0]">
+                          <SelectTrigger className="h-8 min-w-[120px] border-border">
                             <SelectValue placeholder={t("columns.section")} />
                           </SelectTrigger>
                           <SelectContent>
@@ -329,69 +315,67 @@ export function InspectionsGroupedTable({
                         <span className="inline-flex items-center gap-1.5">
                           {getSectionDisplayLabel(inspection?.section)}
                           {canEditSection && inspection.locomotive && (
-                            <button
+                            <Button variant="ghost" size="icon-sm"
                               type="button"
                               onClick={() =>
                                 setEditingSectionForId(inspection.id)
                               }
-                              className="p-1 rounded hover:bg-[#E2E8F0] text-[#64748B] hover:text-[#0F172B]"
                               aria-label={t("action_edit")}
                             >
                               <Pencil className="h-3.5 w-3.5" />
-                            </button>
+                            </Button>
                           )}
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       {inspection?.comment || "—"}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       {inspection?.author?.first_name
                         ? `${inspection?.author?.first_name} ${inspection?.author?.last_name || ""}`.trim()
                         : (inspection?.author?.username ?? "—")}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       {formatCreatedTime(inspection?.created_time)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       <Badge
                         variant={
                           interval?.variant === "success"
                             ? "success"
                             : interval?.variant === "warning"
                               ? "warning"
-                              : "secondary"
+                              : "neutral"
                         }
                         className={cn(
                           interval?.variant === "success" &&
-                            "bg-emerald-500 text-white",
+                            "bg-success text-success-foreground",
                           interval?.variant === "warning" &&
-                            "bg-amber-500 text-white",
+                            "bg-warning text-warning-foreground",
                         )}
                       >
                         {interval.text}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-3 px-4 border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       <Badge
                         variant="warning"
-                        className="bg-amber-500 text-white"
+                        className="bg-warning text-warning-foreground"
                       >
                         {t("status_in_progress")}
                       </Badge>
                     </TableCell>
                     {onAction && (
-                      <TableCell className="py-3 px-4 text-center">
+                      <TableCell className="text-center">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button
+                            <Button variant="ghost" size="icon-sm"
                               type="button"
-                              className="p-1.5 rounded hover:bg-[#E2E8F0] inline-flex items-center justify-center"
                               aria-label={t("columns.actions")}
                             >
-                              <MoreVertical className="h-4 w-4 text-[#64748B]" />
-                            </button>
+                              <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                            </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem

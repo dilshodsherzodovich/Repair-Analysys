@@ -1,9 +1,9 @@
 export function GeometricDesign() {
   const modules = [
-    { label: "Шаҳрлантириш", color: "#2e148c", position: "top" },
-    { label: "Кириш", color: "#492ead", position: "center" },
-    { label: "Мониторинг", color: "#644ac4", position: "bottom-left" },
-    { label: "Ҳисобот", color: "#927be3", position: "bottom-right" },
+    { label: "Шаҳрлантириш", color: "var(--brand-purple-deep)", position: "top" },
+    { label: "Кириш", color: "var(--brand-purple-dark)", position: "center" },
+    { label: "Мониторинг", color: "var(--brand-purple)", position: "bottom-left" },
+    { label: "Ҳисобот", color: "var(--brand-purple-light)", position: "bottom-right" },
   ]
 
   return (
@@ -11,7 +11,7 @@ export function GeometricDesign() {
       {modules.map((module, index) => (
         <div
           key={index}
-          className="absolute w-24 h-24 rounded-lg flex items-center justify-center text-white text-sm font-medium shadow-lg transform rotate-45 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+          className="absolute w-24 h-24 rounded-lg flex items-center justify-center text-primary-foreground text-sm font-medium shadow-lg transform rotate-45 transition-all duration-300 hover:scale-105 hover:shadow-xl"
           style={{
             backgroundColor: module.color,
             ...(module.position === "top" && {

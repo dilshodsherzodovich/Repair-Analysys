@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ChevronDown, ChevronUp, Loader2, Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -21,16 +22,15 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex w-full items-center justify-between cursor-pointer rounded-md border border-gray-300 bg-white",
-      "h-9 px-3 py-1.5 text-sm sm:h-10 sm:px-4 sm:py-2 sm:text-sm",
+      "flex w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground",
+      "h-9 px-3 py-1.5 text-sm",
       "transition-colors outline-none",
-      "focus:border-blue-500 focus:ring-0 hover:border-gray-400",
-      "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
-      "aria-invalid:border-red-500 aria-invalid:focus:border-red-500",
-      "mb-3 sm:mb-4",
+      "focus:border-primary focus:ring-0 hover:border-foreground-subtle",
+      "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
+      "aria-invalid:border-destructive aria-invalid:focus:border-destructive",
       "[&>span]:line-clamp-1",
-      "data-[placeholder]:text-muted-foreground",
-      "[&>span]:text-[#0F172B] [&>span]:data-[placeholder]:text-muted-foreground",
+      "data-[placeholder]:text-foreground-subtle",
+      "[&>span]:text-foreground [&>span]:data-[placeholder]:text-foreground-subtle",
       size === "sm" && "h-8 text-xs",
       className
     )}
@@ -87,7 +87,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-gray-300 bg-white text-[#0F172B] shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-border-strong bg-background text-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
@@ -118,7 +118,7 @@ const SelectLabel = React.forwardRef<
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
-      "py-1.5 pl-8 pr-2 text-sm font-semibold text-[#0F172B]",
+      "py-1.5 pl-8 pr-2 text-sm font-semibold text-foreground",
       className
     )}
     {...props}
@@ -133,14 +133,14 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 px-3 text-sm outline-none focus:bg-gray-100 focus:text-[#0F172B] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 px-3 text-sm outline-none focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
   >
     {/* <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="h-4 w-4 text-blue-500" />
+        <Check className="h-4 w-4 text-primary" />
       </SelectPrimitive.ItemIndicator>
     </span> */}
 
@@ -155,7 +155,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-gray-200", className)}
+    className={cn("-mx-1 my-1 h-px bg-border", className)}
     {...props}
   />
 ));
@@ -175,11 +175,23 @@ export interface SearchableSelectProps {
   options: SearchableSelectOption[];
   placeholder?: string;
   searchable?: boolean;
+  /** Shows an × that resets the value to "". */
+  clearable?: boolean;
+  /** Shows a spinner and blocks opening while options load. */
+  loading?: boolean;
+  /**
+   * Server-side search: called with the typed text (the caller debounces and
+   * refetches `options`). When set, options are not filtered locally.
+   */
+  onSearch?: (query: string) => void;
+  /** Label for the current value when it is not in `options` (server search). */
+  selectedLabel?: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
   disabled?: boolean;
   name?: string;
-  size?: "sm" | "default";
+  /** `md`: 36px, no bottom margin; the standard size inside FilterBar and toolbars. */
+  size?: "sm" | "md" | "default";
   className?: string;
   triggerClassName?: string;
 }
@@ -188,16 +200,24 @@ function SearchableSelect({
   value = "",
   onValueChange,
   options,
-  placeholder = "Select...",
+  placeholder: placeholderProp,
   searchable = false,
-  searchPlaceholder = "Search...",
-  emptyMessage = "No results found.",
+  clearable = false,
+  loading = false,
+  onSearch,
+  selectedLabel,
+  searchPlaceholder: searchPlaceholderProp,
+  emptyMessage: emptyMessageProp,
   disabled = false,
   name,
   size = "default",
   className,
   triggerClassName,
 }: SearchableSelectProps) {
+  const t = useTranslations("Common");
+  const placeholder = placeholderProp ?? t("select");
+  const searchPlaceholder = searchPlaceholderProp ?? t("search_placeholder");
+  const emptyMessage = emptyMessageProp ?? t("no_data");
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
   const [dropdownPosition, setDropdownPosition] = React.useState<"bottom" | "top">("bottom");
@@ -206,10 +226,10 @@ function SearchableSelect({
 
   const selectedOption = options.find((o) => o.value === value);
   const filteredOptions = React.useMemo(() => {
-    if (!searchable || !searchValue.trim()) return options;
+    if (onSearch || !searchable || !searchValue.trim()) return options;
     const q = searchValue.toLowerCase();
     return options.filter((o) => o.label.toLowerCase().includes(q));
-  }, [options, searchValue, searchable]);
+  }, [options, searchValue, searchable, onSearch]);
 
   React.useEffect(() => {
     if (open && triggerRef.current) {
@@ -240,25 +260,38 @@ function SearchableSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
+  // With server search the list reloads while typing; keep the field usable
+  const isDisabled = disabled || (loading && !onSearch);
+
   const handleSelect = (optionValue: string) => {
     onValueChange?.(optionValue);
     setOpen(false);
     setSearchValue("");
   };
 
-  if (!searchable) {
+  // Plain dropdown: native-feeling Radix select. Search, clear and loading
+  // use the custom dropdown below.
+  if (!searchable && !clearable && !loading) {
+    // Radix reserves "" for "nothing selected", but pages use an option with
+    // value "" for "All"; give it a stand-in value inside the dropdown.
+    const ALL = "__all__";
+    const hasAllOption = options.some((opt) => opt.value === "");
+    const toRadix = (v: string | undefined) => (v === "" && hasAllOption ? ALL : v);
     return (
       <div className={cn("relative w-full", className)}>
         {name && <input type="hidden" name={name} value={value} readOnly />}
-        <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
+        <SelectPrimitive.Root
+          value={toRadix(value)}
+          onValueChange={(v) => onValueChange?.(v === ALL ? "" : v)}
+          disabled={disabled}
+        >
           <SelectPrimitive.Trigger
             className={cn(
-              "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
-              "transition-colors outline-none focus:border-blue-500 focus:ring-0 hover:border-gray-400",
-              "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
-              "md:text-sm [&>span]:line-clamp-1",
-              "[&>span]:text-[#0F172B] [&>span]:data-[placeholder]:text-muted-foreground",
-              "mb-4",
+              "flex h-9 w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground px-3 py-1.5 text-sm",
+              "transition-colors outline-none focus:border-primary focus:ring-0 hover:border-foreground-subtle",
+              "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
+              "[&>span]:line-clamp-1",
+              "[&>span]:text-foreground [&>span]:data-[placeholder]:text-foreground-subtle",
               size === "sm" && "h-8 text-xs",
               triggerClassName
             )}
@@ -271,7 +304,7 @@ function SearchableSelect({
           <SelectPrimitive.Portal>
             <SelectPrimitive.Content
               className={cn(
-                "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-gray-300 bg-white text-[#0F172B] shadow-lg",
+                "relative z-50 max-h-96 min-w-[var(--radix-select-trigger-width)] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-md border border-border-strong bg-background text-foreground shadow-lg",
                 "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                 "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
                 "data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
@@ -286,10 +319,10 @@ function SearchableSelect({
                 ) : (
                   options.map((opt) => (
                     <SelectPrimitive.Item
-                      key={opt.value}
-                      value={opt.value}
+                      key={opt.value || ALL}
+                      value={opt.value || ALL}
                       disabled={opt.disabled}
-                      className="relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 px-3 text-sm outline-none focus:bg-gray-100 focus:text-[#0F172B] data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                      className="relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 px-3 text-sm outline-none focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     >
                       <SelectPrimitive.ItemText>{opt.label}</SelectPrimitive.ItemText>
                     </SelectPrimitive.Item>
@@ -311,31 +344,53 @@ function SearchableSelect({
         role="combobox"
         aria-expanded={open}
         className={cn(
-          "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-base",
-          "transition-colors outline-none focus:border-blue-500 focus:ring-0 hover:border-gray-400",
-          "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
-          "md:text-sm [&>span]:line-clamp-1 mb-4",
+          "flex h-9 w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground px-3 py-1.5 text-sm",
+          "transition-colors outline-none focus:border-primary focus:ring-0 hover:border-foreground-subtle",
+          "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted",
+          "[&>span]:line-clamp-1",
+          "aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:bg-surface-muted",
           size === "sm" && "h-8 text-xs",
           triggerClassName
         )}
-        onClick={() => !disabled && setOpen(!open)}
+        aria-disabled={isDisabled || undefined}
+        onClick={() => !isDisabled && setOpen(!open)}
       >
         <span
           className={cn(
             "min-w-0 flex-1 truncate text-left",
-            selectedOption ? "text-[#0F172B]" : "text-muted-foreground"
+            selectedOption || (value && selectedLabel) ? "text-foreground" : "text-foreground-subtle"
           )}
         >
-          {selectedOption ? selectedOption.label : placeholder}
+          {selectedOption?.label ?? (value ? selectedLabel : undefined) ?? placeholder}
         </span>
-        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+        {loading ? (
+          <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+        ) : (
+          <span className="flex shrink-0 items-center gap-1">
+            {clearable && value && !disabled && (
+              <button
+                type="button"
+                aria-label="Clear"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onValueChange?.("");
+                }}
+                className="rounded-sm p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </span>
+        )}
       </div>
 
       {open && (
         <div
           ref={dropdownRef}
           className={cn(
-            "absolute left-0 right-0 z-[999999] max-h-[300px] overflow-hidden rounded-md border border-gray-300 bg-white text-[#0F172B] shadow-lg",
+            // At least as wide as the field, wider for long options
+            "absolute left-0 z-[999999] w-max min-w-full max-w-[min(24rem,calc(100vw-2rem))] max-h-[300px] overflow-hidden rounded-md border border-border-strong bg-background text-foreground shadow-lg",
             "animate-in fade-in-0 zoom-in-95",
             dropdownPosition === "top"
               ? "bottom-full mb-1 slide-in-from-bottom-2"
@@ -343,20 +398,25 @@ function SearchableSelect({
           )}
           style={{ zIndex: 999999 }}
         >
-          <div className="p-2 border-b border-gray-200">
+          {searchable && (
+          <div className="p-2 border-b border-border">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder={searchPlaceholder}
                 value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                  onSearch?.(e.target.value);
+                }}
                 onKeyDown={(e) => e.stopPropagation()}
-                className="w-full rounded-md border border-gray-300 bg-white py-2 pl-8 pr-3 text-sm text-[#0F172B] focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="h-8 w-full rounded-md border border-border-strong bg-background text-foreground pl-8 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </div>
-          <div className="max-h-[200px] overflow-y-auto p-1">
+          )}
+          <div className="max-h-60 overflow-y-auto p-1">
             {filteredOptions.length === 0 ? (
               <div className="py-3 text-center text-sm text-muted-foreground">
                 {emptyMessage}
@@ -369,8 +429,8 @@ function SearchableSelect({
                   disabled={opt.disabled}
                   onClick={() => !opt.disabled && handleSelect(opt.value)}
                   className={cn(
-                    "flex w-full cursor-pointer items-center rounded-sm px-3 py-2 text-left text-sm transition-colors hover:bg-gray-100",
-                    opt.value === value && "bg-blue-50 text-blue-700 font-medium",
+                    "flex w-full cursor-pointer items-center rounded-sm px-3 py-2 text-left text-sm transition-colors hover:bg-muted",
+                    opt.value === value && "bg-primary-subtle text-primary font-medium",
                     opt.disabled && "opacity-50 cursor-not-allowed"
                   )}
                 >

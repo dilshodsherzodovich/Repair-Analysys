@@ -16,7 +16,7 @@ import {
   useComponents,
   useBulkUpdateComponentValues,
 } from "@/api/hooks/use-component";
-import { toast } from "@/ui/use-toast";
+import { useSnackbar } from "@/providers/snackbar-provider";
 import { ComponentValue } from "@/api/types/component";
 import { exportLocomotivePassportPDF } from "@/lib/pdf-export";
 import { LocomotiveModelData } from "@/api/types/locomotive";
@@ -75,6 +75,7 @@ export default function LocomotivePassportForm({
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations("locomotivePassport");
+  const { showSuccess, showError } = useSnackbar();
   const isEditMode = searchParams.get("edit") === "true";
 
   // Which area is drilled into ("see details"); null = the dashboard landing.
@@ -214,28 +215,21 @@ export default function LocomotivePassportForm({
 
   useEffect(() => {
     if (componentsQuery.isSuccess && !hasShownSuccessToast) {
-      toast({
-        title: t("toasts.componentsLoadedTitle"),
-        description: t("toasts.componentsLoadedDesc", {
+      showSuccess(t("toasts.componentsLoadedTitle"), t("toasts.componentsLoadedDesc", {
           count: componentList.length,
-        }),
-      });
+        }));
       setHasShownSuccessToast(true);
     }
-  }, [componentList.length, componentsQuery.isSuccess, hasShownSuccessToast]);
+  }, [componentList.length, componentsQuery.isSuccess, hasShownSuccessToast, showSuccess]);
 
   useEffect(() => {
     if (componentsQuery.isError) {
       const errorMessage =
         (componentsQuery.error as { message?: string })?.message ||
         t("toasts.componentsErrorDesc");
-      toast({
-        variant: "destructive",
-        title: t("toasts.componentsErrorTitle"),
-        description: errorMessage,
-      });
+      showError(t("toasts.componentsErrorTitle"), errorMessage);
     }
-  }, [componentsQuery.error, componentsQuery.isError]);
+  }, [componentsQuery.error, componentsQuery.isError, showError]);
 
   const handleExportPDF = async () => {
     if (
@@ -243,11 +237,7 @@ export default function LocomotivePassportForm({
       activeSectionId === null ||
       componentList.length === 0
     ) {
-      toast({
-        variant: "destructive",
-        title: t("toasts.pdfCannotTitle"),
-        description: t("toasts.pdfCannotDesc"),
-      });
+      showError(t("toasts.pdfCannotTitle"), t("toasts.pdfCannotDesc"));
       return;
     }
 
@@ -261,17 +251,10 @@ export default function LocomotivePassportForm({
         componentList,
         activeSection?.name,
       );
-      toast({
-        title: t("toasts.pdfSuccessTitle"),
-        description: t("toasts.pdfSuccessDesc"),
-      });
+      showSuccess(t("toasts.pdfSuccessTitle"), t("toasts.pdfSuccessDesc"));
     } catch (error) {
       console.error("Failed to export PDF:", error);
-      toast({
-        variant: "destructive",
-        title: t("toasts.pdfErrorTitle"),
-        description: t("toasts.pdfErrorDesc"),
-      });
+      showError(t("toasts.pdfErrorTitle"), t("toasts.pdfErrorDesc"));
     } finally {
       setIsExportingPDF(false);
     }
@@ -348,21 +331,13 @@ export default function LocomotivePassportForm({
 
   const handleSave = async () => {
     if (!componentList.length) {
-      toast({
-        variant: "destructive",
-        title: t("toasts.noComponentsTitle"),
-        description: t("toasts.noComponentsDesc"),
-      });
+      showError(t("toasts.noComponentsTitle"), t("toasts.noComponentsDesc"));
       return;
     }
 
     const payload = buildComponentPayload();
     if (!payload.length) {
-      toast({
-        variant: "destructive",
-        title: t("toasts.noValidDataTitle"),
-        description: t("toasts.noValidDataDesc"),
-      });
+      showError(t("toasts.noValidDataTitle"), t("toasts.noValidDataDesc"));
       return;
     }
 
@@ -375,19 +350,12 @@ export default function LocomotivePassportForm({
       ) {
         syncComponentFormValues(refetchResult.data.results);
       }
-      toast({
-        title: t("toasts.savedTitle"),
-        description: t("toasts.savedDesc"),
-      });
+      showSuccess(t("toasts.savedTitle"), t("toasts.savedDesc"));
       setIsEditing(false);
       pushQuery("view=components");
     } catch (error) {
       console.error("Failed to save component values:", error);
-      toast({
-        variant: "destructive",
-        title: t("toasts.saveErrorTitle"),
-        description: t("toasts.saveErrorDesc"),
-      });
+      showError(t("toasts.saveErrorTitle"), t("toasts.saveErrorDesc"));
     }
   };
 
@@ -425,7 +393,7 @@ export default function LocomotivePassportForm({
           <Button
             variant="ghost"
             onClick={backToDashboard}
-            className="h-8 px-2 text-muted-foreground hover:text-[#0F172B]"
+            className="h-8 px-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-1.5 h-4 w-4" />
             {t("dashboard.backToOverview")}
@@ -488,7 +456,7 @@ export default function LocomotivePassportForm({
                       size="sm"
                       onClick={handleExportPDF}
                       variant="outline"
-                      className="border-gray-300"
+                      className="border-border-strong"
                       disabled={
                         isExportingPDF ||
                         !locomotiveDetail ||
@@ -513,7 +481,6 @@ export default function LocomotivePassportForm({
                         <Button
                           size="sm"
                           onClick={handleEdit}
-                          className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
                         >
                           <Save className="mr-2 h-4 w-4" />
                           {t("actions.edit")}
@@ -524,7 +491,7 @@ export default function LocomotivePassportForm({
                             size="sm"
                             onClick={handleCancel}
                             variant="outline"
-                            className="border-gray-300"
+                            className="border-border-strong"
                             disabled={isSavingComponents}
                           >
                             <X className="mr-2 h-4 w-4" />
@@ -533,7 +500,6 @@ export default function LocomotivePassportForm({
                           <Button
                             size="sm"
                             onClick={handleSave}
-                            className="bg-[#2354BF] hover:bg-[#2354BF]/90 text-white"
                             disabled={isSavingComponents}
                           >
                             {isSavingComponents ? (

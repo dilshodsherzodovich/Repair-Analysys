@@ -33,13 +33,13 @@ const DocumentMetadataComponent = React.forwardRef<HTMLDivElement, DocumentMetad
     const getStatusColor = (status: string) => {
       switch (status) {
         case "approved":
-          return "bg-[#10b981] text-white"
+          return "bg-success text-success-foreground"
         case "review":
-          return "bg-[#f59e0b] text-white"
+          return "bg-warning text-warning-foreground"
         case "archived":
-          return "bg-[#6b7280] text-white"
+          return "bg-muted-foreground text-primary-foreground"
         default:
-          return "bg-[#e5e7eb] text-[#374151]"
+          return "bg-border text-foreground-secondary"
       }
     }
 
@@ -56,22 +56,14 @@ const DocumentMetadataComponent = React.forwardRef<HTMLDivElement, DocumentMetad
       }
     }
 
-    const formatDate = (dateString: string) => {
-      return new Date(dateString).toLocaleDateString("ru-RU", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    }
+    const formatDate = (dateString: string) => formatDateTime(dateString)
 
     return (
-      <div ref={ref} className={cn("bg-white rounded-lg border p-6 space-y-6", className)} {...props}>
+      <div ref={ref} className={cn("bg-background rounded-lg border p-6 space-y-6", className)} {...props}>
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-[#1f2937] mb-2">{metadata.title}</h2>
-            {metadata.description && <p className="text-[#6b7280] mb-4">{metadata.description}</p>}
+            <h2 className="text-xl font-semibold text-foreground mb-2">{metadata.title}</h2>
+            {metadata.description && <p className="text-muted-foreground mb-4">{metadata.description}</p>}
           </div>
           <span className={cn("px-3 py-1 rounded-full text-sm font-medium", getStatusColor(metadata.status))}>
             {getStatusLabel(metadata.status)}
@@ -81,80 +73,80 @@ const DocumentMetadataComponent = React.forwardRef<HTMLDivElement, DocumentMetad
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Basic Info */}
           <div className="space-y-4">
-            <h3 className="font-medium text-[#1f2937] border-b border-[#e5e7eb] pb-2">Основная информация</h3>
+            <h3 className="font-medium text-foreground border-b border-border pb-2">Основная информация</h3>
 
             <div className="flex items-center space-x-3">
-              <User className="w-4 h-4 text-[#6b7280]" />
+              <User className="w-4 h-4 text-muted-foreground" />
               <div>
-                <p className="text-sm text-[#6b7280]">Автор</p>
-                <p className="font-medium text-[#1f2937]">{metadata.author}</p>
+                <p className="text-sm text-muted-foreground">Автор</p>
+                <p className="font-medium text-foreground">{metadata.author}</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <FileText className="w-4 h-4 text-[#6b7280]" />
+              <FileText className="w-4 h-4 text-muted-foreground" />
               <div>
-                <p className="text-sm text-[#6b7280]">Тип файла</p>
-                <p className="font-medium text-[#1f2937]">{metadata.type.toUpperCase()}</p>
+                <p className="text-sm text-muted-foreground">Тип файла</p>
+                <p className="font-medium text-foreground">{metadata.type.toUpperCase()}</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <Tag className="w-4 h-4 text-[#6b7280]" />
+              <Tag className="w-4 h-4 text-muted-foreground" />
               <div>
-                <p className="text-sm text-[#6b7280]">Категория</p>
-                <p className="font-medium text-[#1f2937]">{metadata.category}</p>
+                <p className="text-sm text-muted-foreground">Категория</p>
+                <p className="font-medium text-foreground">{metadata.category}</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
               <div className="w-4 h-4 flex items-center justify-center">
-                <div className="w-2 h-2 bg-[#6b7280] rounded-full" />
+                <div className="w-2 h-2 bg-muted-foreground rounded-full" />
               </div>
               <div>
-                <p className="text-sm text-[#6b7280]">Размер</p>
-                <p className="font-medium text-[#1f2937]">{metadata.size}</p>
+                <p className="text-sm text-muted-foreground">Размер</p>
+                <p className="font-medium text-foreground">{metadata.size}</p>
               </div>
             </div>
           </div>
 
           {/* Dates & Status */}
           <div className="space-y-4">
-            <h3 className="font-medium text-[#1f2937] border-b border-[#e5e7eb] pb-2">Даты и статус</h3>
+            <h3 className="font-medium text-foreground border-b border-border pb-2">Даты и статус</h3>
 
             <div className="flex items-center space-x-3">
-              <Calendar className="w-4 h-4 text-[#6b7280]" />
+              <Calendar className="w-4 h-4 text-muted-foreground" />
               <div>
-                <p className="text-sm text-[#6b7280]">Создано</p>
-                <p className="font-medium text-[#1f2937]">{formatDate(metadata.createdAt)}</p>
+                <p className="text-sm text-muted-foreground">Создано</p>
+                <p className="font-medium text-foreground">{formatDate(metadata.createdAt)}</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <Clock className="w-4 h-4 text-[#6b7280]" />
+              <Clock className="w-4 h-4 text-muted-foreground" />
               <div>
-                <p className="text-sm text-[#6b7280]">Обновлено</p>
-                <p className="font-medium text-[#1f2937]">{formatDate(metadata.updatedAt)}</p>
+                <p className="text-sm text-muted-foreground">Обновлено</p>
+                <p className="font-medium text-foreground">{formatDate(metadata.updatedAt)}</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
               <div className="w-4 h-4 flex items-center justify-center">
-                <div className="w-2 h-2 bg-[#2354bf] rounded-full" />
+                <div className="w-2 h-2 bg-primary rounded-full" />
               </div>
               <div>
-                <p className="text-sm text-[#6b7280]">Версия</p>
-                <p className="font-medium text-[#1f2937]">{metadata.version}</p>
+                <p className="text-sm text-muted-foreground">Версия</p>
+                <p className="font-medium text-foreground">{metadata.version}</p>
               </div>
             </div>
 
             {metadata.approver && metadata.approvedAt && (
               <div className="flex items-center space-x-3">
-                <CheckCircle className="w-4 h-4 text-[#10b981]" />
+                <CheckCircle className="w-4 h-4 text-success" />
                 <div>
-                  <p className="text-sm text-[#6b7280]">Утверждено</p>
-                  <p className="font-medium text-[#1f2937]">{metadata.approver}</p>
-                  <p className="text-xs text-[#9ca3af]">{formatDate(metadata.approvedAt)}</p>
+                  <p className="text-sm text-muted-foreground">Утверждено</p>
+                  <p className="font-medium text-foreground">{metadata.approver}</p>
+                  <p className="text-xs text-foreground-subtle">{formatDate(metadata.approvedAt)}</p>
                 </div>
               </div>
             )}
@@ -164,10 +156,10 @@ const DocumentMetadataComponent = React.forwardRef<HTMLDivElement, DocumentMetad
         {/* Tags */}
         {metadata.tags.length > 0 && (
           <div>
-            <h3 className="font-medium text-[#1f2937] mb-3">Теги</h3>
+            <h3 className="font-medium text-foreground mb-3">Теги</h3>
             <div className="flex flex-wrap gap-2">
               {metadata.tags.map((tag, index) => (
-                <span key={index} className="px-2 py-1 bg-[#f3f4f6] text-[#374151] text-sm rounded-md border">
+                <span key={index} className="px-2 py-1 bg-muted text-foreground-secondary text-sm rounded-md border">
                   {tag}
                 </span>
               ))}
@@ -177,11 +169,13 @@ const DocumentMetadataComponent = React.forwardRef<HTMLDivElement, DocumentMetad
 
         {/* Department */}
         <div>
-          <h3 className="font-medium text-[#1f2937] mb-2">Подразделение</h3>
-          <p className="text-[#6b7280]">{metadata.department}</p>
+          <h3 className="font-medium text-foreground mb-2">Подразделение</h3>
+          <p className="text-muted-foreground">{metadata.department}</p>
         </div>
       </div>
     )
   },
 )
 DocumentMetadataComponent.displayName = "DocumentMetadata"
+
+import { formatDateTime } from "@/lib/format";

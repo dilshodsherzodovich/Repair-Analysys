@@ -2,24 +2,17 @@
 
 import React, { useMemo, useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Settings2, Loader2, FileSpreadsheet } from "lucide-react";
+import { Settings2, Loader2 } from "lucide-react";
 import { PageHeader } from "@/ui/page-header";
 import { Button } from "@/ui/button";
-import { PermissionGuard } from "@/components/permission-guard";
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useTxk13Report } from "@/api/hooks/use-txk13-report";
 import { useGetLocomotiveModels } from "@/api/hooks/use-locomotives";
 import type { Txk13Inspection, Txk13Locomotive } from "@/api/types/txk13-report";
-import { canAccessSection, type Permission } from "@/lib/permissions";
+import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import type { UserData } from "@/api/types/auth";
 import { BaselineModal } from "./baseline-modal";
@@ -27,13 +20,17 @@ import { TotalMileageBaselineModal } from "./total-mileage-baseline-modal";
 import { txk13ReportService } from "@/api/services/txk13-report.service";
 import { Txk13Filters } from "./txk13-filters";
 import { authService } from "@/api/services/auth.service";
+import { Input } from "@/ui/input";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
+import { formatNumber } from "@/lib/format";
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
 
 function formatNum(n: number): string {
-  if (n == null) return "0";
-  return n.toLocaleString("en-US");
+  return formatNumber(n, { fallback: "0" });
 }
 
 function getInspectionMap(loco: Txk13Locomotive): Map<number, Txk13Inspection> {
@@ -73,11 +70,11 @@ function BandajCell({ locoId, serverValue }: { locoId: number; serverValue: numb
   }
 
   return (
-    <TableCell className="p-0 text-center text-[#475569] border-r border-[#E2E8F0] relative">
+    <TableCell className="text-center relative">
       {saving ? (
-        <Loader2 className="size-3.5 animate-spin text-[#2563EB] mx-auto my-2" />
+        <Loader2 className="size-3.5 animate-spin text-primary mx-auto my-2" />
       ) : (
-        <input
+        <Input variant="cell" className="absolute inset-0 text-center"
           type="number"
           min={0}
           max={1000}
@@ -87,7 +84,6 @@ function BandajCell({ locoId, serverValue }: { locoId: number; serverValue: numb
           onClick={(e) => e.currentTarget.select()}
           onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
           onBlur={handleBlur}
-          className="absolute inset-0 w-full h-full text-center bg-transparent border border-transparent outline-none focus:bg-white focus:border-[#93C5FD] focus:ring-1 focus:ring-[#93C5FD] px-2 text-xs [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
       )}
     </TableCell>
@@ -95,7 +91,7 @@ function BandajCell({ locoId, serverValue }: { locoId: number; serverValue: numb
 }
 
 function inspBg(idx: number) {
-  return idx % 2 === 0 ? "bg-[#F1F5F9]" : "bg-white";
+  return idx % 2 === 0 ? "bg-muted" : "bg-background";
 }
 
 
@@ -139,20 +135,19 @@ function ManufactureDateCell({ locoId, serverValue }: { locoId: number; serverVa
 
   return (
     <TableCell
-      className="py-2 px-2 text-[#475569] border-r border-[#E2E8F0] relative whitespace-nowrap min-w-[140px] cursor-pointer"
+      className="relative whitespace-nowrap min-w-[140px] cursor-pointer"
       onClick={() => !editing && !saving && setEditing(true)}
     >
       {saving ? (
-        <Loader2 className="size-3.5 animate-spin text-[#2563EB]" />
+        <Loader2 className="size-3.5 animate-spin text-primary" />
       ) : editing ? (
-        <input
+        <Input variant="cell" className="absolute inset-0 bg-background text-foreground-secondary ring-2 ring-inset ring-primary/40"
           ref={inputRef}
           type="date"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onBlur={submit}
           onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
-          className="absolute inset-0 w-full h-full px-2 text-xs bg-white border border-[#93C5FD] ring-1 ring-[#93C5FD] outline-none text-[#475569]"
         />
       ) : (
         <span className="text-xs">{toDisplayDate(value) || "—"}</span>
@@ -322,261 +317,242 @@ export default function LocomotiveMileageReportPage() {
   const isEmpty = !isLoadingReport && orgs.length === 0;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <PageHeader title={t("title")} description={t("description")} />
-        <Button
-          onClick={handleExport}
-          disabled={
-            !reportData?.data?.length ||
-            selectedInspectionTypes.length === 0 ||
-            isExporting ||
-            isLoadingReport
-          }
-          className="shrink-0 gap-2"
-        >
-          {isExporting ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <FileSpreadsheet className="size-4" />
-          )}
-          {isExporting ? t("exporting") : t("export_button")}
-        </Button>
-      </div>
-
-      <Txk13Filters
-        organizations={organizations}
-        isLoadingOrganizations={isLoadingOrganizations}
-        locomotiveModels={locomotiveModels}
-        inspectionTypes={inspectionTypes}
-        selectedInspectionIds={selectedInspectionIds}
-        onToggleInspection={toggleInspection}
-        activeUnit={activeUnit}
-        onUnitChange={setActiveUnit}
+    <Page>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={
+          <ExportActions
+            onExcel={handleExport}
+            busy={isExporting ? "excel" : null}
+            disabled={!reportData?.data?.length || selectedInspectionTypes.length === 0 || isLoadingReport}
+          />
+        }
+        filters={
+          <Txk13Filters
+            organizations={organizations}
+            isLoadingOrganizations={isLoadingOrganizations}
+            locomotiveModels={locomotiveModels}
+            inspectionTypes={inspectionTypes}
+            selectedInspectionIds={selectedInspectionIds}
+            onToggleInspection={toggleInspection}
+            activeUnit={activeUnit}
+            onUnitChange={setActiveUnit}
+          />
+        }
       />
 
-      <div className="sticky top-0 rounded-lg border border-[#CAD5E2] overflow-x-auto overflow-y-auto max-h-[80vh] bg-white">
-        <table className="w-full text-xs border-collapse">
-          <TableHeader>
-            {/* Row 1: fixed headers + inspection group headers */}
-            <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
-              <TableHead rowSpan={2} className="sticky top-0 left-0 z-30 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] text-center whitespace-nowrap bg-[#F8FAFC] min-w-[40px]">
-                {t("columns.no")}
+      <Table bordered density="compact" frame maxHeight="80vh">
+        <TableHeader>
+          {/* Row 1: fixed headers + inspection group headers */}
+          <TableRow>
+            <TableHead rowSpan={2} className="sticky top-0 left-0 z-30 text-center bg-surface-muted min-w-[40px]">
+              {t("columns.no")}
+            </TableHead>
+            <TableHead rowSpan={2} className="sticky top-0 left-[40px] z-30 bg-surface-muted min-w-[72px]">
+              {t("columns.series")}
+            </TableHead>
+            <TableHead rowSpan={2} className="sticky top-0 left-[112px] z-30 bg-surface-muted min-w-[72px] shadow-pin-start">
+              {t("columns.number")}
+            </TableHead>
+            <TableHead rowSpan={2} className="sticky top-0 z-20 bg-surface-muted min-w-[140px]">
+              {t("columns.manufactured_date")}
+            </TableHead>
+            <TableHead rowSpan={2} className="sticky top-0 z-20 bg-surface-muted">
+              {t("columns.bandaj_mm")}
+            </TableHead>
+            <TableHead rowSpan={2} className="sticky top-0 z-20 bg-surface-muted">
+              {t("columns.total_mileage")}
+            </TableHead>
+            <TableHead rowSpan={2} className="sticky top-0 z-20 bg-surface-muted">
+              {t("columns.avg_monthly_mileage")}
+            </TableHead>
+            {selectedInspectionTypes.map((insp, idx) => (
+              <TableHead
+                key={insp.type_id}
+                colSpan={INSP_SUB_COUNT - 1}
+                className={`sticky top-0 z-20 text-center ${inspBg(idx)}`}
+              >
+                {insp.type}
               </TableHead>
-              <TableHead rowSpan={2} className="sticky top-0 left-[40px] z-30 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC] min-w-[72px]">
-                {t("columns.series")}
-              </TableHead>
-              <TableHead rowSpan={2} className="sticky top-0 left-[112px] z-30 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC] min-w-[72px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]">
-                {t("columns.number")}
-              </TableHead>
-              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC] min-w-[140px]">
-                {t("columns.manufactured_date")}
-              </TableHead>
-              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
-                {t("columns.bandaj_mm")}
-              </TableHead>
-              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
-                {t("columns.total_mileage")}
-              </TableHead>
-              <TableHead rowSpan={2} className="sticky top-0 z-20 py-2 px-2 text-[#475569] font-medium border-r border-[#E2E8F0] whitespace-nowrap bg-[#F8FAFC]">
-                {t("columns.avg_monthly_mileage")}
-              </TableHead>
-              {selectedInspectionTypes.map((insp, idx) => (
-                <TableHead
-                  key={insp.type_id}
-                  colSpan={INSP_SUB_COUNT - 1}
-                  className={`sticky top-0 z-20 py-2 px-2 text-[#475569] font-semibold text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
-                >
-                  {insp.type}
-                </TableHead>
-              ))}
-            </TableRow>
-            {/* Row 2: sub-headers for each inspection type */}
-            <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
-              {selectedInspectionTypes.map((insp, idx) => [
-                <TableHead key={`${insp.type_id}-sana`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
-                  {t("columns.sana")}
-                </TableHead>,
-                <TableHead key={`${insp.type_id}-actual-sana`} className={`hidden sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
-                  {t("columns.actual_sana")}
-                </TableHead>,
-                <TableHead key={`${insp.type_id}-tamirdan`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
-                  {activeUnit === "hours" ? "Ta'mirdan, soat" : activeUnit === "km" ? t("columns.tamirdan_km") : "Ta'mirdan"}
-                </TableHead>,
-                <TableHead key={`${insp.type_id}-norma`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
-                  {t("columns.norma")}
-                </TableHead>,
-                <TableHead key={`${insp.type_id}-qoldiq`} className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
-                  {t("columns.qoldiq")}
-                </TableHead>,
-                <TableHead
-                  key={`${insp.type_id}-keyingi`}
-                  className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}
-                >
-                  {t("columns.keyingi_sana")}
-                </TableHead>,
-                <TableHead
-                  key={`${insp.type_id}-baseline`}
-                  className={`sticky top-[33px] z-20 py-2 px-2 text-[#64748B] font-normal border-r border-[#E2E8F0] whitespace-nowrap text-center ${inspBg(idx)} ${idx === selectedInspectionTypes.length - 1 ? "border-r-0" : ""}`}
-                >
-                  {t("columns.sozlash")}
-                </TableHead>,
-              ])}
-            </TableRow>
-          </TableHeader>
+            ))}
+          </TableRow>
+          {/* Row 2: sub-headers for each inspection type */}
+          <TableRow>
+            {selectedInspectionTypes.map((insp, idx) => [
+              <TableHead key={`${insp.type_id}-sana`} className={`sticky top-[33px] z-20 font-normal ${inspBg(idx)}`}>
+                {t("columns.sana")}
+              </TableHead>,
+              <TableHead key={`${insp.type_id}-actual-sana`} className={`hidden sticky top-[33px] z-20 font-normal ${inspBg(idx)}`}>
+                {t("columns.actual_sana")}
+              </TableHead>,
+              <TableHead key={`${insp.type_id}-tamirdan`} className={`sticky top-[33px] z-20 font-normal ${inspBg(idx)}`}>
+                {activeUnit === "hours" ? "Ta'mirdan, soat" : activeUnit === "km" ? t("columns.tamirdan_km") : "Ta'mirdan"}
+              </TableHead>,
+              <TableHead key={`${insp.type_id}-norma`} className={`sticky top-[33px] z-20 font-normal ${inspBg(idx)}`}>
+                {t("columns.norma")}
+              </TableHead>,
+              <TableHead key={`${insp.type_id}-qoldiq`} className={`sticky top-[33px] z-20 font-normal ${inspBg(idx)}`}>
+                {t("columns.qoldiq")}
+              </TableHead>,
+              <TableHead
+                key={`${insp.type_id}-keyingi`}
+                className={`sticky top-[33px] z-20 font-normal ${inspBg(idx)}`}
+              >
+                {t("columns.keyingi_sana")}
+              </TableHead>,
+              <TableHead
+                key={`${insp.type_id}-baseline`}
+                className={`sticky top-[33px] z-20 font-normal text-center ${inspBg(idx)}`}
+              >
+                {t("columns.sozlash")}
+              </TableHead>,
+            ])}
+          </TableRow>
+        </TableHeader>
 
-          <TableBody>
-            {isLoadingReport ? (
-              <TableSkeleton
-                rows={8}
-                columns={totalColCount || FIXED_COL_COUNT}
-                cellClassName="py-2 px-2"
-              />
-            ) : isEmpty ? (
-              <TableRow>
-                <TableCell
-                  colSpan={totalColCount}
-                  className="py-8 text-center text-[#64748B]"
-                >
-                  {t("empty_title")}
-                </TableCell>
-              </TableRow>
-            ) : (
-              orgs.map((org) => (
-                <React.Fragment key={org.organization_name}>
-                  {/* Org header row */}
-                  <TableRow className="bg-[#EFF6FF] hover:bg-[#EFF6FF]">
-                    <TableCell
-                      colSpan={totalColCount}
-                      className="py-2 px-3 font-semibold text-[#1e40af] border-b border-[#E2E8F0] text-sm"
+        <TableBody>
+          {isLoadingReport ? (
+            <TableSkeleton
+              rows={8}
+              columns={totalColCount || FIXED_COL_COUNT}
+              cellClassName="py-2 px-2"
+            />
+          ) : isEmpty ? (
+            <TableStateRow colSpan={totalColCount}><EmptyState title={t("empty_title")} size="compact" /></TableStateRow>
+          ) : (
+            orgs.map((org) => (
+              <React.Fragment key={org.organization_name}>
+                {/* Org header row */}
+                <TableRow className="bg-primary-subtle hover:bg-primary-subtle">
+                  <TableCell
+                    colSpan={totalColCount}
+                    className="font-semibold text-primary-hover"
+                  >
+                    {org.organization_name}
+                    <span className="ml-2 font-normal text-muted-foreground">
+                      ({t("locomotives_count", { count: org.locomotives.length })})
+                    </span>
+                  </TableCell>
+                </TableRow>
+                {/* Locomotive rows */}
+                {org.locomotives.map((loco) => {
+                  const inspMap = getInspectionMap(loco);
+                  return (
+                    <TableRow
+                      key={`${org.organization_name}-${loco.index}`}
+                      className="group"
                     >
-                      {org.organization_name}
-                      <span className="ml-2 font-normal text-[#64748B]">
-                        ({t("locomotives_count", { count: org.locomotives.length })})
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                  {/* Locomotive rows */}
-                  {org.locomotives.map((loco) => {
-                    const inspMap = getInspectionMap(loco);
-                    return (
-                      <TableRow
-                        key={`${org.organization_name}-${loco.index}`}
-                        className="group hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0"
-                      >
-                        <TableCell className="sticky left-0 z-10 py-2 px-2 text-center text-[#475569] border-r border-[#E2E8F0] bg-white group-hover:bg-[#F8FAFC] min-w-[40px]">
-                          {loco.index}
-                        </TableCell>
-                        <TableCell className="sticky left-[40px] z-10 py-2 px-2 text-[#0F172B] border-r border-[#E2E8F0] whitespace-nowrap bg-white group-hover:bg-[#F8FAFC] min-w-[72px]">
-                          {loco.series}
-                        </TableCell>
-                        <TableCell className="sticky left-[112px] z-10 py-2 px-2 font-mono text-[#0F172B] border-r border-[#E2E8F0] bg-white group-hover:bg-[#F8FAFC] min-w-[72px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]">
-                          {loco.number}
-                        </TableCell>
-                        <ManufactureDateCell locoId={loco.id} serverValue={loco.manufactured_date} />
-                        <BandajCell locoId={loco.id} serverValue={loco.bandaj_thickness} />
-                        <TableCell className="py-2 px-2 border-r border-[#E2E8F0]">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-right text-[#475569] flex-1">{formatNum(loco.total_mileage)}</span>
-                            <button
-                              type="button"
-                              onClick={() => setTotalMileageModal({ locomotiveId: loco.id, locomotiveName: `${loco.series} ${loco.number}` })}
-                              className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#94A3B8] hover:text-[#475569] transition-colors shrink-0"
-                              title="Bazani sozlash"
-                            >
-                              <Settings2 className="size-3.5" />
-                            </button>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-2 px-2 text-right text-[#475569] border-r border-[#E2E8F0]">
-                          {formatNum(loco.average_monthly_mileage)}
-                        </TableCell>
-                        {selectedInspectionTypes.map((inspType, idx) => {
-                          const insp = inspMap.get(inspType.type_id);
-                          const isLast = idx === selectedInspectionTypes.length - 1;
-                          const isSaving = pendingBaselines.has(`${loco.id}-${inspType.type_id}`);
+                      <TableCell className="sticky left-0 z-10 text-center bg-background group-hover/row:bg-row-hover min-w-[40px]">
+                        {loco.index}
+                      </TableCell>
+                      <TableCell className="sticky left-[40px] z-10 whitespace-nowrap bg-background group-hover/row:bg-row-hover min-w-[72px]">
+                        {loco.series}
+                      </TableCell>
+                      <TableCell className="sticky left-[112px] z-10 font-mono bg-background group-hover/row:bg-row-hover min-w-[72px] shadow-pin-start">
+                        {loco.number}
+                      </TableCell>
+                      <ManufactureDateCell locoId={loco.id} serverValue={loco.manufactured_date} />
+                      <BandajCell locoId={loco.id} serverValue={loco.bandaj_thickness} />
+                      <TableCell>
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-right text-foreground-secondary flex-1">{formatNum(loco.total_mileage)}</span>
+                          <Button variant="ghost" size="icon-sm"
+                            type="button"
+                            onClick={() => setTotalMileageModal({ locomotiveId: loco.id, locomotiveName: `${loco.series} ${loco.number}` })}
+                            title="Bazani sozlash"
+                          >
+                            <Settings2 className="size-3.5" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatNum(loco.average_monthly_mileage)}
+                      </TableCell>
+                      {selectedInspectionTypes.map((inspType, idx) => {
+                        const insp = inspMap.get(inspType.type_id);
+                        const isLast = idx === selectedInspectionTypes.length - 1;
+                        const isSaving = pendingBaselines.has(`${loco.id}-${inspType.type_id}`);
 
-                          const gearButton = (
-                            <button
-                              type="button"
-                              disabled={isSaving}
-                              onClick={() =>
-                                setBaselineModal({
-                                  locomotiveId: loco.id,
-                                  inspectionTypeId: inspType.type_id,
-                                  locomotiveName: `${loco.series} ${loco.number}`,
-                                  inspectionTypeName: inspType.type,
-                                  currentActualDate: insp?.actual_last_date,
-                                })
-                              }
-                              className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-[#E2E8F0] text-[#94A3B8] hover:text-[#475569] transition-colors disabled:cursor-not-allowed"
-                              title={t("columns.sozlash")}
-                            >
-                              {isSaving
-                                ? <Loader2 className="size-3.5 animate-spin text-[#2563EB]" />
-                                : <Settings2 className="size-3.5" />}
-                            </button>
-                          );
+                        const gearButton = (
+                          <Button variant="ghost" size="icon-sm"
+                            type="button"
+                            disabled={isSaving}
+                            onClick={() =>
+                              setBaselineModal({
+                                locomotiveId: loco.id,
+                                inspectionTypeId: inspType.type_id,
+                                locomotiveName: `${loco.series} ${loco.number}`,
+                                inspectionTypeName: inspType.type,
+                                currentActualDate: insp?.actual_last_date,
+                              })
+                            }
+                            title={t("columns.sozlash")}
+                          >
+                            {isSaving
+                              ? <Loader2 className="size-3.5 animate-spin text-primary" />
+                              : <Settings2 className="size-3.5" />}
+                          </Button>
+                        );
 
-                          const hasLastDate = !!insp && !!insp.last_date && insp.last_date !== "-";
-                          const showKm = activeUnit !== "hours" && !!insp && (insp.km_norm > 0 || hasLastDate);
-                          const showHours = activeUnit !== "km" && !!insp && insp.hours_norm > 0;
+                        const hasLastDate = !!insp && !!insp.last_date && insp.last_date !== "-";
+                        const showKm = activeUnit !== "hours" && !!insp && (insp.km_norm > 0 || hasLastDate);
+                        const showHours = activeUnit !== "km" && !!insp && insp.hours_norm > 0;
 
-                          if (!showKm && !showHours) {
-                            return [
-                              ...Array.from({ length: INSP_SUB_COUNT - 2 }, (_, i) => (
-                                <TableCell
-                                  key={`${loco.index}-${inspType.type_id}-empty-${i}`}
-                                  className={`py-2 px-2 text-[#CBD5E1] text-center border-r border-[#E2E8F0] ${inspBg(idx)}`}
-                                >
-                                  —
-                                </TableCell>
-                              )),
-                              <TableCell
-                                key={`${loco.index}-${inspType.type_id}-baseline-empty`}
-                                className={`py-2 px-1 text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}
-                              >
-                                {gearButton}
-                              </TableCell>,
-                            ];
-                          }
+                        if (!showKm && !showHours) {
                           return [
-                            <TableCell key={`${loco.index}-${inspType.type_id}-sana`} className={`py-1 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
-                              {insp!.last_date === "-" ? "—" : insp!.last_date}
-                            </TableCell>,
-                            <TableCell key={`${loco.index}-${inspType.type_id}-actual-sana`} className={`hidden py-1 px-2 text-[#475569] border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
-                              {insp!.actual_last_date === "-" ? "—" : (insp!.actual_last_date || "—")}
-                            </TableCell>,
-                            <TableCell key={`${loco.index}-${inspType.type_id}-tamirdan`} className={`py-1 px-2 text-right border-r border-[#E2E8F0] ${inspBg(idx)}`}>
-                              {showKm && <div className="text-[#2563EB]">{formatNum(insp!.km_value_since_repair)}<span className="ml-0.5 text-[9px]">km</span></div>}
-                              {showHours && <div className="text-[#7C3AED]">{formatNum(insp!.hours_value_since_repair)}<span className="ml-0.5 text-[9px]">s</span></div>}
-                            </TableCell>,
-                            <TableCell key={`${loco.index}-${inspType.type_id}-norma`} className={`py-1 px-2 text-right text-[#475569] border-r border-[#E2E8F0] ${inspBg(idx)}`}>
-                              {showKm && <div>{formatNum(insp!.km_norm)}<span className="ml-0.5 text-[9px]">km</span></div>}
-                              {showHours && <div className="text-[#7C3AED]">{formatNum(insp!.hours_norm)}<span className="ml-0.5 text-[9px]">s</span></div>}
-                            </TableCell>,
-                            <TableCell key={`${loco.index}-${inspType.type_id}-qoldiq`} className={`py-1 px-2 text-right border-r border-[#E2E8F0] ${inspBg(idx)}`}>
-                              {showKm && <div className={insp!.km_difference < 0 ? "text-[#DC2626]" : "text-[#475569]"}>{formatNum(insp!.km_difference)}<span className="ml-0.5 text-[9px]">km</span></div>}
-                              {showHours && <div className={insp!.hours_difference < 0 ? "text-[#DC2626]" : "text-[#7C3AED]"}>{formatNum(insp!.hours_difference)}<span className="ml-0.5 text-[9px]">s</span></div>}
-                            </TableCell>,
-                            <TableCell key={`${loco.index}-${inspType.type_id}-keyingi`} className={`py-1 px-2 border-r border-[#E2E8F0] whitespace-nowrap ${inspBg(idx)}`}>
-                              {showKm && <div className="text-[#475569]">{insp!.km_next_repair_date === "-" ? "—" : insp!.km_next_repair_date}</div>}
-                              {showHours && <div className="text-[#7C3AED]">{insp!.hours_next_repair_date === "-" ? "—" : insp!.hours_next_repair_date}</div>}
-                            </TableCell>,
-                            <TableCell key={`${loco.index}-${inspType.type_id}-baseline`} className={`py-1 px-1 text-center border-r border-[#E2E8F0] ${inspBg(idx)} ${isLast ? "border-r-0" : ""}`}>
+                            ...Array.from({ length: INSP_SUB_COUNT - 2 }, (_, i) => (
+                              <TableCell
+                                key={`${loco.index}-${inspType.type_id}-empty-${i}`}
+                                className={`text-foreground-subtle text-center ${inspBg(idx)}`}
+                              >
+                                —
+                              </TableCell>
+                            )),
+                            <TableCell
+                              key={`${loco.index}-${inspType.type_id}-baseline-empty`}
+                              className={`text-center ${inspBg(idx)}`}
+                            >
                               {gearButton}
                             </TableCell>,
                           ];
-                        })}
-                      </TableRow>
-                    );
-                  })}
-                </React.Fragment>
-              ))
-            )}
-          </TableBody>
-        </table>
-      </div>
+                        }
+                        return [
+                          <TableCell key={`${loco.index}-${inspType.type_id}-sana`} className={`whitespace-nowrap ${inspBg(idx)}`}>
+                            {insp!.last_date === "-" ? "—" : insp!.last_date}
+                          </TableCell>,
+                          <TableCell key={`${loco.index}-${inspType.type_id}-actual-sana`} className={`hidden whitespace-nowrap ${inspBg(idx)}`}>
+                            {insp!.actual_last_date === "-" ? "—" : (insp!.actual_last_date || "—")}
+                          </TableCell>,
+                          <TableCell key={`${loco.index}-${inspType.type_id}-tamirdan`} className={`text-right ${inspBg(idx)}`}>
+                            {showKm && <div className="text-primary">{formatNum(insp!.km_value_since_repair)}<span className="ml-0.5 text-2xs">km</span></div>}
+                            {showHours && <div className="text-category-violet">{formatNum(insp!.hours_value_since_repair)}<span className="ml-0.5 text-2xs">s</span></div>}
+                          </TableCell>,
+                          <TableCell key={`${loco.index}-${inspType.type_id}-norma`} className={`text-right ${inspBg(idx)}`}>
+                            {showKm && <div>{formatNum(insp!.km_norm)}<span className="ml-0.5 text-2xs">km</span></div>}
+                            {showHours && <div className="text-category-violet">{formatNum(insp!.hours_norm)}<span className="ml-0.5 text-2xs">s</span></div>}
+                          </TableCell>,
+                          <TableCell key={`${loco.index}-${inspType.type_id}-qoldiq`} className={`text-right ${inspBg(idx)}`}>
+                            {showKm && <div className={insp!.km_difference < 0 ? "text-destructive" : "text-foreground-secondary"}>{formatNum(insp!.km_difference)}<span className="ml-0.5 text-2xs">km</span></div>}
+                            {showHours && <div className={insp!.hours_difference < 0 ? "text-destructive" : "text-category-violet"}>{formatNum(insp!.hours_difference)}<span className="ml-0.5 text-2xs">s</span></div>}
+                          </TableCell>,
+                          <TableCell key={`${loco.index}-${inspType.type_id}-keyingi`} className={`whitespace-nowrap ${inspBg(idx)}`}>
+                            {showKm && <div className="text-foreground-secondary">{insp!.km_next_repair_date === "-" ? "—" : insp!.km_next_repair_date}</div>}
+                            {showHours && <div className="text-category-violet">{insp!.hours_next_repair_date === "-" ? "—" : insp!.hours_next_repair_date}</div>}
+                          </TableCell>,
+                          <TableCell key={`${loco.index}-${inspType.type_id}-baseline`} className={`text-center ${inspBg(idx)}`}>
+                            {gearButton}
+                          </TableCell>,
+                        ];
+                      })}
+                    </TableRow>
+                  );
+                })}
+              </React.Fragment>
+            ))
+          )}
+        </TableBody>
+      </Table>
 
       <BaselineModal
         isOpen={!!baselineModal}
@@ -601,6 +577,6 @@ export default function LocomotiveMileageReportPage() {
         locomotiveId={totalMileageModal?.locomotiveId ?? 0}
         locomotiveName={totalMileageModal?.locomotiveName ?? ""}
       />
-    </div>
+    </Page>
   );
 }

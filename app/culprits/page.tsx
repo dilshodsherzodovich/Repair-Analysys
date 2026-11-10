@@ -9,32 +9,20 @@ import { getPageCount } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
 import { Edit, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  canAccessSection,
-  hasPermission,
-  type Permission,
-} from "@/lib/permissions";
+import { canAccessSection, hasPermission, type Permission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import {
-  useCulprits,
-  useUpdateCulprit,
-  useDeleteCulprit,
-} from "@/api/hooks/use-culprits";
+import { useCulprits, useUpdateCulprit, useDeleteCulprit } from "@/api/hooks/use-culprits";
 import type { Culprit } from "@/api/types/culprits";
 import { CulpritFormModal } from "@/components/culprits/culprit-form-modal";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
+import { formatMoney } from "@/lib/format";
 function formatAmount(amount: string | number): string {
-  const value = typeof amount === "string" ? Number(amount) : amount;
-  if (!value) return "0";
-  return new Intl.NumberFormat("uz-UZ", {
-    style: "currency",
-    currency: "UZS",
-    minimumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(amount);
 }
 
 export default function CulpritsPage() {
@@ -194,7 +182,7 @@ export default function CulpritsPage() {
       key: "payroll_confirmed",
       header: t("columns.payroll_confirmed"),
       accessor: (row) => (
-        <Badge variant={row.payroll_confirmed ? "info" : "outline"}>
+        <Badge variant={row.payroll_confirmed ? "primary" : "neutral"}>
           {row.payroll_confirmed
             ? t("filters.yes")
             : t("filters.no")}
@@ -205,7 +193,7 @@ export default function CulpritsPage() {
       key: "recovered",
       header: t("columns.recovered"),
       accessor: (row) => (
-        <Badge variant={row.recovered ? "success" : "outline"}>
+        <Badge variant={row.recovered ? "success" : "neutral"}>
           {row.recovered ? t("filters.yes") : t("filters.no")}
         </Badge>
       ),
@@ -235,53 +223,53 @@ export default function CulpritsPage() {
   );
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "organization",
+                label: t("filters.organization"),
+                isSelect: true,
+                options: organizationOptions,
+                placeholder: t("filters.organization_placeholder"),
+                loading: isLoadingOrganizations,
+              },
+              {
+                name: "full_name",
+                label: t("filters.full_name"),
+                isSelect: false,
+                placeholder: t("filters.full_name_placeholder"),
+              },
+              {
+                name: "payroll_confirmed",
+                label: t("filters.payroll_confirmed"),
+                isSelect: true,
+                options: yesNoOptions,
+                searchable: false,
+              },
+              {
+                name: "recovered",
+                label: t("filters.recovered"),
+                isSelect: true,
+                options: yesNoOptions,
+                searchable: false,
+              },
+            ]}
+            hasSearch={false}
+            hasDateRangePicker
+          />
+        }
       />
 
-      <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "organization",
-              label: t("filters.organization"),
-              isSelect: true,
-              options: organizationOptions,
-              placeholder: t("filters.organization_placeholder"),
-              loading: isLoadingOrganizations,
-            },
-            {
-              name: "full_name",
-              label: t("filters.full_name"),
-              isSelect: false,
-              placeholder: t("filters.full_name_placeholder"),
-            },
-            {
-              name: "payroll_confirmed",
-              label: t("filters.payroll_confirmed"),
-              isSelect: true,
-              options: yesNoOptions,
-              searchable: false,
-            },
-            {
-              name: "recovered",
-              label: t("filters.recovered"),
-              isSelect: true,
-              options: yesNoOptions,
-              searchable: false,
-            },
-          ]}
-          hasSearch={false}
-          hasDateRangePicker
-          dateRangePickerLabel=""
-          className="!mb-0"
-        />
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={data}
@@ -317,7 +305,7 @@ export default function CulpritsPage() {
                     variant: "outline" as const,
                     shouldShow: (row: Culprit) => !row.payroll_confirmed,
                     className:
-                      "border-red-600 text-red-600 hover:text-red-700 hover:border-red-600 hover:bg-red-600/10",
+                      "border-destructive text-destructive hover:text-destructive hover:border-destructive hover:bg-destructive/10",
                   },
                 ]
               : []
@@ -325,7 +313,7 @@ export default function CulpritsPage() {
           emptyTitle={t("empty.title")}
           emptyDescription={t("empty.description")}
         />
-      </div>
+      </>
 
       <CulpritFormModal
         isOpen={isFormOpen}
@@ -350,6 +338,6 @@ export default function CulpritsPage() {
         isDoingAction={deleteMutation.isPending}
         variant="danger"
       />
-    </div>
+    </Page>
   );
 }

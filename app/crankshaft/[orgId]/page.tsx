@@ -5,38 +5,26 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import PageFilters, { FiltersQuery } from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
-import { toast } from "@/ui/use-toast";
+import { useSnackbar } from "@/providers/snackbar-provider";
 import { cn } from "@/lib/utils";
-import {
-  useGetLocomotiveModels,
-  useGetLocomotives,
-} from "@/api/hooks/use-locomotives";
+import { useGetLocomotiveModels, useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useUpdateSpecialComponent } from "@/api/hooks/use-special-components";
 import { SpecialComponent } from "@/api/types/locomotive";
 import { UserData } from "@/api/types/auth";
-import {
-  canAccessSection,
-  canEditOrganization,
-  hasPermission,
-} from "@/lib/permissions";
+import { canAccessSection, canEditOrganization, hasPermission } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
-import {
-  CellInput,
-  EditActions,
-  firstMessage,
-} from "@/components/locomotive-values/inline-edit";
+import { CellInput, EditActions, firstMessage } from "@/ui/inline-edit";
 import { authService } from "@/api/services/auth.service";
 import { Check } from "lucide-react";
 import { exportCrankshaftExcel } from "@/utils/crankshaft-excel-export";
+import { Alert, AlertDescription } from "@/ui/alert";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
+import { Badge } from "@/ui/badge";
 /** Edited input text per component id, then per field. */
 type Drafts = Record<number, Record<string, string>>;
 /** 400 messages per component id, keyed by field name like the API returns them. */
@@ -63,18 +51,11 @@ const INFO_FIELDS = ["year_of_manufacture", "factory_number"] as const;
 const SAVED_HIGHLIGHT_MS = 5000;
 
 // Tinted headers so the koren and shatun blocks read apart at a glance
-const korenHead = "bg-[#EFF6FF]";
-const shatunHead = "bg-[#FFF7ED]";
+const korenHead = "bg-primary-subtle";
+const shatunHead = "bg-warning-subtle";
 
 const toInputValue = (value: unknown) =>
   typeof value === "string" || typeof value === "number" ? String(value) : "";
-
-// border-separate (not collapse) so the borders stick with the pinned header;
-// every cell draws its own right/bottom border
-const headClass =
-  "py-3 px-3 bg-[#F8FAFC] text-[#475569] font-medium border-r border-b border-[#E2E8F0] whitespace-nowrap";
-const cellClass =
-  "py-2.5 px-3 border-r border-b border-[#E2E8F0] whitespace-nowrap";
 
 // №, locomotive and section stay pinned on horizontal scroll. Fixed widths so
 // each column's left offset is the sum of the widths before it.
@@ -82,7 +63,7 @@ const stickyNo = "sticky left-0 w-[48px] min-w-[48px] max-w-[48px]";
 const stickyLocomotive =
   "sticky left-[48px] w-[160px] min-w-[160px] max-w-[160px] whitespace-normal break-words";
 const stickySection =
-  "sticky left-[208px] w-[96px] min-w-[96px] max-w-[96px] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.08)]";
+  "sticky left-[208px] w-[96px] min-w-[96px] max-w-[96px] shadow-pin-start";
 
 interface LocomotiveGroup {
   locomotiveId: number;
@@ -114,6 +95,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
 }) {
   const t = useTranslations("CrankshaftPage");
   const tModal = useTranslations("SpecialComponentsModal");
+  const { showSuccess, showError } = useSnackbar();
   const { mutateAsync: updateSpecialComponent } = useUpdateSpecialComponent();
 
   const [drafts, setDrafts] = useState<Drafts>({});
@@ -217,7 +199,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
     if (!Object.keys(nextErrors).length) {
       setSavedCells(saved);
       onDone();
-      toast({ title: t("success_updated") });
+      showSuccess(t("success_updated"));
       return;
     }
 
@@ -229,11 +211,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
     });
     setErrors(nextErrors);
     const firstError = Object.values(nextErrors)[0];
-    toast({
-      variant: "destructive",
-      title: t("error_save"),
-      description: Object.values(firstError ?? {}).find(Boolean),
-    });
+    showError(t("error_save"), Object.values(firstError ?? {}).find(Boolean));
   };
 
   const fieldLabel = (field: string) =>
@@ -246,61 +224,67 @@ const LocomotiveRows = memo(function LocomotiveRows({
   const justSaved = !!savedCells;
   // Pinned cells need a solid background or scrolled cells show through
   const stickyBg = isEditing
-    ? "bg-[#F0F7FF]"
+    ? "bg-primary-subtle"
     : justSaved
-      ? "bg-[#F0FDF4]"
-      : "bg-white group-hover:bg-[#F8FAFC]";
+      ? "bg-success-subtle"
+      : "bg-background group-hover:bg-row-hover";
+  // Every line is a plain row (no merged cells), so hover, borders and pinned
+  // columns behave like any table. No, locomotive and the edit button show on
+  // the locomotive's first line; below them those cells stay empty with no
+  // line between, and a darker line closes each locomotive. Hovering any
+  // line highlights the whole locomotive (its <tbody> is the hover group).
+  const isLast = (index: number) => index === span - 1;
+  const groupCell = (index: number) => !isLast(index) && "border-b-transparent";
 
   return (
-    <>
+    <TableBody className="group">
       {group.components.map((component, componentIndex) => (
         <TableRow
           key={component.id}
           className={cn(
-            "group hover:bg-[#F8FAFC] transition-colors duration-700",
-            isEditing && "bg-[#F0F7FF] hover:bg-[#F0F7FF]",
-            justSaved && "bg-[#F0FDF4] hover:bg-[#F0FDF4]",
+            // The hovered line takes the same colour as the rest of its locomotive
+            "hover:bg-row-hover group-hover:bg-row-hover",
+            isLast(componentIndex) && "[&>td]:border-b-border-strong",
+            isEditing && "bg-primary-subtle hover:bg-primary-subtle group-hover:bg-primary-subtle",
+            justSaved && "bg-success-subtle hover:bg-success-subtle group-hover:bg-success-subtle",
           )}
         >
-          {componentIndex === 0 && (
-            <>
-              <TableCell
-                rowSpan={span}
-                className={cn(
-                  cellClass,
-                  stickyNo,
-                  stickyBg,
-                  "z-[5] text-[#64748B] align-top",
-                )}
-              >
-                {group.index}
-              </TableCell>
-              <TableCell
-                rowSpan={span}
-                className={cn(
-                  cellClass,
-                  stickyLocomotive,
-                  stickyBg,
-                  "z-[5] text-[#0F172B] font-medium align-top",
-                  justSaved && "border-l-2 border-l-green-500",
-                )}
-              >
-                {group.name}-{group.modelName}
-                {justSaved && (
-                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                    <Check className="h-3 w-3" />
-                    {t("just_saved")}
-                  </span>
-                )}
-              </TableCell>
-            </>
-          )}
           <TableCell
             className={cn(
-              cellClass,
+              stickyNo,
+              stickyBg,
+              "z-[5]",
+              groupCell(componentIndex),
+            )}
+          >
+            {componentIndex === 0 && group.index}
+          </TableCell>
+          <TableCell
+            className={cn(
+              stickyLocomotive,
+              stickyBg,
+              "z-[5] font-medium",
+              groupCell(componentIndex),
+              justSaved && "border-l-success",
+            )}
+          >
+            {componentIndex === 0 && (
+              <>
+                {group.name}-{group.modelName}
+                {justSaved && (
+                  <Badge variant="success" className="mt-1 w-fit">
+                    <Check className="h-3 w-3" />
+                    {t("just_saved")}
+                  </Badge>
+                )}
+              </>
+            )}
+          </TableCell>
+          <TableCell
+            className={cn(
               stickySection,
               stickyBg,
-              "z-[5] text-[#0F172B]",
+              "z-[5]",
             )}
           >
             {component.section?.name ??
@@ -316,12 +300,11 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 key={field}
                 className={cn(
-                  cellClass,
-                  "transition-colors duration-700",
-                  isInfo ? "text-[#64748B]" : "text-center text-[#0F172B]",
-                  editable && "px-1 py-1.5",
+                  "duration-700",
+                  isInfo ? "" : "text-center",
+                  editable && "",
                   // Changed values stand out while the highlight lasts
-                  wasSaved && "bg-green-100 font-semibold text-green-800",
+                  wasSaved && "bg-success-subtle font-semibold text-success",
                 )}
               >
                 {editable ? (
@@ -349,28 +332,27 @@ const LocomotiveRows = memo(function LocomotiveRows({
               </TableCell>
             );
           })}
-          {canEdit && componentIndex === 0 && (
-            <TableCell
-              rowSpan={span}
-              className={`${cellClass} text-center align-top border-r-0`}
-            >
-              <EditActions
-                isEditing={isEditing}
-                isSaving={isSaving}
-                onEdit={() => onEdit(group.locomotiveId)}
-                onSave={handleSave}
-                onCancel={cancelEdit}
-                labels={{
-                  edit: t("edit"),
-                  save: t("save"),
-                  cancel: t("cancel"),
-                }}
-              />
+          {canEdit && (
+            <TableCell className={cn("text-center", groupCell(componentIndex))}>
+              {componentIndex === 0 && (
+                <EditActions
+                  isEditing={isEditing}
+                  isSaving={isSaving}
+                  onEdit={() => onEdit(group.locomotiveId)}
+                  onSave={handleSave}
+                  onCancel={cancelEdit}
+                  labels={{
+                    edit: t("edit"),
+                    save: t("save"),
+                    cancel: t("cancel"),
+                  }}
+                />
+              )}
             </TableCell>
           )}
         </TableRow>
       ))}
-    </>
+    </TableBody>
   );
 });
 
@@ -383,6 +365,7 @@ function CrankshaftPageContent({
 }) {
   const t = useTranslations("CrankshaftPage");
   const tModal = useTranslations("SpecialComponentsModal");
+  const { showError } = useSnackbar();
   const searchParams = useSearchParams();
   const { q, locModel } = Object.fromEntries(searchParams.entries());
 
@@ -453,11 +436,11 @@ function CrankshaftPageContent({
       );
     } catch (error) {
       console.error("Error exporting crankshaft:", error);
-      toast({ variant: "destructive", title: t("excel.error") });
+      showError(t("excel.error"));
     } finally {
       setIsExporting(false);
     }
-  }, [groups, korenFields, shatunFields, t, tModal]);
+  }, [groups, korenFields, shatunFields, t, tModal, showError]);
 
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
@@ -484,53 +467,55 @@ function CrankshaftPageContent({
   const columnCount = 5 + valueFields.length + (canEdit ? 1 : 0);
 
   return (
-    <div className="space-y-6">
-      <PageHeader title={t("title")} description={t("description")} />
-
-      <PageFilters
-        filters={pageFilters}
-        hasSearch={true}
-        searchPlaceholder={t("search_placeholder")}
-        onExport={isPending ? undefined : handleExport}
-        exportLoading={isExporting}
+    <Page>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        filters={
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
+        actions={<ExportActions onExcel={isPending ? undefined : handleExport} busy={isExporting ? "excel" : null} />}
       />
 
       {isError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Alert variant="destructive"><AlertDescription>
           {t("error_load")}
-        </div>
+        </AlertDescription></Alert>
       )}
 
-      <div className="rounded-lg border border-[#CAD5E2] overflow-auto max-h-[75vh] bg-white">
-        <table className="w-full caption-bottom text-sm border-separate border-spacing-0">
+      <Table frame maxHeight="75vh" bordered>
           {/* Header stays pinned while the rows scroll inside the box */}
           <TableHeader className="sticky top-0 z-10">
-            <TableRow className="hover:bg-transparent">
-              <TableHead rowSpan={2} className={`${headClass} ${stickyNo} z-20`}>
+            <TableRow>
+              <TableHead rowSpan={2} className={`${stickyNo} z-20`}>
                 {t("columns.no")}
               </TableHead>
               <TableHead
                 rowSpan={2}
-                className={`${headClass} ${stickyLocomotive} z-20`}
+                className={`${stickyLocomotive} z-20`}
               >
                 {t("columns.locomotive")}
               </TableHead>
               <TableHead
                 rowSpan={2}
-                className={`${headClass} ${stickySection} z-20`}
+                className={`${stickySection} z-20`}
               >
                 {t("columns.section")}
               </TableHead>
-              <TableHead rowSpan={2} className={headClass}>
+              <TableHead rowSpan={2}>
                 {tModal("year_of_manufacture")}
               </TableHead>
-              <TableHead rowSpan={2} className={headClass}>
+              <TableHead rowSpan={2}>
                 {tModal("factory_number")}
               </TableHead>
               {korenFields.length > 0 && (
                 <TableHead
                   colSpan={korenFields.length}
-                  className={cn(headClass, korenHead, "text-center")}
+                  className={cn(korenHead, "text-center")}
                 >
                   {tModal("koren_prefix")}
                 </TableHead>
@@ -538,7 +523,7 @@ function CrankshaftPageContent({
               {shatunFields.length > 0 && (
                 <TableHead
                   colSpan={shatunFields.length}
-                  className={cn(headClass, shatunHead, "text-center")}
+                  className={cn(shatunHead, "text-center")}
                 >
                   {tModal("shatun_prefix")}
                 </TableHead>
@@ -546,20 +531,20 @@ function CrankshaftPageContent({
               {canEdit && (
                 <TableHead
                   rowSpan={2}
-                  className={`${headClass} text-center border-r-0`}
+                  className={`text-center`}
                 >
                   {t("columns.actions")}
                 </TableHead>
               )}
             </TableRow>
-            <TableRow className="hover:bg-transparent">
+            <TableRow>
               {valueFields.map((field) => (
                 <TableHead
                   key={field}
                   className={cn(
-                    headClass,
-                    "text-center text-xs",
+                    "text-center",
                     field.includes("koren") ? korenHead : shatunHead,
+                    canEdit && "last:border-r",
                   )}
                 >
                   {getFieldNumber(field) === Number.POSITIVE_INFINITY
@@ -570,23 +555,19 @@ function CrankshaftPageContent({
             </TableRow>
           </TableHeader>
 
-          <TableBody>
-            {isPending ? (
+          {isPending || groups.length === 0 ? (
+            <TableBody>
+              {isPending ? (
               <TableSkeleton
                 rows={8}
                 columns={Math.max(columnCount, 6)}
                 cellClassName="py-3 px-3"
               />
-            ) : groups.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columnCount}
-                  className="py-8 text-center text-[#64748B]"
-                >
-                  {t("empty")}
-                </TableCell>
-              </TableRow>
-            ) : (
+              ) : (
+              <TableStateRow colSpan={columnCount}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
+              )}
+            </TableBody>
+          ) : (
               groups.map((group) => (
                 <LocomotiveRows
                   key={group.locomotiveId}
@@ -598,11 +579,9 @@ function CrankshaftPageContent({
                   onDone={handleDone}
                 />
               ))
-            )}
-          </TableBody>
-        </table>
-      </div>
-    </div>
+          )}
+        </Table>
+    </Page>
   );
 }
 

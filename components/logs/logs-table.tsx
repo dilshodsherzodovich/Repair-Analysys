@@ -1,14 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { Card } from "@/ui/card";
 import PageFilters from "@/ui/filters";
 import { Pagination } from "@/ui/pagination";
@@ -17,10 +10,11 @@ import { ContentType, ContentTypeVerbose, LogItem } from "@/api/types/logs";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useUsers } from "@/api/hooks/use-user";
-import { format, formatDate } from "date-fns";
-import { uz } from "date-fns/locale";
+import { format } from "date-fns";
 import { getPageCount } from "@/lib/utils";
+import { FilterPanel } from "@/ui/filter-bar";
 
+import { formatDateTime } from "@/lib/format";
 interface LogsTableProps {
   logs?: PaginatedData<LogItem>;
   isLoading?: boolean;
@@ -162,9 +156,10 @@ export default function LogsTable({
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-xl">
+      <FilterPanel>
         <PageFilters filters={filters} />
-
+      </FilterPanel>
+      <Card className="rounded-xl">
         <div>
           <Table>
             <TableHeader>
@@ -182,8 +177,8 @@ export default function LogsTable({
                 <TableSkeleton rows={8} columns={6} />
               ) : logs?.results.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
-                    <div className="text-sm whitespace-nowrap text-[var(--muted-foreground)]">
+                  <TableCell colSpan={6} className="text-center">
+                    <div className="text-sm whitespace-nowrap text-muted-foreground">
                       Loglar topilmadi.
                     </div>
                   </TableCell>
@@ -207,9 +202,7 @@ export default function LogsTable({
                         {log.content_type_verbose ?? log.content_type}
                       </TableCell>
                       <TableCell>
-                        {log.created
-                          ? format(log?.created, "dd.MM.yy HH:mm")
-                          : ""}
+{formatDateTime(log.created, "")}
                       </TableCell>
                     </TableRow>
                   ))}

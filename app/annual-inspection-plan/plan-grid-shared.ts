@@ -40,12 +40,12 @@ export const GRID_COLUMNS: GridColumn[] = (() => {
  * Tailwind's JIT keeps them.
  */
 export const TYPE_ACCENTS = [
-  { bar: "bg-blue-500", soft: "bg-blue-50 dark:bg-blue-950/40", text: "text-blue-700 dark:text-blue-300", ring: "border-blue-200 dark:border-blue-900/70", ringColor: "ring-blue-500/70" },
-  { bar: "bg-emerald-500", soft: "bg-emerald-50 dark:bg-emerald-950/40", text: "text-emerald-700 dark:text-emerald-300", ring: "border-emerald-200 dark:border-emerald-900/70", ringColor: "ring-emerald-500/70" },
-  { bar: "bg-amber-500", soft: "bg-amber-50 dark:bg-amber-950/40", text: "text-amber-700 dark:text-amber-300", ring: "border-amber-200 dark:border-amber-900/70", ringColor: "ring-amber-500/70" },
-  { bar: "bg-violet-500", soft: "bg-violet-50 dark:bg-violet-950/40", text: "text-violet-700 dark:text-violet-300", ring: "border-violet-200 dark:border-violet-900/70", ringColor: "ring-violet-500/70" },
-  { bar: "bg-rose-500", soft: "bg-rose-50 dark:bg-rose-950/40", text: "text-rose-700 dark:text-rose-300", ring: "border-rose-200 dark:border-rose-900/70", ringColor: "ring-rose-500/70" },
-  { bar: "bg-cyan-500", soft: "bg-cyan-50 dark:bg-cyan-950/40", text: "text-cyan-700 dark:text-cyan-300", ring: "border-cyan-200 dark:border-cyan-900/70", ringColor: "ring-cyan-500/70" },
+  { bar: "bg-primary", soft: "bg-primary-subtle", text: "text-primary-hover", ring: "border-primary/30", ringColor: "ring-primary/70" },
+  { bar: "bg-success", soft: "bg-success-subtle", text: "text-success", ring: "border-success/30", ringColor: "ring-success/70" },
+  { bar: "bg-warning", soft: "bg-warning-subtle", text: "text-warning", ring: "border-warning/30", ringColor: "ring-warning/70" },
+  { bar: "bg-category-violet", soft: "bg-category-violet/10", text: "text-category-violet", ring: "border-category-violet/25", ringColor: "ring-category-violet/70" },
+  { bar: "bg-category-rose", soft: "bg-category-rose/10", text: "text-category-rose", ring: "border-category-rose/25", ringColor: "ring-category-rose/70" },
+  { bar: "bg-category-cyan", soft: "bg-category-cyan/10", text: "text-category-cyan", ring: "border-category-cyan/25", ringColor: "ring-category-cyan/70" },
 ] as const;
 
 export const accentFor = (idx: number) => TYPE_ACCENTS[idx % TYPE_ACCENTS.length];

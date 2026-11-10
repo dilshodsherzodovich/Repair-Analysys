@@ -1,4 +1,5 @@
 "use client";
+// tokens-allow-file: decorative ID-card artwork (guilloche gradients drawn on canvas)
 
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
@@ -170,7 +171,7 @@ export function PassportIdentity({
   return (
     <section
       ref={hostRef}
-      className="relative isolate overflow-hidden rounded-3xl border border-white/10"
+      className="relative isolate overflow-hidden rounded-xl border border-background/10"
       style={{
         background:
           "linear-gradient(135deg, #0d1830 0%, #0a1226 46%, #0b1a3a 100%)",
@@ -199,7 +200,7 @@ export function PassportIdentity({
         <div className="grid gap-6 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)_minmax(0,0.95fr)] lg:items-stretch">
           {/* passport portrait — the locomotive photo */}
           <div
-            className="relative min-h-[240px] overflow-hidden rounded-2xl"
+            className="relative min-h-[240px] overflow-hidden rounded-xl"
             style={{
               background: "linear-gradient(180deg,#fbfcff,#eef2fb)",
               boxShadow:
@@ -215,11 +216,11 @@ export function PassportIdentity({
               />
             ) : (
               <div className="absolute inset-0 grid place-items-center">
-                <TrainFront className="h-20 w-20 text-slate-300" />
+                <TrainFront className="h-20 w-20 text-foreground-subtle" />
               </div>
             )}
             <div
-              className="absolute inset-x-0 bottom-0 truncate px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.2em]"
+              className="absolute inset-x-0 bottom-0 truncate px-3 py-1.5 font-mono text-2xs uppercase tracking-[0.2em]"
               style={{
                 color: "#6b7690",
                 background:
@@ -233,13 +234,13 @@ export function PassportIdentity({
           {/* identity block */}
           <div className="flex min-w-0 flex-col justify-center">
             <div
-              className="font-mono text-[10.5px] uppercase tracking-[0.24em]"
+              className="font-mono text-2xs uppercase tracking-[0.24em]"
               style={{ color: "#8fa0c4" }}
             >
               {t("identity.boardNumber")}
             </div>
             <div
-              className="my-1 font-extrabold leading-[0.92] tracking-[-0.03em] tabular-nums text-white"
+              className="my-1 font-bold leading-[0.92] tracking-[-0.03em] tabular-nums text-primary-foreground"
               style={{
                 fontSize: "clamp(52px, 9vw, 92px)",
                 textShadow: "0 2px 30px rgba(90,140,255,.25)",
@@ -248,7 +249,7 @@ export function PassportIdentity({
               {name ?? "—"}
             </div>
             <div
-              className="text-[18px] font-semibold"
+              className="text-lg font-semibold"
               style={{ color: "#d6deef" }}
             >
               {modelName ?? "—"}{" "}
@@ -294,7 +295,7 @@ export function PassportIdentity({
 
           {/* details — the right section */}
           <div
-            className="grid grid-cols-2 gap-px self-stretch overflow-hidden rounded-2xl border"
+            className="grid grid-cols-2 gap-px self-stretch overflow-hidden rounded-xl border"
             style={{
               background: "rgba(255,255,255,.08)",
               borderColor: "rgba(255,255,255,.08)",
@@ -336,7 +337,7 @@ function SpecCell({
       }}
     >
       <div
-        className="font-mono text-[9.5px] uppercase tracking-[0.18em]"
+        className="font-mono text-2xs uppercase tracking-[0.18em]"
         style={{ color: "#8093b8" }}
       >
         {k}
@@ -345,7 +346,7 @@ function SpecCell({
         className={
           small
             ? "mt-1 text-sm font-bold tabular-nums"
-            : "mt-1 text-[15px] font-bold tabular-nums"
+            : "mt-1 text-base font-bold tabular-nums"
         }
         style={{ color: "#eef2fb" }}
       >

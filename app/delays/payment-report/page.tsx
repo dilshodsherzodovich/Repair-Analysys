@@ -4,8 +4,12 @@ import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
-import { SrivPaymentReport } from "@/components/delays/sriv-payment-report";
+import {
+  SrivPaymentFilters,
+  SrivPaymentReport,
+} from "@/components/delays/sriv-payment-report";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 export default function SrivPaymentReportPage() {
   const t = useTranslations("SrivPaymentReportPage");
@@ -22,13 +26,14 @@ export default function SrivPaymentReportPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={<SrivPaymentFilters />}
       />
       <SrivPaymentReport />
-    </div>
+    </Page>
   );
 }

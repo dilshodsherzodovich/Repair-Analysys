@@ -30,28 +30,28 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
     return (
       <div
         ref={ref}
-        className={cn("flex flex-col h-full bg-white", className)}
+        className={cn("flex flex-col h-full bg-background", className)}
         {...props}
       >
         {/* User Info Header */}
         {user && (
-          <div className="p-4 border-b border-[#e5e7eb] bg-[#f9fafb]">
+          <div className="p-4 border-b border-border bg-surface-muted">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[#2354bf] rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="font-medium text-[#1f2937] text-sm">
+                  <p className="font-medium text-foreground text-sm">
                     {user.name}
                   </p>
-                  <p className="text-xs text-[#6b7280]">({user.role})</p>
+                  <p className="text-xs text-muted-foreground">({user.role})</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 text-[#6b7280] hover:text-[#dc2626] hover:bg-[#dc2626]/10"
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -69,8 +69,8 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                     item.active
-                      ? "bg-[#2354bf] text-white"
-                      : "text-[#6b7280] hover:text-[#1f2937] hover:bg-[#f3f4f6]"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
                   {item.icon}

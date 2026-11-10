@@ -4,26 +4,23 @@ import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { Pencil, Eye } from "lucide-react";
-import {
-  useGetLocomotiveModels,
-  useGetLocomotives,
-} from "@/api/hooks/use-locomotives";
-import { cn } from "@/lib/utils";
+import { useGetLocomotiveModels, useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { LocomotiveModelData } from "@/api/types/locomotive";
 import { authService } from "@/api/services/auth.service";
+import { Alert, AlertDescription } from "@/ui/alert";
+import { Button } from "@/ui/button";
 
+import { Skeleton } from "@/ui/skeleton";
 const actionButtons = [
   {
     label: "Tahrirlash",
     icon: Pencil,
-    className: "bg-[#E8F8ED] text-[#1CA34A] border border-[#1CA34A]",
   },
   {
     label: "Ko'rish",
     icon: Eye,
-    className: "bg-[#FFF4DB] text-[#D28800] border border-[#D28800]",
   },
 ];
 
@@ -85,33 +82,29 @@ export default function LocomotivesTable() {
   return (
     <section className="mt-6">
       {isError && (
-        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Alert variant="destructive" className="mb-4"><AlertDescription>
           Maʼlumotlarni yuklashda xatolik yuz berdi.{" "}
-          <button
+          <Button variant="link" className="h-auto p-0 font-semibold underline"
             onClick={() => refetch()}
-            className="font-semibold underline underline-offset-2"
           >
             Qayta urinib ko&apos;ring.
-          </button>
-        </div>
+          </Button>
+        </AlertDescription></Alert>
       )}
 
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {isPending &&
           Array.from({ length: 8 }).map((_, idx) => (
-            <div
-              key={`skeleton-${idx}`}
-              className="h-48 rounded-2xl border border-[#E5ECF8] bg-white shadow-sm animate-pulse"
-            />
+            <Skeleton key={`skeleton-${idx}`} className="h-48 rounded-xl" />
           ))}
 
         {!isPending &&
           locomotives.map((locomotive) => (
             <article
               key={locomotive.id}
-              className="grid grid-cols-[140px_1fr] gap-2 rounded-lg border border-[#E5ECF8] bg-[#F8FBFF] p-2 shadow-[0px_8px_30px_rgba(16,24,40,0.05)]"
+              className="grid grid-cols-[140px_1fr] gap-2 rounded-lg border border-border bg-surface-muted p-2 shadow-sm"
             >
-              <div className="relative h-full w-full overflow-hidden rounded-md bg-white border">
+              <div className="relative h-full w-full overflow-hidden rounded-md bg-background border">
                 {getLocModelImage(+locomotive.model_id!) ? (
                   <Image
                     src={getLocModelImage(+locomotive.model_id!) ?? ""}
@@ -127,38 +120,30 @@ export default function LocomotivesTable() {
               </div>
 
               <div className="flex flex-col justify-between">
-                <div className="border border-primary/10 bg-brand p-2 rounded-lg">
-                  <h3 className="text-xl font-semibold text-[#0F172B]">
+                <div className="border border-primary/10 bg-primary-subtle p-2 rounded-lg">
+                  <h3 className="text-xl font-semibold text-foreground">
                     {locomotive.name + "-" + locomotive.model_name}
                   </h3>
                 </div>
 
                 <div className="mt-2 flex items-center justify-between flex-wrap">
                   {canEditPassport && (
-                    <button
+                    <Button variant="outline-success" size="sm" className="w-[49%]"
                       type="button"
                       onClick={() => handleEditClick(locomotive.id)}
-                      className={cn(
-                        "flex h-8 w-[49%] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
-                        actionButtons[0].className,
-                      )}
                       aria-label={actionButtons[0].label}
                     >
                       <Pencil className="h-4 w-4" />
-                    </button>
+                    </Button>
                   )}
                   {canViewPassport && (
-                    <button
+                    <Button variant="outline-warning" size="sm" className="w-[49%]"
                       type="button"
                       onClick={() => handleViewClick(locomotive.id)}
-                      className={cn(
-                        "flex h-8 w-[49%] items-center justify-center rounded-sm outline-none transition hover:opacity-80",
-                        actionButtons[1].className,
-                      )}
                       aria-label={actionButtons[1].label}
                     >
                       <Eye className="h-4 w-4" />
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -167,11 +152,11 @@ export default function LocomotivesTable() {
       </div>
 
       {showEmpty && (
-        <div className="mt-8 rounded-2xl border border-dashed border-[#C7D7F4] bg-white px-6 py-12 text-center">
-          <p className="text-base font-semibold text-[#0F172B]">
+        <div className="mt-8 rounded-xl border border-dashed border-border-strong bg-background px-6 py-12 text-center">
+          <p className="text-base font-semibold text-foreground">
             Lokomotivlar topilmadi
           </p>
-          <p className="mt-2 text-sm text-[#6B7280]">
+          <p className="mt-2 text-sm text-muted-foreground">
             Filtrlash parametrlarini o&apos;zgartirib ko&apos;ring yoki qayta
             qidiruv qo&apos;llang.
           </p>

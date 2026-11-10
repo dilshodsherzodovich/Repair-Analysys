@@ -3,25 +3,24 @@
 import { useTranslations, useLocale } from "next-intl";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useState } from "react";
-import DelayedReportFilters from "@/components/reports/delayed-report-filters";
 import { useDelayedLocomotives } from "@/api/hooks/use-reports";
 import type { DelayedLocomotivesResponse, DelayedLocomotive } from "@/api/types/reports";
-import PageLoading from "@/components/page-loading";
-import { FileDown, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { generateDelayedReportPDF } from "@/utils/delayed-report-pdf-export";
 import type { DelayedReportPDFData } from "@/utils/delayed-report-pdf-export";
 import { generateDelayedReportExcel } from "@/utils/delayed-report-excel-export";
 import { useOrganization } from "@/api/hooks/use-organizations";
-import {
-  delayedTrainTypeCount,
-  delayedTrainTypeName,
-} from "@/utils/delayed-report-train-types";
+import { delayedTrainTypeCount, delayedTrainTypeName } from "@/utils/delayed-report-train-types";
 import { format } from "date-fns";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "@/components/reports/report-organization-select";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
+import { PageHeader } from "@/ui/page-header";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar } from "@/ui/filter-bar";
+import { Page } from "@/ui/page";
+import { StatCard, StatGrid } from "@/ui/stat-card";
 
+import { EmptyState, LoadingState } from "@/ui/empty-state";
 const SUPERVISOR_ROLES = ["admin", "dispatcher", "operator", "rb_admin"];
 
 export default function DelayedReportPage() {
@@ -141,108 +140,54 @@ export default function DelayedReportPage() {
     }
   };
 
-  if (isPending) return <PageLoading />;
+  if (isPending) return <LoadingState size="page" />;
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header ─── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-gray-100">
-          <div className="flex items-start gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shrink-0 shadow-sm">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-gray-900 font-semibold text-base leading-tight">
-                {t("delayedReportTitle")}
-              </h1>
-              {/* The report has no date range — it always shows what is overdue
-                  right now, so the description says so rather than leaving the
-                  timestamp to be misread as "generated on". */}
-              <p className="text-gray-500 text-xs mt-1">
-                {t("delayedReportDescription")}
-                <span className="text-gray-400">
-                  {" · "}
-                  {snapshotAt} {t("asOf")}
-                </span>
-                {isFetching && (
-                  <Loader2 className="inline w-3 h-3 ml-1.5 animate-spin text-gray-300 align-[-1px]" />
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={handleExportExcel}
-              disabled={isExportingExcel}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-60"
-            >
-              {isExportingExcel ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileDown className="w-4 h-4" />
-              )}
-              {isExportingExcel ? t("generatingExcel") : t("exportExcel")}
-            </button>
-            <button
-              onClick={handleExportPDF}
-              disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-60"
-            >
-              {isExporting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileDown className="w-4 h-4" />
-              )}
-              {isExporting ? t("generatingPDF") : t("exportPDF")}
-            </button>
-          </div>
-        </div>
-        <div className="px-5 py-3 bg-gray-50/60">
-          <DelayedReportFilters
-            onRefresh={() => refetch()}
-            leading={
-              <ReportOrganizationSelect
-                label
-                labelClassName="text-sm font-normal normal-case tracking-normal text-foreground pl-0"
-                className="gap-2"
-              />
-            }
+      <PageHeader
+        title={t("delayedReportTitle")}
+        description={<>
+            {t("delayedReportDescription")}
+            <span className="text-foreground-subtle">
+              {" · "}
+              {snapshotAt} {t("asOf")}
+            </span>
+            {isFetching && (
+              <Loader2 className="inline w-3 h-3 ml-1.5 animate-spin text-foreground-subtle align-[-1px]" />
+            )}
+          </>}
+        actions={
+          <ExportActions
+            onExcel={handleExportExcel}
+            onPdf={handleExportPDF}
+            busy={isExportingExcel ? "excel" : isExporting ? "pdf" : null}
           />
-        </div>
-      </div>
+        }
+        filters={
+          <FilterBar>
+            <ReportOrganizationSelect />
+          </FilterBar>
+        }
+      />
 
       {/* ─── Summary: the total leads, the breakdown follows ─── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <div className="bg-gray-900 rounded-xl px-4 py-3 shadow-sm">
-          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
-            {t("total")}
-          </p>
-          <p className="text-3xl font-bold text-white tabular-nums leading-none mt-2">
-            {totalDelayed}
-          </p>
-        </div>
+      <StatGrid columns={5}>
+        <StatCard label={t("total")} tone="primary" value={totalDelayed} />
         {rows.map((trainType) => (
-          <div
+          <StatCard
             key={trainType.name}
-            className="bg-white rounded-xl border border-gray-200 border-t-4 border-t-amber-400 px-4 py-3 shadow-sm"
-          >
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-tight min-h-[24px]">
-              {trainTypeName(trainType.name)}
-            </p>
-            <p className="text-3xl font-bold text-gray-900 tabular-nums leading-none mt-2">
-              {countOf(trainType)}
-            </p>
-          </div>
+            label={trainTypeName(trainType.name)}
+            tone="warning"
+            value={countOf(trainType)}
+          />
         ))}
-      </div>
+      </StatGrid>
 
       {/* ─── Detail per train type ─── */}
       {totalDelayed === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm py-16 text-center">
-          <p className="text-sm text-gray-400">{t("noData")}</p>
+        <div className="bg-background rounded-xl border border-border shadow-sm py-16 text-center">
+          <EmptyState title={t("noData")} />
         </div>
       ) : (
         rows.map((trainType) => {
@@ -260,37 +205,36 @@ export default function DelayedReportPage() {
                 {filtered.map((type) => (
                   <div
                     key={type.name}
-                    className="border border-gray-200 rounded-lg overflow-hidden"
+                    className="border border-border rounded-lg overflow-hidden"
                   >
-                    <div className="flex items-center justify-between gap-2 bg-gray-50 px-3 py-1.5 border-b border-gray-200">
-                      <p className="text-[11px] font-semibold text-gray-600 uppercase tracking-wide truncate">
+                    <div className="flex items-center justify-between gap-2 bg-surface-muted px-3 py-1.5 border-b border-border">
+                      <p className="text-2xs font-semibold text-foreground-secondary uppercase tracking-wide truncate">
                         {type.name}
                       </p>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white border border-gray-200 text-gray-600 tabular-nums shrink-0">
+                      <span className="text-2xs font-bold px-1.5 py-0.5 rounded-full bg-background border border-border text-foreground-secondary tabular-nums shrink-0">
                         {type.locomotives.length}
                       </span>
                     </div>
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
-                          <th className="text-left px-3 py-1.5 font-semibold">
+                    <Table density="compact" wrapper={false}>
+                      <TableHeader>
+                        <TableRow className="text-foreground-subtle">
+                          <TableHead className="text-left">
                             {t("locomotive")}
-                          </th>
-                          <th className="text-right px-3 py-1.5 font-semibold">
+                          </TableHead>
+                          <TableHead className="text-right">
                             {t("hourKm")}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
                         {type.locomotives.map((loc: DelayedLocomotive) => (
-                          <tr
+                          <TableRow
                             key={loc.id}
-                            className="border-t border-gray-100 hover:bg-gray-50/60"
                           >
-                            <td className="px-3 py-1.5 font-medium text-gray-800">
+                            <TableCell className="font-medium">
                               {loc.name}
-                            </td>
-                            <td className="px-3 py-1.5 text-right text-gray-500 tabular-nums whitespace-nowrap">
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums whitespace-nowrap">
                               {loc.hour
                                 ? `${loc.hour} ${globalT("hour").toLowerCase()}`
                                 : ""}
@@ -298,11 +242,11 @@ export default function DelayedReportPage() {
                               {loc.mileage
                                 ? `${loc.mileage} ${globalT("Km").toLowerCase()}`
                                 : ""}
-                            </td>
-                          </tr>
+                            </TableCell>
+                          </TableRow>
                         ))}
-                      </tbody>
-                    </table>
+                      </TableBody>
+                    </Table>
                   </div>
                 ))}
               </div>
@@ -310,7 +254,7 @@ export default function DelayedReportPage() {
           );
         })
       )}
-    </div>
+    </Page>
   );
 }
 
@@ -328,13 +272,13 @@ function SectionCard({
   const locale = useLocale();
   const suffix = locale === "ru" ? " шт." : " ta";
   return (
-    <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <header className="flex items-center justify-between gap-2 px-5 py-3 border-b border-gray-100">
+    <section className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
+      <header className="flex items-center justify-between gap-2 px-5 py-3 border-b border-muted">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-          <h2 className="text-sm font-semibold text-gray-800 truncate">{title}</h2>
+          <span className="w-1.5 h-1.5 rounded-full bg-warning shrink-0" />
+          <h2 className="text-sm font-semibold text-foreground truncate">{title}</h2>
         </div>
-        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 shrink-0 tabular-nums">
+        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-warning-subtle text-warning border border-warning/30 shrink-0 tabular-nums">
           {count}
           {suffix}
         </span>

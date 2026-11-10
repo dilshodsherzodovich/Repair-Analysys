@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { Card } from "@/ui/card";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { FormField } from "@/ui/form-field";
 import { FileUpload } from "@/ui/file-upload";
 import { Button } from "@/ui/button";
@@ -57,10 +56,8 @@ export function UploadProtocolModal({
       onClose={onClose}
       title={entry?.protocol_number ? t("title_edit") : t("title")}
       size="md"
-      ariaDescribedBy="upload-protocol-modal"
     >
-      <Card className="border-none p-0 mt-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
           <FormField
             id="protocol_number"
             name="protocol_number"
@@ -82,14 +79,14 @@ export function UploadProtocolModal({
             />
             {!file && entry?.report && (
               <div className="mt-2">
-                <p className="text-sm text-gray-600 mb-1">
+                <p className="text-sm text-foreground-secondary mb-1">
                   {t("current_report")}
                 </p>
                 <a
                   href={entry.report}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                  className="text-sm text-primary hover:underline flex items-center gap-1"
                 >
                   <FileText className="h-4 w-4" />
                   {entry.report_filename || entry.protocol_number || "—"}
@@ -98,7 +95,7 @@ export function UploadProtocolModal({
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -110,9 +107,8 @@ export function UploadProtocolModal({
             <Button type="submit" disabled={isPending}>
               {isPending ? t("pending") : t("submit")}
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

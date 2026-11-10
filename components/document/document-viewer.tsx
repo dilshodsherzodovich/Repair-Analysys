@@ -13,7 +13,7 @@ import {
   RotateCw,
   Maximize,
 } from "lucide-react";
-import { EnhancedButton } from "@/ui/enhanced-button";
+import { Button } from "@/ui/button";
 
 export interface DocumentViewerProps {
   documentUrl: string;
@@ -83,7 +83,7 @@ const DocumentViewer = React.forwardRef<HTMLDivElement, DocumentViewerProps>(
         case "text":
           return (
             <div
-              className="w-full h-full p-4 overflow-auto bg-white text-[#1f2937]"
+              className="w-full h-full p-4 overflow-auto bg-background text-foreground"
               style={{ fontSize: `${zoom}%` }}
             >
               <pre className="whitespace-pre-wrap font-mono text-sm">
@@ -93,7 +93,7 @@ const DocumentViewer = React.forwardRef<HTMLDivElement, DocumentViewerProps>(
           );
         default:
           return (
-            <div className="flex items-center justify-center h-full bg-[#f9fafb] text-[#6b7280]">
+            <div className="flex items-center justify-center h-full bg-surface-muted text-muted-foreground">
               <div className="text-center">
                 <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Предварительный просмотр недоступен</p>
@@ -110,78 +110,78 @@ const DocumentViewer = React.forwardRef<HTMLDivElement, DocumentViewerProps>(
       <div
         ref={ref}
         className={cn(
-          "bg-white rounded-lg border shadow-sm",
+          "bg-background rounded-lg border shadow-sm",
           isFullscreen && "fixed inset-0 z-50 rounded-none",
           className
         )}
         {...props}
       >
         {/* Toolbar */}
-        <div className="flex items-center justify-between p-4 border-b border-[#e5e7eb]">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div>
-            <h3 className="font-medium text-[#1f2937] truncate">
+            <h3 className="font-medium text-foreground truncate">
               {documentName}
             </h3>
-            <p className="text-sm text-[#6b7280]">Масштаб: {zoom}%</p>
+            <p className="text-sm text-muted-foreground">Масштаб: {zoom}%</p>
           </div>
 
           <div className="flex items-center space-x-2">
             {/* Zoom controls */}
             <div className="flex items-center space-x-1 border rounded-lg p-1">
-              <EnhancedButton
+              <Button
                 size="sm"
                 variant="ghost"
                 onClick={handleZoomOut}
                 disabled={zoom <= 50}
               >
                 <ZoomOut className="w-4 h-4" />
-              </EnhancedButton>
+              </Button>
               <span className="text-sm px-2">{zoom}%</span>
-              <EnhancedButton
+              <Button
                 size="sm"
                 variant="ghost"
                 onClick={handleZoomIn}
                 disabled={zoom >= 200}
               >
                 <ZoomIn className="w-4 h-4" />
-              </EnhancedButton>
+              </Button>
             </div>
 
             {/* Rotate */}
-            <EnhancedButton size="sm" variant="ghost" onClick={handleRotate}>
+            <Button size="sm" variant="ghost" onClick={handleRotate}>
               <RotateCw className="w-4 h-4" />
-            </EnhancedButton>
+            </Button>
 
             {/* Fullscreen */}
-            <EnhancedButton
+            <Button
               size="sm"
               variant="ghost"
               onClick={handleFullscreen}
             >
               <Maximize className="w-4 h-4" />
-            </EnhancedButton>
+            </Button>
 
             {/* Actions */}
             <div className="flex items-center space-x-1 border-l pl-2 ml-2">
               {onDownload && (
-                <EnhancedButton size="sm" variant="ghost" onClick={onDownload}>
+                <Button size="sm" variant="ghost" onClick={onDownload}>
                   <Download className="w-4 h-4" />
-                </EnhancedButton>
+                </Button>
               )}
               {canShare && onShare && (
-                <EnhancedButton size="sm" variant="ghost" onClick={onShare}>
+                <Button size="sm" variant="ghost" onClick={onShare}>
                   <Share2 className="w-4 h-4" />
-                </EnhancedButton>
+                </Button>
               )}
               {canEdit && onEdit && (
-                <EnhancedButton size="sm" variant="ghost" onClick={onEdit}>
+                <Button size="sm" variant="ghost" onClick={onEdit}>
                   <Edit className="w-4 h-4" />
-                </EnhancedButton>
+                </Button>
               )}
               {canDelete && onDelete && (
-                <EnhancedButton size="sm" variant="ghost" onClick={onDelete}>
-                  <Trash2 className="w-4 h-4 text-[#ff5959]" />
-                </EnhancedButton>
+                <Button size="sm" variant="ghost" onClick={onDelete}>
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
               )}
             </div>
           </div>

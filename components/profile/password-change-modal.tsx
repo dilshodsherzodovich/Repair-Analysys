@@ -1,10 +1,13 @@
 "use client";
 
+
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Key, Eye, EyeOff, X, AlertCircle } from "lucide-react";
 
+import { Field } from "@/ui/field";
 interface PasswordChangeData {
   currentPassword: string;
   newPassword: string;
@@ -22,6 +25,7 @@ export function PasswordChangeModal({
   onClose,
   onSubmit,
 }: PasswordChangeModalProps) {
+  const tc = useTranslations("Common");
   const [showPassword, setShowPassword] = useState(false);
   const [passwordData, setPasswordData] = useState<PasswordChangeData>({
     currentPassword: "",
@@ -109,10 +113,10 @@ export function PasswordChangeModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+    <div className="fixed inset-0 bg-scrim/50 flex items-center justify-center z-50">
+      <div className="bg-background rounded-xl p-6 w-full max-w-md mx-4">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-[var(--foreground)]">
+          <h3 className="text-xl font-semibold text-foreground">
             Parolni o'zgartirish
           </h3>
           <Button
@@ -127,10 +131,7 @@ export function PasswordChangeModal({
 
         <div className="space-y-4">
           {/* Current Password */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
-              Joriy parol
-            </label>
+          <Field label="Joriy parol">
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
@@ -139,7 +140,7 @@ export function PasswordChangeModal({
                   handlePasswordChange("currentPassword", e.target.value)
                 }
                 placeholder="Joriy parolni kiriting"
-                className="border-[var(--border)] pr-10"
+                className="border-border pr-10"
               />
               <Button
                 type="button"
@@ -155,13 +156,10 @@ export function PasswordChangeModal({
                 )}
               </Button>
             </div>
-          </div>
+          </Field>
 
           {/* New Password */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
-              Yangi parol
-            </label>
+          <Field label="Yangi parol">
             <Input
               type={showPassword ? "text" : "password"}
               value={passwordData.newPassword}
@@ -169,18 +167,15 @@ export function PasswordChangeModal({
                 handlePasswordChange("newPassword", e.target.value)
               }
               placeholder="Yangi parolni kiriting"
-              className="border-[var(--border)]"
+              className="border-border"
             />
-            <p className="text-xs text-[var(--muted-foreground)] mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Kamida 8 ta belgi
             </p>
-          </div>
+          </Field>
 
           {/* Confirm Password */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
-              Parolni tasdiqlang
-            </label>
+          <Field label="Parolni tasdiqlang">
             <Input
               type={showPassword ? "text" : "password"}
               value={passwordData.confirmPassword}
@@ -188,9 +183,9 @@ export function PasswordChangeModal({
                 handlePasswordChange("confirmPassword", e.target.value)
               }
               placeholder="Parolni qayta kiriting"
-              className="border-[var(--border)]"
+              className="border-border"
             />
-          </div>
+          </Field>
 
           {/* Error Messages */}
           {passwordErrors.length > 0 && (
@@ -198,10 +193,10 @@ export function PasswordChangeModal({
               {passwordErrors.map((error, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg"
+                  className="flex items-center gap-2 p-3 bg-destructive-subtle border border-destructive/30 rounded-lg"
                 >
-                  <AlertCircle className="w-4 h-4 text-red-600" />
-                  <span className="text-sm text-red-700">{error}</span>
+                  <AlertCircle className="w-4 h-4 text-destructive" />
+                  <span className="text-sm text-destructive">{error}</span>
                 </div>
               ))}
             </div>
@@ -212,11 +207,11 @@ export function PasswordChangeModal({
             <Button
               onClick={handleSubmit}
               disabled={isChangingPassword}
-              className="flex-1 bg-[var(--primary)] hover:bg-[var(--primary)]/90"
+              className="flex-1"
             >
               {isChangingPassword ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin mr-2"></div>
                   O'zgartirilmoqda...
                 </>
               ) : (
@@ -231,7 +226,7 @@ export function PasswordChangeModal({
               variant="outline"
               disabled={isChangingPassword}
             >
-              Bekor qilish
+              {tc("cancel")}
             </Button>
           </div>
         </div>

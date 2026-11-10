@@ -1,25 +1,21 @@
 "use client";
 
+
+import { useTranslations } from "next-intl";
 import { useState, useEffect, useMemo } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { Label } from "@/ui/label";
-import { Card } from "@/ui/card";
 import { UserData } from "@/api/types/user";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useDepartments } from "@/api/hooks/use-departmants";
 import { userRoles } from "@/lib/users";
 import { getRoleName } from "@/lib/utils";
-import { LoadingButton } from "@/ui/loading-button";
+import { RadioGroup, RadioGroupItem } from "@/ui/radio-group";
 
+import { Field, FieldGrid } from "@/ui/field";
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -37,6 +33,7 @@ export function UserModal({
   onSubmit,
   isLoading = false,
 }: UserModalProps) {
+  const tc = useTranslations("Common");
   const { data: organizations, isPending: isLoadingOrganizations } =
     useOrganizations({
       no_page: true,
@@ -221,46 +218,30 @@ export function UserModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="lg">
-      <Card className="border-none p-0 mt-4">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
-                Familiyasi *
-              </Label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+          <FieldGrid columns={2}>
+            <Field label="Familiyasi" required error={errors.lastName}>
               <Input
                 value={formData.lastName}
                 onChange={(e) =>
                   setFormData({ ...formData, lastName: e.target.value })
                 }
-                className={errors.lastName ? "border-red-500" : ""}
+                aria-invalid={!!errors.lastName}
               />
-              {errors.lastName && (
-                <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
-              )}
-            </div>
-            <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
-                Ismi *
-              </Label>
+            </Field>
+            <Field label="Ismi" required error={errors.firstName}>
               <Input
                 value={formData.firstName}
                 onChange={(e) =>
                   setFormData({ ...formData, firstName: e.target.value })
                 }
-                className={errors.firstName ? "border-red-500" : ""}
+                aria-invalid={!!errors.firstName}
               />
-              {errors.firstName && (
-                <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
-              )}
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
-                Tashkilot *
-              </Label>
+          <FieldGrid columns={2}>
+            <Field label="Tashkilot" required error={errors.organization}>
               <Select
                 value={formData.organization}
                 onValueChange={(value) => {
@@ -269,20 +250,19 @@ export function UserModal({
                 }}
               >
                 <SelectTrigger
-                  className={errors.organization ? "border-red-500" : ""}
+                  aria-invalid={!!errors.organization}
                 >
                   <SelectValue placeholder="Tashkilot tanlang" />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="p-2 border-b border-[var(--border)]">
-                    <input
+                  <div className="p-2 border-b border-border">
+                    <Input variant="compact"
                       type="text"
                       placeholder="Qidirish..."
                       value={orgSearchTerm}
                       onKeyDown={(e) => e.stopPropagation()}
                       onKeyUp={(e) => e.stopPropagation()}
                       onChange={(e) => setOrgSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                     />
                   </div>
                   <div className="max-h-60 overflow-y-auto">
@@ -293,24 +273,16 @@ export function UserModal({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
                         Tashkilot topilmadi
                       </div>
                     )}
                   </div>
                 </SelectContent>
               </Select>
-              {errors.organization && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.organization}
-                </p>
-              )}
-            </div>
+            </Field>
 
-            <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
-                Quyi tashkilot *
-              </Label>
+            <Field label="Quyi tashkilot" required error={errors.department}>
               <Select
                 value={formData.secondary_organization_id}
                 onValueChange={(value) => {
@@ -323,7 +295,7 @@ export function UserModal({
                 disabled={!formData.organization}
               >
                 <SelectTrigger
-                  className={errors.department ? "border-red-500" : ""}
+                  aria-invalid={!!errors.department}
                 >
                   <SelectValue
                     placeholder={
@@ -336,15 +308,14 @@ export function UserModal({
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="p-2 border-b border-[var(--border)]">
-                    <input
+                  <div className="p-2 border-b border-border">
+                    <Input variant="compact"
                       type="text"
                       placeholder="Qidirish..."
                       value={deptSearchTerm}
                       onKeyDown={(e) => e.stopPropagation()}
                       onKeyUp={(e) => e.stopPropagation()}
                       onChange={(e) => setDeptSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                       disabled={!formData.organization}
                     />
                   </div>
@@ -356,7 +327,7 @@ export function UserModal({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-3 py-2 text-sm text-[var(--muted-foreground)]">
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
                         {!formData.organization
                           ? "Avval tashkilot tanlang"
                           : "Quyi tashkilot topilmadi"}
@@ -365,59 +336,41 @@ export function UserModal({
                   </div>
                 </SelectContent>
               </Select>
-              {errors.department && (
-                <p className="text-red-500 text-xs mt-1">{errors.department}</p>
-              )}
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
-                Foydalanuvchi nomi *
-              </Label>
+          <FieldGrid columns={3}>
+            <Field label="Foydalanuvchi nomi" required error={errors.login}>
               <Input
                 value={formData.username}
                 onChange={(e) =>
                   setFormData({ ...formData, username: e.target.value })
                 }
-                className={errors.login ? "border-red-500" : ""}
+                aria-invalid={!!errors.login}
                 autoComplete="off"
               />
-              {errors.login && (
-                <p className="text-red-500 text-xs mt-1">{errors.login}</p>
-              )}
-            </div>
+            </Field>
 
-            <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
-                Parol *
-              </Label>
+            <Field label="Parol" required error={errors.password}>
               <Input
                 type="password"
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className={errors.password ? "border-red-500" : ""}
+                aria-invalid={!!errors.password}
                 autoComplete="off"
               />
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-              )}
-            </div>
+            </Field>
 
-            <div>
-              <Label className="text-sm text-[var(--muted-foreground)]">
-                Rol *
-              </Label>
+            <Field label="Rol" required error={errors.role}>
               <Select
                 value={formData.role}
                 onValueChange={(value) =>
                   setFormData({ ...formData, role: value })
                 }
               >
-                <SelectTrigger className={errors.role ? "border-red-500" : ""}>
+                <SelectTrigger aria-invalid={!!errors.role}>
                   <SelectValue placeholder="Rol tanlang" />
                 </SelectTrigger>
                 <SelectContent>
@@ -428,66 +381,46 @@ export function UserModal({
                   ))}
                 </SelectContent>
               </Select>
-              {errors.role && (
-                <p className="text-red-500 text-xs mt-1">{errors.role}</p>
-              )}
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
-          <div>
-            <Label className="text-sm text-[var(--muted-foreground)]">
-              Holati
-            </Label>
-            <div className="flex items-center gap-6 mt-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name={`status-${mode}`}
-                  value="active"
-                  checked={formData.status === "active"}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="w-4 h-4 text-[var(--primary)] border-gray-300 focus:ring-[var(--primary)]"
-                />
-                <span className="text-[var(--foreground)] text-sm">Faol</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name={`status-${mode}`}
-                  value="inactive"
-                  checked={formData.status === "inactive"}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="w-4 h-4 text-[var(--primary)] border-gray-300 focus:ring-[var(--primary)]"
-                />
-                <span className="text-[var(--foreground)] text-sm">Nofaol</span>
-              </label>
-            </div>
-          </div>
+          <Field label="Holati">
+            <RadioGroup
+              name={`status-${mode}`}
+              value={formData.status}
+              onValueChange={(status) => setFormData({ ...formData, status })}
+              className="mt-2 flex items-center gap-6"
+            >
+              <Label className="flex items-center gap-2 cursor-pointer">
+                <RadioGroupItem value="active" />
+                <span className="text-foreground text-sm">Faol</span>
+              </Label>
+              <Label className="flex items-center gap-2 cursor-pointer">
+                <RadioGroupItem value="inactive" />
+                <span className="text-foreground text-sm">Nofaol</span>
+              </Label>
+            </RadioGroup>
+          </Field>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={isLoading}
             >
-              Bekor qilish
+              {tc("cancel")}
             </Button>
-            <LoadingButton
+            <Button
               type="submit"
-              className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white px-8"
-              disabled={isSubmitButtonDisabled || isLoading}
-              isPending={isLoading}
+              className="min-w-24 px-8"
+              disabled={isSubmitButtonDisabled}
+              loading={isLoading}
             >
               {submitText}
-            </LoadingButton>
-          </div>
+            </Button>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

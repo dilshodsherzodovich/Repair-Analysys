@@ -19,15 +19,11 @@ import { RECOVERY_STAGE_VALUES } from "@/api/types/recovery";
 import type { DelayStage } from "@/api/types/delays";
 import { RecoveryCulpritsModal } from "@/components/recovery/recovery-culprits-modal";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
+import { formatMoney } from "@/lib/format";
 function formatAmount(amount: string | number): string {
-  const value = typeof amount === "string" ? Number(amount) : amount;
-  if (!value) return "0";
-  return new Intl.NumberFormat("uz-UZ", {
-    style: "currency",
-    currency: "UZS",
-    minimumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(amount);
 }
 
 export default function RecoveryPage() {
@@ -102,11 +98,11 @@ export default function RecoveryPage() {
       case "accountant_confirmed":
         return "success" as const;
       case "payroll_confirmed":
-        return "info" as const;
+        return "primary" as const;
       case "disruption":
-        return "destructive_outline" as const;
+        return "danger" as const;
       default:
-        return "outline" as const;
+        return "neutral" as const;
     }
   };
 
@@ -233,60 +229,60 @@ export default function RecoveryPage() {
   }, [locomotivesData, t]);
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "stage",
+                label: t("filters.recovery_status"),
+                isSelect: true,
+                options: stageOptions,
+                placeholder: t("filters.recovery_status_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "train_number",
+                label: t("filters.train_number"),
+                isSelect: false,
+                placeholder: t("filters.train_number_placeholder"),
+              },
+              {
+                name: "station",
+                label: t("filters.station"),
+                isSelect: false,
+                placeholder: t("filters.station_placeholder"),
+              },
+              {
+                name: "mashinist",
+                label: t("filters.mashinist"),
+                isSelect: false,
+                placeholder: t("filters.mashinist_placeholder"),
+              },
+              {
+                name: "locomotiv",
+                label: t("filters.locomotiv"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotiv_placeholder"),
+                searchable: true,
+                loading: isLoadingLocomotives,
+              },
+            ]}
+            hasSearch={false}
+            hasDateRangePicker
+          />
+        }
       />
 
-      <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "stage",
-              label: t("filters.recovery_status"),
-              isSelect: true,
-              options: stageOptions,
-              placeholder: t("filters.recovery_status_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "train_number",
-              label: t("filters.train_number"),
-              isSelect: false,
-              placeholder: t("filters.train_number_placeholder"),
-            },
-            {
-              name: "station",
-              label: t("filters.station"),
-              isSelect: false,
-              placeholder: t("filters.station_placeholder"),
-            },
-            {
-              name: "mashinist",
-              label: t("filters.mashinist"),
-              isSelect: false,
-              placeholder: t("filters.mashinist_placeholder"),
-            },
-            {
-              name: "locomotiv",
-              label: t("filters.locomotiv"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotiv_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-          ]}
-          hasSearch={false}
-          hasDateRangePicker
-          dateRangePickerLabel=""
-          className="!mb-0"
-        />
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={data}
@@ -302,7 +298,7 @@ export default function RecoveryPage() {
           emptyTitle={t("empty.title")}
           emptyDescription={t("empty.description")}
         />
-      </div>
+      </>
 
       <RecoveryCulpritsModal
         isOpen={isModalOpen}
@@ -313,6 +309,6 @@ export default function RecoveryPage() {
         delay={selected}
         mode={mode}
       />
-    </div>
+    </Page>
   );
 }

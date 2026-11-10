@@ -5,33 +5,12 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/ui/dialog";
-import {
-  MapPin,
-  Navigation,
-  Gauge,
-  Power,
-  Satellite,
-  History,
-  ExternalLink,
-} from "lucide-react";
-import {
-  SectionCard,
-  InfoRow,
-  EmptyBlock,
-  LoadingBlock,
-} from "./passport-shared";
-import {
-  useLocomotiveLocation,
-  useLocomotiveLocationHistory,
-} from "@/api/hooks/use-emm";
+import { Modal } from "@/ui/modal";
+import { MapPin, Navigation, Gauge, Power, Satellite, History, ExternalLink } from "lucide-react";
+import { SectionCard, InfoRow, EmptyBlock, LoadingBlock } from "./passport-shared";
+import { useLocomotiveLocation, useLocomotiveLocationHistory } from "@/api/hooks/use-emm";
 import type { LocationRecord } from "@/api/services/emm.service";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 const mapLink = (lat: number, lon: number) =>
   `https://yandex.com/maps/?ll=${lon},${lat}&pt=${lon},${lat}&z=15&l=map`;
@@ -86,23 +65,20 @@ function HistoryDialog({ imei }: { imei: string }) {
   }, [rows, selected]);
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        setOpen(v);
-        if (!v) setSelected(null);
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="border-gray-300">
-          <History className="mr-2 h-4 w-4" />
-          {t("history")}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>{t("historyTitle")}</DialogTitle>
-        </DialogHeader>
+    <>
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        <History className="size-4" />
+        {t("history")}
+      </Button>
+      <Modal
+        isOpen={open}
+        onClose={() => {
+          setOpen(false);
+          setSelected(null);
+        }}
+        title={t("historyTitle")}
+        size="xl"
+      >
         {isLoading ? (
           <LoadingBlock />
         ) : rows.length === 0 ? (
@@ -119,7 +95,7 @@ function HistoryDialog({ imei }: { imei: string }) {
               )}
               {selected && (
                 <div className="rounded-lg border bg-muted/30 p-3 text-sm">
-                  <div className="font-medium text-[#0F172B]">
+                  <div className="font-medium text-foreground">
                     {fmtExact(selected.tpTimestamp)}
                   </div>
                   <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
@@ -133,7 +109,7 @@ function HistoryDialog({ imei }: { imei: string }) {
                       href={mapLink(selected.lat, selected.lon)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[#2354BF] hover:underline"
+                      className="inline-flex items-center gap-1 text-primary hover:underline"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                       {t("mapLink")}
@@ -142,48 +118,46 @@ function HistoryDialog({ imei }: { imei: string }) {
                 </div>
               )}
             </div>
-            <div className="max-h-[52vh] overflow-auto rounded-lg border">
-              <table className="w-full border-collapse text-sm">
-                <thead className="sticky top-0 bg-muted/80 backdrop-blur">
-                  <tr>
-                    <th className="border-b border-r border-border px-3 py-2 text-left font-semibold">
-                      {t("time")}
-                    </th>
-                    <th className="border-b border-border px-3 py-2 text-right font-semibold">
-                      {t("speed")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((r) => {
-                    const isSel =
-                      selected?.id === r.id &&
-                      selected?.tpTimestamp === r.tpTimestamp;
-                    return (
-                      <tr
-                        key={`${r.id}-${r.tpTimestamp}`}
-                        onClick={() => setSelected(r)}
-                        className={cn(
-                          "cursor-pointer transition-colors hover:bg-[#2354BF]/5",
-                          isSel && "bg-[#2354BF]/10"
-                        )}
-                      >
-                        <td className="border-b border-r border-border px-3 py-2 whitespace-nowrap">
-                          {fmtExact(r.tpTimestamp)}
-                        </td>
-                        <td className="border-b border-border px-3 py-2 text-right tabular-nums">
-                          {Math.round(r.speed)} {t("kmh")}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <Table bordered frame maxHeight="52vh">
+              <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur">
+                <TableRow>
+                  <TableHead className="text-left">
+                    {t("time")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("speed")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((r) => {
+                  const isSel =
+                    selected?.id === r.id &&
+                    selected?.tpTimestamp === r.tpTimestamp;
+                  return (
+                    <TableRow
+                      key={`${r.id}-${r.tpTimestamp}`}
+                      onClick={() => setSelected(r)}
+                      className={cn(
+                        "cursor-pointer hover:bg-primary/5",
+                        isSel && "bg-primary/10"
+                      )}
+                    >
+                      <TableCell className="whitespace-nowrap">
+                        {fmtExact(r.tpTimestamp)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {Math.round(r.speed)} {t("kmh")}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </Modal>
+    </>
   );
 }
 
@@ -216,8 +190,8 @@ export function PassportLocation({ imei }: { imei?: string }) {
             <Badge
               className={
                 moving
-                  ? "bg-emerald-500 text-white border-transparent"
-                  : "bg-[#6b7280] text-white border-transparent"
+                  ? "bg-success text-success-foreground border-transparent"
+                  : "bg-muted-foreground text-primary-foreground border-transparent"
               }
             >
               {moving ? t("moving") : t("stopped")}
@@ -225,8 +199,8 @@ export function PassportLocation({ imei }: { imei?: string }) {
             <Badge
               className={
                 engineOn
-                  ? "bg-[#2354BF] text-white border-transparent"
-                  : "bg-[#f3f4f6] text-[#374151] border-transparent"
+                  ? "bg-primary text-primary-foreground border-transparent"
+                  : "bg-muted text-foreground-secondary border-transparent"
               }
             >
               <Power className="mr-1 h-3 w-3" />
@@ -259,7 +233,7 @@ export function PassportLocation({ imei }: { imei?: string }) {
             </div>
           </div>
 
-          <Button asChild variant="outline" className="w-full border-gray-300">
+          <Button asChild variant="outline" className="w-full border-border-strong">
             <a
               href={mapLink(data.lat, data.lon)}
               target="_blank"

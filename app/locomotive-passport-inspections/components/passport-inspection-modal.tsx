@@ -2,25 +2,11 @@
 
 import { useState, useEffect, useCallback, useMemo, memo, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Label } from "@/ui/label";
 import { Input } from "@/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { Search } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/ui/modal";
 import { DatePicker } from "@/ui/date-picker";
 import {
   CreateLocomotivePassportInspectionPayload,
@@ -28,6 +14,8 @@ import {
   LocomotivePassportInspection,
 } from "@/api/types/locomotive-passport-inspections";
 
+import { Field, FieldGrid } from "@/ui/field";
+import { Modal, ModalFooter } from "@/ui/modal";
 interface PassportInspectionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -325,20 +313,16 @@ export function PassportInspectionModal({
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-[#0F172B]">
-            {mode === "edit" ? t("title_edit") : t("title_create")}
-          </DialogTitle>
-        </DialogHeader>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={mode === "edit" ? t("title_edit") : t("title_create")}
+      size="xl"
+    >
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="locomotive_id">
-                {t("locomotive")} <span className="text-red-500">*</span>
-              </Label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <FieldGrid columns={2}>
+            <Field label={t("locomotive")} htmlFor="locomotive_id" required>
               <Select
                 value={locomotiveId || undefined}
                 onValueChange={(value) => {
@@ -351,17 +335,16 @@ export function PassportInspectionModal({
                   <SelectValue placeholder={t("placeholder_locomotive")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="p-2 border-b border-[#E5ECF8]">
+                  <div className="p-2 border-b border-border">
                     <div className="relative">
-                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7280]" />
-                      <input
+                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input variant="compact" className="pl-8"
                         type="text"
                         placeholder={t("placeholder_search")}
                         value={locomotiveSearchTerm}
                         onChange={(e) => setLocomotiveSearchTerm(e.target.value)}
                         onKeyDown={(e) => e.stopPropagation()}
                         onKeyUp={(e) => e.stopPropagation()}
-                        className="w-full pl-8 pr-2 py-1.5 text-sm border border-[#d1d5db] rounded-md focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20"
                       />
                     </div>
                   </div>
@@ -386,19 +369,16 @@ export function PassportInspectionModal({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-3 py-2 text-sm text-[#6b7280] text-center">
+                      <div className="px-3 py-2 text-sm text-muted-foreground text-center">
                         {t("locomotive_not_found")}
                       </div>
                     )}
                   </div>
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="section_id">
-                {t("section")} <span className="text-red-500">*</span>
-              </Label>
+            <Field label={t("section")} htmlFor="section_id" required>
               <Select
                 value={sectionId || undefined}
                 onValueChange={(value) => handleFieldChange("section_id", value)}
@@ -419,17 +399,17 @@ export function PassportInspectionModal({
                       </SelectItem>
                     ))
                   ) : (
-                    <div className="px-3 py-2 text-sm text-[#6b7280] text-center">
+                    <div className="px-3 py-2 text-sm text-muted-foreground text-center">
                       {t("section_not_found")}
                     </div>
                   )}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
+            </Field>
+          </FieldGrid>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[#0F172B] border-b pb-2">
+            <h3 className="text-lg font-semibold text-foreground border-b pb-2">
               {t("inspection_data_heading")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3" key={formKeyRef.current}>
@@ -447,7 +427,7 @@ export function PassportInspectionModal({
             </div>
           </div>
 
-          <DialogFooter>
+          <ModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -463,10 +443,9 @@ export function PassportInspectionModal({
                   ? t("save")
                   : t("add")}
             </Button>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }
 

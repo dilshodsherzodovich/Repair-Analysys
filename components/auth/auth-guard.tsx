@@ -7,6 +7,7 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import type { UserData } from "@/api/types/auth";
 import { isEchAccount } from "@/lib/permissions";
 
+import { LoadingScreen } from "@/ui/empty-state";
 interface AuthGuardProps {
   children: React.ReactNode;
   publicRoutes?: string[];
@@ -189,36 +190,19 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
 
   if (!isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Yuklanmoqda...</p>
-        </div>
-      </div>
+      <LoadingScreen />
     );
   }
 
   if (isUserLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Yuklanmoqda...</p>
-        </div>
-      </div>
+      <LoadingScreen />
     );
   }
 
   if (!isPublicRoute && !currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">
-            Avtorizatsiya sahifasiga yo'naltirilmoqda...
-          </p>
-        </div>
-      </div>
+      <LoadingScreen label="Avtorizatsiya sahifasiga yo'naltirilmoqda..." />
     );
   }
 
@@ -229,12 +213,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
       !isEchAllowedRoute(pathname)
     ) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Yo'naltirilmoqda...</p>
-          </div>
-        </div>
+        <LoadingScreen label="Yo'naltirilmoqda..." />
       );
     }
   }
@@ -246,23 +225,13 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     isEchAccount(currentUser)
   ) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Yo'naltirilmoqda...</p>
-        </div>
-      </div>
+      <LoadingScreen label="Yo'naltirilmoqda..." />
     );
   }
 
   if (isLoginPage && currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Bosh sahifaga yo'naltirilmoqda...</p>
-        </div>
-      </div>
+      <LoadingScreen label="Bosh sahifaga yo'naltirilmoqda..." />
     );
   }
 
@@ -271,12 +240,7 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
     const defaultRoute = getDefaultRouteForRole(currentUser);
     if (defaultRoute !== "/") {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Yo'naltirilmoqda...</p>
-          </div>
-        </div>
+        <LoadingScreen label="Yo'naltirilmoqda..." />
       );
     }
   }

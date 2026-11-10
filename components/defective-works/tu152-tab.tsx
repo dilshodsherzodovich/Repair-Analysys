@@ -12,25 +12,15 @@ import {
   useTU152LocomotiveModels,
   useUpdateTU152Entry,
 } from "@/api/hooks/use-tu152";
-import {
-  TU152Entry,
-  TU152_STATUSES,
-  TU152UpdatePayload,
-} from "@/api/types/tu152";
-import { DatePicker } from "@/ui/date-picker";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { TU152Entry, TU152_STATUSES, TU152UpdatePayload } from "@/api/types/tu152";
 import { PaginationEllipsis, PaginationLink } from "@/ui/pagination";
 import { ChevronLeft, ChevronRight, Edit } from "lucide-react";
 import { TU152Modal } from "@/components/defective-works/tu152-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import { Permission } from "@/lib/permissions";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
+import { Button } from "@/ui/button";
+import { FilterPanel } from "@/ui/filter-bar";
+import { Page } from "@/ui/page";
 
 export function TU152Tab() {
   const t = useTranslations("TU152Tab");
@@ -135,15 +125,15 @@ export function TU152Tab() {
     if (!status) return null;
 
     let variant:
-      | "default"
-      | "success_outline"
-      | "destructive_outline"
-      | "warning_outline"
-      | "info_outline" = "default";
-    if (statusId === 24) variant = "success_outline";
-    else if (statusId === 22) variant = "warning_outline";
-    else if (statusId === 23) variant = "destructive_outline";
-    else if (statusId === 21) variant = "info_outline";
+      | "neutral"
+      | "success"
+      | "danger"
+      | "warning"
+      | "primary" = "neutral";
+    if (statusId === 24) variant = "success";
+    else if (statusId === 22) variant = "warning";
+    else if (statusId === 23) variant = "danger";
+    else if (statusId === 21) variant = "primary";
 
     return <Badge variant={variant}>{status.name}</Badge>;
   }, []);
@@ -297,25 +287,7 @@ export function TU152Tab() {
     return options;
   }, [t]);
 
-  const handleDateFromChange = useCallback(
-    (date: Date | undefined) => {
-      setDateFrom(date);
-      updateQuery({
-        p_create_date_from: date ? date.toISOString().split("T")[0] : null,
-      });
-    },
-    [updateQuery],
-  );
 
-  const handleDateToChange = useCallback(
-    (date: Date | undefined) => {
-      setDateTo(date);
-      updateQuery({
-        p_create_date_to: date ? date.toISOString().split("T")[0] : null,
-      });
-    },
-    [updateQuery],
-  );
 
   const handleEdit = useCallback((row: TU152Entry) => {
     setSelectedEntry(row);
@@ -352,64 +324,49 @@ export function TU152Tab() {
   );
 
   return (
-    <>
-      <div className="px-6 py-4">
-        <div className="bg-white border p-4 mb-4">
-          <div className="flex flex-wrap md:flex-nowrap items-end gap-4">
-            <div className="min-w-[200px] flex-1">
-              <DatePicker
-                label=""
-                value={dateFrom}
-                onValueChange={handleDateFromChange}
-                placeholder={t("date_from")}
-              />
-            </div>
-            <div className="min-w-[200px] flex-1">
-              <DatePicker
-                label=""
-                value={dateTo}
-                onValueChange={handleDateToChange}
-                placeholder={t("date_to")}
-              />
-            </div>
-            <PageFilters
-              filters={[
-                {
-                  name: "p_lokomotiv_id",
-                  label: t("filters.locomotive"),
-                  isSelect: true,
-                  options: locomotiveOptions,
-                  placeholder: t("filters.locomotive_placeholder"),
-                  searchable: false,
-                  loading: isLoadingLocomotives,
-                },
-                {
-                  name: "p_lokomotiv_seriya_id",
-                  label: t("filters.seriya"),
-                  isSelect: true,
-                  options: locomotiveModelOptions,
-                  placeholder: t("filters.seriya_placeholder"),
-                  searchable: false,
-                  loading: isLoadingLocomotiveModels,
-                },
-                {
-                  name: "p_status_id",
-                  label: t("filters.status"),
-                  isSelect: true,
-                  options: statusOptions,
-                  placeholder: t("filters.status_placeholder"),
-                  searchable: false,
-                },
-              ]}
-              hasSearch={false}
-              className="!mb-0 flex-nowrap"
-            />
-          </div>
-        </div>
-      </div>
+    <Page>
+      <>
+        <FilterPanel className="mb-4">
+          <PageFilters
+            filters={[
+              {
+                name: "p_lokomotiv_id",
+                label: t("filters.locomotive"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotive_placeholder"),
+                searchable: false,
+                loading: isLoadingLocomotives,
+              },
+              {
+                name: "p_lokomotiv_seriya_id",
+                label: t("filters.seriya"),
+                isSelect: true,
+                options: locomotiveModelOptions,
+                placeholder: t("filters.seriya_placeholder"),
+                searchable: false,
+                loading: isLoadingLocomotiveModels,
+              },
+              {
+                name: "p_status_id",
+                label: t("filters.status"),
+                isSelect: true,
+                options: statusOptions,
+                placeholder: t("filters.status_placeholder"),
+                searchable: false,
+              },
+            ]}
+            hasSearch={false}
+            hasDateRangePicker
+            dateRangeStartKey="p_create_date_from"
+            dateRangeEndKey="p_create_date_to"
+            className="!mb-0 flex-nowrap"
+          />
+        </FilterPanel>
+      </>
 
-      <div className="px-6 pb-6">
-        <div className="rounded-lg overflow-hidden ">
+      <>
+        <div className="rounded-lg overflow-hidden">
           <div className="w-full overflow-x-auto">
             <PaginatedTable
               columns={columns}
@@ -446,9 +403,9 @@ export function TU152Tab() {
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-[#F8FAFC]">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-surface-muted">
               {totalItems ? (
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   {t("pagination_showing", {
                     from: Math.min(
                       (currentPage - 1) * itemsPerPage + 1,
@@ -465,16 +422,15 @@ export function TU152Tab() {
               <ul className="flex flex-row items-center gap-1">
                 {currentPage > 1 && (
                   <li>
-                    <button
+                    <Button variant="outline" size="sm"
                       type="button"
                       onClick={() =>
                         updateQuery({ page: (currentPage - 1).toString() })
                       }
-                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
                     >
                       <ChevronLeft className="h-4 w-4" />
                       <span>{t("pagination_prev")}</span>
-                    </button>
+                    </Button>
                   </li>
                 )}
 
@@ -520,23 +476,22 @@ export function TU152Tab() {
 
                 {currentPage < totalPages && (
                   <li>
-                    <button
+                    <Button variant="outline" size="sm"
                       type="button"
                       onClick={() =>
                         updateQuery({ page: (currentPage + 1).toString() })
                       }
-                      className="inline-flex items-center justify-center h-8 px-3 rounded-md text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors gap-1"
                     >
                       <span>{t("pagination_next")}</span>
                       <ChevronRight className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </li>
                 )}
               </ul>
             </div>
           )}
         </div>
-      </div>
+      </>
 
       <TU152Modal
         isOpen={isModalOpen}
@@ -548,6 +503,6 @@ export function TU152Tab() {
         entry={selectedEntry}
         isPending={updateMutation.isPending}
       />
-    </>
+    </Page>
   );
 }

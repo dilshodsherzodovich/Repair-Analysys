@@ -1,75 +1,17 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
-import type {
-  ExcludedTypeCount,
-  UnifiedKpis,
-} from "./use-unified-report-data";
+import type { ExcludedTypeCount, UnifiedKpis } from "./use-unified-report-data";
+import { Skeleton } from "@/ui/skeleton";
+import { StatCard, StatGrid } from "@/ui/stat-card";
 
+import { formatNumber } from "@/lib/format";
 /** Which detail section a tile drills into. `null` = show every section. */
 export type UnifiedSection = "inspections" | "duration" | "entry";
 
-/** Unresolved values render as a skeleton — never as a misleading `0`. */
-function Value({ value, suffix }: { value: number | null; suffix?: string }) {
-  if (value == null) {
-    return <div className="h-8 w-16 rounded bg-gray-200 animate-pulse" />;
-  }
-  return (
-    <p className="text-3xl font-bold tabular-nums leading-none">
-      {value.toLocaleString()}
-      {suffix}
-    </p>
-  );
-}
-
-const TONES = {
-  neutral: {
-    idle: "border-t-gray-300",
-    active: "ring-gray-400 border-t-gray-500",
-  },
-  danger: { idle: "border-t-red-400", active: "ring-red-400 border-t-red-500" },
-  warning: {
-    idle: "border-t-amber-400",
-    active: "ring-amber-400 border-t-amber-500",
-  },
-} as const;
-
-function Tile({
-  label,
-  tone,
-  active,
-  dimmed,
-  onClick,
-  children,
-}: {
-  label: string;
-  tone: keyof typeof TONES;
-  active: boolean;
-  /** Another tile owns the selection, so this one steps back visually. */
-  dimmed: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={cn(
-        "text-left bg-white rounded-xl border border-gray-200 border-t-4 px-4 py-3 shadow-sm transition-all",
-        "hover:border-gray-300 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1",
-        TONES[tone].idle,
-        active && cn("ring-2", TONES[tone].active),
-        dimmed && "opacity-55 hover:opacity-100",
-      )}
-    >
-      <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-2">
-        {label}
-      </p>
-      {children}
-    </button>
-  );
+/** Unresolved values render as a skeleton, never as a misleading `0`. */
+function value(n: number | null) {
+  return n == null ? <Skeleton className="h-7 w-16" /> : formatNumber(n);
 }
 
 export function KpiStrip({
@@ -89,37 +31,42 @@ export function KpiStrip({
 
   // Clicking the active tile clears the drill-down rather than re-selecting it.
   const state = (section: UnifiedSection) => ({
-    active: activeSection === section,
-    dimmed: activeSection !== null && activeSection !== section,
+    selected: activeSection === section,
+    muted: activeSection !== null && activeSection !== section,
     onClick: () => onSelectSection(activeSection === section ? null : section),
   });
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <Tile label={t("kpiTotal")} tone="neutral" {...state("inspections")}>
-        <Value value={kpis.total} />
-        {kpis.total != null && excludedTypes.length > 0 && (
-          <p className="text-[11px] text-gray-400 mt-1.5">
-            {t("excludedNote")}:{" "}
-            {excludedTypes
-              .map((type) => `${type.name} · ${type.total.toLocaleString()}`)
-              .join(", ")}
-          </p>
-        )}
-      </Tile>
-
-      <Tile label={t("kpiDelayedEntry")} tone="danger" {...state("entry")}>
-        <Value value={kpis.delayedEntry} />
-        {kpis.delayedEntryLocomotives != null && (
-          <p className="text-[11px] text-gray-400 mt-1.5">
-            {kpis.delayedEntryLocomotives} {t("delayedLocomotivesCount")}
-          </p>
-        )}
-      </Tile>
-
-      <Tile label={t("kpiDelayedDuration")} tone="warning" {...state("duration")}>
-        <Value value={kpis.delayedDuration} />
-      </Tile>
-    </div>
+    <StatGrid columns={3}>
+      <StatCard
+        label={t("kpiTotal")}
+        value={value(kpis.total)}
+        caption={
+          kpis.total != null && excludedTypes.length > 0
+            ? `${t("excludedNote")}: ${excludedTypes
+                .map((type) => `${type.name} · ${formatNumber(type.total)}`)
+                .join(", ")}`
+            : undefined
+        }
+        {...state("inspections")}
+      />
+      <StatCard
+        label={t("kpiDelayedEntry")}
+        tone="danger"
+        value={value(kpis.delayedEntry)}
+        caption={
+          kpis.delayedEntryLocomotives != null
+            ? `${kpis.delayedEntryLocomotives} ${t("delayedLocomotivesCount")}`
+            : undefined
+        }
+        {...state("entry")}
+      />
+      <StatCard
+        label={t("kpiDelayedDuration")}
+        tone="warning"
+        value={value(kpis.delayedDuration)}
+        {...state("duration")}
+      />
+    </StatGrid>
   );
 }

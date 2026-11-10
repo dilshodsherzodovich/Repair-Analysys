@@ -2,19 +2,13 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { AlertCircle, ChevronDown, ExternalLink } from "lucide-react";
+import { AlertCircle, ExternalLink } from "lucide-react";
 import { Skeleton } from "@/ui/skeleton";
 import { EmptyState } from "@/ui/empty-state";
-import { cn } from "@/lib/utils";
 import { useComponentRegistryByGroup } from "@/api/hooks/use-component-registry";
-import {
-  ComponentGroupOverview,
-  ComponentGroupOverviewGroup,
-} from "@/api/types/component-registry";
-import {
-  ComponentGroupComponents,
-  CountBadge,
-} from "./component-group-components";
+import { ComponentGroupOverview, ComponentGroupOverviewGroup } from "@/api/types/component-registry";
+import { ComponentGroupComponents, CountBadge } from "./component-group-components";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 interface ComponentGroupAccordionProps {
   data?: ComponentGroupOverview;
@@ -56,7 +50,7 @@ function GroupPanel({
 
   if (isLoading) {
     return (
-      <div className="border-t border-[#E2E8F0] bg-[#F8FAFC] p-3 space-y-2">
+      <div className="border-t border-border bg-surface-muted p-3 space-y-2">
         {Array.from({ length: Math.min(group.components?.length || 3, 4) }).map(
           (_, i) => (
             <Skeleton key={i} className="h-11 w-full rounded-md" />
@@ -72,7 +66,7 @@ function GroupPanel({
       ? payload.group_id.join(" ")
       : payload?.detail || (error as Error)?.message || t("error_load");
     return (
-      <div className="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-sm text-red-700">
+      <div className="border-t border-border bg-surface-muted px-4 py-3 text-sm text-destructive">
         {message}
       </div>
     );
@@ -81,7 +75,7 @@ function GroupPanel({
   return (
     <ComponentGroupComponents
       components={data?.components ?? []}
-      className="border-t border-[#E2E8F0] bg-[#F8FAFC] p-3"
+      className="border-t border-border bg-surface-muted p-3"
     />
   );
 }
@@ -154,9 +148,9 @@ export function ComponentGroupAccordion({
 
   if (groups.length === 0) {
     return (
-      <div className="rounded-lg border border-[#CAD5E2] bg-white p-8">
+      <div className="rounded-lg border border-border-strong bg-background p-8">
         <EmptyState
-          icon={<AlertCircle className="h-12 w-12" />}
+          icon={<AlertCircle className="size-6" />}
           title={t("empty_title")}
           description={t("empty_description")}
         />
@@ -166,11 +160,11 @@ export function ComponentGroupAccordion({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-[#CAD5E2] bg-[#EFF6FF] px-4 py-2.5">
-        <span className="text-sm font-semibold text-[#0F172B]">
+      <div className="flex items-center justify-between gap-3 rounded-lg border border-border-strong bg-primary-subtle px-4 py-2.5">
+        <span className="text-sm font-semibold text-foreground">
           {t("groups_title")}
         </span>
-        <span className="text-sm font-medium text-[#475569] whitespace-nowrap">
+        <span className="text-sm font-medium text-foreground-secondary whitespace-nowrap">
           {t("group_total", { count: data?.count ?? 0 })}
         </span>
       </div>
@@ -181,25 +175,18 @@ export function ComponentGroupAccordion({
           return (
             <div
               key={group.id}
-              className="rounded-lg border border-[#CAD5E2] bg-white overflow-hidden"
+              className="rounded-lg border border-border-strong bg-background overflow-hidden"
             >
               <div className="flex items-stretch">
                 {/* Chevron expands in place; the rest of the row opens the
                     group on its own page in a new tab. */}
-                <button
-                  type="button"
+                <DisclosureTrigger
+                  open={isOpen}
                   onClick={() => toggleGroup(group.id)}
-                  aria-expanded={isOpen}
                   aria-label={t("groups_title")}
-                  className="px-3 flex items-center hover:bg-[#F1F5F9] transition-colors cursor-pointer shrink-0"
+                  className="w-auto shrink-0 px-3"
                 >
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 text-[#64748B] transition-transform",
-                      !isOpen && "-rotate-90",
-                    )}
-                  />
-                </button>
+                </DisclosureTrigger>
 
                 <a
                   href={groupHref(group.id)}
@@ -207,13 +194,13 @@ export function ComponentGroupAccordion({
                   rel="noopener noreferrer"
                   onClick={(event) => openGroupWindow(event, group.id)}
                   title={t("group_open_in_new_tab")}
-                  className="group/link flex flex-1 min-w-0 items-center gap-3 py-3 pr-4 hover:bg-[#F8FAFC] transition-colors"
+                  className="group/link flex flex-1 min-w-0 items-center gap-3 py-3 pr-4 hover:bg-surface-muted transition-colors"
                 >
-                  <span className="flex-1 min-w-0 truncate text-sm font-semibold text-[#0F172B]">
+                  <span className="flex-1 min-w-0 truncate text-sm font-semibold text-foreground">
                     {group.name}
                   </span>
-                  <ExternalLink className="h-3.5 w-3.5 shrink-0 text-[#94A3B8] opacity-0 transition-opacity group-hover/link:opacity-100" />
-                  <span className="hidden sm:inline text-xs text-[#64748B] whitespace-nowrap">
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0 text-foreground-subtle opacity-0 transition-opacity group-hover/link:opacity-100" />
+                  <span className="hidden sm:inline text-xs text-muted-foreground whitespace-nowrap">
                     {t("group_components_count", {
                       count: group.components?.length ?? 0,
                     })}

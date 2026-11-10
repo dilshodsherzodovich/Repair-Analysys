@@ -22,17 +22,17 @@ const icons = {
 };
 
 const colors = {
-  success: "bg-green-50 border-green-200 text-green-800",
-  error: "bg-red-50 border-red-200 text-red-800",
-  warning: "bg-yellow-50 border-yellow-200 text-yellow-800",
-  info: "bg-blue-50 border-blue-200 text-blue-800",
+  success: "bg-success-subtle border-success/30 text-foreground",
+  error: "bg-destructive-subtle border-destructive/30 text-foreground",
+  warning: "bg-warning-subtle border-warning/30 text-foreground",
+  info: "bg-primary-subtle border-primary/30 text-foreground",
 };
 
 const iconColors = {
-  success: "text-green-600",
-  error: "text-red-600",
-  warning: "text-yellow-600",
-  info: "text-blue-600",
+  success: "text-success",
+  error: "text-destructive",
+  warning: "text-warning",
+  info: "text-primary",
 };
 
 export function Snackbar({
@@ -93,7 +93,7 @@ export function Snackbar({
           </div>
           <button
             onClick={handleClose}
-            className="flex-shrink-0 ml-2 p-1 rounded-full hover:bg-black/10 transition-colors"
+            className="flex-shrink-0 ml-2 p-1 rounded-full hover:bg-scrim/10 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>

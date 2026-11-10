@@ -30,26 +30,26 @@ function validationTone(
     case "VALID":
       return {
         label: t("valid"),
-        badge: "bg-emerald-500",
-        tile: "bg-emerald-50 text-emerald-600",
+        badge: "bg-success",
+        tile: "bg-success-subtle text-success",
       };
     case "EXPIRED":
       return {
         label: t("expired"),
-        badge: "bg-red-500",
-        tile: "bg-red-50 text-red-600",
+        badge: "bg-destructive",
+        tile: "bg-destructive-subtle text-destructive",
       };
     case "INVALID":
       return {
         label: t("invalid"),
-        badge: "bg-red-500",
-        tile: "bg-red-50 text-red-600",
+        badge: "bg-destructive",
+        tile: "bg-destructive-subtle text-destructive",
       };
     default:
       return {
         label: validation ?? "—",
-        badge: "bg-slate-400",
-        tile: "bg-slate-100 text-slate-500",
+        badge: "bg-foreground-subtle",
+        tile: "bg-muted text-muted-foreground",
       };
   }
 }
@@ -69,7 +69,7 @@ function OilMetric({
         <Icon className="h-3.5 w-3.5" />
         {label}
       </span>
-      <span className="font-semibold tabular-nums text-[#0F172B]">{value}</span>
+      <span className="font-semibold tabular-nums text-foreground">{value}</span>
     </div>
   );
 }
@@ -81,7 +81,7 @@ function OilCard({ entry }: { entry: LocomotiveOilStatusEntry }) {
   const tone = validationTone(status?.validation, t);
 
   return (
-    <div className="flex flex-col rounded-2xl border bg-card p-4 transition-shadow hover:shadow-[0_14px_34px_-22px_rgba(15,23,43,0.55)]">
+    <div className="flex flex-col rounded-xl border bg-card p-4 transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2.5">
           <div
@@ -93,18 +93,18 @@ function OilCard({ entry }: { entry: LocomotiveOilStatusEntry }) {
             <Droplet className="h-[18px] w-[18px]" />
           </div>
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-semibold leading-tight text-[#0F172B]">
+            <h3 className="truncate text-sm font-semibold leading-tight text-foreground">
               {label}
             </h3>
             {entry.modelName && (
-              <p className="truncate text-[11px] text-muted-foreground">
+              <p className="truncate text-2xs text-muted-foreground">
                 {entry.modelName}
               </p>
             )}
           </div>
         </div>
         <Badge
-          className={cn("shrink-0 border-transparent text-white", tone.badge)}
+          className={cn("shrink-0 border-transparent text-primary-foreground", tone.badge)}
         >
           {tone.label}
         </Badge>

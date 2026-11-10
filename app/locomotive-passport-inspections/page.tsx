@@ -20,7 +20,10 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
+import { AddButton } from "@/ui/add-button";
+import { Page } from "@/ui/page";
 
+import { formatNumber as formatNumberShared } from "@/lib/format";
 export default function LocomotivePassportInspectionsPage() {
   const t = useTranslations("LocomotivePassportInspectionsPage");
   const searchParams = useSearchParams();
@@ -178,8 +181,7 @@ export default function LocomotivePassportInspectionsPage() {
 
   // Format number helper
   const formatNumber = (value: number | null | undefined): string => {
-    if (value === null || value === undefined) return "—";
-    return value.toLocaleString();
+    return formatNumberShared(value);
   };
 
   // Simple inspection field component
@@ -194,21 +196,21 @@ export default function LocomotivePassportInspectionsPage() {
     const hasKm = km !== null && km !== undefined;
 
     if (!hasDate && !hasKm) {
-      return <span className="text-gray-400">—</span>;
+      return <span className="text-foreground-subtle">—</span>;
     }
 
     return (
       <div className="space-y-1.5">
         {hasDate && (
           <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-gray-500" />
-            <span className="text-sm text-gray-900">{formatDate(date)}</span>
+            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-sm text-foreground">{formatDate(date)}</span>
           </div>
         )}
         {hasKm && (
           <div className="flex items-center gap-1.5">
-            <Gauge className="h-3.5 w-3.5 text-gray-500" />
-            <span className="text-sm text-gray-900">{formatNumber(km)}</span>
+            <Gauge className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-sm text-foreground">{formatNumber(km)}</span>
           </div>
         )}
       </div>
@@ -224,9 +226,9 @@ export default function LocomotivePassportInspectionsPage() {
         accessor: (row) => {
           return (
             <div className="flex items-center gap-2">
-              <Train className="h-4 w-4 text-gray-600" />
+              <Train className="h-4 w-4 text-foreground-secondary" />
               <div className="flex flex-col">
-                <span className="font-medium text-gray-900 text-sm">
+                <span className="font-medium text-foreground text-sm">
                   {row.locomotive_name + " - " + row.locomotive_model}
                 </span>
               </div>
@@ -239,7 +241,7 @@ export default function LocomotivePassportInspectionsPage() {
         key: "section_name",
         header: t("columns.section"),
         accessor: (row) => (
-          <span className="text-sm text-gray-700">{row.section_name}</span>
+          <span className="text-sm text-foreground-secondary">{row.section_name}</span>
         ),
       },
       {
@@ -315,24 +317,24 @@ export default function LocomotivePassportInspectionsPage() {
   );
 
   return (
-    <>
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
+        filters={
+          <PageFilters
+            filters={[]}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
+        actions={<AddButton onClick={handleCreate} permission="create_locomotive_passport_inspection" />}
       />
 
-      <div className="mt-4">
-        <PageFilters
-          filters={[]}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-          addButtonText={t("add_button")}
-          addButtonPermittion="create_locomotive_passport_inspection"
-          onAdd={handleCreate}
-        />
-      </div>
+      <>
+      </>
 
-      <div className="mt-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -351,7 +353,7 @@ export default function LocomotivePassportInspectionsPage() {
           editPermission="edit_locomotive_passport_inspection"
           deletePermission="delete_locomotive_passport_inspection"
         />
-      </div>
+      </>
 
       <PassportInspectionModal
         isOpen={isModalOpen}
@@ -364,6 +366,6 @@ export default function LocomotivePassportInspectionsPage() {
         inspection={selectedInspection}
         mode={modalMode}
       />
-    </>
+    </Page>
   );
 }

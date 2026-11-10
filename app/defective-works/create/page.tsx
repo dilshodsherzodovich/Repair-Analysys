@@ -6,13 +6,13 @@ import Link from "next/link";
 import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
-import { Label } from "@/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SearchableSelect,
 } from "@/ui/select";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { authService } from "@/api/services/auth.service";
@@ -22,10 +22,11 @@ import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useRevisionRemarkGroups } from "@/api/hooks/use-defective-works";
 import { defectiveWorksService } from "@/api/services/defective-works.service";
 import type { DefectiveWorkCreatePayload } from "@/api/types/defective-works";
-import { XIcon, ChevronsUpDown, Search } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { DateTimePicker } from "@/ui/datetime-picker";
-import { cn } from "@/lib/utils";
 
+import { Field } from "@/ui/field";
+import { LoadingScreen } from "@/ui/empty-state";
 interface IssueWithDate {
   text: string;
   date: Date | undefined;
@@ -35,155 +36,6 @@ interface IssueWithDate {
 }
 
 /** Single-select with search, same pattern as multi-select */
-function SearchableLocomotiveSelect({
-  options,
-  value,
-  onValueChange,
-  placeholder,
-  disabled,
-  loading,
-  emptyMessage,
-}: {
-  options: { value: string; label: string }[];
-  value: string;
-  onValueChange: (value: string) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  loading?: boolean;
-  emptyMessage?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
-    "bottom"
-  );
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const selectedOption = options.find((o) => o.value === value);
-
-  const filteredOptions = options.filter((opt) =>
-    opt.label.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
-  useEffect(() => {
-    if (open && triggerRef.current) {
-      const triggerRect = triggerRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const dropdownHeight = 300;
-      const spaceBelow = viewportHeight - triggerRect.bottom;
-      const spaceAbove = triggerRect.top;
-      if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
-        setDropdownPosition("top");
-      } else {
-        setDropdownPosition("bottom");
-      }
-    }
-  }, [open]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-        setSearchValue("");
-      }
-    };
-    if (open) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
-
-  const handleSelect = (optionValue: string) => {
-    onValueChange(optionValue);
-    setOpen(false);
-    setSearchValue("");
-  };
-
-  return (
-    <div className="relative w-full">
-      <div
-        ref={triggerRef}
-        className={cn(
-          "flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-base cursor-pointer",
-          "hover:border-gray-400 focus-within:ring-2 focus-within:ring-[#2354bf]/20 focus-within:border-[#2354bf]",
-          "disabled:pointer-events-none disabled:opacity-50",
-          "[&>span]:line-clamp-1",
-          disabled && "opacity-50 cursor-not-allowed"
-        )}
-        onClick={() => !disabled && !loading && setOpen(!open)}
-      >
-        <span
-          className={cn(
-            "truncate flex-1 min-w-0 text-left text-sm",
-            !selectedOption ? "text-[#90A1B9]" : "text-[#0F172B]"
-          )}
-        >
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-[#64748B]" />
-      </div>
-
-      {open && (
-        <div
-          ref={dropdownRef}
-          className={cn(
-            "absolute left-0 right-0 z-[999999] max-h-[300px] overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg",
-            "animate-in fade-in-0 zoom-in-95 duration-100",
-            dropdownPosition === "top"
-              ? "bottom-full mb-1 slide-in-from-bottom-2"
-              : "top-full mt-1 slide-in-from-top-2"
-          )}
-          style={{ zIndex: 999999 }}
-        >
-          <div className="p-2 border-b border-[#E2E8F0]">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
-              <input
-                type="text"
-                placeholder={placeholder}
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onKeyDown={(e) => e.stopPropagation()}
-                className="w-full border border-[#E2E8F0] rounded-md py-2 pl-8 pr-3 text-sm focus:border-[#2354bf] focus:outline-none focus:ring-2 focus:ring-[#2354bf]/20"
-              />
-            </div>
-          </div>
-          <div className="max-h-[240px] overflow-y-auto py-0.5">
-            {loading ? (
-              <div className="p-4 text-center text-sm text-[#64748B]">
-                Loading...
-              </div>
-            ) : filteredOptions.length === 0 ? (
-              <div className="py-3 text-center text-sm text-[#64748B]">
-                {emptyMessage ?? "No items found."}
-              </div>
-            ) : (
-              filteredOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleSelect(opt.value)}
-                  className={cn(
-                    "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-[#F1F5F9]",
-                    opt.value === value &&
-                      "bg-[#EFF6FF] font-medium text-[#1d4ed8]"
-                  )}
-                >
-                  <span className="truncate">{opt.label}</span>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function PublicDefectiveWorkCreatePage() {
   const t = useTranslations("DefectiveWorksCreatePage");
   const searchParams = useSearchParams();
@@ -432,23 +284,20 @@ export default function PublicDefectiveWorkCreatePage() {
   // Show loading state while authenticating
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
-        <Card className="border border-[#E2E8F0] bg-white p-6 shadow-xl md:p-8">
-          <p className="text-center text-sm text-[#475569]">{t("loading")}</p>
-        </Card>
-      </div>
+      <LoadingScreen label={t("loading")} />
     );
   }
 
   // Show error state if authentication failed
   if (authError || !temporaryToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
-        <Card className="border border-red-200 bg-white p-6 shadow-xl md:p-8 space-y-4">
-          <h1 className="text-lg font-semibold text-red-700">
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted px-4 py-10 text-foreground">
+        <Card className="border border-destructive/30 bg-background p-6 shadow-xl md:p-8 space-y-4">
+          {/* kit-allow: public defect form hero, outside the app layout */}
+          <h1 className="text-lg font-semibold text-destructive">
             {t("auth_error_title")}
           </h1>
-          <p className="text-sm text-[#475569] break-words">
+          <p className="text-sm text-foreground-secondary break-words">
             {authError || t("auth_error_token")}
           </p>
           <div className="flex justify-end">
@@ -462,15 +311,16 @@ export default function PublicDefectiveWorkCreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] px-4 py-10 text-[#0F172A]">
+    <div className="min-h-screen bg-surface-muted px-4 py-10 text-foreground">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="space-y-3 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#7C8DB5]">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
             Smart Depo
           </p>
+          {/* kit-allow: public defect form hero, outside the app layout */}
           <h1 className="text-3xl font-bold md:text-4xl">{t("title")}</h1>
-          <p className="text-base text-[#475569] md:text-lg">{t("subtitle")}</p>
-          <div className="flex items-center justify-center gap-2 text-sm text-[#475569]">
+          <p className="text-base text-foreground-secondary md:text-lg">{t("subtitle")}</p>
+          <div className="flex items-center justify-center gap-2 text-sm text-foreground-secondary">
             <span>{t("has_account")}</span>
             <Link
               href="/login"
@@ -481,7 +331,7 @@ export default function PublicDefectiveWorkCreatePage() {
           </div>
         </header>
 
-        <Card className="border border-[#E2E8F0] bg-white p-6 shadow-xl md:p-8">
+        <Card className="border border-border bg-background p-6 shadow-xl md:p-8">
           <form
             key={formResetKey}
             ref={formRef}
@@ -490,18 +340,12 @@ export default function PublicDefectiveWorkCreatePage() {
           >
             {/* Hidden inputs for form submission */}
             <input type="hidden" name="locomotive" value={selectedLocomotive} />
-            <input
-              type="hidden"
-              name="organization"
-              value={organizationFromUrl ?? selectedOrganization}
-            />
+            <input type="hidden" name="organization" value={organizationFromUrl ?? selectedOrganization} />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                  {t("locomotive")}
-                </Label>
-                <SearchableLocomotiveSelect
+              <Field label={t("locomotive")}>
+                <SearchableSelect
+                  searchable
                   options={
                     locomotives.length
                       ? locomotives.map((loc) => ({
@@ -521,31 +365,25 @@ export default function PublicDefectiveWorkCreatePage() {
                   loading={isLoadingLocomotives}
                   emptyMessage={t("locomotive_empty")}
                 />
-              </div>
+              </Field>
 
               {organizationFromUrl ? (
-                <div>
-                  <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                    {t("organization")}
-                  </Label>
-                  <div className="flex h-10 w-full items-center rounded-md border border-gray-200 bg-[#F8FAFC] px-4 py-2 text-sm text-[#475569]">
+                <Field label={t("organization")}>
+                  <div className="flex h-10 w-full items-center rounded-md border border-border bg-surface-muted px-4 py-2 text-sm text-foreground-secondary">
                     {organizations.find(
                       (o) => o.id.toString() === organizationFromUrl
                     )?.name ?? organizationFromUrl}
                   </div>
-                </div>
+                </Field>
               ) : (
-                <div>
-                  <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                    {t("organization")}
-                  </Label>
+                <Field label={t("organization")}>
                   <Select
                     name="organization"
                     value={selectedOrganization}
                     onValueChange={setSelectedOrganization}
                     disabled={isLoadingOrganizations}
                   >
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-background">
                       <SelectValue
                         placeholder={t("organization_placeholder")}
                       />
@@ -567,7 +405,7 @@ export default function PublicDefectiveWorkCreatePage() {
                       )}
                     </SelectContent>
                   </Select>
-                </div>
+                </Field>
               )}
 
               <FormField
@@ -588,10 +426,7 @@ export default function PublicDefectiveWorkCreatePage() {
               </div>
 
               {/* TU-152 defect group */}
-              <div>
-                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                  {t("remark_group")}
-                </Label>
+              <Field label={t("remark_group")}>
                 <Select
                   value={selectedGroup}
                   onValueChange={(v) => {
@@ -600,7 +435,7 @@ export default function PublicDefectiveWorkCreatePage() {
                   }}
                   disabled={!selectedLocomotive || isLoadingRemarkGroups}
                 >
-                  <SelectTrigger className="bg-white">
+                  <SelectTrigger className="bg-background">
                     <SelectValue
                       placeholder={
                         !selectedLocomotive
@@ -621,19 +456,16 @@ export default function PublicDefectiveWorkCreatePage() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </Field>
 
               {/* TU-152 defect */}
-              <div>
-                <Label className="mb-2 block text-sm font-medium text-[#1E293B]">
-                  {t("remark")}
-                </Label>
+              <Field label={t("remark")}>
                 <Select
                   value={selectedRemark}
                   onValueChange={setSelectedRemark}
                   disabled={!selectedGroup || remarkOptions.length === 0}
                 >
-                  <SelectTrigger className="bg-white">
+                  <SelectTrigger className="bg-background">
                     <SelectValue
                       placeholder={
                         !selectedGroup
@@ -652,7 +484,7 @@ export default function PublicDefectiveWorkCreatePage() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </Field>
             </div>
 
             <div className="space-y-3">
@@ -666,13 +498,13 @@ export default function PublicDefectiveWorkCreatePage() {
               />
 
               <div className="flex items-center justify-between gap-3">
-                <p className="text-xs text-[#64748B]">{t("add_issue_hint")}</p>
+                <p className="text-xs text-muted-foreground">{t("add_issue_hint")}</p>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleAddIssue}
                   disabled={isPending}
-                  className="border-[#CBD5F5] text-[#1D4ED8] hover:bg-[#EEF2FF] whitespace-nowrap"
+                  className="border-primary/30 text-primary-hover hover:bg-primary-subtle whitespace-nowrap"
                 >
                   {t("add_to_list")}
                 </Button>
@@ -681,7 +513,7 @@ export default function PublicDefectiveWorkCreatePage() {
               {issues.length > 0 && (
                 <>
                   <div className="mb-2 flex items-center justify-between">
-                    <p className="text-xs font-medium text-[#1E293B]">
+                    <p className="text-xs font-medium text-foreground">
                       {t("added_issues", { count: issues.length })}
                     </p>
                   </div>
@@ -689,14 +521,14 @@ export default function PublicDefectiveWorkCreatePage() {
                   {issues.map((issue, index) => (
                     <div
                       key={index}
-                      className="rounded-md border-2 border-dashed border-[#CBD5F5]  bg-[#F8FAFF] p-3 space-y-3"
+                      className="rounded-md border-2 border-dashed border-primary/30 bg-surface-muted p-3 space-y-3"
                     >
-                      <div className="flex items-center justify-between overflow-y-auto text-xs text-[#475569]">
+                      <div className="flex items-center justify-between overflow-y-auto text-xs text-foreground-secondary">
                         <div className="flex items-center gap-2">
                           <span className="flex-1">
                             {index + 1}. {issue.text}
                             {issue.remarkLabel && (
-                              <span className="ml-2 inline-flex items-center rounded bg-[#EEF2FF] px-1.5 py-0.5 text-[10px] font-medium text-[#4338CA]">
+                              <span className="ml-2 inline-flex items-center rounded bg-primary-subtle px-1.5 py-0.5 text-2xs font-medium text-primary-hover">
                                 {issue.remarkLabel}
                               </span>
                             )}
@@ -716,7 +548,7 @@ export default function PublicDefectiveWorkCreatePage() {
                           type="button"
                           variant="destructive"
                           size="icon"
-                          className="bg-red-400 w-6 h-6"
+                          className="bg-destructive w-6 h-6"
                           onClick={() => handleRemoveIssue(index)}
                           disabled={isPending}
                         >
@@ -730,12 +562,12 @@ export default function PublicDefectiveWorkCreatePage() {
             </div>
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-sm text-[#475569]">{t("submit_note")}</p>
+              <p className="text-sm text-foreground-secondary">{t("submit_note")}</p>
               <div className="flex gap-3">
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-[#CBD5F5] text-[#1D4ED8] hover:bg-[#EEF2FF]"
+                  className="border-primary/30 text-primary-hover hover:bg-primary-subtle"
                   onClick={resetForm}
                   disabled={isPending}
                 >

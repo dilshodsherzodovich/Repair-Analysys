@@ -1,19 +1,16 @@
 "use client";
 
+
+import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Input } from "@/ui/input";
 
 import { Button } from "@/ui/button";
-import { Label } from "@/ui/label";
-import { Card } from "@/ui/card";
-import {
-  Organization,
-  OrganizationCreateParams,
-} from "@/api/types/organizations";
-import { LoadingButton } from "@/ui/loading-button";
+import { Organization, OrganizationCreateParams } from "@/api/types/organizations";
 import { FileUpload } from "@/ui/file-upload";
 
+import { Field, FieldGrid } from "@/ui/field";
 interface OrganizationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,6 +28,7 @@ export function OrganizationModal({
   mode,
   isDoingAction,
 }: OrganizationModalProps) {
+  const tc = useTranslations("Common");
   const [formData, setFormData] = useState({
     name: "",
     legal_basis: "",
@@ -77,17 +75,9 @@ export function OrganizationModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <Card className="border-none p-0 mt-4">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label
-                className="text-sm text-[var(--muted-foreground)]"
-                aria-required
-                htmlFor="name"
-              >
-                Tashkilot nomi
-              </Label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+          <FieldGrid>
+            <Field label="Tashkilot nomi" htmlFor="name">
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -97,15 +87,8 @@ export function OrganizationModal({
                 id="name"
                 required
               />
-            </div>
-            <div>
-              <Label
-                className="text-sm text-[var(--muted-foreground)]"
-                aria-required
-                htmlFor="legal_basis"
-              >
-                Huquqiy asos
-              </Label>
+            </Field>
+            <Field label="Huquqiy asos" htmlFor="legal_basis">
               <Input
                 value={formData.legal_basis}
                 onChange={(e) =>
@@ -118,15 +101,8 @@ export function OrganizationModal({
                 id="legal_basis"
                 required
               />
-            </div>
-            <div>
-              <Label
-                className="text-sm text-[var(--muted-foreground)]"
-                aria-required
-                htmlFor="attachment_file"
-              >
-                Asos fayl
-              </Label>
+            </Field>
+            <Field label="Asos fayl" htmlFor="attachment_file">
               <FileUpload
                 filesUploaded={
                   formData.attachment_file ? [formData.attachment_file] : []
@@ -139,18 +115,17 @@ export function OrganizationModal({
                   }));
                 }}
               />
-            </div>
-          </div>
-          <div className="flex justify-end gap-3 pt-4">
+            </Field>
+          </FieldGrid>
+          <ModalFooter>
             <Button type="button" variant="outline" onClick={onClose}>
-              Bekor qilish
+              {tc("cancel")}
             </Button>
-            <LoadingButton type="submit" isPending={isDoingAction}>
+            <Button type="submit" loading={isDoingAction} className="min-w-24">
               {submitText}
-            </LoadingButton>
-          </div>
+            </Button>
+          </ModalFooter>
         </form>
-      </Card>
     </Modal>
   );
 }

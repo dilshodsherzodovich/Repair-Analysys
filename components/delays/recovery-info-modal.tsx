@@ -1,19 +1,15 @@
 "use client";
 
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Button } from "@/ui/button";
-import {
-  Train,
-  MapPin,
-  Users,
-  CircleCheck,
-  CircleDashed,
-  Wallet,
-} from "lucide-react";
+import { Train, MapPin, Users, CircleCheck, CircleDashed, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { DelayEntry } from "@/api/types/delays";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
+import { formatNumber } from "@/lib/format";
 interface RecoveryInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,11 +17,7 @@ interface RecoveryInfoModalProps {
 }
 
 function fmt(amount: string | number): string {
-  const value = typeof amount === "string" ? Number(amount) : amount;
-  if (!value) return "0";
-  return new Intl.NumberFormat("uz-UZ", { maximumFractionDigits: 0 }).format(
-    value
-  );
+  return formatNumber(amount, { fallback: "0" });
 }
 
 export function RecoveryInfoModal({
@@ -52,7 +44,6 @@ export function RecoveryInfoModal({
       onClose={onClose}
       title={t("title")}
       size="lg"
-      ariaDescribedBy="recovery-info-modal"
     >
       <div className="mt-2 space-y-4">
         {delay && (
@@ -76,7 +67,7 @@ export function RecoveryInfoModal({
         <div className="rounded-xl border bg-muted/30 p-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-lg bg-background p-3 shadow-sm">
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              <div className="text-2xs uppercase tracking-wide text-muted-foreground">
                 {t("to_recover")}
               </div>
               <div className="mt-0.5 text-lg font-semibold tabular-nums">
@@ -84,7 +75,7 @@ export function RecoveryInfoModal({
               </div>
             </div>
             <div className="rounded-lg bg-background p-3 shadow-sm">
-              <div className="flex items-center gap-1 text-[11px] uppercase tracking-wide text-success">
+              <div className="flex items-center gap-1 text-2xs uppercase tracking-wide text-success">
                 <Wallet className="h-3.5 w-3.5" />
                 {t("recovered")}
               </div>
@@ -115,79 +106,70 @@ export function RecoveryInfoModal({
         </div>
 
         {/* Per-culprit breakdown */}
-        <div className="overflow-hidden rounded-xl border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/40 text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.full_name")}
-                </th>
-                <th className="px-3 py-2.5 text-right font-medium">
-                  {t("columns.amount")}
-                </th>
-                <th className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.payroll")}
-                </th>
-                <th className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.recovered")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {culprits.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-3 py-8 text-center text-muted-foreground"
-                  >
-                    {t("empty")}
-                  </td>
-                </tr>
-              ) : (
-                culprits.map((c) => (
-                  <tr key={c.id} className="border-t align-top hover:bg-muted/20">
-                    <td className="px-3 py-2.5 font-medium">{c.full_name}</td>
-                    <td className="px-3 py-2.5 text-right tabular-nums">
-                      {fmt(c.amount)}
-                    </td>
-                    <td className="px-3 py-2.5">
-                      <StatusPill
-                        active={c.payroll_confirmed}
-                        yes={t("yes")}
-                        no={t("no")}
-                        by={
-                          c.payroll_confirmed && c.payroll_confirmed_by_name
-                            ? t("confirmed_by", {
-                                name: c.payroll_confirmed_by_name,
-                              })
-                            : null
-                        }
-                      />
-                    </td>
-                    <td className="px-3 py-2.5">
-                      <StatusPill
-                        active={c.recovered}
-                        yes={t("yes")}
-                        no={t("no")}
-                        by={
-                          c.recovered && c.recovered_by_name
-                            ? t("recovered_by", { name: c.recovered_by_name })
-                            : null
-                        }
-                      />
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Table frame>
+          <TableHeader className="text-muted-foreground">
+            <TableRow>
+              <TableHead className="text-left">
+                {t("columns.full_name")}
+              </TableHead>
+              <TableHead className="text-right">
+                {t("columns.amount")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("columns.payroll")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("columns.recovered")}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {culprits.length === 0 ? (
+              <TableStateRow colSpan={4}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
+            ) : (
+              culprits.map((c) => (
+                <TableRow key={c.id} className="align-top">
+                  <TableCell className="font-medium">{c.full_name}</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {fmt(c.amount)}
+                  </TableCell>
+                  <TableCell>
+                    <StatusPill
+                      active={c.payroll_confirmed}
+                      yes={t("yes")}
+                      no={t("no")}
+                      by={
+                        c.payroll_confirmed && c.payroll_confirmed_by_name
+                          ? t("confirmed_by", {
+                              name: c.payroll_confirmed_by_name,
+                            })
+                          : null
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <StatusPill
+                      active={c.recovered}
+                      yes={t("yes")}
+                      no={t("no")}
+                      by={
+                        c.recovered && c.recovered_by_name
+                          ? t("recovered_by", { name: c.recovered_by_name })
+                          : null
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
 
-        <div className="flex justify-end pt-1">
+        <ModalFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             {t("close")}
           </Button>
-        </div>
+        </ModalFooter>
       </div>
     </Modal>
   );
@@ -208,7 +190,7 @@ function StatusPill({
     <div className="flex flex-col gap-0.5">
       <span
         className={cn(
-          "inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+          "inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium",
           active
             ? "bg-success/10 text-success"
             : "bg-muted text-muted-foreground"
@@ -222,7 +204,7 @@ function StatusPill({
         {active ? yes : no}
       </span>
       {by && (
-        <span className="pl-1 text-[10px] text-muted-foreground">{by}</span>
+        <span className="pl-1 text-2xs text-muted-foreground">{by}</span>
       )}
     </div>
   );

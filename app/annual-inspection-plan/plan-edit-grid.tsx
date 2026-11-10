@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -13,15 +13,14 @@ import {
 } from "@/api/hooks/use-annual-inspection-plans";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
 import { useLocomotiveModels } from "@/api/hooks/use-locomotive-models";
-import {
-  GRID_COLUMNS,
-  MONTHS_SHORT,
-  QUARTER_LABELS,
-  accentFor,
-  roundCount,
-} from "./plan-grid-shared";
+import { GRID_COLUMNS, MONTHS_SHORT, QUARTER_LABELS, accentFor, roundCount } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import { Button } from "@/ui/button";
+import { Input } from "@/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { LoadingState } from "@/ui/empty-state";
 function getErrorMessage(e: any): string {
   return (
     e?.response?.data?.message ||
@@ -79,7 +78,7 @@ const EditableCell = memo(function EditableCell({
 
   if (editing) {
     return (
-      <input
+      <Input variant="cell" className="h-9 bg-primary/10 text-center tabular-nums ring-2 ring-inset ring-primary/50"
         ref={inputRef}
         type="number"
         min={0}
@@ -92,22 +91,19 @@ const EditableCell = memo(function EditableCell({
           if (e.key === "Enter") finish();
           else if (e.key === "Escape") setEditing(false);
         }}
-        className="w-full h-9 text-center text-xs tabular-nums bg-primary/10 outline-none ring-2 ring-inset ring-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
     );
   }
 
   return (
-    <button
-      type="button"
+    <Button variant="ghost" className="h-9 w-full rounded-none text-xs font-normal tabular-nums text-foreground hover:bg-primary/5 focus-visible:bg-primary/10"
       onClick={begin}
       onKeyDown={(e) => {
         if (e.key === "Enter") begin();
       }}
-      className="w-full h-9 text-center text-xs tabular-nums hover:bg-primary/5 focus:bg-primary/10 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-primary/40 transition-colors"
     >
       {value ? value : <span className="text-muted-foreground/25">·</span>}
-    </button>
+    </Button>
   );
 });
 
@@ -281,9 +277,7 @@ export function PlanEditGrid({
 
   if (isLoading || typesLoading || modelsLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
+      <LoadingState size="page" />
     );
   }
 
@@ -299,11 +293,11 @@ export function PlanEditGrid({
     <section className="space-y-3">
       {/* Autosave hint */}
       <div className="flex items-center justify-between gap-3 px-1">
-        <span className="text-[11px] font-medium text-muted-foreground">
+        <span className="text-2xs font-medium text-muted-foreground">
           Katakni bosib to&apos;ldiring — o&apos;zgarish avtomatik saqlanadi
         </span>
         {saving > 0 && (
-          <span className="flex items-center gap-1.5 text-[11px] text-primary">
+          <span className="flex items-center gap-1.5 text-2xs text-primary">
             <Loader2 className="h-3 w-3 animate-spin" /> Saqlanmoqda…
           </span>
         )}
@@ -325,25 +319,23 @@ export function PlanEditGrid({
               className={cn("rounded-xl border bg-card shadow-sm overflow-hidden", accent.ring)}
             >
               {/* Header (toggles) */}
-              <button
-                type="button"
+              <DisclosureTrigger
+                open={open}
+                chevronSide="end"
                 onClick={() => toggleCard(group.type.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30",
-                  open && "border-b border-border"
-                )}
+                className={cn("px-4 py-3", open && "border-b border-border")}
               >
                 <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
                 <div className="min-w-0">
                   <div className="text-sm font-semibold text-foreground leading-tight">
                     {group.type.name}
                   </div>
-                  <div className="text-[11px] text-muted-foreground">Texnik ko&apos;rik</div>
+                  <div className="text-2xs text-muted-foreground">Texnik ko&apos;rik</div>
                 </div>
                 <div className="ml-auto hidden md:flex items-center gap-1.5">
                   {QUARTER_LABELS.map((q, i) => (
                     <div key={q} className="flex items-center gap-1 rounded-md border border-border bg-muted/40 px-2 py-1">
-                      <span className="text-[10px] font-medium text-muted-foreground">{q} kv</span>
+                      <span className="text-2xs font-medium text-muted-foreground">{q} kv</span>
                       <span className="text-xs font-semibold tabular-nums text-foreground">
                         {typeQuarter(group, i + 1) || 0}
                       </span>
@@ -351,76 +343,71 @@ export function PlanEditGrid({
                   ))}
                 </div>
                 <div className={cn("flex items-center gap-1.5 rounded-lg px-3 py-1.5 shrink-0", accent.soft)}>
-                  <span className={cn("text-[10px] font-medium uppercase tracking-wide", accent.text)}>Yillik</span>
+                  <span className={cn("text-2xs font-medium uppercase tracking-wide", accent.text)}>Yillik</span>
                   <span className={cn("text-base font-bold tabular-nums", accent.text)}>{typeYearly(group)}</span>
                 </div>
-                <ChevronDown
-                  className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")}
-                />
-              </button>
+              </DisclosureTrigger>
 
               {/* Table */}
               {open && (
-                <div className="overflow-x-auto">
-                  <table className="w-full table-fixed min-w-[900px] border-collapse text-xs">
-                    <colgroup>
-                      <col style={{ width: 150 }} />
-                      {GRID_COLUMNS.map((c, i) => (
-                        <col key={i} />
-                      ))}
-                      <col style={{ width: 72 }} />
-                    </colgroup>
-                    <thead>
-                      <tr className="text-muted-foreground bg-muted/40">
-                        <th className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</th>
-                        {GRID_COLUMNS.map((col) =>
-                          col.kind === "month" ? (
-                            <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">
-                              {MONTHS_SHORT[col.month - 1]}
-                            </th>
-                          ) : (
-                            <th key={`q${col.quarter}`} className={cn("border border-border px-1 py-2.5 text-center font-semibold", accent.soft, accent.text)}>
-                              {QUARTER_LABELS[col.quarter - 1]}
-                            </th>
-                          )
-                        )}
-                        <th className={cn("border border-border px-2 py-2.5 text-center font-semibold", accent.soft, accent.text)}>Σ</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {group.models.map((mdl) => (
-                        <tr key={mdl.id} className="hover:bg-muted/20 transition-colors">
-                          <td className="border border-border px-3 py-1 text-left font-medium text-foreground whitespace-nowrap">
-                            {mdl.name}
-                          </td>
-                          {GRID_COLUMNS.map((col) => {
-                            if (col.kind === "quarter") {
-                              return (
-                                <td key={`q${col.quarter}`} className={cn("border border-border px-1 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
-                                  {rowQuarter(group.type.id, mdl.id, col.quarter) || 0}
-                                </td>
-                              );
-                            }
+                <Table bordered density="compact" className="table-fixed min-w-[900px]">
+                  <colgroup>
+                    <col style={{ width: 150 }} />
+                    {GRID_COLUMNS.map((c, i) => (
+                      <col key={i} />
+                    ))}
+                    <col style={{ width: 72 }} />
+                  </colgroup>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-left">Rusum</TableHead>
+                      {GRID_COLUMNS.map((col) =>
+                        col.kind === "month" ? (
+                          <TableHead key={`m${col.month}`} className="text-center">
+                            {MONTHS_SHORT[col.month - 1]}
+                          </TableHead>
+                        ) : (
+                          <TableHead key={`q${col.quarter}`} className={cn("text-center", accent.soft, accent.text)}>
+                            {QUARTER_LABELS[col.quarter - 1]}
+                          </TableHead>
+                        )
+                      )}
+                      <TableHead className={cn("text-center", accent.soft, accent.text)}>Σ</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {group.models.map((mdl) => (
+                      <TableRow key={mdl.id}>
+                        <TableCell className="text-left font-medium whitespace-nowrap">
+                          {mdl.name}
+                        </TableCell>
+                        {GRID_COLUMNS.map((col) => {
+                          if (col.kind === "quarter") {
                             return (
-                              <td key={`m${col.month}`} className="border border-border p-0">
-                                <EditableCell
-                                  value={countAt(group.type.id, mdl.id, col.month)}
-                                  typeId={group.type.id}
-                                  modelId={mdl.id}
-                                  month={col.month}
-                                  onCommit={commit}
-                                />
-                              </td>
+                              <TableCell key={`q${col.quarter}`} className={cn("text-center font-semibold tabular-nums", accent.soft, accent.text)}>
+                                {rowQuarter(group.type.id, mdl.id, col.quarter) || 0}
+                              </TableCell>
                             );
-                          })}
-                          <td className={cn("border border-border px-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
-                            {rowYearly(group.type.id, mdl.id) || ""}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                          }
+                          return (
+                            <TableCell key={`m${col.month}`}>
+                              <EditableCell
+                                value={countAt(group.type.id, mdl.id, col.month)}
+                                typeId={group.type.id}
+                                modelId={mdl.id}
+                                month={col.month}
+                                onCommit={commit}
+                              />
+                            </TableCell>
+                          );
+                        })}
+                        <TableCell className={cn("text-center font-bold tabular-nums", accent.soft, accent.text)}>
+                          {rowYearly(group.type.id, mdl.id) || ""}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               )}
             </div>
           );

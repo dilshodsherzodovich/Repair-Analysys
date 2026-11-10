@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { uz } from "date-fns/locale";
 import { CalendarIcon, AlertCircle, CheckCircle, X, Clock, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Label } from "@/ui/label";
 import { Button } from "@/ui/button";
 import { Calendar } from "@/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
@@ -156,11 +157,11 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     };
 
     return (
-      <div ref={ref} className={cn("space-y-2", className)} {...props}>
+      <div ref={ref} className={cn("flex flex-col gap-1.5", className)} {...props}>
         {label && (
-          <label className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-[var(--muted-foreground)] mb-1">
+          <Label>
             {label}
-          </label>
+          </Label>
         )}
 
         <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -170,13 +171,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal shadow-none",
-                "hover:bg-white hover:text-[#374151] hover:border-[#d1d5db]",
-                !value && "text-[#9ca3af]",
+                "hover:bg-background hover:text-foreground-secondary hover:border-border-strong",
+                !value && "text-foreground-subtle",
                 hasError
-                  ? "border-[#ff5959] focus:ring-2 focus:ring-[#ff5959]/20"
+                  ? "border-destructive focus:ring-2 focus:ring-destructive/20"
                   : hasSuccess
-                  ? "border-[#10b981] focus:ring-2 focus:ring-[#10b981]/20"
-                  : "border-[#d1d5db]"
+                  ? "border-success focus:ring-2 focus:ring-success/20"
+                  : "border-border-strong"
               )}
               disabled={disabled}
             >
@@ -201,15 +202,15 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                         handleClear();
                       }
                     }}
-                    className="hover:bg-gray-100 rounded p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400"
+                    className="hover:bg-muted rounded p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-foreground-subtle"
                     aria-label={t("clear_aria")}
                   >
-                    <X className="h-4 w-4 text-gray-500" />
+                    <X className="h-4 w-4 text-muted-foreground" />
                   </div>
                 )}
-                {hasError && <AlertCircle className="h-4 w-4 text-[#ff5959]" />}
+                {hasError && <AlertCircle className="h-4 w-4 text-destructive" />}
                 {hasSuccess && (
-                  <CheckCircle className="h-4 w-4 text-[#10b981]" />
+                  <CheckCircle className="h-4 w-4 text-success" />
                 )}
               </div>
             </Button>
@@ -231,13 +232,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               }}
               initialFocus
             />
-            <div className="border-t border-[#E2E8F0] p-3 select-text">
-              <label className="mb-1.5 flex items-center gap-2 text-xs font-medium text-[#64748B]">
+            <div className="border-t border-border p-3 select-text">
+              <label className="mb-1.5 flex items-center gap-2 text-xs font-medium text-muted-foreground">
                 <Clock className="h-3.5 w-3.5" />
                 {t("time_label")} (24h)
               </label>
               <div className="flex items-center gap-1.5">
-                <div className="flex items-center rounded-md border border-[#d1d5db] bg-white focus-within:border-[#2354bf] focus-within:ring-2 focus-within:ring-[#2354bf]/20">
+                <div className="flex items-center rounded-md border border-border-strong bg-background focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
                   <input
                     type="text"
                     inputMode="numeric"
@@ -249,7 +250,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     disabled={disabled}
                     placeholder="00"
                     autoComplete="off"
-                    className="w-10 rounded-l-md border-0 bg-transparent px-2 py-2 text-center text-sm tabular-nums text-[#0F172B] select-text cursor-text focus:outline-none focus:ring-0"
+                    className="w-10 rounded-l-md border-0 bg-transparent px-2 py-2 text-center text-sm tabular-nums text-foreground select-text cursor-text focus:outline-none focus:ring-0"
                     aria-label={t("hours_24")}
                   />
                   <Popover open={hoursPickerOpen} onOpenChange={setHoursPickerOpen}>
@@ -259,10 +260,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                         variant="ghost"
                         size="icon"
                         disabled={disabled}
-                        className="h-9 w-9 shrink-0 rounded-l-none rounded-r-md border-0 border-l border-[#d1d5db] hover:bg-[#f1f5f9]"
+                        className="h-9 w-9 shrink-0 rounded-l-none rounded-r-md border-0 border-l border-border-strong hover:bg-muted"
                         aria-label={t("time_pick_hour")}
                       >
-                        <ChevronDown className="h-4 w-4 text-[#64748B]" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start" sideOffset={4}>
@@ -276,8 +277,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                               className={cn(
                                 "flex w-full items-center justify-center rounded py-2 text-sm transition-colors",
                                 hours === i
-                                  ? "bg-[#2354bf] text-white"
-                                  : "hover:bg-[#f1f5f9] text-[#0F172B]"
+                                  ? "bg-primary text-primary-foreground"
+                                  : "hover:bg-muted text-foreground"
                               )}
                             >
                               {String(i).padStart(2, "0")}
@@ -288,8 +289,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     </PopoverContent>
                   </Popover>
                 </div>
-                <span className="text-sm font-medium text-[#64748B]">:</span>
-                <div className="flex items-center rounded-md border border-[#d1d5db] bg-white focus-within:border-[#2354bf] focus-within:ring-2 focus-within:ring-[#2354bf]/20">
+                <span className="text-sm font-medium text-muted-foreground">:</span>
+                <div className="flex items-center rounded-md border border-border-strong bg-background focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
                   <input
                     type="text"
                     inputMode="numeric"
@@ -301,7 +302,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     disabled={disabled}
                     placeholder="00"
                     autoComplete="off"
-                    className="w-10 rounded-l-md border-0 bg-transparent px-2 py-2 text-center text-sm tabular-nums text-[#0F172B] select-text cursor-text focus:outline-none focus:ring-0"
+                    className="w-10 rounded-l-md border-0 bg-transparent px-2 py-2 text-center text-sm tabular-nums text-foreground select-text cursor-text focus:outline-none focus:ring-0"
                     aria-label={t("minutes_24")}
                   />
                   <Popover open={minutesPickerOpen} onOpenChange={setMinutesPickerOpen}>
@@ -311,10 +312,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                         variant="ghost"
                         size="icon"
                         disabled={disabled}
-                        className="h-9 w-9 shrink-0 rounded-l-none rounded-r-md border-0 border-l border-[#d1d5db] hover:bg-[#f1f5f9]"
+                        className="h-9 w-9 shrink-0 rounded-l-none rounded-r-md border-0 border-l border-border-strong hover:bg-muted"
                         aria-label={t("time_pick_minute")}
                       >
-                        <ChevronDown className="h-4 w-4 text-[#64748B]" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start" sideOffset={4}>
@@ -328,8 +329,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                               className={cn(
                                 "flex w-full items-center justify-center rounded py-2 text-sm transition-colors",
                                 minutes === i
-                                  ? "bg-[#2354bf] text-white"
-                                  : "hover:bg-[#f1f5f9] text-[#0F172B]"
+                                  ? "bg-primary text-primary-foreground"
+                                  : "hover:bg-muted text-foreground"
                               )}
                             >
                               {String(i).padStart(2, "0")}
@@ -346,16 +347,16 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         </Popover>
 
         {hint && !error && !success && (
-          <p className="text-xs text-[#6b7280]">{hint}</p>
+          <p className="text-xs text-muted-foreground">{hint}</p>
         )}
         {error && (
-          <p className="text-xs text-[#ff5959] flex items-center gap-1">
+          <p className="text-xs text-destructive flex items-center gap-1">
             <AlertCircle className="h-3 w-3" />
             {error}
           </p>
         )}
         {success && (
-          <p className="text-xs text-[#10b981] flex items-center gap-1">
+          <p className="text-xs text-success flex items-center gap-1">
             <CheckCircle className="h-3 w-3" />
             {success}
           </p>

@@ -8,6 +8,7 @@ import { PageHeader } from "@/ui/page-header";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
 export default function DepoLocomotives() {
   const t = useTranslations("DepoPage");
@@ -41,21 +42,23 @@ export default function DepoLocomotives() {
   ];
 
   return (
-    <>
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
+        filters={
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
       />
 
-      <div className="mt-4">
-        <PageFilters
-          filters={pageFilters}
-          hasSearch={true}
-          searchPlaceholder={t("search_placeholder")}
-        />
-      </div>
+      <>
+      </>
 
       <LocomotivesTable />
-    </>
+    </Page>
   );
 }

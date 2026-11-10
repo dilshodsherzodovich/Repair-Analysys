@@ -36,11 +36,7 @@ import { DelayTimelineModal } from "@/components/delays/delay-timeline-modal";
 import { RecoveryInfoModal } from "@/components/delays/recovery-info-modal";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import {
-  canAccessSection,
-  hasPermission,
-  type Permission,
-} from "@/lib/permissions";
+import { canAccessSection, hasPermission, type Permission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
@@ -59,11 +55,15 @@ import {
   CornerDownRight,
   Archive,
   Info,
-  FileSpreadsheet,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { authService } from "@/api/services/auth.service";
+import { Button } from "@/ui/button";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
+import { formatNumber } from "@/lib/format";
 // Stages that still have a "next" awaited step (terminal stages excluded)
 const STAGES_WITH_NEXT: DelayStage[] = [
   "created",
@@ -435,19 +435,19 @@ export default function DelaysPage() {
   const getStageVariant = useCallback((s?: DelayStage) => {
     switch (s) {
       case "disruption":
-        return "destructive_outline" as const;
+        return "danger" as const;
       case "not_disruption":
-        return "success_outline" as const;
+        return "success" as const;
       case "payroll_confirmed":
-        return "info" as const;
+        return "primary" as const;
       case "accountant_confirmed":
         return "success" as const;
       case "protocol_uploaded":
-        return "warning_outline" as const;
+        return "warning" as const;
       case "accepted":
-        return "secondary" as const;
+        return "neutral_solid" as const;
       default:
-        return "outline" as const;
+        return "neutral" as const;
     }
   }, []);
 
@@ -565,8 +565,7 @@ export default function DelaysPage() {
       header: t("columns.damage_amount"),
       width: "180px",
       accessor: (row) => {
-        const fmt = (v: number) =>
-          new Intl.NumberFormat("uz-UZ", { maximumFractionDigits: 0 }).format(v);
+        const fmt = (v: number) => formatNumber(v);
         const culprits = row?.culprits ?? [];
         const totalCount = culprits.length;
         const recoveredList = culprits.filter((c) => c.recovered);
@@ -584,10 +583,9 @@ export default function DelaysPage() {
               <span className="text-success">{fmt(recoveredSum)}</span>
             </span>
             {totalCount > 0 && (
-              <button
+              <Button variant="link" size="xs" className="h-auto w-fit p-0 text-2xs text-muted-foreground hover:text-foreground"
                 type="button"
                 onClick={() => handleOpenInfo(row)}
-                className="inline-flex w-fit items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
                 title={t("actions.culprits")}
               >
                 <Info className="h-3 w-3 shrink-0" />
@@ -597,7 +595,7 @@ export default function DelaysPage() {
                     tc: totalCount,
                   })}
                 </span>
-              </button>
+              </Button>
             )}
           </div>
         );
@@ -627,18 +625,18 @@ export default function DelaysPage() {
             {next && (
               <div className="flex items-center gap-1 pl-0.5 text-muted-foreground">
                 <CornerDownRight className="h-3 w-3 shrink-0 opacity-50" />
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 ring-1 ring-amber-200/70">
+                <Badge variant="warning" size="sm">
                   <Clock className="h-3 w-3 shrink-0" />
                   {next}
-                </span>
+                </Badge>
               </div>
             )}
 
             {row?.protocol_overdue && (
-              <span className="inline-flex w-fit items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600 ring-1 ring-red-200">
+              <Badge variant="danger" size="sm" className="w-fit">
                 <AlertTriangle className="h-3 w-3 shrink-0" />
                 {t("protocol_overdue")}
-              </span>
+              </Badge>
             )}
           </div>
         );
@@ -651,7 +649,7 @@ export default function DelaysPage() {
       accessor: (row) => {
         const hasFile = !!(row?.report_filename || row?.report);
         if (!hasFile && !row?.protocol_number) {
-          return <span className="text-gray-400">-</span>;
+          return <span className="text-foreground-subtle">-</span>;
         }
         const filename = row.report_filename || t("columns.report");
         return (
@@ -666,13 +664,13 @@ export default function DelaysPage() {
                 href={row.report}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block truncate text-sm text-blue-600 hover:underline"
+                className="block truncate text-sm text-primary hover:underline"
                 title={filename}
               >
                 {truncateFilename(filename, 25)}
               </a>
             ) : (
-              <span className="text-xs text-gray-400">—</span>
+              <span className="text-xs text-foreground-subtle">—</span>
             )}
           </div>
         );
@@ -757,102 +755,102 @@ export default function DelaysPage() {
   }, [t]);
 
   return (
-    <div className="min-h-full ">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "delay_type",
+                label: t("filters.delay_type"),
+                isSelect: true,
+                options: delayTypeOptions,
+                placeholder: t("filters.delay_type_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "train_type",
+                label: t("filters.train_type"),
+                isSelect: true,
+                options: trainTypeOptions,
+                placeholder: t("filters.train_type_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "group_reason",
+                label: t("filters.group_reason"),
+                isSelect: true,
+                options: groupReasonOptions,
+                placeholder: t("filters.group_reason_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "station",
+                label: t("filters.station"),
+                isSelect: false,
+                placeholder: t("filters.station_placeholder"),
+                permission: "filter_delay_station",
+              },
+              {
+                name: "mashinist",
+                label: t("filters.mashinist"),
+                isSelect: false,
+                placeholder: t("filters.mashinist_placeholder"),
+              },
+              {
+                name: "locomotiv",
+                label: t("filters.locomotiv"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotiv_placeholder"),
+                searchable: true,
+                loading: isLoadingLocomotives,
+              },
+              {
+                name: "responsible_org",
+                label: t("filters.responsible_org"),
+                isSelect: true,
+                options: organizationOptions,
+                placeholder: t("filters.responsible_org_placeholder"),
+                searchable: false,
+                loading: isLoadingOrganizations,
+              },
+              {
+                name: "stage",
+                label: t("filters.stage"),
+                isSelect: true,
+                options: stageOptions,
+                placeholder: t("filters.stage_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "protocol_overdue",
+                label: t("filters.protocol_overdue"),
+                isSelect: true,
+                options: protocolOverdueOptions,
+                searchable: false,
+              },
+            ]}
+            hasSearch
+            hasDateRangePicker
+            searchPlaceholder={t("filters.search_placeholder")}
+          />
+        }
+        actions={
+          <>
+            <ExportActions onExcel={canExport ? handleExport : undefined} busy={isExporting ? "excel" : null} />
+            <AddButton onClick={handleCreate} permission="create_delay" />
+          </>
+        }
       />
 
-      <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "delay_type",
-              label: t("filters.delay_type"),
-              isSelect: true,
-              options: delayTypeOptions,
-              placeholder: t("filters.delay_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "train_type",
-              label: t("filters.train_type"),
-              isSelect: true,
-              options: trainTypeOptions,
-              placeholder: t("filters.train_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "group_reason",
-              label: t("filters.group_reason"),
-              isSelect: true,
-              options: groupReasonOptions,
-              placeholder: t("filters.group_reason_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "station",
-              label: t("filters.station"),
-              isSelect: false,
-              placeholder: t("filters.station_placeholder"),
-              permission: "filter_delay_station",
-            },
-            {
-              name: "mashinist",
-              label: t("filters.mashinist"),
-              isSelect: false,
-              placeholder: t("filters.mashinist_placeholder"),
-            },
-            {
-              name: "locomotiv",
-              label: t("filters.locomotiv"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotiv_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-            {
-              name: "responsible_org",
-              label: t("filters.responsible_org"),
-              isSelect: true,
-              options: organizationOptions,
-              placeholder: t("filters.responsible_org_placeholder"),
-              searchable: false,
-              loading: isLoadingOrganizations,
-            },
-            {
-              name: "stage",
-              label: t("filters.stage"),
-              isSelect: true,
-              options: stageOptions,
-              placeholder: t("filters.stage_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "protocol_overdue",
-              label: t("filters.protocol_overdue"),
-              isSelect: true,
-              options: protocolOverdueOptions,
-              searchable: false,
-            },
-          ]}
-          hasSearch
-          hasDateRangePicker
-          dateRangePickerLabel=""
-          searchPlaceholder={t("filters.search_placeholder")}
-          addButtonPermittion="create_delay"
-          onAdd={handleCreate}
-          onExport={canExport ? handleExport : undefined}
-          exportButtonText={t("export_button")}
-          exportButtonIcon={<FileSpreadsheet className="w-4 h-4 mr-2" />}
-          exportLoading={isExporting}
-          className="!mb-0"
-        />
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -868,7 +866,7 @@ export default function DelaysPage() {
           alwaysShowKebab
           rowBadge={(row) =>
             row.archive ? (
-              <span className="inline-flex -rotate-6 select-none items-center gap-1 rounded-md border-2 border-red-400/60 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-500/80">
+              <span className="inline-flex -rotate-6 select-none items-center gap-1 rounded-md border-2 border-destructive/60 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-destructive/80">
                 <Archive className="h-3 w-3" />
                 {t("archive.archived")}
               </span>
@@ -945,7 +943,7 @@ export default function DelaysPage() {
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) =>
                       row.stage === "protocol_uploaded" && !row.archive,
-                    className: "text-red-600 focus:text-red-600 focus:bg-red-50",
+                    className: "text-destructive focus:text-destructive focus:bg-destructive-subtle",
                   },
                   {
                     label: t("actions.classify_not_disruption"),
@@ -1001,7 +999,7 @@ export default function DelaysPage() {
                     permission: "delete_delay" as Permission,
                     variant: "outline" as const,
                     shouldShow: (row: DelayEntry) => !row.archive,
-                    className: "text-red-600 focus:text-red-600 focus:bg-red-50",
+                    className: "text-destructive focus:text-destructive focus:bg-destructive-subtle",
                   },
                 ]
               : []),
@@ -1015,7 +1013,7 @@ export default function DelaysPage() {
           deletePermission="delete_delay"
           editPermission="edit_delay"
         />
-      </div>
+      </>
 
       <DelayModal
         isOpen={isModalOpen}
@@ -1112,6 +1110,6 @@ export default function DelaysPage() {
         isDoingAction={deleteMutation.isPending}
         variant="danger"
       />
-    </div>
+    </Page>
   );
 }

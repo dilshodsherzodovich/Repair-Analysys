@@ -29,7 +29,10 @@ import {
 import { BandageGroupCards } from "./components/bandage-group-cards";
 import { bandageGroupKey } from "./bandage-groups";
 import { exportBandagesExcel } from "@/utils/bandages-excel-export";
-import { toast } from "@/ui/use-toast";
+import { useSnackbar } from "@/providers/snackbar-provider";
+import { Alert, AlertDescription } from "@/ui/alert";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 function BandagesPageContent({
   user,
@@ -40,6 +43,7 @@ function BandagesPageContent({
 }) {
   const t = useTranslations("BandagesPage");
   const tModal = useTranslations("BandagesModal");
+  const { showError } = useSnackbar();
   const searchParams = useSearchParams();
   const { q, locModel } = Object.fromEntries(searchParams.entries());
   const activeGroup = searchParams.get("group") || null;
@@ -168,11 +172,11 @@ function BandagesPageContent({
       );
     } catch (error) {
       console.error("Error exporting bandages:", error);
-      toast({ variant: "destructive", title: t("excel.error") });
+      showError(t("excel.error"));
     } finally {
       setIsExporting(false);
     }
-  }, [visibleGroups, groups, componentNames, t, tModal, activeGroup]);
+  }, [visibleGroups, groups, componentNames, t, tModal, activeGroup, showError]);
 
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
@@ -197,21 +201,24 @@ function BandagesPageContent({
   );
 
   return (
-    <div className="space-y-6">
-      <PageHeader title={t("title")} description={t("description")} />
-
-      <PageFilters
-        filters={pageFilters}
-        hasSearch={true}
-        searchPlaceholder={t("search_placeholder")}
-        onExport={isLoading ? undefined : handleExport}
-        exportLoading={isExporting}
+    <Page>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        filters={
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+          />
+        }
+        actions={<ExportActions onExcel={isLoading ? undefined : handleExport} busy={isExporting ? "excel" : null} />}
       />
 
       {isError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Alert variant="destructive"><AlertDescription>
           {t("error_load")}
-        </div>
+        </AlertDescription></Alert>
       )}
 
       <BandageGroupCards
@@ -231,7 +238,7 @@ function BandagesPageContent({
         onDone={handleDone}
         activeGroup={activeGroup}
       />
-    </div>
+    </Page>
   );
 }
 

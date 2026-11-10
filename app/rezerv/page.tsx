@@ -6,14 +6,7 @@ import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { PageHeader } from "@/ui/page-header";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useReserve } from "@/api/hooks/use-reserve";
@@ -22,15 +15,12 @@ import { getPageCount } from "@/lib/utils";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import type { UserData } from "@/api/types/auth";
-import {
-  PaginationEllipsis,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/ui/pagination";
+import { PaginationEllipsis, PaginationLink, PaginationNext, PaginationPrevious } from "@/ui/pagination";
 import { Badge } from "@/ui/badge";
 import { authService } from "@/api/services/auth.service";
+import { Page } from "@/ui/page";
 
+import { EmptyState, TableStateRow } from "@/ui/empty-state";
 type TabValue = "current" | "archive";
 
 const TAB_TO_IS_ACTIVE: Record<TabValue, 0 | 1> = {
@@ -134,57 +124,57 @@ export default function RezervPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
       />
 
-      <div className="mb-4">
+      <>
         <Tabs value={tab} onValueChange={handleTabChange}>
-          <TabsList className="bg-white border border-gray-200 p-1 gap-2 rounded-md inline-flex">
+          <TabsList>
             <TabsTrigger
               value="current"
-              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
+              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong"
             >
               {t("tab_current")}
             </TabsTrigger>
             <TabsTrigger
               value="archive"
-              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:hover:bg-gray-50 data-[state=inactive]:hover:border-gray-300"
+              className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong"
             >
               {t("tab_archive")}
             </TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
+      </>
 
-      <div className="rounded-lg border border-[#CAD5E2] overflow-hidden bg-white">
+      <div className="rounded-lg border border-border-strong overflow-hidden bg-background">
         {isLoading ? (
-          <Table className="w-full min-w-[700px]">
+          <Table bordered className="min-w-[700px]">
             <TableHeader>
-              <TableRow className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <TableHead className="min-w-[50px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+              <TableRow>
+                <TableHead className="min-w-[50px]">
                   {t("columns.no")}
                 </TableHead>
-                <TableHead className="min-w-[140px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                <TableHead className="min-w-[140px]">
                   {t("columns.locomotive")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                <TableHead className="min-w-[120px]">
                   {t("columns.location")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                <TableHead className="min-w-[120px]">
                   {t("columns.start_date")}
                 </TableHead>
                 {isArchiveTab && (
-                  <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                  <TableHead className="min-w-[120px]">
                     {t("columns.end_date")}
                   </TableHead>
                 )}
-                <TableHead className="min-w-[90px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                <TableHead className="min-w-[90px]">
                   {t("columns.status")}
                 </TableHead>
-                <TableHead className="min-w-[100px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[100px]">
                   {t("columns.command_number")}
                 </TableHead>
               </TableRow>
@@ -198,73 +188,65 @@ export default function RezervPage() {
             </TableBody>
           </Table>
         ) : (
-          <Table className="w-full min-w-[700px]">
+          <Table bordered className="min-w-[700px]">
             <TableHeader>
-              <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <TableHead className="min-w-[50px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+              <TableRow>
+                <TableHead className="min-w-[50px]">
                   {t("columns.no")}
                 </TableHead>
-                <TableHead className="min-w-[140px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                <TableHead className="min-w-[140px]">
                   {t("columns.locomotive")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                <TableHead className="min-w-[120px]">
                   {t("columns.location")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                <TableHead className="min-w-[120px]">
                   {t("columns.start_date")}
                 </TableHead>
                 {isArchiveTab && (
-                  <TableHead className="min-w-[120px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                  <TableHead className="min-w-[120px]">
                     {t("columns.end_date")}
                   </TableHead>
                 )}
-                <TableHead className="min-w-[90px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0]">
+                <TableHead className="min-w-[90px]">
                   {t("columns.status")}
                 </TableHead>
-                <TableHead className="min-w-[100px] py-3 px-4 text-[#475569] font-medium border-r border-[#E2E8F0] last:border-r-0">
+                <TableHead className="min-w-[100px]">
                   {t("columns.command_number")}
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {displayRows.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columnCount}
-                    className="py-8 text-center text-[#64748B]"
-                  >
-                    {t("empty_title")}
-                  </TableCell>
-                </TableRow>
+                <TableStateRow colSpan={columnCount}><EmptyState title={t("empty_title")} size="compact" /></TableStateRow>
               ) : (
                 displayRows.map((row) => (
                   <TableRow
                     key={row.id}
-                    className="hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0"
                   >
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0]">
+                    <TableCell>
                       {row.__displayIndex}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#0F172B] font-medium border-r border-[#E2E8F0]">
+                    <TableCell className="font-medium">
                       {getLocomotiveDisplay(row)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0]">
+                    <TableCell>
                       {getLocationDisplay(row)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0]">
+                    <TableCell>
                       {formatDate(row.start_date)}
                     </TableCell>
                     {isArchiveTab && (
-                      <TableCell className="py-3 px-4 text-[#64748B] border-r border-[#E2E8F0]">
+                      <TableCell>
                         {formatDate(row.end_date)}
                       </TableCell>
                     )}
-                    <TableCell className="py-3 px-4 border-r border-[#E2E8F0]">
+                    <TableCell>
                       <Badge variant={isArchiveTab ? "warning" : "success"}>
                         {isArchiveTab ? t("tab_archive") : t("tab_current")}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-[#0F172B] border-r border-[#E2E8F0] last:border-r-0">
+                    <TableCell>
                       {row.command_number || "—"}
                     </TableCell>
                   </TableRow>
@@ -277,7 +259,7 @@ export default function RezervPage() {
 
       {!isLoading && totalPages > 1 && (
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <p className="text-sm text-[#64748B]">
+          <p className="text-sm text-muted-foreground">
             {t("pagination_summary", { total: totalCount, from: (currentPage - 1) * itemsPerPage + 1, to: Math.min(currentPage * itemsPerPage, totalCount) })}
           </p>
           <nav className="flex items-center gap-1" role="navigation" aria-label="pagination">
@@ -315,6 +297,6 @@ export default function RezervPage() {
           </nav>
         </div>
       )}
-    </div>
+    </Page>
   );
 }

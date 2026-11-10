@@ -35,6 +35,11 @@ import type { StatMetric, StatsHook } from "@/components/statistics/stats-panel"
 import { ClipboardCheck, ClipboardX } from "lucide-react";
 import { authService } from "@/api/services/auth.service";
 import { isEchAccount } from "@/lib/permissions";
+import { FilterPanel } from "@/ui/filter-bar";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
+import { ListStatsSwitch, useListStatsView } from "@/ui/view-switch";
 
 export function NosozliklarTab() {
   const t = useTranslations("NosozliklarTab");
@@ -77,7 +82,7 @@ export function NosozliklarTab() {
       key: "table_number_not_null",
       totalKey: "total_table_number_not_null",
       label: t("statistics.with_table_number"),
-      color: "#16a34a",
+      color: "var(--success)",
       kind: "count",
       chart: "bar",
       icon: ClipboardCheck,
@@ -86,7 +91,7 @@ export function NosozliklarTab() {
       key: "table_number_null",
       totalKey: "total_table_number_null",
       label: t("statistics.without_table_number"),
-      color: "#f59e0b",
+      color: "var(--warning)",
       kind: "count",
       chart: "bar",
       icon: ClipboardX,
@@ -332,7 +337,7 @@ export function NosozliklarTab() {
       accessor: (row) => {
         const isDone = !!row?.table_number;
         return (
-          <Badge variant={isDone ? "success" : "destructive"}>
+          <Badge variant={isDone ? "success" : "danger"}>
             {isDone ? t("status_done") : t("status_not_done")}
           </Badge>
         );
@@ -496,148 +501,161 @@ export function NosozliklarTab() {
     return options;
   }, [remarkGroupsData, remark_group, t]);
 
+  // Statistics are not shown to ECH accounts
+  const [view, setView] = useListStatsView();
+  const showStats = !isEchUser && view === "stats";
+  const viewSwitch = !isEchUser && (
+    <ListStatsSwitch value={view} onValueChange={setView} />
+  );
+
   return (
-    <>
-      {!isEchUser && (
+    <Page>
+      {showStats ? (
         <StatsPanel
           title={t("statistics.title")}
           metrics={revisionMetrics}
           useStats={useRevisionStatistics as unknown as StatsHook}
           locomotiveOptions={statLocomotiveOptions}
           inspectionTypeOptions={statInspectionTypeOptions}
+          header={(filters) => <FilterPanel actions={viewSwitch}>{filters}</FilterPanel>}
         />
+      ) : (
+        <>
+          <FilterPanel
+            actions={
+              <>
+                {viewSwitch}
+                <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />
+                <AddButton onClick={handleCreate} permission="create_defective_work" />
+              </>
+            }
+          >
+            <PageFilters
+              filters={[
+                {
+                  name: "locomotive",
+                primary: true,
+                  label: t("filters.locomotive"),
+                  isSelect: true,
+                  options: locomotiveOptions,
+                  placeholder: t("filters.locomotive_placeholder"),
+                  searchable: true,
+                  loading: isLoadingLocomotives,
+                },
+                {
+                  name: "organization_id",
+                  label: t("filters.organization"),
+                  isSelect: true,
+                  options: organizationOptions,
+                  placeholder: t("filters.organization_placeholder"),
+                  searchable: false,
+                  loading: isLoadingOrganizations,
+                  permission: "choose_organization",
+                },
+                {
+                  name: "inspection_type",
+                  label: t("filters.inspection_type"),
+                  isSelect: true,
+                  options: inspectionTypeOptions,
+                  placeholder: t("filters.inspection_type_placeholder"),
+                  searchable: false,
+                  loading: isLoadingInspectionTypes,
+                },
+                {
+                  name: "locomotive_type",
+                  label: t("filters.locomotive_type"),
+                  isSelect: true,
+                  options: locomotiveTypeOptions,
+                  placeholder: t("filters.locomotive_type_placeholder"),
+                  searchable: false,
+                },
+                {
+                  name: "locomotive_model",
+                  label: t("filters.locomotive_model"),
+                  isSelect: true,
+                  options: locomotiveModelOptions,
+                  placeholder: t("filters.locomotive_model_placeholder"),
+                  searchable: true,
+                  loading: isLoadingModels,
+                },
+                ...(!isEchUser
+                  ? [
+                      {
+                        name: "remark_group",
+                        label: t("filters.remark_group"),
+                        isSelect: true,
+                        options: remarkGroupOptions,
+                        placeholder: t("filters.remark_group_placeholder"),
+                        searchable: true,
+                        loading: isLoadingRemarkGroups,
+                      },
+                      {
+                        name: "remark",
+                        label: t("filters.remark"),
+                        isSelect: true,
+                        options: remarkOptions,
+                        placeholder: t("filters.remark_placeholder"),
+                        searchable: true,
+                      },
+                    ]
+                  : []),
+                {
+                  name: "ech_remark_group",
+                  label: t("filters.group_ech"),
+                  isSelect: true,
+                  options: echGroupOptions,
+                  placeholder: t("filters.group_ech_placeholder"),
+                  searchable: true,
+                  loading: isLoadingEchGroups,
+                },
+                {
+                  name: "tab",
+                primary: true,
+                  label: t("filters.status"),
+                  isSelect: true,
+                  options: statusOptions,
+                  placeholder: t("filters.status_placeholder"),
+                  searchable: false,
+                },
+              ]}
+              hasSearch
+              searchPlaceholder={t("search_placeholder")}
+              hasDateRangePicker
+            />
+          </FilterPanel>
+
+          <PaginatedTable
+            columns={columns}
+            data={paginatedData}
+            getRowId={(row) => row.id}
+            itemsPerPage={25}
+            size="xs"
+            rowClassName={(row) =>
+              formatDate(new Date(row.date).toISOString(), false) ===
+              formatDate(new Date().toISOString(), false)
+                ? "bg-success-subtle hover:bg-success-subtle [&>td]:bg-success-subtle [&>td]:group-hover:bg-success-subtle"
+                : !row?.table_number
+                  ? "bg-destructive-subtle hover:bg-destructive-subtle [&>td]:bg-destructive-subtle [&>td]:group-hover:bg-destructive-subtle"
+                  : ""
+            }
+            isLoading={isLoading}
+            error={error}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            updateQueryParams
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            isDeleting={deleteMutation.isPending}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            emptyTitle={t("empty_title")}
+            emptyDescription={t("empty_description")}
+            deletePermission="delete_defective_work"
+            editPermission="edit_defective_work"
+          />
+        </>
       )}
-
-      <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "locomotive",
-              label: t("filters.locomotive"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotive_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-            {
-              name: "organization_id",
-              label: t("filters.organization"),
-              isSelect: true,
-              options: organizationOptions,
-              placeholder: t("filters.organization_placeholder"),
-              searchable: false,
-              loading: isLoadingOrganizations,
-              permission: "choose_organization",
-            },
-            {
-              name: "inspection_type",
-              label: t("filters.inspection_type"),
-              isSelect: true,
-              options: inspectionTypeOptions,
-              placeholder: t("filters.inspection_type_placeholder"),
-              searchable: false,
-              loading: isLoadingInspectionTypes,
-            },
-            {
-              name: "locomotive_type",
-              label: t("filters.locomotive_type"),
-              isSelect: true,
-              options: locomotiveTypeOptions,
-              placeholder: t("filters.locomotive_type_placeholder"),
-              searchable: false,
-            },
-            {
-              name: "locomotive_model",
-              label: t("filters.locomotive_model"),
-              isSelect: true,
-              options: locomotiveModelOptions,
-              placeholder: t("filters.locomotive_model_placeholder"),
-              searchable: true,
-              loading: isLoadingModels,
-            },
-            ...(!isEchUser
-              ? [
-                  {
-                    name: "remark_group",
-                    label: t("filters.remark_group"),
-                    isSelect: true,
-                    options: remarkGroupOptions,
-                    placeholder: t("filters.remark_group_placeholder"),
-                    searchable: true,
-                    loading: isLoadingRemarkGroups,
-                  },
-                  {
-                    name: "remark",
-                    label: t("filters.remark"),
-                    isSelect: true,
-                    options: remarkOptions,
-                    placeholder: t("filters.remark_placeholder"),
-                    searchable: true,
-                  },
-                ]
-              : []),
-            {
-              name: "ech_remark_group",
-              label: t("filters.group_ech"),
-              isSelect: true,
-              options: echGroupOptions,
-              placeholder: t("filters.group_ech_placeholder"),
-              searchable: true,
-              loading: isLoadingEchGroups,
-            },
-            {
-              name: "tab",
-              label: t("filters.status"),
-              isSelect: true,
-              options: statusOptions,
-              placeholder: t("filters.status_placeholder"),
-              searchable: false,
-            },
-          ]}
-          hasSearch
-          searchPlaceholder={t("search_placeholder")}
-          hasDateRangePicker
-          addButtonPermittion="create_defective_work"
-          onAdd={handleCreate}
-          onExport={handleExport}
-          exportLoading={isExporting}
-          className="!mb-0"
-        />
-      </div>
-
-      <div className="px-6 pb-6">
-        <PaginatedTable
-          columns={columns}
-          data={paginatedData}
-          getRowId={(row) => row.id}
-          itemsPerPage={25}
-          size="xs"
-          rowClassName={(row) =>
-            formatDate(new Date(row.date).toISOString(), false) ===
-            formatDate(new Date().toISOString(), false)
-              ? "bg-emerald-50 hover:bg-emerald-100 [&>td]:bg-emerald-50 [&>td]:group-hover:bg-emerald-100"
-              : !row?.table_number
-                ? "bg-red-50 hover:bg-red-100 [&>td]:bg-red-50 [&>td]:group-hover:bg-red-100"
-                : ""
-          }
-          isLoading={isLoading}
-          error={error}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          updateQueryParams
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          isDeleting={deleteMutation.isPending}
-          selectable
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          emptyTitle={t("empty_title")}
-          emptyDescription={t("empty_description")}
-          deletePermission="delete_defective_work"
-          editPermission="edit_defective_work"
-        />
-      </div>
 
       <DefectiveWorkModal
         isOpen={isModalOpen}
@@ -654,6 +672,6 @@ export function NosozliklarTab() {
           updateMutation.isPending
         }
       />
-    </>
+    </Page>
   );
 }

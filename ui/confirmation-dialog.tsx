@@ -45,15 +45,15 @@ export function ConfirmationDialog({
 
   const variantStyles = {
     danger: "text-destructive",
-    warning: "text-orange-600",
-    info: "text-blue-600",
+    warning: "text-warning",
+    info: "text-primary",
   };
 
   const buttonStyles = {
     danger:
       "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-    warning: "bg-orange-600 text-white hover:bg-orange-700",
-    info: "bg-blue-600 text-white hover:bg-blue-700",
+    warning: "bg-warning text-warning-foreground hover:bg-warning/90",
+    info: "bg-primary text-primary-foreground hover:bg-primary-hover",
   };
 
   // Handle dialog state changes

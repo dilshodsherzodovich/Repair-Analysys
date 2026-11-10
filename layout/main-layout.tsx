@@ -79,7 +79,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             : SIDEBAR_WIDTH_EXPANDED,
         }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
-        className="hidden md:block flex-shrink-0 overflow-hidden border-r border-sidebar-border bg-white"
+        className="hidden md:block flex-shrink-0 overflow-hidden border-r border-sidebar-border bg-background"
       >
         <Sidebar isCollapsed={isSidebarCollapsed} />
       </motion.aside>
@@ -88,7 +88,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
         <SheetContent
           side="left"
-          className="p-0 w-[280px] sm:max-w-[280px] bg-white md:hidden"
+          className="p-0 w-[280px] sm:max-w-[280px] bg-background md:hidden"
         >
           <SheetTitle className="sr-only">{t("brand_title")}</SheetTitle>
           <SheetDescription className="sr-only">
@@ -105,7 +105,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           onSidebarToggle={() => setIsSidebarCollapsed((prev) => !prev)}
           onMobileMenuOpen={() => setIsMobileOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-4 bg-background-secondary">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-4 bg-surface-muted">
           {children}
         </main>
       </div>

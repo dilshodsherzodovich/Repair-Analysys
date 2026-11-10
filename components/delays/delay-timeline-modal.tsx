@@ -1,17 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { Modal } from "@/ui/modal";
+import { Modal, ModalFooter } from "@/ui/modal";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 import { CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type {
-  DelayEntry,
-  DelayStage,
-  DelayTimelineEntry,
-} from "@/api/types/delays";
+import type { DelayEntry, DelayStage, DelayTimelineEntry } from "@/api/types/delays";
 
+import { EmptyState } from "@/ui/empty-state";
 interface DelayTimelineModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -90,7 +87,6 @@ export function DelayTimelineModal({
       onClose={onClose}
       title={t("title")}
       size="md"
-      ariaDescribedBy="delay-timeline-modal"
     >
       <div className="mt-2 space-y-4">
         {delay && (
@@ -103,7 +99,7 @@ export function DelayTimelineModal({
         )}
 
         {entries.length === 0 ? (
-          <p className="py-6 text-center text-muted-foreground">{t("empty")}</p>
+          <EmptyState title={t("empty")} size="compact" />
         ) : (
           <ol className="relative ml-3 border-l border-border">
             {entries.map((entry, i) => (
@@ -112,7 +108,7 @@ export function DelayTimelineModal({
                   <CheckCircle2 className="h-4 w-4 text-primary" />
                 </span>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{stageLabel(entry.stage)}</Badge>
+                  <Badge variant="neutral">{stageLabel(entry.stage)}</Badge>
                   <span className="text-xs text-muted-foreground">
                     {formatDateTime(entry.at)}
                   </span>
@@ -125,11 +121,11 @@ export function DelayTimelineModal({
           </ol>
         )}
 
-        <div className="flex justify-end pt-2">
+        <ModalFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             {t("close")}
           </Button>
-        </div>
+        </ModalFooter>
       </div>
     </Modal>
   );

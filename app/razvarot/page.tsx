@@ -26,6 +26,9 @@ import { authService } from "@/api/services/auth.service";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { exportManeuverJournalExcel } from "@/api/services/maneuver-journal";
 import { format } from "date-fns";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
+import { Page } from "@/ui/page";
 
 export default function RazvarotPage() {
   const t = useTranslations("ManeuverJournalPage");
@@ -203,7 +206,7 @@ export default function RazvarotPage() {
       header: t("columns.section"),
       accessor: (row) => (
         <div className="flex items-center gap-1">
-          <Badge variant="info">{row.from_section}</Badge>{" "}
+          <Badge variant="primary">{row.from_section}</Badge>{" "}
           <MoveRight width={16} height={16} />{" "}
           <Badge variant="success">{row.to_section}</Badge>
         </div>
@@ -248,49 +251,52 @@ export default function RazvarotPage() {
   ];
 
   return (
-    <div className="min-h-full">
+    <Page>
       <PageHeader
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "locomotive",
+                label: t("filters.locomotive"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotive_placeholder"),
+                searchable: true,
+                loading: isLoadingLocomotives,
+              },
+              {
+                name: "organization",
+                label: t("filters.organization"),
+                isSelect: true,
+                options: organizationOptions,
+                placeholder: t("filters.organization_placeholder"),
+                searchable: true,
+                loading: isLoadingOrganizations,
+                permission: "choose_organization",
+              },
+            ]}
+            hasSearch
+            searchPlaceholder={t("search_placeholder")}
+            hasDateRangePicker
+            dateRangePickerLabel={t("filters.date_range")}
+          />
+        }
+        actions={
+          <>
+            <ExportActions onExcel={handleExport} busy={isExporting ? "excel" : null} />
+            <AddButton onClick={handleOpenCreateModal} permission="create_maneuver_journal" />
+          </>
+        }
       />
 
-      <div className="px-6 py-4">
-        <PageFilters
-          filters={[
-            {
-              name: "locomotive",
-              label: t("filters.locomotive"),
-              isSelect: true,
-              options: locomotiveOptions,
-              placeholder: t("filters.locomotive_placeholder"),
-              searchable: true,
-              loading: isLoadingLocomotives,
-            },
-            {
-              name: "organization",
-              label: t("filters.organization"),
-              isSelect: true,
-              options: organizationOptions,
-              placeholder: t("filters.organization_placeholder"),
-              searchable: true,
-              loading: isLoadingOrganizations,
-              permission: "choose_organization",
-            },
-          ]}
-          hasSearch
-          searchPlaceholder={t("search_placeholder")}
-          hasDateRangePicker
-          dateRangePickerLabel={t("filters.date_range")}
-          className="!mb-0"
-          onAdd={handleOpenCreateModal}
-          addButtonPermittion="create_maneuver_journal"
-          onExport={handleExport}
-          exportLoading={isExporting}
-        />
-      </div>
+      <>
+      </>
 
-      <div className="px-6 pb-6">
+      <>
         <PaginatedTable
           columns={columns}
           data={paginatedData}
@@ -310,7 +316,7 @@ export default function RazvarotPage() {
           emptyTitle={t("empty_title")}
           emptyDescription={t("empty_description")}
         />
-      </div>
+      </>
 
       <ManeuverJournalModal
         isOpen={isModalOpen}
@@ -321,6 +327,6 @@ export default function RazvarotPage() {
         isPending={createMutation.isPending || updateMutation.isPending}
         currentUser={currentUser}
       />
-    </div>
+    </Page>
   );
 }

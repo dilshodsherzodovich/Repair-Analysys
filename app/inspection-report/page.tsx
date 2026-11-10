@@ -6,21 +6,6 @@ import { useInspectionCountStats } from "@/api/hooks/use-report-inspections";
 import { useBranches } from "@/api/hooks/use-branches";
 import { format } from "date-fns";
 import { uz } from "date-fns/locale";
-import { Calendar } from "@/ui/calendar";
-import { Button } from "@/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
-import { CalendarIcon, Download, FileDown, FileSpreadsheet, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useInspectionsReport } from "@/api/hooks/use-report-inspections";
@@ -28,13 +13,21 @@ import { formatDate } from "@/utils/formatDate";
 import { Inspection } from "@/api/types/report-inspection";
 import { generateInspectionsPDF } from "@/utils/inspections-pdf-export";
 import { generateInspectionReportExcel } from "@/utils/inspection-report-excel-export";
-import {
-  ReportOrganizationSelect,
-  useReportOrganization,
-} from "@/components/reports/report-organization-select";
+import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
+import { PageHeader } from "@/ui/page-header";
+import { Chip } from "@/ui/chip";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
+import { DateRangeField } from "@/ui/date-range-field";
+import { SearchableSelect } from "@/ui/select";
+import { Page } from "@/ui/page";
+import { StatCard } from "@/ui/stat-card";
 
+import { LoadingState, EmptyState } from "@/ui/empty-state";
 export default function InspectionReportPage() {
   const t = useTranslations("Statistics");
+  const tc = useTranslations("Common");
   const globalT = useTranslations();
   const inspectsT = useTranslations("Inspects");
   const locale = useLocale();
@@ -187,164 +180,79 @@ export default function InspectionReportPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <Page>
       {/* ─── Header Card ─── */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
-              <FileDown className="w-4 h-4 text-white" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-gray-900 dark:text-white font-semibold text-base leading-tight">
-                Texnik ko&apos;riklar hisoboti
-              </h1>
-              <p className="text-gray-400 text-xs mt-0.5">
-                {new Date().toLocaleDateString(
-                  locale === "ru" ? "ru-RU" : "uz-UZ",
-                  { weekday: "long", year: "numeric", month: "long", day: "numeric" }
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="shrink-0 flex items-center gap-2">
-            <button
-              onClick={handleDownloadExcel}
-              disabled={isDownloadingExcel || !Object.keys(visibleInspectionsByType).length}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-60"
-            >
-              {isDownloadingExcel ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileSpreadsheet className="w-4 h-4" />
-              )}
-              {isDownloadingExcel ? t("downloading") : t("downloadExcel")}
-            </button>
-            <button
-              onClick={handleDownloadPdf}
-              disabled={isDownloadingPdf || !Object.keys(visibleInspectionsByType).length}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-60"
-            >
-              {isDownloadingPdf ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4" />
-              )}
-              {isDownloadingPdf ? t("downloading") : t("downloadPdf")}
-            </button>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="px-5 py-3 bg-gray-50/60 dark:bg-gray-900/30 flex flex-wrap items-end gap-2">
-          <ReportOrganizationSelect />
-          {/* Start date */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "h-9 w-[140px] justify-start text-left font-normal text-xs",
-                  !startDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-3 w-3" />
-                {startDate ? format(startDate, "dd/MM/yyyy") : t("selectDate")}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={(d) =>
-                  setFilters({ fromDate: d ? format(d, "yyyy-MM-dd") : "" })
-                }
-                captionLayout="dropdown"
-                locale={uz}
-              />
-            </PopoverContent>
-          </Popover>
-
-          {/* End date */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "h-9 w-[140px] justify-start text-left font-normal text-xs",
-                  !endDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-3 w-3" />
-                {endDate ? format(endDate, "dd/MM/yyyy") : t("selectDate")}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={(d) =>
-                  setFilters({ toDate: d ? format(d, "yyyy-MM-dd") : "" })
-                }
-                captionLayout="dropdown"
-                locale={uz}
-              />
-            </PopoverContent>
-          </Popover>
-
-          {/* Branch */}
-          {filteredBranches.length > 0 && (
-            <Select
-              value={branch}
-              onValueChange={(v) => setFilters({ branch: v === "all" ? "" : v })}
-            >
-              <SelectTrigger className="w-[200px] h-9 text-xs mb-0 sm:mb-0">
-                <SelectValue placeholder={t("branch")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("all")}</SelectItem>
-                {filteredBranches.map((b) => (
-                  <SelectItem key={b.id} value={b.id.toString()}>
-                    {b.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <PageHeader
+        title="Texnik ko&apos;riklar hisoboti"
+        description={new Date().toLocaleDateString(
+            locale === "ru" ? "ru-RU" : "uz-UZ",
+            { weekday: "long", year: "numeric", month: "long", day: "numeric" }
           )}
-        </div>
-      </div>
+        actions={
+          <ExportActions
+            onExcel={handleDownloadExcel}
+            onPdf={handleDownloadPdf}
+            busy={isDownloadingExcel ? "excel" : isDownloadingPdf ? "pdf" : null}
+            disabled={!Object.keys(visibleInspectionsByType).length}
+          />
+        }
+        filters={
+          <FilterBar>
+            <ReportOrganizationSelect />
+            <FilterField label={tc("period")} width="lg">
+              <DateRangeField
+                value={{ from: startDate, to: new Date(`${toDateStr}T00:00:00`) }}
+                onChange={({ from, to }) =>
+                  setFilters({
+                    fromDate: from ? format(from, "yyyy-MM-dd") : "",
+                    toDate: to ? format(to, "yyyy-MM-dd") : "",
+                  })
+                }
+              />
+            </FilterField>
+            {filteredBranches.length > 0 && (
+              <FilterField label={t("branch")}>
+                <SearchableSelect
+                  size="md"
+                  searchable
+                  value={branch === "all" ? "" : branch}
+                  onValueChange={(v) => setFilters({ branch: v })}
+                  placeholder={tc("all")}
+                  options={[
+                    { value: "", label: tc("all") },
+                    ...filteredBranches.map((b) => ({ value: b.id.toString(), label: b.name })),
+                  ]}
+                />
+              </FilterField>
+            )}
+            <FilterReset
+              active={Boolean(globalFilters.fromDate || globalFilters.toDate || globalFilters.branch)}
+              onReset={() => setFilters({ fromDate: "", toDate: "", branch: "" })}
+            />
+          </FilterBar>
+        }
+      />
 
       {/* ─── Counts by type ─── */}
-      <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5">
+      <div className="bg-background rounded-xl shadow-sm border border-border p-5">
         <h2 className="text-sm font-semibold mb-4">{t("inspectionCountsByType")}</h2>
         {isLoadingStats ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
+          <LoadingState />
         ) : statsByType.length === 0 ? (
-          <div className="text-center py-8 text-sm text-gray-400">{t("noData")}</div>
+          <EmptyState title={t("noData")} />
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {statsByType.map(([typeName, count]) => {
               const isSelected = selectedType === typeName;
               return (
-                <button
+                <StatCard
                   key={typeName}
-                  type="button"
+                  label={typeName}
+                  value={count}
+                  tone="primary"
+                  selected={isSelected}
                   onClick={() => toggleType(typeName)}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "p-3 rounded-lg border text-left transition-colors",
-                    isSelected
-                      ? "bg-blue-50 dark:bg-blue-900/30 border-blue-500 dark:border-blue-400 ring-1 ring-blue-500"
-                      : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-gray-800",
-                  )}
-                >
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">{typeName}</div>
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
-                    {count}
-                  </div>
-                </button>
+                />
               );
             })}
           </div>
@@ -352,26 +260,22 @@ export default function InspectionReportPage() {
       </div>
 
       {/* ─── Inspections list grouped by type ─── */}
-      <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5">
+      <div className="bg-background rounded-xl shadow-sm border border-border p-5">
         <div className="flex items-center justify-between gap-3 mb-4">
           <h2 className="text-sm font-semibold">{t("inspectionsList")}</h2>
           {selectedType && (
-            <button
-              type="button"
-              onClick={() => setFilters({ inspectionType: "" })}
-              className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+            <Chip
+              className="shrink-0"
+              onRemove={() => setFilters({ inspectionType: "" })}
             >
-              <X className="h-3 w-3" />
               {selectedType}
-            </button>
+            </Chip>
           )}
         </div>
         {isLoadingInspections ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
+          <LoadingState />
         ) : !Object.keys(visibleInspectionsByType).length ? (
-          <div className="text-center py-8 text-sm text-gray-400">{t("noData")}</div>
+          <EmptyState title={t("noData")} />
         ) : (
           <div
             className={cn(
@@ -382,54 +286,49 @@ export default function InspectionReportPage() {
             {Object.entries(visibleInspectionsByType)
               .sort((a, b) => b[1].count - a[1].count)
               .map(([typeName, data]) => (
-                <div key={typeName} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                  <div className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                    <h4 className="font-semibold text-xs text-gray-900 dark:text-white">{typeName}</h4>
-                    <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400">
+                <div key={typeName} className="border border-border rounded-lg overflow-hidden">
+                  <div className="px-3 py-1.5 bg-muted border-b border-border flex items-center justify-between">
+                    <h4 className="font-semibold text-xs text-foreground">{typeName}</h4>
+                    <span className="text-2xs font-bold px-1.5 py-0.5 rounded-full bg-primary-subtle text-primary-hover">
                       {data.count}
                     </span>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs border-collapse">
-                      <thead>
-                        <tr className="bg-muted/40 text-[10px] font-semibold text-muted-foreground tracking-wide align-bottom">
-                          <th className="border px-1.5 py-1 text-center w-8">{globalT("no")}</th>
-                          <th className="border px-2 py-1 text-left whitespace-nowrap">{globalT("locomotive")}</th>
-                          <th className="border px-2 py-1 text-left whitespace-nowrap">{t("branch")}</th>
-                          <th className="border px-2 py-1 text-center whitespace-nowrap">{globalT("createdTime")}</th>
-                          <th className="border px-2 py-1 text-center whitespace-nowrap">{inspectsT("closeTime")}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {data.inspections.map((inspection, index) => (
-                          <tr
-                            key={inspection.id}
-                            className={cn(
-                              "hover:bg-muted/30 transition-colors",
-                              index % 2 === 0 ? "bg-background" : "bg-muted/10",
-                            )}
-                          >
-                            <td className="border px-1.5 py-1 text-center text-muted-foreground">{index + 1}</td>
-                            <td className="border px-2 py-1 font-medium whitespace-nowrap">
-                              {[inspection.locomotive?.name, inspection.locomotive?.locomotive_model?.name]
-                                .filter(Boolean)
-                                .join(" ")}
-                            </td>
-                            <td className="border px-2 py-1 whitespace-nowrap">{inspection.branch?.name}</td>
-                            <td className="border px-2 py-1 text-center whitespace-nowrap">{formatDate(inspection.created_time)}</td>
-                            <td className="border px-2 py-1 text-center whitespace-nowrap">
-                              {inspection.is_closed_time ? formatDate(inspection.is_closed_time) : "—"}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <Table bordered density="compact">
+                    <TableHeader>
+                      <TableRow className="align-bottom">
+                        <TableHead className="text-center w-8">{globalT("no")}</TableHead>
+                        <TableHead className="text-left">{globalT("locomotive")}</TableHead>
+                        <TableHead className="text-left">{t("branch")}</TableHead>
+                        <TableHead className="text-center">{globalT("createdTime")}</TableHead>
+                        <TableHead className="text-center">{inspectsT("closeTime")}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data.inspections.map((inspection, index) => (
+                        <TableRow
+                          key={inspection.id}
+                          
+                        >
+                          <TableCell className="text-center">{index + 1}</TableCell>
+                          <TableCell className="font-medium whitespace-nowrap">
+                            {[inspection.locomotive?.name, inspection.locomotive?.locomotive_model?.name]
+                              .filter(Boolean)
+                              .join(" ")}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">{inspection.branch?.name}</TableCell>
+                          <TableCell className="text-center whitespace-nowrap">{formatDate(inspection.created_time)}</TableCell>
+                          <TableCell className="text-center whitespace-nowrap">
+                            {inspection.is_closed_time ? formatDate(inspection.is_closed_time) : "—"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               ))}
           </div>
         )}
       </div>
-    </div>
+    </Page>
   );
 }

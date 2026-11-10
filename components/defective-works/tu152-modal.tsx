@@ -2,20 +2,14 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import { Modal } from "@/ui/modal";
-import { Label } from "@/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Modal, ModalFooter } from "@/ui/modal";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Button } from "@/ui/button";
 import { FormField } from "@/ui/form-field";
 import { TU152Entry, TU152_STATUSES, TU152UpdatePayload } from "@/api/types/tu152";
 import { useSnackbar } from "@/providers/snackbar-provider";
 
+import { Field } from "@/ui/field";
 interface TU152ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -75,11 +69,8 @@ export function TU152Modal({
       title={t("title")}
       size="md"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="status" className="mb-2 block">
-            {t("status_label")} <span className="text-red-500">*</span>
-          </Label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <Field label={t("status_label")} htmlFor="status" required>
           <Select value={statusId} onValueChange={setStatusId}>
             <SelectTrigger id="status">
               <SelectValue placeholder={t("status_placeholder")} />
@@ -92,7 +83,7 @@ export function TU152Modal({
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </Field>
 
         <FormField
           id="answer"
@@ -105,7 +96,7 @@ export function TU152Modal({
           onChange={setAnswer}
         />
 
-        <div className="flex justify-end gap-3 pt-4">
+        <ModalFooter>
           <Button
             type="button"
             variant="outline"
@@ -117,7 +108,7 @@ export function TU152Modal({
           <Button type="submit" disabled={isPending || !statusId}>
             {isPending ? t("saving") : t("save")}
           </Button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );
