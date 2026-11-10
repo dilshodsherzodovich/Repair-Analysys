@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
@@ -37,6 +37,7 @@ import { FileSpreadsheet } from "lucide-react";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
+import { ListStatsSwitch, useListStatsView } from "@/ui/view-switch";
 
 import { formatDate as formatDateShared, formatNumber } from "@/lib/format";
 export default function PantografPage() {
@@ -335,57 +336,63 @@ export default function PantografPage() {
     { label: t("breadcrumbs.current"), current: true },
   ];
 
+  const [view, setView] = useListStatsView();
+  const viewSwitch = <ListStatsSwitch value={view} onValueChange={setView} />;
+  const header = (filters: React.ReactNode, actions: React.ReactNode) => (
+    <PageHeader
+      title={t("title")}
+      description={t("description")}
+      breadcrumbs={breadcrumbs}
+      filters={filters}
+      actions={actions}
+    />
+  );
+
   return (
     <Page>
-      <PageHeader
-        title={t("title")}
-        description={t("description")}
-        breadcrumbs={breadcrumbs}
-        filters={
-          <PageFilters
-            filters={pageFilters}
-            hasSearch={true}
-            searchPlaceholder={t("search_placeholder")}
-          />
-        }
-        actions={
-          <>
-            <AddButton onClick={handleCreate} permission="create_pantograf" />
-            <ExportActions onExcel={handleExport} />
-          </>
-        }
-      />
-
-      <StatsPanel
-        title={t("statistics.title")}
-        metrics={pantographMetrics}
-        useStats={usePantographStatistics as unknown as StatsHook}
-        locomotiveOptions={statLocomotiveOptions}
-      />
-
-      <>
-      </>
-
-      <>
-        <PaginatedTable
-          columns={columns}
-          data={paginatedData}
-          getRowId={(row) => row.id}
-          isLoading={isLoading}
-          error={error}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          updateQueryParams={true}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          isDeleting={deleteEntryMutation.isPending}
-          selectable={true}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          emptyTitle={t("empty_title")}
-          emptyDescription={t("empty_description")}
+      {view === "stats" ? (
+        <StatsPanel
+          title={t("statistics.title")}
+          metrics={pantographMetrics}
+          useStats={usePantographStatistics as unknown as StatsHook}
+          locomotiveOptions={statLocomotiveOptions}
+          header={(filters) => header(filters, viewSwitch)}
         />
-      </>
+      ) : (
+        <>
+          {header(
+            <PageFilters
+              filters={pageFilters}
+              hasSearch={true}
+              searchPlaceholder={t("search_placeholder")}
+            />,
+            <>
+              {viewSwitch}
+              <AddButton onClick={handleCreate} permission="create_pantograf" />
+              <ExportActions onExcel={handleExport} />
+            </>,
+          )}
+
+          <PaginatedTable
+            columns={columns}
+            data={paginatedData}
+            getRowId={(row) => row.id}
+            isLoading={isLoading}
+            error={error}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            updateQueryParams={true}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            isDeleting={deleteEntryMutation.isPending}
+            selectable={true}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            emptyTitle={t("empty_title")}
+            emptyDescription={t("empty_description")}
+          />
+        </>
+      )}
 
       <PantographModal
         isOpen={isModalOpen}

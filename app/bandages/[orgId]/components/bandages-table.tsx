@@ -223,15 +223,17 @@ const LocomotiveRows = memo(function LocomotiveRows({
       ? "bg-success-subtle"
       : "bg-background group-hover:bg-surface-muted";
 
+  // Each locomotive is its own <tbody>: its rows highlight together, so the
+  // cells that span them (No, locomotive, actions) never look half-hovered
   return (
-    <>
+    <TableBody className="group">
       {group.sections.map((section, sectionIndex) => (
         <TableRow
           key={section.key}
           className={cn(
-            "group duration-700",
-            isEditing && "bg-primary-subtle hover:bg-primary-subtle",
-            justSaved && "bg-success-subtle hover:bg-success-subtle",
+            "duration-700 hover:bg-transparent group-hover:bg-surface-muted/70",
+            isEditing && "bg-primary-subtle group-hover:bg-primary-subtle",
+            justSaved && "bg-success-subtle group-hover:bg-success-subtle",
           )}
         >
           {sectionIndex === 0 && (
@@ -332,7 +334,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           {canEdit && sectionIndex === 0 && (
             <TableCell
               rowSpan={span}
-              className={`text-center align-top`}
+              className="text-center align-middle"
             >
               {group.bandages.length > 0 && (
                 <EditActions
@@ -352,7 +354,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           )}
         </TableRow>
       ))}
-    </>
+    </TableBody>
   );
 });
 
@@ -432,16 +434,19 @@ export function BandagesTable({
           </TableRow>
         </TableHeader>
 
-        <TableBody>
-          {isLoading ? (
+        {isLoading || groups.length === 0 ? (
+          <TableBody>
+            {isLoading ? (
             <TableSkeleton
               rows={8}
               columns={Math.max(columnCount, 6)}
               cellClassName="py-3 px-3"
             />
-          ) : groups.length === 0 ? (
+            ) : (
             <TableStateRow colSpan={columnCount}><EmptyState title={t("empty")} size="compact" /></TableStateRow>
-          ) : (
+            )}
+          </TableBody>
+        ) : (
             groups.map((group) => (
               <LocomotiveRows
                 key={group.locomotiveId}
@@ -454,8 +459,7 @@ export function BandagesTable({
                 activeGroup={activeGroup}
               />
             ))
-          )}
-        </TableBody>
+        )}
       </Table>
   );
 }

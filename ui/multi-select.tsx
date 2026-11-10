@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { X, ChevronsUpDown, Check } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { X, ChevronDown, Check, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
 
 interface MultiSelectProps {
@@ -22,13 +22,14 @@ export function MultiSelect({
   options,
   selectedValues,
   onSelectionChange,
-  placeholder = "Select items...",
-  searchPlaceholder = "Search items...",
-  emptyMessage = "No items found.",
+  placeholder,
+  searchPlaceholder,
+  emptyMessage,
   className,
   disabled = false,
   size = "md",
 }: MultiSelectProps) {
+  const t = useTranslations("Common");
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
   const [dropdownPosition, setDropdownPosition] = React.useState<
@@ -43,10 +44,6 @@ export function MultiSelect({
     } else {
       onSelectionChange([...selectedValues, value]);
     }
-  };
-
-  const handleRemove = (value: string) => {
-    onSelectionChange(selectedValues.filter((v) => v !== value));
   };
 
   // Calculate dropdown position when opening
@@ -90,107 +87,124 @@ export function MultiSelect({
     };
   }, [open]);
 
-  const filteredOptions = options.filter(
-    (option) =>
-      option.label.toLowerCase().includes(searchValue.toLowerCase()) &&
-      !selectedValues.includes(option.value)
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchValue.toLowerCase())
   );
 
+  // The field stays one line: the first choice and "+N" for the rest
   const selectedOptions = options.filter((option) =>
     selectedValues.includes(option.value)
   );
+  const [first, ...rest] = selectedOptions;
 
   return (
     <div className="relative w-full">
-      {/* Custom Trigger */}
       <div
         ref={triggerRef}
+        role="combobox"
+        aria-expanded={open}
+        aria-disabled={disabled || undefined}
         className={cn(
-          "w-full justify-between border-border min-h-[40px] h-auto p-2 bg-background hover:bg-muted/20 focus:bg-background focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-all duration-150 border rounded-md cursor-pointer flex items-center",
+          "flex w-full cursor-pointer items-center gap-2 rounded-md border border-border-strong bg-background px-3 text-foreground transition-colors hover:border-foreground-subtle",
           size === "sm" && "h-8 text-xs",
           size === "md" && "h-9 text-sm",
-          size === "lg" && "h-12 text-base",
-          disabled && "opacity-50 cursor-not-allowed",
+          size === "lg" && "h-11 text-base",
+          disabled && "pointer-events-none cursor-not-allowed bg-surface-muted opacity-50",
           className
         )}
         onClick={() => !disabled && setOpen(!open)}
       >
-        <div className="flex flex-wrap gap-1 flex-1 min-w-0">
-          {selectedOptions.length === 0 ? (
-            <span className="text-muted-foreground text-sm">
-              {placeholder}
-            </span>
+        <span className="flex min-w-0 flex-1 items-center gap-1.5">
+          {first ? (
+            <>
+              <span className="truncate" title={selectedOptions.map((o) => o.label).join(", ")}>
+                {first.label}
+              </span>
+              {rest.length > 0 && (
+                <Badge variant="primary" size="sm" className="shrink-0">
+                  +{rest.length}
+                </Badge>
+              )}
+            </>
           ) : (
-            selectedOptions.map((option) => (
-              <Badge
-                key={option.value}
-                variant="primary"
-                size="sm"
-              >
-                {option.label}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleRemove(option.value);
-                  }}
-                  className="h-4 w-4 p-0 ml-1 hover:bg-primary/20"
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </Badge>
-            ))
+            <span className="truncate text-foreground-subtle">{placeholder ?? t("select")}</span>
           )}
-        </div>
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </span>
+        {selectedOptions.length > 0 && !disabled && (
+          <button
+            type="button"
+            aria-label={t("reset")}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectionChange([]);
+            }}
+            className="shrink-0 rounded-sm p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <X className="size-3.5" />
+          </button>
+        )}
+        <ChevronDown className="size-4 shrink-0 opacity-50" />
       </div>
 
-      {/* Custom Dropdown with Smart Positioning and Animations */}
       {open && (
         <div
           ref={dropdownRef}
           className={cn(
-            "absolute left-0 right-0 bg-background border border-border rounded-lg z-[999999] max-h-[300px] overflow-hidden",
+            // At least as wide as the field, wider for long options
+            "absolute left-0 z-50 w-max min-w-full max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-md border border-border-strong bg-background text-foreground shadow-lg",
             "animate-in fade-in-0 zoom-in-95",
             dropdownPosition === "top"
               ? "bottom-full mb-1 slide-in-from-bottom-2"
               : "top-full mt-1 slide-in-from-top-2"
           )}
-          style={{ zIndex: 999999 }}
         >
-          {/* Search Input */}
-          <div className="p-2 border-b border-border">
-            <input
-              type="text"
-              placeholder={searchPlaceholder}
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+          <div className="border-b border-border p-2">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                autoFocus
+                placeholder={searchPlaceholder ?? t("search_placeholder")}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="h-8 w-full rounded-md border border-border-strong bg-background pl-8 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
           </div>
-          {/* Options List */}
-          <div className="max-h-[200px] overflow-y-auto">
+          <div className="max-h-60 overflow-y-auto p-1">
             {filteredOptions.length === 0 ? (
-              <div className="py-3 text-center text-sm text-muted-foreground bg-muted/10">
-                {emptyMessage}
+              <div className="py-3 text-center text-sm text-muted-foreground">
+                {emptyMessage ?? t("no_data")}
               </div>
             ) : (
-              <div className="py-0.5">
-                {filteredOptions.map((option) => (
+              filteredOptions.map((option) => {
+                const selected = selectedValues.includes(option.value);
+                return (
                   <button
                     key={option.value}
                     type="button"
+                    role="option"
+                    aria-selected={selected}
                     onClick={() => handleSelect(option.value)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/30 cursor-pointer transition-all duration-150 bg-background rounded-sm"
+                    className={cn(
+                      "flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-left text-sm transition-colors hover:bg-muted",
+                      selected && "font-medium text-primary"
+                    )}
                   >
-                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                    <span
+                      className={cn(
+                        "flex size-4 shrink-0 items-center justify-center rounded-sm border",
+                        selected
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border-strong"
+                      )}
+                    >
+                      {selected && <Check className="size-3" />}
+                    </span>
                     <span className="truncate">{option.label}</span>
                   </button>
-                ))}
-              </div>
+                );
+              })
             )}
           </div>
         </div>

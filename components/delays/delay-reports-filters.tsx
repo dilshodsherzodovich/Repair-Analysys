@@ -233,7 +233,6 @@ export function DelayReportsFilters() {
             searchPlaceholder={t("organizations_search")}
             emptyMessage={t("organizations_empty")}
             disabled={isLoadingOrganizations}
-            className="min-h-9 py-0"
           />
         </FilterField>
       )}

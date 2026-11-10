@@ -33,7 +33,7 @@ export default function DefectiveWorksPage() {
     (value: string) => {
       if (isEchUser && value !== "nosozliklar") return;
       setCurrentMainTab(value);
-      updateQuery({ mainTab: value, page: "1" });
+      updateQuery({ mainTab: value, page: "1", view: null });
     },
     [isEchUser, updateQuery],
   );
@@ -51,18 +51,14 @@ export default function DefectiveWorksPage() {
         breadcrumbs={breadcrumbs}
       />
 
-      <>
+      {!isEchUser && (
         <Tabs value={currentMainTab} onValueChange={handleMainTabChange}>
-          <TabsList className="bg-muted p-1 gap-0 border-0 rounded-lg inline-flex">
-            <TabsTrigger value="nosozliklar">
-              {t("tab_nosozliklar")}
-            </TabsTrigger>
-            {!isEchUser && (
-              <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
-            )}
+          <TabsList>
+            <TabsTrigger value="nosozliklar">{t("tab_nosozliklar")}</TabsTrigger>
+            <TabsTrigger value="tu152">{t("tab_tu152")}</TabsTrigger>
           </TabsList>
         </Tabs>
-      </>
+      )}
 
       {currentMainTab === "nosozliklar" && <NosozliklarTab />}
       {!isEchUser && currentMainTab === "tu152" && <TU152Tab />}

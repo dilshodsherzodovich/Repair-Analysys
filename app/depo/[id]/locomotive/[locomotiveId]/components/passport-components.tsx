@@ -133,7 +133,7 @@ export function PassportComponents({
           value={activeSectionId?.toString() ?? ""}
           onValueChange={(value) => onSectionChange(Number(value))}
         >
-          <TabsList className="inline-flex w-fit gap-1 rounded-lg border-0 bg-muted p-1">
+          <TabsList>
             {sections.map((section) => (
               <TabsTrigger
                 key={section.id}

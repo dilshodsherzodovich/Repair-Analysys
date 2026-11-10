@@ -16,7 +16,7 @@ import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 
-import { ErrorState } from "@/ui/empty-state";
+import { LoadingState, ErrorState } from "@/ui/empty-state";
 const PAGE_SIZE = 20;
 
 type Tab = "in_progress" | "hal_qilingan";
@@ -167,7 +167,7 @@ export default function Tu137Page() {
 
         {/* Records Table */}
         {isLoading ? (
-          <div className="text-sm text-muted-foreground">{t("loading")}</div>
+          <LoadingState />
         ) : error ? (
           <ErrorState title={t("error")} message={(error as Error).message} />
         ) : (

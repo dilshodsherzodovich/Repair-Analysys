@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
+import { useTranslations } from "next-intl";
 import { ChevronDown, ChevronUp, Loader2, Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -199,20 +200,24 @@ function SearchableSelect({
   value = "",
   onValueChange,
   options,
-  placeholder = "Select...",
+  placeholder: placeholderProp,
   searchable = false,
   clearable = false,
   loading = false,
   onSearch,
   selectedLabel,
-  searchPlaceholder = "Search...",
-  emptyMessage = "No results found.",
+  searchPlaceholder: searchPlaceholderProp,
+  emptyMessage: emptyMessageProp,
   disabled = false,
   name,
   size = "default",
   className,
   triggerClassName,
 }: SearchableSelectProps) {
+  const t = useTranslations("Common");
+  const placeholder = placeholderProp ?? t("select");
+  const searchPlaceholder = searchPlaceholderProp ?? t("search_placeholder");
+  const emptyMessage = emptyMessageProp ?? t("no_data");
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
   const [dropdownPosition, setDropdownPosition] = React.useState<"bottom" | "top">("bottom");
@@ -299,7 +304,7 @@ function SearchableSelect({
           <SelectPrimitive.Portal>
             <SelectPrimitive.Content
               className={cn(
-                "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-border-strong bg-background text-foreground shadow-lg",
+                "relative z-50 max-h-96 min-w-[var(--radix-select-trigger-width)] max-w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-md border border-border-strong bg-background text-foreground shadow-lg",
                 "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                 "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
                 "data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
@@ -384,7 +389,8 @@ function SearchableSelect({
         <div
           ref={dropdownRef}
           className={cn(
-            "absolute left-0 right-0 z-[999999] max-h-[300px] overflow-hidden rounded-md border border-border-strong bg-background text-foreground shadow-lg",
+            // At least as wide as the field, wider for long options
+            "absolute left-0 z-[999999] w-max min-w-full max-w-[min(24rem,calc(100vw-2rem))] max-h-[300px] overflow-hidden rounded-md border border-border-strong bg-background text-foreground shadow-lg",
             "animate-in fade-in-0 zoom-in-95",
             dropdownPosition === "top"
               ? "bottom-full mb-1 slide-in-from-bottom-2"
@@ -405,12 +411,12 @@ function SearchableSelect({
                   onSearch?.(e.target.value);
                 }}
                 onKeyDown={(e) => e.stopPropagation()}
-                className="w-full rounded-md border border-border-strong bg-background text-foreground py-2 pl-8 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="h-8 w-full rounded-md border border-border-strong bg-background text-foreground pl-8 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </div>
           )}
-          <div className="max-h-[200px] overflow-y-auto p-1">
+          <div className="max-h-60 overflow-y-auto p-1">
             {filteredOptions.length === 0 ? (
               <div className="py-3 text-center text-sm text-muted-foreground">
                 {emptyMessage}

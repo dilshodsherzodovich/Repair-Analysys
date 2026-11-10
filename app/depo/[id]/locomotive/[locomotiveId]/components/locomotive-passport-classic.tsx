@@ -378,7 +378,7 @@ export default function LocomotivePassportClassic({
                 onValueChange={(value) => setActiveSectionId(Number(value))}
                 className="flex w-full flex-col"
               >
-                <TabsList className="bg-muted p-2 gap-0 border-0 rounded-lg w-full flex">
+                <TabsList>
                   {locomotiveDetail.sections.map((section) => (
                     <TabsTrigger
                       key={section.id}

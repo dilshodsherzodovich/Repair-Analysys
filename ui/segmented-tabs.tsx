@@ -35,7 +35,9 @@ export function SegmentedTabs({
       <TabsPrimitive.List
         aria-label={ariaLabel}
         className={cn(
-          "inline-flex items-center gap-1 rounded-lg border border-border-strong bg-background p-1",
+          // Same height as Button so it lines up with the other actions
+          "inline-flex items-stretch gap-1 rounded-lg border border-border-strong bg-background p-[3px]",
+          size === "sm" ? "h-8" : "h-9",
           className,
         )}
       >
@@ -45,7 +47,7 @@ export function SegmentedTabs({
             value={option.value}
             className={cn(
               "inline-flex items-center gap-2 rounded-md font-semibold transition-colors cursor-pointer whitespace-nowrap",
-              size === "sm" ? "px-2.5 py-1 text-xs [&_svg]:size-3.5" : "px-3 py-1.5 text-sm",
+              size === "sm" ? "px-2.5 text-xs [&_svg]:size-3.5" : "px-3 text-sm",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
               "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm",
               "data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:bg-muted",

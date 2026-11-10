@@ -128,13 +128,26 @@ one meta line (org · period · "holatiga")
 ### PageHeader
 
 - One header for every page (list pages and reports): breadcrumbs
-  (optional), the title (xl / 2xl bold) with one meta line under it, actions
-  right-aligned, optional `leading` (Back). No card, no icon tile.
+  (optional), the title (xl / 2xl bold) with one meta line under it,
+  optional `leading` (Back). No card, no icon tile.
 - Filters go in the `filters` slot and render in the filter card under the
-  header; sections use `FilterPanel`, the same card with their actions on
-  the right.
-- Actions order, left to right: view switch (SegmentedTabs), page actions
-  (AddButton, ...), then ExportActions.
+  header. The page's actions live in the same card, on the right and
+  bottom-aligned with the controls; never split between title and card.
+  Only a page without filters shows its actions next to the title.
+  Sections use `FilterPanel`, the same card with their actions.
+- Actions order, left to right: view switch (SegmentedTabs /
+  ListStatsSwitch), page actions (AddButton, ...), then ExportActions.
+- A page with a list and statistics shows one at a time: `ListStatsSwitch`
+  (Ro'yxat / Statistika, `?view=stats`) first in the actions. In the
+  statistics view the filter card holds the statistics filters.
+- Section tabs use the kit `Tabs` as is: a compact grey track, left-aligned.
+
+### Dropdowns and dates
+
+- Select and multi-select fields are 36px and one line. Their list is at
+  least as wide as the field and grows for long options (up to 24rem).
+- A multi-select shows the first choice and "+N"; its list has checkboxes.
+- Calendars follow the app language (uz / ru) and start weeks on Monday.
 
 ### FilterBar
 

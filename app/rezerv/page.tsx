@@ -132,7 +132,7 @@ export default function RezervPage() {
 
       <>
         <Tabs value={tab} onValueChange={handleTabChange}>
-          <TabsList className="bg-background border border-border p-1 gap-2 rounded-md inline-flex">
+          <TabsList>
             <TabsTrigger
               value="current"
               className="px-3 py-2 text-sm font-semibold transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=inactive]:text-foreground-secondary data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-surface-muted data-[state=inactive]:hover:border-border-strong"

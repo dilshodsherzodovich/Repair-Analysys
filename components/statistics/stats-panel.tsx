@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Bar, CartesianGrid, ComposedChart, Legend, Line, XAxis, YAxis } from "recharts";
@@ -15,7 +16,7 @@ import { StatCard, type StatTone } from "@/ui/stat-card";
 
 import { LoadingState, EmptyState, ErrorState } from "@/ui/empty-state";
 import { formatNumber } from "@/lib/format";
-import { FilterField } from "@/ui/filter-bar";
+import { FilterBar, FilterField } from "@/ui/filter-bar";
 export interface StatMetric {
   key: string;
   totalKey: string;
@@ -45,6 +46,11 @@ interface StatsPanelProps {
   useStats: StatsHook;
   locomotiveOptions?: SelectOption[];
   inspectionTypeOptions?: SelectOption[];
+  /**
+   * Renders the page's filter card around the panel's own filters, so the
+   * statistics view keeps the same header and filter card as the list.
+   */
+  header: (filters: React.ReactNode) => React.ReactNode;
   className?: string;
 }
 
@@ -67,6 +73,7 @@ export function StatsPanel({
   useStats,
   locomotiveOptions,
   inspectionTypeOptions,
+  header,
   className,
 }: StatsPanelProps) {
   const t = useTranslations("JournalStatistics");
@@ -150,194 +157,187 @@ export function StatsPanel({
     [series, metrics, t]
   );
 
+  const filters = (
+    <FilterBar>
+      {locomotiveOptions && (
+        <FilterField label={t("locomotive")}>
+          <SearchableSelect
+            value={locomotive}
+            onValueChange={setLocomotive}
+            options={[
+              { value: ALL, label: t("all") },
+              ...locomotiveOptions,
+            ]}
+            searchable
+            size="md"
+          />
+        </FilterField>
+      )}
+      {inspectionTypeOptions && (
+        <FilterField label={t("inspection_type")}>
+          <SearchableSelect
+            value={inspectionType}
+            onValueChange={setInspectionType}
+            options={[
+              { value: ALL, label: t("all") },
+              ...inspectionTypeOptions,
+            ]}
+            size="md"
+          />
+        </FilterField>
+      )}
+      <FilterField label={t("organization")}>
+        <SearchableSelect
+          value={org}
+          onValueChange={setOrg}
+          options={orgOptions}
+          searchable={orgOptions.length > 8}
+          size="md"
+        />
+      </FilterField>
+    </FilterBar>
+  );
+
   return (
-    <section className={cn("px-6 pt-5", className)}>
-      <div className="rounded-xl border border-border bg-background shadow-sm">
-        {/* Header + filters */}
-        <div className="flex flex-col gap-3 border-b border-muted p-4 lg:flex-row lg:items-end lg:justify-between">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            {title}
-          </h2>
-
-          <div className="flex flex-wrap items-end gap-3">
-            {locomotiveOptions && (
-              <FilterField label={t("locomotive")}>
-                <SearchableSelect
-                  value={locomotive}
-                  onValueChange={setLocomotive}
-                  options={[
-                    { value: ALL, label: t("all") },
-                    ...locomotiveOptions,
-                  ]}
-                  searchable
-                  size="sm"
-                  triggerClassName="min-w-[180px] bg-background"
+    <>
+      {header(filters)}
+      <section className={cn("space-y-4", className)}>
+        <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+          <BarChart3 className="size-5 text-primary" />
+          {title}
+        </h2>
+        {isLoading ? (
+          <LoadingState />
+        ) : error ? (
+          <ErrorState title={t("error")} />
+        ) : !data || data.length === 0 ? (
+          <EmptyState title={t("empty")} />
+        ) : (
+          <>
+            {/* KPI cards */}
+            <div
+              className={cn(
+                "grid grid-cols-1 gap-4",
+                metrics.length === 2 && "sm:grid-cols-2",
+                metrics.length === 3 && "sm:grid-cols-2 lg:grid-cols-3",
+                metrics.length >= 4 && "sm:grid-cols-2 xl:grid-cols-4"
+              )}
+            >
+              {metrics.map((m) => (
+                <KpiCard
+                  key={m.key}
+                  metric={m}
+                  total={totals[m.key]}
+                  series={series[m.key]}
                 />
-              </FilterField>
-            )}
-            {inspectionTypeOptions && (
-              <FilterField label={t("inspection_type")}>
-                <SearchableSelect
-                  value={inspectionType}
-                  onValueChange={setInspectionType}
-                  options={[
-                    { value: ALL, label: t("all") },
-                    ...inspectionTypeOptions,
-                  ]}
-                  size="sm"
-                  triggerClassName="min-w-[180px] bg-background"
-                />
-              </FilterField>
-            )}
-            <FilterField label={t("organization")}>
-              <SearchableSelect
-                value={org}
-                onValueChange={setOrg}
-                options={orgOptions}
-                searchable={orgOptions.length > 8}
-                size="sm"
-                triggerClassName="min-w-[200px] bg-background"
-              />
-            </FilterField>
-          </div>
-        </div>
+              ))}
+            </div>
 
-        {/* Body */}
-        <div className="p-4">
-          {isLoading ? (
-            <LoadingState />
-          ) : error ? (
-            <ErrorState title={t("error")} />
-          ) : !data || data.length === 0 ? (
-            <EmptyState title={t("empty")} />
-          ) : (
-            <>
-              {/* KPI cards */}
-              <div
-                className={cn(
-                  "grid grid-cols-1 gap-4",
-                  metrics.length === 2 && "sm:grid-cols-2",
-                  metrics.length === 3 && "sm:grid-cols-2 lg:grid-cols-3",
-                  metrics.length >= 4 && "sm:grid-cols-2 xl:grid-cols-4"
-                )}
+            {/* Chart */}
+            <div className="mt-4 rounded-xl border border-border bg-background shadow-sm">
+              <DisclosureTrigger
+                open={chartOpen}
+                chevronSide="end"
+                onClick={() => setChartOpen((v) => !v)}
+                className="justify-between px-4 py-2.5 text-sm font-medium text-foreground-secondary"
               >
-                {metrics.map((m) => (
-                  <KpiCard
-                    key={m.key}
-                    metric={m}
-                    total={totals[m.key]}
-                    series={series[m.key]}
-                  />
-                ))}
-              </div>
-
-              {/* Chart */}
-              <div className="mt-4 rounded-lg border border-border">
-                <DisclosureTrigger
-                  open={chartOpen}
-                  chevronSide="end"
-                  onClick={() => setChartOpen((v) => !v)}
-                  className="justify-between px-4 py-2.5 text-sm font-medium text-foreground-secondary"
-                >
-                  {t("monthly_dynamics")}
-                </DisclosureTrigger>
-                {chartOpen && (
-                  <div className="px-2 pb-3 pt-1">
-                    <ChartContainer
-                      config={chartConfig}
-                      className="aspect-auto h-[320px] w-full"
+                {t("monthly_dynamics")}
+              </DisclosureTrigger>
+              {chartOpen && (
+                <div className="px-2 pb-3 pt-1">
+                  <ChartContainer
+                    config={chartConfig}
+                    className="aspect-auto h-[320px] w-full"
+                  >
+                    <ComposedChart
+                      data={chartData}
+                      margin={{ top: 8, left: 4, right: 4, bottom: 0 }}
+                      barGap={2}
                     >
-                      <ComposedChart
-                        data={chartData}
-                        margin={{ top: 8, left: 4, right: 4, bottom: 0 }}
-                        barGap={2}
-                      >
-                        <CartesianGrid
-                          vertical={false}
-                          stroke="currentColor"
-                          className="text-foreground-subtle"
-                        />
-                        <XAxis
-                          dataKey="month"
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={10}
-                          className="text-xs"
-                        />
+                      <CartesianGrid
+                        vertical={false}
+                        stroke="currentColor"
+                        className="text-foreground-subtle"
+                      />
+                      <XAxis
+                        dataKey="month"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={10}
+                        className="text-xs"
+                      />
+                      <YAxis
+                        yAxisId="left"
+                        tickLine={false}
+                        axisLine={false}
+                        width={36}
+                        allowDecimals={false}
+                        className="text-xs"
+                      />
+                      {hasCurrencyMetric && (
                         <YAxis
-                          yAxisId="left"
+                          yAxisId="right"
+                          orientation="right"
                           tickLine={false}
                           axisLine={false}
-                          width={36}
-                          allowDecimals={false}
+                          width={52}
                           className="text-xs"
+                          tickFormatter={(v) =>
+                            Math.abs(v) >= 1_000_000
+                              ? `${(v / 1_000_000).toFixed(0)}M`
+                              : Math.abs(v) >= 1000
+                                ? `${Math.round(v / 1000)}k`
+                                : String(v)
+                          }
                         />
-                        {hasCurrencyMetric && (
-                          <YAxis
-                            yAxisId="right"
-                            orientation="right"
-                            tickLine={false}
-                            axisLine={false}
-                            width={52}
-                            className="text-xs"
-                            tickFormatter={(v) =>
-                              Math.abs(v) >= 1_000_000
-                                ? `${(v / 1_000_000).toFixed(0)}M`
-                                : Math.abs(v) >= 1000
-                                  ? `${Math.round(v / 1000)}k`
-                                  : String(v)
-                            }
+                      )}
+                      <ChartTooltip
+                        cursor={{ fill: "var(--muted)" }}
+                        content={<ChartTooltipContent />}
+                      />
+                      <Legend
+                        verticalAlign="top"
+                        height={32}
+                        iconType="circle"
+                        wrapperStyle={{ fontSize: 12 }}
+                      />
+                      {metrics.map((m) => {
+                        const isCurrency = m.kind === "currency";
+                        const axisId = isCurrency ? "right" : "left";
+                        const asLine = m.chart === "line" || isCurrency;
+                        return asLine ? (
+                          <Line
+                            key={m.key}
+                            yAxisId={axisId}
+                            type="monotone"
+                            dataKey={m.key}
+                            name={m.label}
+                            stroke={m.color}
+                            strokeWidth={2.5}
+                            dot={{ r: 3, fill: m.color }}
+                            activeDot={{ r: 5 }}
                           />
-                        )}
-                        <ChartTooltip
-                          cursor={{ fill: "var(--muted)" }}
-                          content={<ChartTooltipContent />}
-                        />
-                        <Legend
-                          verticalAlign="top"
-                          height={32}
-                          iconType="circle"
-                          wrapperStyle={{ fontSize: 12 }}
-                        />
-                        {metrics.map((m) => {
-                          const isCurrency = m.kind === "currency";
-                          const axisId = isCurrency ? "right" : "left";
-                          const asLine = m.chart === "line" || isCurrency;
-                          return asLine ? (
-                            <Line
-                              key={m.key}
-                              yAxisId={axisId}
-                              type="monotone"
-                              dataKey={m.key}
-                              name={m.label}
-                              stroke={m.color}
-                              strokeWidth={2.5}
-                              dot={{ r: 3, fill: m.color }}
-                              activeDot={{ r: 5 }}
-                            />
-                          ) : (
-                            <Bar
-                              key={m.key}
-                              yAxisId={axisId}
-                              dataKey={m.key}
-                              name={m.label}
-                              fill={m.color}
-                              radius={[4, 4, 0, 0]}
-                              maxBarSize={26}
-                            />
-                          );
-                        })}
-                      </ComposedChart>
-                    </ChartContainer>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    </section>
+                        ) : (
+                          <Bar
+                            key={m.key}
+                            yAxisId={axisId}
+                            dataKey={m.key}
+                            name={m.label}
+                            fill={m.color}
+                            radius={[4, 4, 0, 0]}
+                            maxBarSize={26}
+                          />
+                        );
+                      })}
+                    </ComposedChart>
+                  </ChartContainer>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </section>
+    </>
   );
 }
 

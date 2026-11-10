@@ -367,8 +367,8 @@ function UiKit() {
         />
         <Panel title="Rules">
           <ul className="list-disc space-y-1.5 pl-5 text-sm text-foreground-secondary">
-            <li><b className="text-foreground">PageHeader</b> on every page: breadcrumbs (optional), the title with one meta line, actions on the right, and the filters in the filter card under it.</li>
-            <li><b className="text-foreground">Actions order:</b> view switch (SegmentedTabs) → page actions (AddButton, …) → ExportActions.</li>
+            <li><b className="text-foreground">PageHeader</b> on every page: breadcrumbs (optional), the title with one meta line, and under it the filter card with the filters on the left and the page actions on the right.</li>
+            <li><b className="text-foreground">Actions order:</b> view switch (SegmentedTabs, or ListStatsSwitch for list / statistics) → page actions (AddButton, …) → ExportActions.</li>
             <li><b className="text-foreground">Exports:</b> only ExportActions — Excel (green), PDF / Word (outline), size sm, labels from Common.</li>
             <li><b className="text-foreground">Filters:</b> every control in a labelled FilterField, all 36px; a period is one DateRangeField (presets / time optional).</li>
             <li><b className="text-foreground">Apply:</b> filters apply instantly; the only filter action is FilterReset (&quot;Tozalash&quot;), shown when something is set.</li>

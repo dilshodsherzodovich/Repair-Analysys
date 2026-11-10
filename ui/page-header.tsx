@@ -16,7 +16,10 @@ export interface PageHeaderProps
   /** One meta line under the title: org · period · "as of" time, count, ... */
   description?: React.ReactNode;
   breadcrumbs?: BreadcrumbItem[];
-  /** Page actions (view switch, Add, ...) then ExportActions, right-aligned. */
+  /**
+   * Page actions (view switch, Add, ...) then ExportActions. With `filters`
+   * they sit at the right of the filter card; without, next to the title.
+   */
   actions?: React.ReactNode;
   /** Before the title, e.g. a Back button. */
   leading?: React.ReactNode;
@@ -29,9 +32,36 @@ export const FILTER_CARD =
   "rounded-xl border border-border bg-background px-4 py-3 shadow-sm";
 
 /**
+ * The filter card: the FilterBar on the left and the page's actions on the
+ * right, bottom-aligned with the controls. Every page's filters and actions
+ * live here, never split between the header and the card.
+ */
+export function FilterCard({
+  children,
+  actions,
+  className,
+}: {
+  children?: React.ReactNode;
+  actions?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex flex-wrap items-end justify-between gap-3", FILTER_CARD, className)}>
+      {children && <div className="min-w-0 flex-1">{children}</div>}
+      {actions && (
+        <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+          {actions}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
  * The header every page uses (see "Page standards" in the design-system
  * spec): breadcrumbs, the title with one meta line and the actions on the
- * right, and under it the page's filters in the filter card.
+ * right, and under it the page's filters in the filter card (which then
+ * holds the actions too).
  */
 const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
   (
@@ -79,13 +109,13 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
               )}
             </div>
           </div>
-          {actions && (
+          {actions && !filters && (
             <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
           )}
         </div>
       </div>
 
-      {filters && <div className={FILTER_CARD}>{filters}</div>}
+      {filters && <FilterCard actions={actions}>{filters}</FilterCard>}
     </div>
   )
 );

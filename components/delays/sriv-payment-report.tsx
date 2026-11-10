@@ -541,7 +541,6 @@ export function SrivPaymentFilters() {
             }
             placeholder={tc("all")}
             disabled={isLoadingOrganizations}
-            className="min-h-9 py-0"
           />
         </FilterField>
       )}

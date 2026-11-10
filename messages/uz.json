@@ -1,5 +1,7 @@
 {
   "Common": {
+    "view_list": "Ro'yxat",
+    "view_statistics": "Statistika",
     "add": "Qo'shish",
     "edit": "Tahrirlash",
     "delete": "O'chirish",
