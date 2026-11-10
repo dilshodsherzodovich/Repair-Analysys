@@ -292,6 +292,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
                   key={`${name}-${side}`}
                   className={cn(
                     "text-center duration-700",
+                    // The actions cell spans the rows from the first one, so in the other
+                    // rows a value cell is last in the markup but not the last column: keep
+                    // its right border (the kit drops it on a row's last cell)
+                    canEdit && "last:border-r",
                     editable && "",
                     !editable &&
                       activeGroup &&
@@ -427,7 +431,7 @@ export function BandagesTable({
               SIDES.map((side) => (
                 <TableHead
                   key={`${name}-${side}`}
-                  className={`text-center`}
+                  className={cn("text-center", canEdit && "last:border-r")}
                 >
                   {tModal(side)}
                 </TableHead>

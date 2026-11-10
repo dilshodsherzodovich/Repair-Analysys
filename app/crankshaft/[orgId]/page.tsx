@@ -294,6 +294,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 key={field}
                 className={cn(
                   "duration-700",
+                  // The actions cell spans the rows from the first one, so in the other
+                  // rows a value cell is last in the markup but not the last column: keep
+                  // its right border (the kit drops it on a row's last cell)
+                  canEdit && "last:border-r",
                   isInfo ? "text-muted-foreground" : "text-center",
                   editable && "",
                   // Changed values stand out while the highlight lasts
@@ -540,6 +544,7 @@ function CrankshaftPageContent({
                   className={cn(
                     "text-center",
                     field.includes("koren") ? korenHead : shatunHead,
+                    canEdit && "last:border-r",
                   )}
                 >
                   {getFieldNumber(field) === Number.POSITIVE_INFINITY
