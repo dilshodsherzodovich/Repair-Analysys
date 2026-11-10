@@ -268,10 +268,19 @@ function SearchableSelect({
   // Plain dropdown: native-feeling Radix select. Search, clear and loading
   // use the custom dropdown below.
   if (!searchable && !clearable && !loading) {
+    // Radix reserves "" for "nothing selected", but pages use an option with
+    // value "" for "All"; give it a stand-in value inside the dropdown.
+    const ALL = "__all__";
+    const hasAllOption = options.some((opt) => opt.value === "");
+    const toRadix = (v: string | undefined) => (v === "" && hasAllOption ? ALL : v);
     return (
       <div className={cn("relative w-full", className)}>
         {name && <input type="hidden" name={name} value={value} readOnly />}
-        <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
+        <SelectPrimitive.Root
+          value={toRadix(value)}
+          onValueChange={(v) => onValueChange?.(v === ALL ? "" : v)}
+          disabled={disabled}
+        >
           <SelectPrimitive.Trigger
             className={cn(
               "flex h-10 w-full items-center justify-between cursor-pointer rounded-md border border-border-strong bg-background text-foreground px-4 py-2 text-base",
@@ -308,8 +317,8 @@ function SearchableSelect({
                 ) : (
                   options.map((opt) => (
                     <SelectPrimitive.Item
-                      key={opt.value}
-                      value={opt.value}
+                      key={opt.value || ALL}
+                      value={opt.value || ALL}
                       disabled={opt.disabled}
                       className="relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 px-3 text-sm outline-none focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     >
