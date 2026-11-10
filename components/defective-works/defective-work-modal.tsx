@@ -322,7 +322,6 @@ export function DefectiveWorkModal({
         onClose={handleClose}
         title={modalTexts.title}
         size="sm"
-        ariaDescribedBy="defective-works-resolution-modal"
       >
         <form
             key={formKey}
@@ -368,7 +367,6 @@ export function DefectiveWorkModal({
       onClose={handleClose}
       title={modalTexts.title}
       size="lg"
-      ariaDescribedBy="defective-works-modal"
     >
       <form
           key={formKey}

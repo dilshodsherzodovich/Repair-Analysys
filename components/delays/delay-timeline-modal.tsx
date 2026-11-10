@@ -87,7 +87,6 @@ export function DelayTimelineModal({
       onClose={onClose}
       title={t("title")}
       size="md"
-      ariaDescribedBy="delay-timeline-modal"
     >
       <div className="mt-2 space-y-4">
         {delay && (

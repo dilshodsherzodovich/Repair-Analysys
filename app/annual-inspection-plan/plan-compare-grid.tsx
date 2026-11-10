@@ -248,7 +248,7 @@ export function PlanCompareGrid({
             </DisclosureTrigger>
 
             {open && (
-              <Table bordered density="compact" className=" table-fixed min-w-[1080px]">
+              <Table bordered density="compact" className="table-fixed min-w-[1080px]">
                 <colgroup>
                   <col style={{ width: 150 }} />
                   {GRID_COLUMNS.map((c, i) => <col key={i} />)}

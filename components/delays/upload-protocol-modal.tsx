@@ -56,7 +56,6 @@ export function UploadProtocolModal({
       onClose={onClose}
       title={entry?.protocol_number ? t("title_edit") : t("title")}
       size="md"
-      ariaDescribedBy="upload-protocol-modal"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
           <FormField

@@ -27,7 +27,7 @@ import { FilterBar } from "@/ui/filter-bar";
 import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
-import { EmptyState, LoadingState } from "@/ui/empty-state";
+import { EmptyState, ErrorState, LoadingState } from "@/ui/empty-state";
 import { formatDate, formatDateTime, formatTime } from "@/lib/format";
 export default function ReportDashboard() {
   const t = useTranslations("Reports");
@@ -90,11 +90,7 @@ export default function ReportDashboard() {
     isError || isInspectionError || isDelayedError ||
     isTxk2InspectionError || isReservedError
   ) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-destructive text-lg">{t("error")}</div>
-      </div>
-    );
+    return <ErrorState size="page" title={t("error")} />;
   }
 
   const activeLocomotives = convertToDisplayData(apiData?.active_locomotives);

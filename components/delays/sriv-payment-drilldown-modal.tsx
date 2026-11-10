@@ -57,7 +57,7 @@ export function SrivPaymentDrilldownModal({
             <p className="mb-3 text-xs text-muted-foreground">
               {t("count_n", { n: data?.count ?? results.length })}
             </p>
-            <Table frame maxHeight="60vh" className=" min-w-[720px]">
+            <Table frame maxHeight="60vh" className="min-w-[720px]">
               <TableHeader className="sticky top-0 z-10 bg-surface-muted">
                 <TableRow className="text-left">
                   <TableHead>{t("dd_date")}</TableHead>

@@ -34,6 +34,7 @@ import { StatCard, type StatTone } from "@/ui/stat-card";
 
 import { EmptyState, TableStateRow, ErrorState } from "@/ui/empty-state";
 import { formatNumber } from "@/lib/format";
+import { Skeleton } from "@/ui/skeleton";
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
 interface BucketMeta {
@@ -238,7 +239,7 @@ export function SrivPaymentReport() {
           </div>
 
           {/* Per-depo table */}
-          <Table frame className=" min-w-[820px]">
+          <Table frame className="min-w-[820px]">
             <TableHeader>
               <TableRow className="text-left">
                 <TableHead>{t("depo")}</TableHead>
@@ -474,14 +475,14 @@ function SkeletonState() {
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
-          <div
+          <Skeleton
             key={i}
-            className="h-[104px] animate-pulse rounded-xl border border-border bg-surface-muted"
+            className="h-[104px] rounded-xl"
           />
         ))}
       </div>
-      <div className="h-24 animate-pulse rounded-xl border border-border bg-surface-muted" />
-      <div className="h-64 animate-pulse rounded-xl border border-border bg-surface-muted" />
+      <Skeleton className="h-24 rounded-xl" />
+      <Skeleton className="h-64 rounded-xl" />
     </div>
   );
 }

@@ -274,7 +274,6 @@ export function CulpritsListModal({
         onClose={onClose}
         title={t("title")}
         size="lg"
-        ariaDescribedBy="culprits-list-modal"
       >
         <div className="mt-2 space-y-4">
           {delay && (

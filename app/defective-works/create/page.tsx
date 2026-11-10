@@ -524,7 +524,7 @@ export default function PublicDefectiveWorkCreatePage() {
                   {issues.map((issue, index) => (
                     <div
                       key={index}
-                      className="rounded-md border-2 border-dashed border-primary/30  bg-surface-muted p-3 space-y-3"
+                      className="rounded-md border-2 border-dashed border-primary/30 bg-surface-muted p-3 space-y-3"
                     >
                       <div className="flex items-center justify-between overflow-y-auto text-xs text-foreground-secondary">
                         <div className="flex items-center gap-2">

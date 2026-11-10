@@ -168,7 +168,7 @@ export function SectionDelayedEntry({
               {t("mileageLabel")}
             </TableHead>
           </TableRow>
-          <TableRow className=" text-foreground-subtle">
+          <TableRow className="text-foreground-subtle">
             <TableHead className="text-center">{t("actual")}</TableHead>
             <TableHead className="text-center">{t("interval")}</TableHead>
             <TableHead className="text-center">{t("overrunLabel")}</TableHead>

@@ -10,12 +10,12 @@ import type { ChartConfig } from "@/ui/chart";
 import { SearchableSelect } from "@/ui/select";
 import { cn } from "@/lib/utils";
 import { STAT_MONTHS, type GenericOrgStatistics, type JournalStatisticsParams } from "@/api/types/statistics";
-import { Label } from "@/ui/label";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { StatCard, type StatTone } from "@/ui/stat-card";
 
 import { LoadingState, EmptyState, ErrorState } from "@/ui/empty-state";
 import { formatNumber } from "@/lib/format";
+import { FilterField } from "@/ui/filter-bar";
 export interface StatMetric {
   key: string;
   totalKey: string;
@@ -338,23 +338,6 @@ export function StatsPanel({
         </div>
       </div>
     </section>
-  );
-}
-
-function FilterField({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Label className="flex flex-col gap-1">
-      <span className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
-      {children}
-    </Label>
   );
 }
 

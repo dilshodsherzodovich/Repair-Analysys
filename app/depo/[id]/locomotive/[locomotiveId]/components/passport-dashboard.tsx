@@ -35,6 +35,7 @@ import type {
   Txk13Inspection,
 } from "@/api/types/txk13-report";
 
+import { Skeleton } from "@/ui/skeleton";
 export type PassportView =
   "inspections" | "oil" | "location" | "crew" | "components" | "journals";
 
@@ -150,7 +151,7 @@ function TileSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-5 animate-pulse rounded bg-muted/60" />
+        <Skeleton key={i} className="h-5" />
       ))}
     </div>
   );

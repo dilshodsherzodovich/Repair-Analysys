@@ -343,7 +343,6 @@ export function DelayModal({
       onClose={handleClose}
       title={modalTexts.title}
       size="lg"
-      ariaDescribedBy="delay-modal"
     >
       <form
           key={formKey}

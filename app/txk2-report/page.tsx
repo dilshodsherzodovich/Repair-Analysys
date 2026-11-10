@@ -195,7 +195,7 @@ function Txk2ReportPage() {
           {/* Table */}
           <Table bordered density="compact">
             <TableHeader>
-              <TableRow className=" align-bottom">
+              <TableRow className="align-bottom">
                 <TableHead className="text-center w-8">#</TableHead>
                 <TableHead className="text-left">{t("locomotive")}</TableHead>
                 <TableHead className="text-left">{t("serviceLocation")}</TableHead>

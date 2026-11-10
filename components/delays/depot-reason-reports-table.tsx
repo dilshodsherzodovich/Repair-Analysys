@@ -7,6 +7,7 @@ import { useDepotReasonReports } from "@/api/hooks/use-delays";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { Skeleton } from "@/ui/skeleton";
 export function DepotReasonReportsTable() {
   const { getAllQueryValues } = useFilterParams();
   const {
@@ -57,7 +58,7 @@ export function DepotReasonReportsTable() {
                     index === skeletonColumnCount - 1 && ""
                   )}
                 >
-                  <div className="h-4 bg-border rounded animate-pulse" />
+                  <Skeleton className="h-4" />
                 </TableHead>
               ))}
             </TableRow>
@@ -73,10 +74,10 @@ export function DepotReasonReportsTable() {
                     key={colIndex}
                     className={cn(
                       "text-center",
-                      colIndex === skeletonColumnCount - 1 && "bg-border"
+                      colIndex === skeletonColumnCount - 1 && "bg-surface-muted font-semibold"
                     )}
                   >
-                    <div className="h-4 bg-border rounded animate-pulse mx-auto w-12" />
+                    <Skeleton className="h-4 mx-auto w-12" />
                   </TableCell>
                 ))}
               </TableRow>
@@ -88,10 +89,10 @@ export function DepotReasonReportsTable() {
                   key={colIndex}
                   className={cn(
                     "text-center",
-                    colIndex === skeletonColumnCount - 1 && "bg-border"
+                    colIndex === skeletonColumnCount - 1 && "bg-surface-muted font-semibold"
                   )}
                 >
-                  <div className="h-4 bg-border-strong rounded animate-pulse mx-auto w-12" />
+                  <Skeleton className="h-4 mx-auto w-12" />
                 </TableCell>
               ))}
             </TableRow>
@@ -143,7 +144,7 @@ export function DepotReasonReportsTable() {
                         key={key}
                         className={cn(
                           "text-center font-bold",
-                          index === headers?.length - 1 && "bg-border"
+                          index === headers?.length - 1 && "bg-surface-muted font-semibold"
                         )}
                       >
                         {value ?? 0}
@@ -160,7 +161,7 @@ export function DepotReasonReportsTable() {
                         key={key}
                         className={cn(
                           "text-center font-bold",
-                          index === headers?.length - 1 && "bg-border"
+                          index === headers?.length - 1 && "bg-surface-muted font-semibold"
                         )}
                       >
                         {value ?? 0}

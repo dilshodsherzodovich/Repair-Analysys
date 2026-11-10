@@ -44,7 +44,6 @@ export function RecoveryInfoModal({
       onClose={onClose}
       title={t("title")}
       size="lg"
-      ariaDescribedBy="recovery-info-modal"
     >
       <div className="mt-2 space-y-4">
         {delay && (

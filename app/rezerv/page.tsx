@@ -151,7 +151,7 @@ export default function RezervPage() {
 
       <div className="rounded-lg border border-border-strong overflow-hidden bg-background">
         {isLoading ? (
-          <Table bordered className=" min-w-[700px]">
+          <Table bordered className="min-w-[700px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="min-w-[50px]">
@@ -188,7 +188,7 @@ export default function RezervPage() {
             </TableBody>
           </Table>
         ) : (
-          <Table bordered className=" min-w-[700px]">
+          <Table bordered className="min-w-[700px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="min-w-[50px]">

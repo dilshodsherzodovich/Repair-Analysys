@@ -50,7 +50,7 @@ function RegistryTable({
 
   return (
     <div className="overflow-x-auto border-t border-border">
-      <Table className=" min-w-[1100px]">
+      <Table className="min-w-[1100px]">
         <TableHeader>
           <TableRow>
             <TableHead className={cn(HEAD, "w-12")}>{t("columns.no")}</TableHead>

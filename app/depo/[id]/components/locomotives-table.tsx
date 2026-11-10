@@ -4,10 +4,7 @@ import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { Pencil, Eye } from "lucide-react";
-import {
-  useGetLocomotiveModels,
-  useGetLocomotives,
-} from "@/api/hooks/use-locomotives";
+import { useGetLocomotiveModels, useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { hasPermission } from "@/lib/permissions";
 import { UserData } from "@/api/types/auth";
 import { LocomotiveModelData } from "@/api/types/locomotive";
@@ -15,6 +12,7 @@ import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
 import { Button } from "@/ui/button";
 
+import { Skeleton } from "@/ui/skeleton";
 const actionButtons = [
   {
     label: "Tahrirlash",
@@ -97,10 +95,7 @@ export default function LocomotivesTable() {
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {isPending &&
           Array.from({ length: 8 }).map((_, idx) => (
-            <div
-              key={`skeleton-${idx}`}
-              className="h-48 rounded-xl border border-border bg-background shadow-sm animate-pulse"
-            />
+            <Skeleton key={`skeleton-${idx}`} className="h-48 rounded-xl" />
           ))}
 
         {!isPending &&

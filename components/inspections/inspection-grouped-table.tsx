@@ -164,7 +164,7 @@ export function InspectionsGroupedTable({
             <div className="bg-primary-subtle px-4 py-3 border-b border-border-strong">
               <Skeleton className="h-5 w-24 rounded-md" />
             </div>
-            <Table bordered className=" min-w-[900px]">
+            <Table bordered className="min-w-[900px]">
               <TableHeader>
                 <TableRow>
                   {Array.from({ length: columnCount }).map((_, i) => (
@@ -215,7 +215,7 @@ export function InspectionsGroupedTable({
               {group?.name}
             </h3>
           </div>
-          <Table bordered className=" min-w-[900px]">
+          <Table bordered className="min-w-[900px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-14 min-w-[3.5rem]">

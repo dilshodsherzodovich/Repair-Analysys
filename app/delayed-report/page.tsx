@@ -217,7 +217,7 @@ export default function DelayedReportPage() {
                     </div>
                     <Table density="compact" wrapper={false}>
                       <TableHeader>
-                        <TableRow className=" text-foreground-subtle">
+                        <TableRow className="text-foreground-subtle">
                           <TableHead className="text-left">
                             {t("locomotive")}
                           </TableHead>

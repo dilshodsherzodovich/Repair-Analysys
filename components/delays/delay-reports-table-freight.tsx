@@ -6,6 +6,7 @@ import { ErrorState, EmptyState } from "@/ui/empty-state";
 import { DepotReasonReportsTable } from "./depot-reason-reports-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { Skeleton } from "@/ui/skeleton";
 interface DelayReportsTableFreightProps {
   data: DelayReportFreightResponse | undefined;
   isLoading: boolean;
@@ -151,13 +152,13 @@ export function DelayReportsTableFreight({
                 
               >
                 <TableCell>
-                  <div className="h-4 bg-border rounded animate-pulse" />
+                  <Skeleton className="h-4" />
                 </TableCell>
                 {Array.from({ length: 15 }).map((_, colIndex) => (
                   <TableCell
                     key={colIndex}
                   >
-                    <div className="h-4 bg-border rounded animate-pulse" />
+                    <Skeleton className="h-4" />
                   </TableCell>
                 ))}
               </TableRow>
@@ -304,13 +305,13 @@ export function DelayReportsTableFreight({
                   {formatNumber(row?.po_prosledovaniyu?.total_damage)}
                 </TableCell>
                 {/* Всего */}
-                <TableCell className="text-right bg-border">
+                <TableCell className="text-right bg-surface-muted font-semibold">
                   {row?.total?.count}
                 </TableCell>
-                <TableCell className="text-right bg-border">
+                <TableCell className="text-right bg-surface-muted font-semibold">
                   {row?.total?.total_delay_time}
                 </TableCell>
-                <TableCell className="text-right bg-border">
+                <TableCell className="text-right bg-surface-muted font-semibold">
                   {formatNumber(row?.total?.total_damage)}
                 </TableCell>
                 {/* В том числе: нет электровоза */}
@@ -328,10 +329,10 @@ export function DelayReportsTableFreight({
                   {row?.v_tom_chisle?.net_teplovaza?.total_delay_time}
                 </TableCell>
                 {/* В том числе: по вине депо */}
-                <TableCell className="text-right bg-border">
+                <TableCell className="text-right bg-surface-muted font-semibold">
                   {row?.v_tom_chisle?.po_vine_depo?.count}
                 </TableCell>
-                <TableCell className="text-right bg-border">
+                <TableCell className="text-right bg-surface-muted font-semibold">
                   {row?.v_tom_chisle?.po_vine_depo?.total_delay_time}
                 </TableCell>
               </TableRow>

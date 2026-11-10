@@ -247,7 +247,7 @@ export function PassportInspectionHistory({
       ) : rows.length === 0 ? (
         <EmptyBlock icon={History} message={t("empty")} />
       ) : (
-        <Table frame className=" min-w-[900px] table-fixed">
+        <Table frame className="min-w-[900px] table-fixed">
           <colgroup>
             <col style={{ width: "14%" }} />
             <col style={{ width: "14%" }} />

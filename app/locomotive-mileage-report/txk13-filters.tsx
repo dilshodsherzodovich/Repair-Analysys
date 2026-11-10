@@ -187,7 +187,7 @@ export function Txk13Filters({
               {inspectionTypes.map((insp) => (
                 <Label
                   key={insp.type_id}
-                  className="mb-0 flex cursor-pointer items-center gap-1.5 text-sm text-foreground select-none sm:mb-0"
+                  className="flex cursor-pointer items-center gap-1.5 text-foreground"
                 >
                   <Checkbox
                     checked={selectedInspectionIds.includes(insp.type_id)}

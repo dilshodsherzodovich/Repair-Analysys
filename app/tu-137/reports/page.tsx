@@ -266,7 +266,7 @@ export default function Tu137ReportsPage() {
 
         {/* Mashinists Table */}
         {!isLoading && !error && (
-          <Table density="compact" frame className=" text-left whitespace-nowrap">
+          <Table density="compact" frame className="text-left whitespace-nowrap">
             <TableHeader className="text-muted-foreground font-bold uppercase tracking-wider">
               <TableRow>
                 <TableHead>{t("mashinist")}</TableHead>
@@ -347,10 +347,10 @@ export default function Tu137ReportsPage() {
 
                       {isExpanded && (
                         <TableRow>
-                          <TableCell colSpan={5} className="sm:p-6">
+                          <TableCell colSpan={5} className="bg-surface-muted p-4">
                             <div className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
-                              <Table density="compact" wrapper={false} className=" text-left sm: whitespace-normal">
-                                <TableHeader className="text-muted-foreground font-bold uppercase tracking-wider sm:text-xs">
+                              <Table density="compact" wrapper={false}>
+                                <TableHeader>
                                   <TableRow>
                                     <TableHead>
                                       {t("table_number")}

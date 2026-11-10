@@ -261,7 +261,6 @@ export function RecoveryCulpritsModal({
       onClose={onClose}
       title={t("title")}
       size="xl"
-      ariaDescribedBy="recovery-culprits-modal"
     >
       <div className="mt-2 space-y-4">
         {/* Header card */}

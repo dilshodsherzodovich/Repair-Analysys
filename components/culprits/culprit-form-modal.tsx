@@ -75,7 +75,6 @@ export function CulpritFormModal({
       onClose={onClose}
       title={isEdit ? t("form.title_edit") : t("form.title_create")}
       size="md"
-      ariaDescribedBy="culprit-form-modal"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
           <FormField

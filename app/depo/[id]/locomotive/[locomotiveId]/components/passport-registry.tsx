@@ -63,7 +63,7 @@ export function PassportRegistry({ locomotiveId }: { locomotiveId: number }) {
       ) : rows.length === 0 ? (
         <EmptyBlock icon={Boxes} message={t("empty")} />
       ) : (
-        <Table frame className=" min-w-[820px] table-fixed">
+        <Table frame className="min-w-[820px] table-fixed">
           <colgroup>
             <col style={{ width: "11%" }} />
             <col style={{ width: "19%" }} />

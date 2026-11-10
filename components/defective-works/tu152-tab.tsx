@@ -366,7 +366,7 @@ export function TU152Tab() {
       </>
 
       <>
-        <div className="rounded-lg overflow-hidden ">
+        <div className="rounded-lg overflow-hidden">
           <div className="w-full overflow-x-auto">
             <PaginatedTable
               columns={columns}

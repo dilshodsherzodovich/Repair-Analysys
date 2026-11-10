@@ -295,7 +295,7 @@ export default function InspectionReportPage() {
                   </div>
                   <Table bordered density="compact">
                     <TableHeader>
-                      <TableRow className=" align-bottom">
+                      <TableRow className="align-bottom">
                         <TableHead className="text-center w-8">{globalT("no")}</TableHead>
                         <TableHead className="text-left">{globalT("locomotive")}</TableHead>
                         <TableHead className="text-left">{t("branch")}</TableHead>

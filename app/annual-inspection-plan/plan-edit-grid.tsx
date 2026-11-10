@@ -350,7 +350,7 @@ export function PlanEditGrid({
 
               {/* Table */}
               {open && (
-                <Table bordered density="compact" className=" table-fixed min-w-[900px]">
+                <Table bordered density="compact" className="table-fixed min-w-[900px]">
                   <colgroup>
                     <col style={{ width: 150 }} />
                     {GRID_COLUMNS.map((c, i) => (
