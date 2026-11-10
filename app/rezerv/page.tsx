@@ -224,20 +224,20 @@ export default function RezervPage() {
                   <TableRow
                     key={row.id}
                   >
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {row.__displayIndex}
                     </TableCell>
                     <TableCell className="font-medium">
                       {getLocomotiveDisplay(row)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {getLocationDisplay(row)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {formatDate(row.start_date)}
                     </TableCell>
                     {isArchiveTab && (
-                      <TableCell className="text-muted-foreground">
+                      <TableCell>
                         {formatDate(row.end_date)}
                       </TableCell>
                     )}

@@ -107,7 +107,9 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "transition-colors hover:bg-surface-muted/70 data-[state=selected]:bg-primary-subtle",
+        // One solid hover colour for every table, applied instantly; pinned
+        // cells (their own background) follow it with group-hover/row
+        "group/row hover:bg-row-hover data-[state=selected]:bg-primary-subtle",
         className
       )}
       {...props}

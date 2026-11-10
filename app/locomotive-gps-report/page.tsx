@@ -279,7 +279,7 @@ function ModelSection({
                 key={loco.id}
                 
               >
-                <TableCell className="text-center text-muted-foreground">
+                <TableCell className="text-center">
                   {idx + 1}
                 </TableCell>
                 <TableCell className="font-medium whitespace-nowrap">
@@ -297,7 +297,7 @@ function ModelSection({
                     status={loco.gps_status}
                   />
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell>
                   {loco.gps_status_detail || "—"}
                 </TableCell>
               </TableRow>

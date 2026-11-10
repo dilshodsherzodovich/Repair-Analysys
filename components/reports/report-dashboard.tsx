@@ -288,7 +288,7 @@ export default function ReportDashboard() {
                 {activeLocomotives.map((station, i) => (
                   <TableRow key={station.name} data-pdf-block>
                     <TableCell className="font-semibold">{station.name}</TableCell>
-                    <TableCell className="text-foreground-secondary">{station.codes}</TableCell>
+                    <TableCell>{station.codes}</TableCell>
                     <TableCell className="text-right font-semibold text-success">{station.total}</TableCell>
                   </TableRow>
                 ))}
@@ -317,7 +317,7 @@ export default function ReportDashboard() {
                     {col.items.map((station) => (
                       <TableRow key={station.name} data-pdf-block>
                         <TableCell className="font-semibold">{station.name}</TableCell>
-                        <TableCell className="text-foreground-secondary">{station.codes}</TableCell>
+                        <TableCell>{station.codes}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -389,7 +389,7 @@ export default function ReportDashboard() {
                               {type.locomotives.map((loc: DelayedLocomotive, li: number) => (
                                 <TableRow key={loc.name} data-pdf-block>
                                   <TableCell className="font-semibold">{loc.name}</TableCell>
-                                  <TableCell className="text-foreground-secondary">
+                                  <TableCell>
                                     {loc.hour ? loc.hour + " " + globalT("hour").toLowerCase() : loc.mileage + " " + globalT("Km").toLowerCase()}
                                   </TableCell>
                                 </TableRow>
@@ -427,10 +427,10 @@ export default function ReportDashboard() {
                       {group.map((loco) => (
                         <TableRow key={`reserved-${loco.loco_id}`} data-pdf-block>
                           <TableCell className="font-semibold">{loco.loco_name}</TableCell>
-                          <TableCell className="text-foreground-secondary">
+                          <TableCell>
                             {formatDateTime(loco.reserve_started_time)}
                           </TableCell>
-                          <TableCell className="text-foreground-secondary">
+                          <TableCell>
                             {formatDateTime(loco.reserve_closed_time)}
                           </TableCell>
                         </TableRow>
@@ -515,8 +515,8 @@ function RepairTypeTable({ repairType }: { repairType: InspectionTypeGroup }) {
           {repairType.locomotives.map((loco: InspectionTypeLocomotive) => (
             <TableRow key={loco.name} data-pdf-block>
               <TableCell className="font-semibold">{loco.name}</TableCell>
-              <TableCell className="text-foreground-secondary">{formatDateTime(loco.inspection_started_time)}</TableCell>
-              <TableCell className="text-foreground-secondary">{formatDateTime(loco.inspection_closed_time)}</TableCell>
+              <TableCell>{formatDateTime(loco.inspection_started_time)}</TableCell>
+              <TableCell>{formatDateTime(loco.inspection_closed_time)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

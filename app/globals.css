@@ -34,6 +34,7 @@
   --background: #ffffff; /* page, cards, inputs */
   --surface-muted: #f8fafc; /* table headers, zebra rows, sidebar */
   --muted: #f1f5f9; /* hover fills, chips, skeletons */
+  --row-hover: #f8fafc; /* hovered table row; solid so pinned cells match */
   --scrim: #000000; /* modal / drawer overlay, always with opacity (bg-scrim/50) */
 
   /* Lines */
@@ -139,6 +140,7 @@
   --color-foreground-secondary: var(--foreground-secondary);
   --color-foreground-subtle: var(--foreground-subtle);
   --color-surface-muted: var(--surface-muted);
+  --color-row-hover: var(--row-hover);
   --color-scrim: var(--scrim);
   --color-border-strong: var(--border-strong);
   --color-success-subtle: var(--success-subtle);

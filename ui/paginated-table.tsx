@@ -388,7 +388,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                   {showCheckbox && (
                     <TableCell
                       className={cn(
-                        "text-muted-foreground",
+                        "",
                         sizeClasses.checkboxCell,
                         isSelected && "bg-primary-subtle"
                       )}
@@ -412,7 +412,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                       <TableCell
                         key={column.key}
                         className={cn(
-                          "text-muted-foreground",
+                          "",
                           sizeClasses.rowCell,
                           column.className,
                           isSelected && "bg-primary-subtle"
@@ -434,7 +434,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                     <TableCell
                       className={cn(
                         "text-center sticky right-0 z-10 shadow-pin-end",
-                        isSelected ? "bg-primary-subtle" : "bg-background"
+                        isSelected ? "bg-primary-subtle" : "bg-background group-hover/row:bg-row-hover"
                       )}
                     >
                       <div className="flex items-center justify-center gap-2">

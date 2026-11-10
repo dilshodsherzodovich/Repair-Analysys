@@ -309,7 +309,7 @@ export default function InspectionReportPage() {
                           key={inspection.id}
                           
                         >
-                          <TableCell className="text-center text-muted-foreground">{index + 1}</TableCell>
+                          <TableCell className="text-center">{index + 1}</TableCell>
                           <TableCell className="font-medium whitespace-nowrap">
                             {[inspection.locomotive?.name, inspection.locomotive?.locomotive_model?.name]
                               .filter(Boolean)

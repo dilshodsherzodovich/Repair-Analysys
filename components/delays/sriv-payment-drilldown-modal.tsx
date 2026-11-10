@@ -84,16 +84,16 @@ export function SrivPaymentDrilldownModal({
                       key={row.id}
                       className="last:border-0"
                     >
-                      <TableCell className="whitespace-nowrap text-foreground-secondary">
+                      <TableCell className="whitespace-nowrap">
                         {fmtDate(row.incident_date)}
                       </TableCell>
                       <TableCell className="font-medium">
                         {row.train_number || "-"}
                       </TableCell>
-                      <TableCell className="text-foreground-secondary">
+                      <TableCell>
                         {row.station || "-"}
                       </TableCell>
-                      <TableCell className="text-foreground-secondary">
+                      <TableCell>
                         {row.responsible_org_name ||
                           row.responsible_org_detail?.name ||
                           "-"}
@@ -101,7 +101,7 @@ export function SrivPaymentDrilldownModal({
                       <TableCell className="whitespace-nowrap text-right font-semibold tabular-nums">
                         {fmtSum(row.damage_amount || 0)}
                       </TableCell>
-                      <TableCell className="text-foreground-secondary">
+                      <TableCell>
                         {culprits.length > 0 ? (
                           <span className="tabular-nums">
                             {recovered}/{culprits.length}

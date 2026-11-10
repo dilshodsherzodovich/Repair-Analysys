@@ -227,7 +227,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
     ? "bg-primary-subtle"
     : justSaved
       ? "bg-success-subtle"
-      : "bg-background group-hover:bg-surface-muted";
+      : "bg-background group-hover:bg-row-hover";
   // Every line is a plain row (no merged cells), so hover, borders and pinned
   // columns behave like any table. No, locomotive and the edit button show on
   // the locomotive's first line; below them those cells stay empty with no
@@ -242,10 +242,8 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={component.id}
           className={cn(
-            // The hovered line gets the same solid grey as the rest of its
-            // locomotive (and the pinned cells), not the table's lighter hover.
-            // No fade: the pinned cells change instantly, so the row must too
-            "transition-none hover:bg-surface-muted group-hover:bg-surface-muted",
+            // The hovered line takes the same colour as the rest of its locomotive
+            "hover:bg-row-hover group-hover:bg-row-hover",
             isLast(componentIndex) && "[&>td]:border-b-border-strong",
             isEditing && "bg-primary-subtle hover:bg-primary-subtle group-hover:bg-primary-subtle",
             justSaved && "bg-success-subtle hover:bg-success-subtle group-hover:bg-success-subtle",
@@ -255,7 +253,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
             className={cn(
               stickyNo,
               stickyBg,
-              "z-[5] text-muted-foreground",
+              "z-[5]",
               groupCell(componentIndex),
             )}
           >
@@ -303,7 +301,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 key={field}
                 className={cn(
                   "duration-700",
-                  isInfo ? "text-muted-foreground" : "text-center",
+                  isInfo ? "" : "text-center",
                   editable && "",
                   // Changed values stand out while the highlight lasts
                   wasSaved && "bg-success-subtle font-semibold text-success",

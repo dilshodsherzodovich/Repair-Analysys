@@ -382,7 +382,7 @@ export default function Tu137ReportsPage() {
                                       <TableRow
                                         key={record.id}
                                       >
-                                        <TableCell className="font-medium text-muted-foreground">
+                                        <TableCell className="font-medium">
                                           #{record.id}
                                         </TableCell>
                                         <TableCell>
@@ -406,10 +406,10 @@ export default function Tu137ReportsPage() {
                                               : ""}
                                           </div>
                                         </TableCell>
-                                        <TableCell className="text-foreground-secondary whitespace-nowrap">
+                                        <TableCell className="whitespace-nowrap">
                                           {formatDate(record.created_at)}
                                         </TableCell>
-                                        <TableCell className="text-foreground-secondary whitespace-pre-wrap max-w-lg">
+                                        <TableCell className="whitespace-pre-wrap max-w-lg">
                                           {record.comments}
                                         </TableCell>
                                         <TableCell className="text-center">

@@ -65,7 +65,7 @@ function Row({
         <TableCell
           key={c.key}
           className={cn(
-            "align-top text-foreground-secondary",
+            "align-top",
             c.align === "right" ? "text-right tabular-nums" : "text-left",
             c.wrap ? "whitespace-normal break-words" : "whitespace-nowrap",
             c.width

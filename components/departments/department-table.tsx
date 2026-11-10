@@ -130,10 +130,10 @@ export function DepartmentTable({
                       <TableCell>
                         <span className="font-medium">{department.name}</span>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell>
                         {department.organization}
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell>
                         {department.created
                           ? format(department.created, "dd.MM.yyyy HH:mm")
                           : ""}

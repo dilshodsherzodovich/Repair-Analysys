@@ -234,7 +234,7 @@ export default function DelayedReportPage() {
                             <TableCell className="font-medium">
                               {loc.name}
                             </TableCell>
-                            <TableCell className="text-right text-muted-foreground tabular-nums whitespace-nowrap">
+                            <TableCell className="text-right tabular-nums whitespace-nowrap">
                               {loc.hour
                                 ? `${loc.hour} ${globalT("hour").toLowerCase()}`
                                 : ""}

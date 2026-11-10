@@ -159,7 +159,7 @@ export function InspectionsGroupedTable({
         {[1, 2].map((groupKey) => (
           <div
             key={groupKey}
-            className="rounded-lg border border-border-strong overflow-hidden"
+            className="rounded-lg border border-border-strong overflow-hidden bg-background"
           >
             <div className="bg-primary-subtle px-4 py-3 border-b border-border-strong">
               <Skeleton className="h-5 w-24 rounded-md" />
@@ -208,7 +208,7 @@ export function InspectionsGroupedTable({
       {groupedByType?.map((group) => (
         <div
           key={group.id}
-          className="rounded-lg border border-border-strong overflow-hidden"
+          className="rounded-lg border border-border-strong overflow-hidden bg-background"
         >
           <div className="bg-primary-subtle px-4 py-2 border-b border-border-strong">
             <h3 className="text-xl font-semibold text-foreground">
@@ -268,13 +268,13 @@ export function InspectionsGroupedTable({
                     <TableCell>
                       {getLocomotiveDisplay(inspection)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {getBranchName(inspection)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {inspection?.inspection_type?.name ?? "—"}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {isSectionCellUpdating(inspection.id) ? (
                         <span className="inline-flex items-center gap-2 text-muted-foreground">
                           <Loader2 className="h-4 w-4 animate-spin shrink-0" />
@@ -328,15 +328,15 @@ export function InspectionsGroupedTable({
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {inspection?.comment || "—"}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {inspection?.author?.first_name
                         ? `${inspection?.author?.first_name} ${inspection?.author?.last_name || ""}`.trim()
                         : (inspection?.author?.username ?? "—")}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {formatCreatedTime(inspection?.created_time)}
                     </TableCell>
                     <TableCell>

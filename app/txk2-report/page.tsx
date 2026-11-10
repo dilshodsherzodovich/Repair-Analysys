@@ -220,14 +220,14 @@ function Txk2ReportPage() {
                   key={idx}
                   
                 >
-                  <TableCell className="text-center text-muted-foreground">{idx + 1}</TableCell>
+                  <TableCell className="text-center">{idx + 1}</TableCell>
                   <TableCell className="font-medium whitespace-nowrap">{row.locomotive.split("|").join(" ")}</TableCell>
                   <TableCell className="whitespace-nowrap">{row.branch}</TableCell>
                   <TableCell className="text-center">{row.inspection_type}</TableCell>
                   <TableCell className="text-center whitespace-nowrap">{fmtTime(row.entry_time)}</TableCell>
                   <TableCell className="text-center">{fmtNum(row.fixed_maneuver_time)}</TableCell>
                   <TableCell className="text-center whitespace-nowrap">{fmtTime(row.kanava_entry_time)}</TableCell>
-                  <TableCell className="text-center text-muted-foreground">{fmtNum(row.standard_duration)}</TableCell>
+                  <TableCell className="text-center">{fmtNum(row.standard_duration)}</TableCell>
                   <TableCell className="text-center">{fmtNum(row.technical_service_hours)}</TableCell>
                   <TableCell className="text-center whitespace-nowrap">{fmtTime(row.kanava_exit_time)}</TableCell>
                   <TableCell className="text-center whitespace-nowrap">{nextTypeName(row.next_inspection_type, locale) ?? "—"}</TableCell>

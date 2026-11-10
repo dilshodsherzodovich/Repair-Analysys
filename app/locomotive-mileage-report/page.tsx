@@ -70,7 +70,7 @@ function BandajCell({ locoId, serverValue }: { locoId: number; serverValue: numb
   }
 
   return (
-    <TableCell className="text-center text-foreground-secondary relative">
+    <TableCell className="text-center relative">
       {saving ? (
         <Loader2 className="size-3.5 animate-spin text-primary mx-auto my-2" />
       ) : (
@@ -135,7 +135,7 @@ function ManufactureDateCell({ locoId, serverValue }: { locoId: number; serverVa
 
   return (
     <TableCell
-      className="text-foreground-secondary relative whitespace-nowrap min-w-[140px] cursor-pointer"
+      className="relative whitespace-nowrap min-w-[140px] cursor-pointer"
       onClick={() => !editing && !saving && setEditing(true)}
     >
       {saving ? (
@@ -443,13 +443,13 @@ export default function LocomotiveMileageReportPage() {
                       key={`${org.organization_name}-${loco.index}`}
                       className="group"
                     >
-                      <TableCell className="sticky left-0 z-10 text-center text-foreground-secondary bg-background min-w-[40px]">
+                      <TableCell className="sticky left-0 z-10 text-center bg-background group-hover/row:bg-row-hover min-w-[40px]">
                         {loco.index}
                       </TableCell>
-                      <TableCell className="sticky left-[40px] z-10 whitespace-nowrap bg-background min-w-[72px]">
+                      <TableCell className="sticky left-[40px] z-10 whitespace-nowrap bg-background group-hover/row:bg-row-hover min-w-[72px]">
                         {loco.series}
                       </TableCell>
-                      <TableCell className="sticky left-[112px] z-10 font-mono bg-background min-w-[72px] shadow-pin-start">
+                      <TableCell className="sticky left-[112px] z-10 font-mono bg-background group-hover/row:bg-row-hover min-w-[72px] shadow-pin-start">
                         {loco.number}
                       </TableCell>
                       <ManufactureDateCell locoId={loco.id} serverValue={loco.manufactured_date} />
@@ -466,7 +466,7 @@ export default function LocomotiveMileageReportPage() {
                           </Button>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right text-foreground-secondary">
+                      <TableCell className="text-right">
                         {formatNum(loco.average_monthly_mileage)}
                       </TableCell>
                       {selectedInspectionTypes.map((inspType, idx) => {
@@ -518,17 +518,17 @@ export default function LocomotiveMileageReportPage() {
                           ];
                         }
                         return [
-                          <TableCell key={`${loco.index}-${inspType.type_id}-sana`} className={`text-foreground-secondary whitespace-nowrap ${inspBg(idx)}`}>
+                          <TableCell key={`${loco.index}-${inspType.type_id}-sana`} className={`whitespace-nowrap ${inspBg(idx)}`}>
                             {insp!.last_date === "-" ? "—" : insp!.last_date}
                           </TableCell>,
-                          <TableCell key={`${loco.index}-${inspType.type_id}-actual-sana`} className={`hidden text-foreground-secondary whitespace-nowrap ${inspBg(idx)}`}>
+                          <TableCell key={`${loco.index}-${inspType.type_id}-actual-sana`} className={`hidden whitespace-nowrap ${inspBg(idx)}`}>
                             {insp!.actual_last_date === "-" ? "—" : (insp!.actual_last_date || "—")}
                           </TableCell>,
                           <TableCell key={`${loco.index}-${inspType.type_id}-tamirdan`} className={`text-right ${inspBg(idx)}`}>
                             {showKm && <div className="text-primary">{formatNum(insp!.km_value_since_repair)}<span className="ml-0.5 text-2xs">km</span></div>}
                             {showHours && <div className="text-category-violet">{formatNum(insp!.hours_value_since_repair)}<span className="ml-0.5 text-2xs">s</span></div>}
                           </TableCell>,
-                          <TableCell key={`${loco.index}-${inspType.type_id}-norma`} className={`text-right text-foreground-secondary ${inspBg(idx)}`}>
+                          <TableCell key={`${loco.index}-${inspType.type_id}-norma`} className={`text-right ${inspBg(idx)}`}>
                             {showKm && <div>{formatNum(insp!.km_norm)}<span className="ml-0.5 text-2xs">km</span></div>}
                             {showHours && <div className="text-category-violet">{formatNum(insp!.hours_norm)}<span className="ml-0.5 text-2xs">s</span></div>}
                           </TableCell>,

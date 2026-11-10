@@ -98,7 +98,7 @@ export function SectionDelayedDuration({
               <TableCell className="text-center whitespace-nowrap">
                 {fmtTime(row.close_time)}
               </TableCell>
-              <TableCell className="text-center text-muted-foreground tabular-nums">
+              <TableCell className="text-center tabular-nums">
                 {fmtNum(row.interval_hours)}
               </TableCell>
               <TableCell className="text-center tabular-nums">

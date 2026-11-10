@@ -57,7 +57,7 @@ function MetricCells({ metric }: { metric: DelayedInspectionMetric }) {
       >
         {fmtNum(metric.actual)}
       </TableCell>
-      <TableCell className="text-center tabular-nums text-muted-foreground">
+      <TableCell className="text-center tabular-nums">
         {fmtNum(metric.interval)}
       </TableCell>
       <TableCell

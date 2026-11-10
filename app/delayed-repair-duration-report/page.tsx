@@ -257,7 +257,7 @@ function DelayedRepairDurationReportPage() {
                   key={row.id ?? idx}
                   
                 >
-                  <TableCell className="text-center text-muted-foreground">{idx + 1}</TableCell>
+                  <TableCell className="text-center">{idx + 1}</TableCell>
                   <TableCell className="font-medium whitespace-nowrap">
                     {[row.locomotive_name, row.locomotive_model_name].filter(Boolean).join(" ")}
                   </TableCell>
@@ -266,7 +266,7 @@ function DelayedRepairDurationReportPage() {
                   <TableCell className="text-center whitespace-nowrap">{fmtTime(row.entry_time)}</TableCell>
                   <TableCell className="text-center whitespace-nowrap">{fmtTime(row.kanava_entry_time)}</TableCell>
                   <TableCell className="text-center whitespace-nowrap">{fmtTime(row.close_time)}</TableCell>
-                  <TableCell className="text-center text-muted-foreground">{fmtNum(row.interval_hours)}</TableCell>
+                  <TableCell className="text-center">{fmtNum(row.interval_hours)}</TableCell>
                   <TableCell className="text-center">{fmtNum(row.delayed_hours)}</TableCell>
                   <TableCell className="text-center font-semibold text-destructive">{fmtNum(delayedAmount(row))}</TableCell>
                   <TableCell className="text-left">

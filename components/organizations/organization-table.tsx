@@ -159,7 +159,7 @@ export function OrganizationTable({
                         {getFileName(organization.attachment_file)}
                       </a>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {format(organization.created, "dd.MM.yyyy HH:mm")}
                     </TableCell>
                     <TableCell>

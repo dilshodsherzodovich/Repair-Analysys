@@ -244,7 +244,7 @@ export function UserTable({
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell>
                       {user.createdAt}
                     </TableCell>
                     <TableCell>

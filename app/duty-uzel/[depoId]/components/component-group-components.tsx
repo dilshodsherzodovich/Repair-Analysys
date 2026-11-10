@@ -86,7 +86,7 @@ function RegistryTable({
               <TableCell className={cn(CELL, "whitespace-nowrap")}>
                 {formatDefectDate(registry.defect_date)}
               </TableCell>
-              <TableCell className={cn(CELL, "")}>
+              <TableCell className={cn(CELL)}>
                 {registry.locomotive}
                 {registry.locomotive_model ? `-${registry.locomotive_model}` : ""}
               </TableCell>

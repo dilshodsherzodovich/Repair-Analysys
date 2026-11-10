@@ -207,6 +207,14 @@ one meta line (org · period · "holatiga")
   background), and status highlights (primary-subtle, destructive-subtle,
   ...). No per-cell backgrounds, borders, padding or text sizes.
 - A table's scroll box is `frame`, never a hand-built wrapper div.
+- Cell text is `foreground` (dark) in every table; no grey values. Only
+  status colours and the empty-value dash (`foreground-subtle`) differ.
+- Row hover is one solid token, `row-hover`, applied instantly. Pinned cells
+  keep a solid background and follow it with `group-hover/row:bg-row-hover`.
+- Interactive tables don't merge body cells (no rowSpan): a group's shared
+  values show on its first line, the cells below stay empty with no line
+  between, and a darker line closes the group (bandages, crankshaft).
+- A table box sits on `bg-background` (white), even inside grouped lists.
 
 ### Forms
 
