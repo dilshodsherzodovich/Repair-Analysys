@@ -236,11 +236,12 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={section.key}
           className={cn(
-            // Solid colour so it matches the pinned cells
-            "duration-700 hover:bg-transparent group-hover:bg-surface-muted",
+            // The hovered line gets the same solid grey as the rest of its
+            // locomotive (and the pinned cells), not the table's lighter hover
+            "duration-700 hover:bg-surface-muted group-hover:bg-surface-muted",
             isLast(sectionIndex) && "[&>td]:border-b-border-strong",
-            isEditing && "bg-primary-subtle group-hover:bg-primary-subtle",
-            justSaved && "bg-success-subtle group-hover:bg-success-subtle",
+            isEditing && "bg-primary-subtle hover:bg-primary-subtle group-hover:bg-primary-subtle",
+            justSaved && "bg-success-subtle hover:bg-success-subtle group-hover:bg-success-subtle",
           )}
         >
           <TableCell
