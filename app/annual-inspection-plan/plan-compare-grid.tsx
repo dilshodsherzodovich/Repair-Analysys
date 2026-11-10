@@ -11,6 +11,14 @@ import {
 import { GRID_COLUMNS, MONTHS_SHORT, QUARTER_LABELS, accentFor } from "./plan-grid-shared";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { CardButton } from "@/ui/card-button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 const mVal = (row: AnnualPlanReportRow | undefined, m: number) => cellCount(row?.months[String(m)]);
 const qVal = (row: AnnualPlanReportRow | undefined, q: number) => cellCount(row?.quarters[String(q)]);
@@ -241,41 +249,41 @@ export function PlanCompareGrid({
 
             {open && (
               <div className="overflow-x-auto">
-                <table className="w-full table-fixed min-w-[1080px] border-collapse text-xs">
+                <Table wrapper={false} className="w-full table-fixed min-w-[1080px] border-collapse text-xs">
                   <colgroup>
                     <col style={{ width: 150 }} />
                     {GRID_COLUMNS.map((c, i) => <col key={i} />)}
                     <col style={{ width: 84 }} />
                   </colgroup>
-                  <thead>
-                    <tr className="text-muted-foreground bg-muted/40">
-                      <th className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</th>
+                  <TableHeader>
+                    <TableRow className="text-muted-foreground bg-muted/40">
+                      <TableHead className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</TableHead>
                       {GRID_COLUMNS.map((col) =>
                         col.kind === "month" ? (
-                          <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">{MONTHS_SHORT[col.month - 1]}</th>
+                          <TableHead key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">{MONTHS_SHORT[col.month - 1]}</TableHead>
                         ) : (
-                          <th key={`q${col.quarter}`} className="border border-border px-1 py-2.5 text-center font-semibold text-success">{QUARTER_LABELS[col.quarter - 1]}</th>
+                          <TableHead key={`q${col.quarter}`} className="border border-border px-1 py-2.5 text-center font-semibold text-success">{QUARTER_LABELS[col.quarter - 1]}</TableHead>
                         )
                       )}
-                      <th className="border border-border px-2 py-2.5 text-center font-semibold text-foreground">Σ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                      <TableHead className="border border-border px-2 py-2.5 text-center font-semibold text-foreground">Σ</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {t.models.map((m) => (
-                      <tr key={m.id}>
-                        <td className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">{m.name}</td>
+                      <TableRow key={m.id}>
+                        <TableCell className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">{m.name}</TableCell>
                         {GRID_COLUMNS.map((col) =>
                           col.kind === "month" ? (
-                            <td key={`m${col.month}`} className="border border-border p-0"><Cell plan={mVal(m.plan, col.month)} fact={mVal(m.fact, col.month)} /></td>
+                            <TableCell key={`m${col.month}`} className="border border-border p-0"><Cell plan={mVal(m.plan, col.month)} fact={mVal(m.fact, col.month)} /></TableCell>
                           ) : (
-                            <td key={`q${col.quarter}`} className="border border-border p-0"><Cell plan={qVal(m.plan, col.quarter)} fact={qVal(m.fact, col.quarter)} /></td>
+                            <TableCell key={`q${col.quarter}`} className="border border-border p-0"><Cell plan={qVal(m.plan, col.quarter)} fact={qVal(m.fact, col.quarter)} /></TableCell>
                           )
                         )}
-                        <td className="border border-border p-0"><Cell plan={yVal(m.plan)} fact={yVal(m.fact)} /></td>
-                      </tr>
+                        <TableCell className="border border-border p-0"><Cell plan={yVal(m.plan)} fact={yVal(m.fact)} /></TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
             )}
           </div>

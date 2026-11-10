@@ -24,6 +24,14 @@ import { PlanStatCards } from "./plan-stat-cards";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 function getErrorMessage(e: any): string {
   return (
@@ -357,7 +365,7 @@ export function PlanEditGrid({
               {/* Table */}
               {open && (
                 <div className="overflow-x-auto">
-                  <table className="w-full table-fixed min-w-[900px] border-collapse text-xs">
+                  <Table wrapper={false} className="w-full table-fixed min-w-[900px] border-collapse text-xs">
                     <colgroup>
                       <col style={{ width: 150 }} />
                       {GRID_COLUMNS.map((c, i) => (
@@ -365,39 +373,39 @@ export function PlanEditGrid({
                       ))}
                       <col style={{ width: 72 }} />
                     </colgroup>
-                    <thead>
-                      <tr className="text-muted-foreground bg-muted/40">
-                        <th className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</th>
+                    <TableHeader>
+                      <TableRow className="text-muted-foreground bg-muted/40">
+                        <TableHead className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</TableHead>
                         {GRID_COLUMNS.map((col) =>
                           col.kind === "month" ? (
-                            <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">
+                            <TableHead key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">
                               {MONTHS_SHORT[col.month - 1]}
-                            </th>
+                            </TableHead>
                           ) : (
-                            <th key={`q${col.quarter}`} className={cn("border border-border px-1 py-2.5 text-center font-semibold", accent.soft, accent.text)}>
+                            <TableHead key={`q${col.quarter}`} className={cn("border border-border px-1 py-2.5 text-center font-semibold", accent.soft, accent.text)}>
                               {QUARTER_LABELS[col.quarter - 1]}
-                            </th>
+                            </TableHead>
                           )
                         )}
-                        <th className={cn("border border-border px-2 py-2.5 text-center font-semibold", accent.soft, accent.text)}>Σ</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                        <TableHead className={cn("border border-border px-2 py-2.5 text-center font-semibold", accent.soft, accent.text)}>Σ</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {group.models.map((mdl) => (
-                        <tr key={mdl.id} className="hover:bg-muted/20 transition-colors">
-                          <td className="border border-border px-3 py-1 text-left font-medium text-foreground whitespace-nowrap">
+                        <TableRow key={mdl.id} className="hover:bg-muted/20 transition-colors">
+                          <TableCell className="border border-border px-3 py-1 text-left font-medium text-foreground whitespace-nowrap">
                             {mdl.name}
-                          </td>
+                          </TableCell>
                           {GRID_COLUMNS.map((col) => {
                             if (col.kind === "quarter") {
                               return (
-                                <td key={`q${col.quarter}`} className={cn("border border-border px-1 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
+                                <TableCell key={`q${col.quarter}`} className={cn("border border-border px-1 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
                                   {rowQuarter(group.type.id, mdl.id, col.quarter) || 0}
-                                </td>
+                                </TableCell>
                               );
                             }
                             return (
-                              <td key={`m${col.month}`} className="border border-border p-0">
+                              <TableCell key={`m${col.month}`} className="border border-border p-0">
                                 <EditableCell
                                   value={countAt(group.type.id, mdl.id, col.month)}
                                   typeId={group.type.id}
@@ -405,16 +413,16 @@ export function PlanEditGrid({
                                   month={col.month}
                                   onCommit={commit}
                                 />
-                              </td>
+                              </TableCell>
                             );
                           })}
-                          <td className={cn("border border-border px-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
+                          <TableCell className={cn("border border-border px-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
                             {rowYearly(group.type.id, mdl.id) || ""}
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
+                    </TableBody>
+                  </Table>
                 </div>
               )}
             </div>

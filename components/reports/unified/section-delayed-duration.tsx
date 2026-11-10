@@ -5,6 +5,14 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { DelayedRepairDurationRow } from "@/api/types/delayed-repair-duration-report";
 import { SectionShell } from "./section-shell";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 /** Times arrive as "yyyy-MM-dd HH:mm", ISO, or null. */
 export function fmtTime(value: string | null): string {
@@ -53,63 +61,63 @@ export function SectionDelayedDuration({
       isEmpty={rows.length === 0}
     >
       <div className="overflow-x-auto">
-        <table className="w-full text-xs border-collapse">
-          <thead>
-            <tr className="bg-surface-muted text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
-              <th className="border px-2 py-1.5 text-center w-10">
+        <Table wrapper={false} className="w-full text-xs border-collapse">
+          <TableHeader>
+            <TableRow className="bg-surface-muted text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <TableHead className="border px-2 py-1.5 text-center w-10">
                 {globalT("no")}
-              </th>
-              <th className="border px-2 py-1.5 text-left">{t("locomotive")}</th>
-              <th className="border px-2 py-1.5 text-left">{t("branch")}</th>
-              <th className="border px-2 py-1.5 text-center">
+              </TableHead>
+              <TableHead className="border px-2 py-1.5 text-left">{t("locomotive")}</TableHead>
+              <TableHead className="border px-2 py-1.5 text-left">{t("branch")}</TableHead>
+              <TableHead className="border px-2 py-1.5 text-center">
                 {t("inspectionType")}
-              </th>
-              <th className="border px-2 py-1.5 text-center">{t("entryTime")}</th>
-              <th className="border px-2 py-1.5 text-center">{t("closeTime")}</th>
-              <th className="border px-2 py-1.5 text-center">{t("normHours")}</th>
-              <th className="border px-2 py-1.5 text-center">{t("spentHours")}</th>
-              <th className="border px-2 py-1.5 text-center">
+              </TableHead>
+              <TableHead className="border px-2 py-1.5 text-center">{t("entryTime")}</TableHead>
+              <TableHead className="border px-2 py-1.5 text-center">{t("closeTime")}</TableHead>
+              <TableHead className="border px-2 py-1.5 text-center">{t("normHours")}</TableHead>
+              <TableHead className="border px-2 py-1.5 text-center">{t("spentHours")}</TableHead>
+              <TableHead className="border px-2 py-1.5 text-center">
                 {t("overrunHours")}
-              </th>
-              <th className="border px-2 py-1.5 text-left">{t("delayReason")}</th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+              <TableHead className="border px-2 py-1.5 text-left">{t("delayReason")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {rows.map((row, i) => (
-              <tr
+              <TableRow
                 key={row.id ?? i}
                 className={cn("hover:bg-surface-muted", i % 2 === 1 && "bg-surface-muted/40")}
               >
-                <td className="border px-2 py-1 text-center text-foreground-subtle">
+                <TableCell className="border px-2 py-1 text-center text-foreground-subtle">
                   {i + 1}
-                </td>
-                <td className="border px-2 py-1 font-medium whitespace-nowrap">
+                </TableCell>
+                <TableCell className="border px-2 py-1 font-medium whitespace-nowrap">
                   {[row.locomotive_name, row.locomotive_model_name]
                     .filter(Boolean)
                     .join(" ")}
-                </td>
-                <td className="border px-2 py-1 whitespace-nowrap">
+                </TableCell>
+                <TableCell className="border px-2 py-1 whitespace-nowrap">
                   {row.branch_name}
-                </td>
-                <td className="border px-2 py-1 text-center">
+                </TableCell>
+                <TableCell className="border px-2 py-1 text-center">
                   {row.inspection_type_name}
-                </td>
-                <td className="border px-2 py-1 text-center whitespace-nowrap">
+                </TableCell>
+                <TableCell className="border px-2 py-1 text-center whitespace-nowrap">
                   {fmtTime(row.entry_time)}
-                </td>
-                <td className="border px-2 py-1 text-center whitespace-nowrap">
+                </TableCell>
+                <TableCell className="border px-2 py-1 text-center whitespace-nowrap">
                   {fmtTime(row.close_time)}
-                </td>
-                <td className="border px-2 py-1 text-center text-muted-foreground tabular-nums">
+                </TableCell>
+                <TableCell className="border px-2 py-1 text-center text-muted-foreground tabular-nums">
                   {fmtNum(row.interval_hours)}
-                </td>
-                <td className="border px-2 py-1 text-center tabular-nums">
+                </TableCell>
+                <TableCell className="border px-2 py-1 text-center tabular-nums">
                   {fmtNum(row.delayed_hours)}
-                </td>
-                <td className="border px-2 py-1 text-center font-semibold text-destructive tabular-nums">
+                </TableCell>
+                <TableCell className="border px-2 py-1 text-center font-semibold text-destructive tabular-nums">
                   {fmtNum(overrun(row))}
-                </td>
-                <td className="border px-2 py-1">
+                </TableCell>
+                <TableCell className="border px-2 py-1">
                   {row.delay_reason_code ? (
                     <>
                       <span className="font-medium">
@@ -124,11 +132,11 @@ export function SectionDelayedDuration({
                   ) : (
                     <span className="text-foreground-subtle">—</span>
                   )}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </SectionShell>
   );

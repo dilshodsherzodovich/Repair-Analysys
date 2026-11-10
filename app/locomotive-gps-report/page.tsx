@@ -35,6 +35,14 @@ import {
 import { PageHeader } from "@/ui/page-header";
 import { Button } from "@/ui/button";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 const LOCOMOTIVE_TYPES = [
   "electric_loco",
@@ -302,61 +310,61 @@ function ModelSection({
 
       {open && (
         <div className="overflow-x-auto border-t border-muted">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide">
-                <th className="border-b px-2 py-2 text-center w-8">#</th>
-                <th className="border-b px-3 py-2 text-left whitespace-nowrap">
+          <Table wrapper={false} className="w-full text-sm border-collapse">
+            <TableHeader>
+              <TableRow className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide">
+                <TableHead className="border-b px-2 py-2 text-center w-8">#</TableHead>
+                <TableHead className="border-b px-3 py-2 text-left whitespace-nowrap">
                   {t("locomotive")}
-                </th>
-                <th className="border-b px-3 py-2 text-left whitespace-nowrap">
+                </TableHead>
+                <TableHead className="border-b px-3 py-2 text-left whitespace-nowrap">
                   {t("serviceType")}
-                </th>
-                <th className="border-b px-3 py-2 text-center whitespace-nowrap">
+                </TableHead>
+                <TableHead className="border-b px-3 py-2 text-center whitespace-nowrap">
                   {t("imei")}
-                </th>
-                <th className="border-b px-3 py-2 text-center whitespace-nowrap">
+                </TableHead>
+                <TableHead className="border-b px-3 py-2 text-center whitespace-nowrap">
                   {t("gpsStatus")}
-                </th>
-                <th className="border-b px-3 py-2 text-left whitespace-nowrap">
+                </TableHead>
+                <TableHead className="border-b px-3 py-2 text-left whitespace-nowrap">
                   {t("statusDetail")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {model.locomotives.map((loco, idx) => (
-                <tr
+                <TableRow
                   key={loco.id}
                   className={cn(
                     "hover:bg-muted/30 transition-colors",
                     idx % 2 === 0 ? "bg-background" : "bg-muted/10",
                   )}
                 >
-                  <td className="border-b px-2 py-2 text-center text-muted-foreground text-xs">
+                  <TableCell className="border-b px-2 py-2 text-center text-muted-foreground text-xs">
                     {idx + 1}
-                  </td>
-                  <td className="border-b px-3 py-2 font-medium whitespace-nowrap">
+                  </TableCell>
+                  <TableCell className="border-b px-3 py-2 font-medium whitespace-nowrap">
                     {loco.name}
-                  </td>
-                  <td className="border-b px-3 py-2 text-xs whitespace-nowrap">
+                  </TableCell>
+                  <TableCell className="border-b px-3 py-2 text-xs whitespace-nowrap">
                     {serviceTypeLabel(loco.service_type)}
-                  </td>
-                  <td className="border-b px-3 py-2 text-center text-xs font-mono">
+                  </TableCell>
+                  <TableCell className="border-b px-3 py-2 text-center text-xs font-mono">
                     {loco.gps_imei_code || "—"}
-                  </td>
-                  <td className="border-b px-3 py-2 text-center">
+                  </TableCell>
+                  <TableCell className="border-b px-3 py-2 text-center">
                     <GpsStatusBadge
                       hasGps={loco.has_gps}
                       status={loco.gps_status}
                     />
-                  </td>
-                  <td className="border-b px-3 py-2 text-xs text-muted-foreground">
+                  </TableCell>
+                  <TableCell className="border-b px-3 py-2 text-xs text-muted-foreground">
                     {loco.gps_status_detail || "—"}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

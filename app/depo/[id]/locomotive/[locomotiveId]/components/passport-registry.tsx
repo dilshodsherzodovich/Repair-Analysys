@@ -10,6 +10,14 @@ import {
   fmtDate,
 } from "./passport-shared";
 import { useComponentRegistry } from "@/api/hooks/use-component-registry";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 /** Registry of installed/removed components for this locomotive. */
 export function PassportRegistry({ locomotiveId }: { locomotiveId: number }) {
@@ -56,7 +64,7 @@ export function PassportRegistry({ locomotiveId }: { locomotiveId: number }) {
         <EmptyBlock icon={Boxes} message={t("empty")} />
       ) : (
         <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full min-w-[820px] table-fixed border-collapse text-sm">
+          <Table wrapper={false} className="w-full min-w-[820px] table-fixed border-collapse text-sm">
             <colgroup>
               <col style={{ width: "11%" }} />
               <col style={{ width: "19%" }} />
@@ -66,51 +74,51 @@ export function PassportRegistry({ locomotiveId }: { locomotiveId: number }) {
               <col style={{ width: "16%" }} />
               <col style={{ width: "9%" }} />
             </colgroup>
-            <thead>
-              <tr className="bg-muted/60">
-                <th className={thBase}>{t("columns.date")}</th>
-                <th className={thBase}>{t("columns.component")}</th>
-                <th className={thBase}>{t("columns.section")}</th>
-                <th className={thBase}>{t("columns.reason")}</th>
-                <th className={thBase}>{t("columns.installed")}</th>
-                <th className={thBase}>{t("columns.removed")}</th>
-                <th className={thBase}>{t("columns.staff")}</th>
-              </tr>
-            </thead>
-            <tbody>
+            <TableHeader>
+              <TableRow className="bg-muted/60">
+                <TableHead className={thBase}>{t("columns.date")}</TableHead>
+                <TableHead className={thBase}>{t("columns.component")}</TableHead>
+                <TableHead className={thBase}>{t("columns.section")}</TableHead>
+                <TableHead className={thBase}>{t("columns.reason")}</TableHead>
+                <TableHead className={thBase}>{t("columns.installed")}</TableHead>
+                <TableHead className={thBase}>{t("columns.removed")}</TableHead>
+                <TableHead className={thBase}>{t("columns.staff")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {rows.map((r) => (
-                <tr key={r.id} className="even:bg-muted/20">
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
+                <TableRow key={r.id} className="even:bg-muted/20">
+                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
                     {fmtDate(r.defect_date)}
-                  </td>
-                  <td className={cn(tdBase, "font-medium break-words")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "font-medium break-words")}>
                     {r.component || "—"}
-                  </td>
-                  <td className={cn(tdBase, "break-words")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "break-words")}>
                     {r.section || "—"}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-normal break-words")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "whitespace-normal break-words")}>
                     {r.reason || "—"}
-                  </td>
-                  <td className={cn(tdBase, "break-words")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "break-words")}>
                     <YearFactory
                       year={r.installed_manufacture_year}
                       factory={r.installed_manufacture_factory}
                     />
-                  </td>
-                  <td className={cn(tdBase, "break-words")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "break-words")}>
                     <YearFactory
                       year={r.removed_manufacture_year}
                       factory={r.removed_manufacture_factory}
                     />
-                  </td>
-                  <td className={cn(tdBase, "break-words")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "break-words")}>
                     {r.staff || "—"}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </SectionCard>

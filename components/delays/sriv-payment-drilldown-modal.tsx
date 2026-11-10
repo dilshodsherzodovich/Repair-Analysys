@@ -6,6 +6,14 @@ import { Modal } from "@/ui/modal";
 import { Badge } from "@/ui/badge";
 import { useSrivPaymentReportDetails } from "@/api/hooks/use-delays";
 import type { SrivPaymentReportDetailsParams } from "@/api/types/delays";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 interface Props {
   isOpen: boolean;
@@ -66,51 +74,51 @@ export function SrivPaymentDrilldownModal({
               {t("count_n", { n: data?.count ?? results.length })}
             </p>
             <div className="max-h-[60vh] overflow-auto rounded-lg border border-border">
-              <table className="w-full min-w-[720px] border-collapse text-sm">
-                <thead className="sticky top-0 z-10 bg-surface-muted">
-                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-3 py-2.5 font-semibold">{t("dd_date")}</th>
-                    <th className="px-3 py-2.5 font-semibold">{t("dd_train")}</th>
-                    <th className="px-3 py-2.5 font-semibold">
+              <Table wrapper={false} className="w-full min-w-[720px] border-collapse text-sm">
+                <TableHeader className="sticky top-0 z-10 bg-surface-muted">
+                  <TableRow className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <TableHead className="px-3 py-2.5 font-semibold">{t("dd_date")}</TableHead>
+                    <TableHead className="px-3 py-2.5 font-semibold">{t("dd_train")}</TableHead>
+                    <TableHead className="px-3 py-2.5 font-semibold">
                       {t("dd_station")}
-                    </th>
-                    <th className="px-3 py-2.5 font-semibold">{t("depo")}</th>
-                    <th className="px-3 py-2.5 text-right font-semibold">
+                    </TableHead>
+                    <TableHead className="px-3 py-2.5 font-semibold">{t("depo")}</TableHead>
+                    <TableHead className="px-3 py-2.5 text-right font-semibold">
                       {t("dd_damage")}
-                    </th>
-                    <th className="px-3 py-2.5 font-semibold">
+                    </TableHead>
+                    <TableHead className="px-3 py-2.5 font-semibold">
                       {t("dd_culprits")}
-                    </th>
-                    <th className="px-3 py-2.5 font-semibold">{t("dd_stage")}</th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </TableHead>
+                    <TableHead className="px-3 py-2.5 font-semibold">{t("dd_stage")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {results.map((row) => {
                     const culprits = row.culprits ?? [];
                     const recovered = culprits.filter((c) => c.recovered).length;
                     return (
-                      <tr
+                      <TableRow
                         key={row.id}
                         className="border-b border-muted last:border-0 hover:bg-surface-muted/60"
                       >
-                        <td className="whitespace-nowrap px-3 py-2.5 text-foreground-secondary">
+                        <TableCell className="whitespace-nowrap px-3 py-2.5 text-foreground-secondary">
                           {fmtDate(row.incident_date)}
-                        </td>
-                        <td className="px-3 py-2.5 font-medium text-foreground">
+                        </TableCell>
+                        <TableCell className="px-3 py-2.5 font-medium text-foreground">
                           {row.train_number || "-"}
-                        </td>
-                        <td className="px-3 py-2.5 text-foreground-secondary">
+                        </TableCell>
+                        <TableCell className="px-3 py-2.5 text-foreground-secondary">
                           {row.station || "-"}
-                        </td>
-                        <td className="px-3 py-2.5 text-foreground-secondary">
+                        </TableCell>
+                        <TableCell className="px-3 py-2.5 text-foreground-secondary">
                           {row.responsible_org_name ||
                             row.responsible_org_detail?.name ||
                             "-"}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-semibold tabular-nums text-foreground">
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap px-3 py-2.5 text-right font-semibold tabular-nums text-foreground">
                           {fmtSum(row.damage_amount || 0)}
-                        </td>
-                        <td className="px-3 py-2.5 text-foreground-secondary">
+                        </TableCell>
+                        <TableCell className="px-3 py-2.5 text-foreground-secondary">
                           {culprits.length > 0 ? (
                             <span className="tabular-nums">
                               {recovered}/{culprits.length}
@@ -118,17 +126,17 @@ export function SrivPaymentDrilldownModal({
                           ) : (
                             <span className="text-foreground-subtle">0</span>
                           )}
-                        </td>
-                        <td className="px-3 py-2.5">
+                        </TableCell>
+                        <TableCell className="px-3 py-2.5">
                           <Badge variant="outline" className="font-medium">
                             {row.stage_display || row.stage}
                           </Badge>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </>
         )}

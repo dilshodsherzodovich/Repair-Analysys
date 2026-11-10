@@ -40,6 +40,14 @@ import {
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 const DATE_FMT = "yyyy-MM-dd";
 
@@ -272,44 +280,44 @@ function DelayedRepairDurationReportPage() {
 
           {/* Table */}
           <div className="overflow-x-auto py-2">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide align-bottom">
-                  <th className="border px-2 py-2 text-center w-8">#</th>
-                  <th className="border px-3 py-2 text-left whitespace-nowrap">{t("locomotive")}</th>
-                  <th className="border px-3 py-2 text-left whitespace-nowrap">{t("branch")}</th>
-                  <th className="border px-3 py-2 text-center whitespace-nowrap">{t("inspectionType")}</th>
-                  <th className="border px-3 py-2 text-center min-w-[110px]">{t("entryTime")}</th>
-                  <th className="border px-3 py-2 text-center min-w-[110px]">{t("kanavaEntry")}</th>
-                  <th className="border px-3 py-2 text-center min-w-[110px]">{t("closeTime")}</th>
-                  <th className="border px-3 py-2 text-center min-w-[100px]">{t("intervalHours")}</th>
-                  <th className="border px-3 py-2 text-center min-w-[100px]">{t("delayedHours")}</th>
-                  <th className="border px-3 py-2 text-center min-w-[100px]">{t("delayedAmount")}</th>
-                  <th className="border px-3 py-2 text-left min-w-[170px]">{t("delayReason")}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table wrapper={false} className="w-full text-sm border-collapse">
+              <TableHeader>
+                <TableRow className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide align-bottom">
+                  <TableHead className="border px-2 py-2 text-center w-8">#</TableHead>
+                  <TableHead className="border px-3 py-2 text-left whitespace-nowrap">{t("locomotive")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-left whitespace-nowrap">{t("branch")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-center whitespace-nowrap">{t("inspectionType")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-center min-w-[110px]">{t("entryTime")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-center min-w-[110px]">{t("kanavaEntry")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-center min-w-[110px]">{t("closeTime")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-center min-w-[100px]">{t("intervalHours")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-center min-w-[100px]">{t("delayedHours")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-center min-w-[100px]">{t("delayedAmount")}</TableHead>
+                  <TableHead className="border px-3 py-2 text-left min-w-[170px]">{t("delayReason")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {rows.map((row: DelayedRepairDurationRow, idx) => (
-                  <tr
+                  <TableRow
                     key={row.id ?? idx}
                     className={cn(
                       "hover:bg-muted/30 transition-colors",
                       idx % 2 === 0 ? "bg-background" : "bg-muted/10",
                     )}
                   >
-                    <td className="border px-2 py-2 text-center text-muted-foreground text-xs">{idx + 1}</td>
-                    <td className="border px-3 py-2 font-medium whitespace-nowrap">
+                    <TableCell className="border px-2 py-2 text-center text-muted-foreground text-xs">{idx + 1}</TableCell>
+                    <TableCell className="border px-3 py-2 font-medium whitespace-nowrap">
                       {[row.locomotive_name, row.locomotive_model_name].filter(Boolean).join(" ")}
-                    </td>
-                    <td className="border px-3 py-2 whitespace-nowrap text-xs">{row.branch_name}</td>
-                    <td className="border px-3 py-2 text-center text-xs">{row.inspection_type_name}</td>
-                    <td className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.entry_time)}</td>
-                    <td className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.kanava_entry_time)}</td>
-                    <td className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.close_time)}</td>
-                    <td className="border px-3 py-2 text-center text-xs text-muted-foreground">{fmtNum(row.interval_hours)}</td>
-                    <td className="border px-3 py-2 text-center text-xs">{fmtNum(row.delayed_hours)}</td>
-                    <td className="border px-3 py-2 text-center text-xs font-semibold text-destructive">{fmtNum(delayedAmount(row))}</td>
-                    <td className="border px-3 py-2 text-left text-xs">
+                    </TableCell>
+                    <TableCell className="border px-3 py-2 whitespace-nowrap text-xs">{row.branch_name}</TableCell>
+                    <TableCell className="border px-3 py-2 text-center text-xs">{row.inspection_type_name}</TableCell>
+                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.entry_time)}</TableCell>
+                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.kanava_entry_time)}</TableCell>
+                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.close_time)}</TableCell>
+                    <TableCell className="border px-3 py-2 text-center text-xs text-muted-foreground">{fmtNum(row.interval_hours)}</TableCell>
+                    <TableCell className="border px-3 py-2 text-center text-xs">{fmtNum(row.delayed_hours)}</TableCell>
+                    <TableCell className="border px-3 py-2 text-center text-xs font-semibold text-destructive">{fmtNum(delayedAmount(row))}</TableCell>
+                    <TableCell className="border px-3 py-2 text-left text-xs">
                       {row.delay_reason_code ? (
                         <>
                           <span className="font-medium">{delayLabel(row.delay_reason_code)}</span>
@@ -322,11 +330,11 @@ function DelayedRepairDurationReportPage() {
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {rows.length === 0 && !isFetching && (

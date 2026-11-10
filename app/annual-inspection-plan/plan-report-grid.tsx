@@ -16,6 +16,14 @@ import {
 } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 function num(v: number) {
   return v ? (
@@ -83,7 +91,7 @@ function PlanTypeCard({
       {/* Table */}
       {open && (
         <div className="overflow-x-auto">
-          <table className="w-full table-fixed min-w-[900px] border-collapse text-xs">
+          <Table wrapper={false} className="w-full table-fixed min-w-[900px] border-collapse text-xs">
             <colgroup>
               <col style={{ width: 150 }} />
               {GRID_COLUMNS.map((c, i) => (
@@ -91,47 +99,47 @@ function PlanTypeCard({
               ))}
               <col style={{ width: 72 }} />
             </colgroup>
-            <thead>
-              <tr className="text-muted-foreground bg-muted/40">
-                <th className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</th>
+            <TableHeader>
+              <TableRow className="text-muted-foreground bg-muted/40">
+                <TableHead className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</TableHead>
                 {GRID_COLUMNS.map((col) =>
                   col.kind === "month" ? (
-                    <th key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">
+                    <TableHead key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">
                       {MONTHS_SHORT[col.month - 1]}
-                    </th>
+                    </TableHead>
                   ) : (
-                    <th key={`q${col.quarter}`} className={cn("border border-border px-1 py-2.5 text-center font-semibold", accent.soft, accent.text)}>
+                    <TableHead key={`q${col.quarter}`} className={cn("border border-border px-1 py-2.5 text-center font-semibold", accent.soft, accent.text)}>
                       {QUARTER_LABELS[col.quarter - 1]}
-                    </th>
+                    </TableHead>
                   )
                 )}
-                <th className={cn("border border-border px-2 py-2.5 text-center font-semibold", accent.soft, accent.text)}>Σ</th>
-              </tr>
-            </thead>
-            <tbody>
+                <TableHead className={cn("border border-border px-2 py-2.5 text-center font-semibold", accent.soft, accent.text)}>Σ</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {type.locomotive_models.map((row, rowIndex) => (
-                <tr key={row.locomotive_model?.id ?? `x-${rowIndex}`} className="hover:bg-muted/30 transition-colors">
-                  <td className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">
+                <TableRow key={row.locomotive_model?.id ?? `x-${rowIndex}`} className="hover:bg-muted/30 transition-colors">
+                  <TableCell className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">
                     {row.locomotive_model?.name ?? "—"}
-                  </td>
+                  </TableCell>
                   {GRID_COLUMNS.map((col) =>
                     col.kind === "month" ? (
-                      <td key={`m${col.month}`} className="border border-border px-1 py-2 text-center">
+                      <TableCell key={`m${col.month}`} className="border border-border px-1 py-2 text-center">
                         {num(cellCount(row.months[String(col.month)]))}
-                      </td>
+                      </TableCell>
                     ) : (
-                      <td key={`q${col.quarter}`} className={cn("border border-border px-1 py-2 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
+                      <TableCell key={`q${col.quarter}`} className={cn("border border-border px-1 py-2 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
                         {cellCount(row.quarters[String(col.quarter)])}
-                      </td>
+                      </TableCell>
                     )
                   )}
-                  <td className={cn("border border-border px-2 py-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
+                  <TableCell className={cn("border border-border px-2 py-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
                     {cellCount(row.yearly_count)}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

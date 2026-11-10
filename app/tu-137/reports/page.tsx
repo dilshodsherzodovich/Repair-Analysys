@@ -22,6 +22,14 @@ import {
 import { Input } from "@/ui/input";
 import { formatDate } from "@/lib/utils";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 const getProgressBgColor = (percent: number) => {
   if (percent < 50) return "bg-destructive";
@@ -320,28 +328,28 @@ export default function Tu137ReportsPage() {
         {!isLoading && !error && (
           <div className="bg-background rounded-xl border border-border/60 shadow-sm overflow-hidden mt-6">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-surface-muted border-b border-border text-muted-foreground font-bold uppercase text-2xs tracking-wider">
-                  <tr>
-                    <th className="px-6 py-4">{t("mashinist")}</th>
-                    <th className="px-6 py-4 text-center">{t("records")}</th>
-                    <th className="px-6 py-4 text-center">{t("open")}</th>
-                    <th className="px-6 py-4 text-center">{t("solved")}</th>
-                    <th className="px-6 py-4 text-right">
+              <Table wrapper={false} className="w-full text-left text-sm whitespace-nowrap">
+                <TableHeader className="bg-surface-muted border-b border-border text-muted-foreground font-bold uppercase text-2xs tracking-wider">
+                  <TableRow>
+                    <TableHead className="px-6 py-4">{t("mashinist")}</TableHead>
+                    <TableHead className="px-6 py-4 text-center">{t("records")}</TableHead>
+                    <TableHead className="px-6 py-4 text-center">{t("open")}</TableHead>
+                    <TableHead className="px-6 py-4 text-center">{t("solved")}</TableHead>
+                    <TableHead className="px-6 py-4 text-right">
                       {t("percent_solved")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-muted text-foreground-secondary">
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="divide-y divide-muted text-foreground-secondary">
                   {filteredMashinists.length === 0 ? (
-                    <tr>
-                      <td
+                    <TableRow>
+                      <TableCell
                         colSpan={5}
                         className="px-6 py-12 text-center text-muted-foreground"
                       >
                         {t("no_data")}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ) : (
                     filteredMashinists.map((mashinist) => {
                       const matchKey = String(mashinist.id);
@@ -349,13 +357,13 @@ export default function Tu137ReportsPage() {
 
                       return (
                         <React.Fragment key={matchKey}>
-                          <tr
+                          <TableRow
                             className="hover:bg-surface-muted/80 transition-colors cursor-pointer group"
                             onClick={() =>
                               setExpandedRow(isExpanded ? null : matchKey)
                             }
                           >
-                            <td className="px-6 py-3 flex items-center gap-3">
+                            <TableCell className="px-6 py-3 flex items-center gap-3">
                               {isExpanded ? (
                                 <ChevronDown className="w-4 h-4 text-muted-foreground" />
                               ) : (
@@ -373,17 +381,17 @@ export default function Tu137ReportsPage() {
                               >
                                 {mashinist.fio}
                               </span>
-                            </td>
-                            <td className="px-6 py-3 text-center font-bold text-foreground">
+                            </TableCell>
+                            <TableCell className="px-6 py-3 text-center font-bold text-foreground">
                               {mashinist.total}
-                            </td>
-                            <td className="px-6 py-3 text-center font-bold text-warning">
+                            </TableCell>
+                            <TableCell className="px-6 py-3 text-center font-bold text-warning">
                               {mashinist.open}
-                            </td>
-                            <td className="px-6 py-3 text-center font-bold text-success">
+                            </TableCell>
+                            <TableCell className="px-6 py-3 text-center font-bold text-success">
                               {mashinist.solved}
-                            </td>
-                            <td className="px-6 py-3 text-right">
+                            </TableCell>
+                            <TableCell className="px-6 py-3 text-right">
                               <div className="flex items-center justify-end gap-3">
                                 <div className="w-16 bg-muted h-1.5 rounded-full overflow-hidden flex">
                                   <div
@@ -403,51 +411,51 @@ export default function Tu137ReportsPage() {
                                   {mashinist.percent}%
                                 </span>
                               </div>
-                            </td>
-                          </tr>
+                            </TableCell>
+                          </TableRow>
 
                           {isExpanded && (
-                            <tr className="bg-surface-muted/40 border-b border-t border-muted">
-                              <td colSpan={5} className="p-4 sm:p-6">
+                            <TableRow className="bg-surface-muted/40 border-b border-t border-muted">
+                              <TableCell colSpan={5} className="p-4 sm:p-6">
                                 <div className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
-                                  <table className="w-full text-left text-xs sm:text-sm whitespace-normal">
-                                    <thead className="bg-surface-muted/80 text-muted-foreground font-bold uppercase tracking-wider text-2xs sm:text-xs border-b border-border">
-                                      <tr>
-                                        <th className="px-4 py-3">
+                                  <Table wrapper={false} className="w-full text-left text-xs sm:text-sm whitespace-normal">
+                                    <TableHeader className="bg-surface-muted/80 text-muted-foreground font-bold uppercase tracking-wider text-2xs sm:text-xs border-b border-border">
+                                      <TableRow>
+                                        <TableHead className="px-4 py-3">
                                           {t("table_number")}
-                                        </th>
-                                        <th className="px-4 py-3">
+                                        </TableHead>
+                                        <TableHead className="px-4 py-3">
                                           {t("table_lokomotiv")}
-                                        </th>
-                                        <th className="px-4 py-3">
+                                        </TableHead>
+                                        <TableHead className="px-4 py-3">
                                           {t("table_station")}
-                                        </th>
-                                        <th className="px-4 py-3">
+                                        </TableHead>
+                                        <TableHead className="px-4 py-3">
                                           {t("table_date")}
-                                        </th>
-                                        <th className="px-4 py-3 max-w-lg">
+                                        </TableHead>
+                                        <TableHead className="px-4 py-3 max-w-lg">
                                           {t("table_comment")}
-                                        </th>
-                                        <th className="px-4 py-3 text-center">
+                                        </TableHead>
+                                        <TableHead className="px-4 py-3 text-center">
                                           {t("table_status")}
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-muted">
+                                        </TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody className="divide-y divide-muted">
                                       {apiResponse?.results
                                         ?.filter(
                                           (r) =>
                                             String(r.mashinist_id) === matchKey,
                                         )
                                         .map((record) => (
-                                          <tr
+                                          <TableRow
                                             key={record.id}
                                             className="hover:bg-surface-muted transition-colors"
                                           >
-                                            <td className="px-4 py-3 font-medium text-muted-foreground">
+                                            <TableCell className="px-4 py-3 font-medium text-muted-foreground">
                                               #{record.id}
-                                            </td>
-                                            <td className="px-4 py-3">
+                                            </TableCell>
+                                            <TableCell className="px-4 py-3">
                                               <div className="font-semibold text-foreground-secondary">
                                                 {record.lokomotiv_name}
                                               </div>
@@ -456,8 +464,8 @@ export default function Tu137ReportsPage() {
                                                   №{record.poezd_number}
                                                 </div>
                                               )}
-                                            </td>
-                                            <td className="px-4 py-3">
+                                            </TableCell>
+                                            <TableCell className="px-4 py-3">
                                               <div className="font-medium text-foreground">
                                                 {record.group_name}
                                               </div>
@@ -467,14 +475,14 @@ export default function Tu137ReportsPage() {
                                                   ? `- ${record.station2_name}`
                                                   : ""}
                                               </div>
-                                            </td>
-                                            <td className="px-4 py-3 text-foreground-secondary whitespace-nowrap">
+                                            </TableCell>
+                                            <TableCell className="px-4 py-3 text-foreground-secondary whitespace-nowrap">
                                               {formatDate(record.created_at)}
-                                            </td>
-                                            <td className="px-4 py-3 text-foreground-secondary whitespace-pre-wrap max-w-lg">
+                                            </TableCell>
+                                            <TableCell className="px-4 py-3 text-foreground-secondary whitespace-pre-wrap max-w-lg">
                                               {record.comments}
-                                            </td>
-                                            <td className="px-4 py-3 text-center">
+                                            </TableCell>
+                                            <TableCell className="px-4 py-3 text-center">
                                               <span
                                                 className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-2xs font-bold uppercase tracking-wider border ${
                                                   record.finished
@@ -486,21 +494,21 @@ export default function Tu137ReportsPage() {
                                                   ? t("status_finished")
                                                   : t("status_open")}
                                               </span>
-                                            </td>
-                                          </tr>
+                                            </TableCell>
+                                          </TableRow>
                                         ))}
-                                    </tbody>
-                                  </table>
+                                    </TableBody>
+                                  </Table>
                                 </div>
-                              </td>
-                            </tr>
+                              </TableCell>
+                            </TableRow>
                           )}
                         </React.Fragment>
                       );
                     })
                   )}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
         )}

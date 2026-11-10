@@ -4,27 +4,41 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({
+  className,
+  wrapper = true,
+  ...props
+}: React.ComponentProps<"table"> & {
+  /**
+   * Wraps the table in a horizontal scroll container. Pass false when the
+   * table already sits in its own scroll frame (e.g. with a sticky header),
+   * since a second scroll container breaks position: sticky.
+   */
+  wrapper?: boolean;
+}) {
+  const table = (
+    <table
+      data-slot="table"
+      className={cn("w-full caption-bottom text-sm border-collapse", className)}
+      {...props}
+    />
+  );
+  if (!wrapper) return table;
   return (
-    <div
-      data-slot="table-container"
-      className="relative w-full overflow-x-auto"
-    >
-      <table
-        data-slot="table"
-        className={cn(
-          "w-full caption-bottom text-sm border-collapse",
-          className
-        )}
-        {...props}
-      />
+    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+      {table}
     </div>
   );
 }
 
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
-    <thead data-slot="table-header" className={cn(className)} {...props} />
+    // Header rows don't take the body rows' hover tint
+    <thead
+      data-slot="table-header"
+      className={cn("[&_tr]:hover:bg-transparent", className)}
+      {...props}
+    />
   );
 }
 

@@ -7,6 +7,7 @@ import { PageHeader } from "@/ui/page-header";
 import { Button } from "@/ui/button";
 import { PermissionGuard } from "@/components/permission-guard";
 import {
+  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -355,7 +356,7 @@ export default function LocomotiveMileageReportPage() {
       />
 
       <div className="sticky top-0 rounded-lg border border-border-strong overflow-x-auto overflow-y-auto max-h-[80vh] bg-background">
-        <table className="w-full text-xs border-collapse">
+        <Table wrapper={false} className="w-full text-xs border-collapse">
           <TableHeader>
             {/* Row 1: fixed headers + inspection group headers */}
             <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
@@ -572,7 +573,7 @@ export default function LocomotiveMileageReportPage() {
               ))
             )}
           </TableBody>
-        </table>
+        </Table>
       </div>
 
       <BaselineModal

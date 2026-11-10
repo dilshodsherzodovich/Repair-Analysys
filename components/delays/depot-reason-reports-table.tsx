@@ -5,6 +5,14 @@ import { cn } from "@/lib/utils";
 import { ErrorCard } from "@/ui/error-card";
 import { useDepotReasonReports } from "@/api/hooks/use-delays";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 export function DepotReasonReportsTable() {
   const { getAllQueryValues } = useFilterParams();
@@ -54,11 +62,11 @@ export function DepotReasonReportsTable() {
       {isLoading && (
         <div className="mt-6 bg-background rounded-md overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-muted border-b border-border-strong">
+            <Table wrapper={false} className="w-full border-collapse">
+              <TableHeader>
+                <TableRow className="bg-muted border-b border-border-strong">
                   {Array.from({ length: skeletonColumnCount }).map((_, index) => (
-                    <th
+                    <TableHead
                       key={index}
                       className={cn(
                         "border border-border-strong px-4 py-3 text-center font-semibold text-sm",
@@ -66,13 +74,13 @@ export function DepotReasonReportsTable() {
                       )}
                     >
                       <div className="h-4 bg-border rounded animate-pulse" />
-                    </th>
+                    </TableHead>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {Array.from({ length: 8 }).map((_, rowIndex) => (
-                  <tr
+                  <TableRow
                     key={rowIndex}
                     className={cn(
                       "border-b border-border",
@@ -80,7 +88,7 @@ export function DepotReasonReportsTable() {
                     )}
                   >
                     {Array.from({ length: skeletonColumnCount }).map((_, colIndex) => (
-                      <td
+                      <TableCell
                         key={colIndex}
                         className={cn(
                           "border border-border-strong px-4 py-3 text-center",
@@ -88,14 +96,14 @@ export function DepotReasonReportsTable() {
                         )}
                       >
                         <div className="h-4 bg-border rounded animate-pulse mx-auto w-12" />
-                      </td>
+                      </TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 ))}
                 {/* Skeleton Total Row */}
-                <tr className="bg-border border-t-2 border-foreground-subtle">
+                <TableRow className="bg-border border-t-2 border-foreground-subtle">
                   {Array.from({ length: skeletonColumnCount }).map((_, colIndex) => (
-                    <td
+                    <TableCell
                       key={colIndex}
                       className={cn(
                         "border border-border-strong px-4 py-3 text-center",
@@ -103,11 +111,11 @@ export function DepotReasonReportsTable() {
                       )}
                     >
                       <div className="h-4 bg-border-strong rounded animate-pulse mx-auto w-12" />
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
-              </tbody>
-            </table>
+                </TableRow>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}
@@ -130,11 +138,11 @@ export function DepotReasonReportsTable() {
               </div>
             )}
 
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-muted border-b border-border-strong">
+            <Table wrapper={false} className="w-full border-collapse">
+              <TableHeader>
+                <TableRow className="bg-muted border-b border-border-strong">
                   {headers?.map((header, index) => (
-                    <th
+                    <TableHead
                       key={header}
                       className={cn(
                         "border border-border-strong px-4 py-3 text-center font-semibold text-sm",
@@ -142,18 +150,18 @@ export function DepotReasonReportsTable() {
                       )}
                     >
                       {header}
-                    </th>
+                    </TableHead>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {data?.rows?.map((row, index) => (
-                  <tr
+                  <TableRow
                     key={row?.reason}
                     className="border-b border-border hover:bg-surface-muted"
                   >
                     {Object.entries(row).slice(1).map(([key, value], index) => (
-                      <td
+                      <TableCell
                         key={key}
                         className={cn(
                           "border border-border-strong px-4 py-3 text-sm text-center font-bold",
@@ -161,16 +169,16 @@ export function DepotReasonReportsTable() {
                         )}
                       >
                         {value ?? 0}
-                      </td>
+                      </TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 ))}
 
                 {/* Total Row */}
                 {data?.total && (
-                  <tr className="bg-border border-t-2 border-foreground-subtle font-semibold">
+                  <TableRow className="bg-border border-t-2 border-foreground-subtle font-semibold">
                     {Object.entries(data?.total).slice(1).map(([key, value], index) => (
-                      <td
+                      <TableCell
                         key={key}
                         className={cn(
                           "border border-border-strong px-4 py-3 text-sm text-center font-bold",
@@ -178,12 +186,12 @@ export function DepotReasonReportsTable() {
                         )}
                       >
                         {value ?? 0}
-                      </td>
+                      </TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}

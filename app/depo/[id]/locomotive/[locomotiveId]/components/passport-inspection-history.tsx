@@ -13,6 +13,14 @@ import {
 } from "./passport-shared";
 import { useInspections } from "@/api/hooks/use-inspections";
 import type { Inspection } from "@/api/types/inspections";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 /* -------------------------------------------------------------------------- */
 /*  Interval + duration helpers (ported from dejurniy)                         */
@@ -252,7 +260,7 @@ export function PassportInspectionHistory({
         <EmptyBlock icon={History} message={t("empty")} />
       ) : (
         <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full min-w-[900px] table-fixed border-collapse text-sm">
+          <Table wrapper={false} className="w-full min-w-[900px] table-fixed border-collapse text-sm">
             <colgroup>
               <col style={{ width: "14%" }} />
               <col style={{ width: "14%" }} />
@@ -262,45 +270,45 @@ export function PassportInspectionHistory({
               <col style={{ width: "19%" }} />
               <col style={{ width: "10%" }} />
             </colgroup>
-            <thead>
-              <tr className="bg-muted/60">
-                <th className={thBase}>{t("columns.createdTime")}</th>
-                <th className={thBase}>{t("columns.kanavaEntry")}</th>
-                <th className={thBase}>{t("columns.inspectionType")}</th>
-                <th className={thBase}>{t("columns.xkp")}</th>
-                <th className={thBase}>{t("columns.interval")}</th>
-                <th className={thBase}>{t("columns.progress")}</th>
-                <th className={thBase}>{t("columns.status")}</th>
-              </tr>
-            </thead>
-            <tbody>
+            <TableHeader>
+              <TableRow className="bg-muted/60">
+                <TableHead className={thBase}>{t("columns.createdTime")}</TableHead>
+                <TableHead className={thBase}>{t("columns.kanavaEntry")}</TableHead>
+                <TableHead className={thBase}>{t("columns.inspectionType")}</TableHead>
+                <TableHead className={thBase}>{t("columns.xkp")}</TableHead>
+                <TableHead className={thBase}>{t("columns.interval")}</TableHead>
+                <TableHead className={thBase}>{t("columns.progress")}</TableHead>
+                <TableHead className={thBase}>{t("columns.status")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {rows.map((r) => (
-                <tr key={r.id} className="even:bg-muted/20">
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
+                <TableRow key={r.id} className="even:bg-muted/20">
+                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
                     {fmtDateTime(r.created_time)}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
                     {r.kanava_entry_time ? fmtDateTime(r.kanava_entry_time) : "—"}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-nowrap font-medium")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "whitespace-nowrap font-medium")}>
                     {r.inspection_type?.name ?? "—"}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-normal break-words")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "whitespace-normal break-words")}>
                     {r.branch?.name ?? "—"}
-                  </td>
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
                     <IntervalBadge inspection={r} />
-                  </td>
-                  <td className={tdBase}>
+                  </TableCell>
+                  <TableCell className={tdBase}>
                     <ProgressCell inspection={r} now={now} />
-                  </td>
-                  <td className={cn(tdBase, "whitespace-nowrap")}>
+                  </TableCell>
+                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
                     <StatusBadge inspection={r} />
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </SectionCard>

@@ -28,6 +28,14 @@ import {
 } from "@/api/hooks/use-culprits";
 import type { Culprit } from "@/api/types/culprits";
 import type { DelayEntry } from "@/api/types/delays";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 interface CulpritsListModalProps {
   isOpen: boolean;
@@ -364,43 +372,43 @@ export function CulpritsListModal({
           )}
 
           <div className="overflow-hidden rounded-xl border">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/40 text-muted-foreground">
-                <tr>
-                  <th className="px-3 py-2 text-left font-medium">
+            <Table wrapper={false} className="w-full text-sm">
+              <TableHeader className="bg-muted/40 text-muted-foreground">
+                <TableRow>
+                  <TableHead className="px-3 py-2 text-left font-medium">
                     {t("columns.full_name")}
-                  </th>
-                  <th className="px-3 py-2 text-left font-medium">
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-left font-medium">
                     {t("columns.amount")}
-                  </th>
-                  <th className="px-3 py-2 text-left font-medium">
+                  </TableHead>
+                  <TableHead className="px-3 py-2 text-left font-medium">
                     {t("columns.status")}
-                  </th>
+                  </TableHead>
                   {canManage && (
-                    <th className="px-3 py-2 text-right font-medium">
+                    <TableHead className="px-3 py-2 text-right font-medium">
                       {t("columns.actions")}
-                    </th>
+                    </TableHead>
                   )}
-                </tr>
-              </thead>
-              <tbody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={colSpan} className="px-3 py-6">
+                  <TableRow>
+                    <TableCell colSpan={colSpan} className="px-3 py-6">
                       <div className="flex justify-center">
                         <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ) : culprits.length === 0 && drafts.length === 0 ? (
-                  <tr>
-                    <td
+                  <TableRow>
+                    <TableCell
                       colSpan={colSpan}
                       className="px-3 py-6 text-center text-muted-foreground"
                     >
                       {t("empty")}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ) : null}
 
                 {/* Existing culprits */}
@@ -414,14 +422,14 @@ export function CulpritsListModal({
 
                   if (!canManage || locked) {
                     return (
-                      <tr key={culprit.id} className="border-t hover:bg-muted/20">
-                        <td className="px-3 py-2">{culprit.full_name}</td>
-                        <td className="px-3 py-2">
+                      <TableRow key={culprit.id} className="border-t hover:bg-muted/20">
+                        <TableCell className="px-3 py-2">{culprit.full_name}</TableCell>
+                        <TableCell className="px-3 py-2">
                           {formatAmount(culprit.amount)}
-                        </td>
-                        <td className="px-3 py-2">{statusBadge(culprit)}</td>
+                        </TableCell>
+                        <TableCell className="px-3 py-2">{statusBadge(culprit)}</TableCell>
                         {canManage && (
-                          <td className="px-3 py-2">
+                          <TableCell className="px-3 py-2">
                             <div className="flex items-center justify-end">
                               <span
                                 className="inline-flex items-center gap-1 text-xs text-muted-foreground"
@@ -430,22 +438,22 @@ export function CulpritsListModal({
                                 <Lock className="h-3.5 w-3.5" />
                               </span>
                             </div>
-                          </td>
+                          </TableCell>
                         )}
-                      </tr>
+                      </TableRow>
                     );
                   }
 
                   // Default: plain text row with Edit/Delete
                   if (editingId !== culprit.id) {
                     return (
-                      <tr key={culprit.id} className="border-t hover:bg-muted/20">
-                        <td className="px-3 py-2">{culprit.full_name}</td>
-                        <td className="px-3 py-2">
+                      <TableRow key={culprit.id} className="border-t hover:bg-muted/20">
+                        <TableCell className="px-3 py-2">{culprit.full_name}</TableCell>
+                        <TableCell className="px-3 py-2">
                           {formatAmount(culprit.amount)}
-                        </td>
-                        <td className="px-3 py-2">{statusBadge(culprit)}</td>
-                        <td className="px-3 py-2">
+                        </TableCell>
+                        <TableCell className="px-3 py-2">{statusBadge(culprit)}</TableCell>
+                        <TableCell className="px-3 py-2">
                           <div className="flex items-center justify-end gap-2">
                             <Button
                               size="sm"
@@ -464,15 +472,15 @@ export function CulpritsListModal({
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     );
                   }
 
                   // Edit mode: inline inputs + Save/Cancel
                   return (
-                    <tr key={culprit.id} className="border-t hover:bg-muted/20">
-                      <td className="px-3 py-2">
+                    <TableRow key={culprit.id} className="border-t hover:bg-muted/20">
+                      <TableCell className="px-3 py-2">
                         <Input
                           className="mb-0 h-8"
                           value={values.full_name}
@@ -486,8 +494,8 @@ export function CulpritsListModal({
                             }))
                           }
                         />
-                      </td>
-                      <td className="px-3 py-2">
+                      </TableCell>
+                      <TableCell className="px-3 py-2">
                         <Input
                           className="mb-0 h-8"
                           value={values.amount}
@@ -501,9 +509,9 @@ export function CulpritsListModal({
                             }))
                           }
                         />
-                      </td>
-                      <td className="px-3 py-2">{statusBadge(culprit)}</td>
-                      <td className="px-3 py-2">
+                      </TableCell>
+                      <TableCell className="px-3 py-2">{statusBadge(culprit)}</TableCell>
+                      <TableCell className="px-3 py-2">
                         <div className="flex items-center justify-end gap-2">
                           <Button
                             size="sm"
@@ -528,8 +536,8 @@ export function CulpritsListModal({
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
 
@@ -540,8 +548,8 @@ export function CulpritsListModal({
                     const max = maxForDraft(row.tempId);
                     const maxStr = max > 0 ? formatThousands(String(max)) : "";
                     return (
-                      <tr key={`draft-${row.tempId}`} className="border-t bg-primary/5">
-                        <td className="px-3 py-2">
+                      <TableRow key={`draft-${row.tempId}`} className="border-t bg-primary/5">
+                        <TableCell className="px-3 py-2">
                           <Input
                             className="mb-0 h-8"
                             autoFocus
@@ -553,8 +561,8 @@ export function CulpritsListModal({
                               })
                             }
                           />
-                        </td>
-                        <td className="px-3 py-2">
+                        </TableCell>
+                        <TableCell className="px-3 py-2">
                           <div className="relative">
                             <Input
                               className="mb-0 h-8 pr-12"
@@ -592,11 +600,11 @@ export function CulpritsListModal({
                               </span>
                             )}
                           </div>
-                        </td>
-                        <td className="px-3 py-2">
+                        </TableCell>
+                        <TableCell className="px-3 py-2">
                           <Badge variant="outline">{t("status.pending")}</Badge>
-                        </td>
-                        <td className="px-3 py-2">
+                        </TableCell>
+                        <TableCell className="px-3 py-2">
                           <div className="flex items-center justify-end gap-2">
                             <Button
                               size="sm"
@@ -621,15 +629,15 @@ export function CulpritsListModal({
                               <X className="h-4 w-4" />
                             </Button>
                           </div>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
 
                 {/* Persistent "+ add" row, always last */}
                 {canAdd && (
-                  <tr className="border-t">
-                    <td colSpan={colSpan} className="px-3 py-2">
+                  <TableRow className="border-t">
+                    <TableCell colSpan={colSpan} className="px-3 py-2">
                       <Button variant="link" className="h-auto p-0"
                         type="button"
                         onClick={addDraft}
@@ -637,11 +645,11 @@ export function CulpritsListModal({
                         <Plus className="h-4 w-4" />
                         {t("add_button")}
                       </Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           <div className="flex justify-end pt-2">

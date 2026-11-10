@@ -14,6 +14,14 @@ import { useRevisionJournal } from "@/api/hooks/use-revision-journal";
 import { useOrders } from "@/api/hooks/use-orders";
 import { usePantographJournal } from "@/api/hooks/use-pantograph";
 import type { ReactNode } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 /* -------------------------------------------------------------------------- */
 /*  Bordered table primitives — every cell is boxed so columns never merge     */
@@ -36,11 +44,11 @@ function BorderedTable({
 }) {
   return (
     <div className="overflow-x-auto rounded-lg border">
-      <table className="w-full border-collapse text-sm">
-        <thead>
-          <tr className="bg-muted/60">
+      <Table wrapper={false} className="w-full border-collapse text-sm">
+        <TableHeader>
+          <TableRow className="bg-muted/60">
             {columns.map((c) => (
-              <th
+              <TableHead
                 key={c.key}
                 className={cn(
                   "border-b border-r border-border px-3 py-2.5 font-semibold text-foreground last:border-r-0",
@@ -49,12 +57,12 @@ function BorderedTable({
                 )}
               >
                 {c.header}
-              </th>
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>{children}</tbody>
-      </table>
+          </TableRow>
+        </TableHeader>
+        <TableBody>{children}</TableBody>
+      </Table>
     </div>
   );
 }
@@ -67,9 +75,9 @@ function Row({
   cells: Record<string, ReactNode>;
 }) {
   return (
-    <tr className="even:bg-muted/20">
+    <TableRow className="even:bg-muted/20">
       {columns.map((c) => (
-        <td
+        <TableCell
           key={c.key}
           className={cn(
             "border-b border-r border-border px-3 py-2.5 align-top text-foreground-secondary last:border-r-0",
@@ -79,9 +87,9 @@ function Row({
           )}
         >
           {cells[c.key] ?? "—"}
-        </td>
+        </TableCell>
       ))}
-    </tr>
+    </TableRow>
   );
 }
 

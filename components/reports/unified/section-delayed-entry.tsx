@@ -9,6 +9,14 @@ import type {
   DelayedInspectionsSummary,
 } from "@/api/types/delayed-inspections-report";
 import { SectionShell } from "./section-shell";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 /** One flat row per late inspection, carrying its locomotive down with it. */
 export interface FlatDelayedEntryRow extends DelayedInspectionRow {
@@ -47,25 +55,25 @@ function MetricCells({ metric }: { metric: DelayedInspectionMetric }) {
   const untracked = metric.interval == null;
   return (
     <>
-      <td
+      <TableCell
         className={cn(
           "border px-2 py-1 text-center tabular-nums",
           untracked && "text-foreground-subtle",
         )}
       >
         {fmtNum(metric.actual)}
-      </td>
-      <td className="border px-2 py-1 text-center tabular-nums text-muted-foreground">
+      </TableCell>
+      <TableCell className="border px-2 py-1 text-center tabular-nums text-muted-foreground">
         {fmtNum(metric.interval)}
-      </td>
-      <td
+      </TableCell>
+      <TableCell
         className={cn(
           "border px-2 py-1 text-center tabular-nums font-semibold",
           metric.is_delayed ? "text-destructive" : "text-foreground-subtle",
         )}
       >
         {metric.is_delayed ? `+${fmtNum(metric.overrun)}` : "—"}
-      </td>
+      </TableCell>
     </>
   );
 }
@@ -139,76 +147,76 @@ export function SectionDelayedEntry({
       isEmpty={rows.length === 0}
     >
       <div className="overflow-x-auto">
-        <table className="w-full text-xs border-collapse">
-          <thead>
-            <tr className="bg-surface-muted text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
-              <th rowSpan={2} className="border px-2 py-1.5 text-center w-10">
+        <Table wrapper={false} className="w-full text-xs border-collapse">
+          <TableHeader>
+            <TableRow className="bg-surface-muted text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <TableHead rowSpan={2} className="border px-2 py-1.5 text-center w-10">
                 {globalT("no")}
-              </th>
-              <th rowSpan={2} className="border px-2 py-1.5 text-left">
+              </TableHead>
+              <TableHead rowSpan={2} className="border px-2 py-1.5 text-left">
                 {t("locomotive")}
-              </th>
-              <th rowSpan={2} className="border px-2 py-1.5 text-center">
+              </TableHead>
+              <TableHead rowSpan={2} className="border px-2 py-1.5 text-center">
                 {t("inspectionType")}
-              </th>
-              <th rowSpan={2} className="border px-2 py-1.5 text-left">
+              </TableHead>
+              <TableHead rowSpan={2} className="border px-2 py-1.5 text-left">
                 {t("branch")}
-              </th>
-              <th rowSpan={2} className="border px-2 py-1.5 text-center">
+              </TableHead>
+              <TableHead rowSpan={2} className="border px-2 py-1.5 text-center">
                 {t("openedAt")}
-              </th>
-              <th rowSpan={2} className="border px-2 py-1.5 text-center">
+              </TableHead>
+              <TableHead rowSpan={2} className="border px-2 py-1.5 text-center">
                 {t("delayKind")}
-              </th>
-              <th colSpan={3} className="border px-2 py-1 text-center">
+              </TableHead>
+              <TableHead colSpan={3} className="border px-2 py-1 text-center">
                 {t("hoursLabel")}
-              </th>
-              <th colSpan={3} className="border px-2 py-1 text-center">
+              </TableHead>
+              <TableHead colSpan={3} className="border px-2 py-1 text-center">
                 {t("mileageLabel")}
-              </th>
-            </tr>
-            <tr className="bg-surface-muted text-2xs font-semibold text-foreground-subtle uppercase tracking-wide">
-              <th className="border px-2 py-1 text-center">{t("actual")}</th>
-              <th className="border px-2 py-1 text-center">{t("interval")}</th>
-              <th className="border px-2 py-1 text-center">{t("overrunLabel")}</th>
-              <th className="border px-2 py-1 text-center">{t("actual")}</th>
-              <th className="border px-2 py-1 text-center">{t("interval")}</th>
-              <th className="border px-2 py-1 text-center">{t("overrunLabel")}</th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+            </TableRow>
+            <TableRow className="bg-surface-muted text-2xs font-semibold text-foreground-subtle uppercase tracking-wide">
+              <TableHead className="border px-2 py-1 text-center">{t("actual")}</TableHead>
+              <TableHead className="border px-2 py-1 text-center">{t("interval")}</TableHead>
+              <TableHead className="border px-2 py-1 text-center">{t("overrunLabel")}</TableHead>
+              <TableHead className="border px-2 py-1 text-center">{t("actual")}</TableHead>
+              <TableHead className="border px-2 py-1 text-center">{t("interval")}</TableHead>
+              <TableHead className="border px-2 py-1 text-center">{t("overrunLabel")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {rows.map((row, i) => (
-              <tr
+              <TableRow
                 key={row.inspection_id}
                 className={cn("hover:bg-surface-muted", i % 2 === 1 && "bg-surface-muted/40")}
               >
-                <td className="border px-2 py-1 text-center text-foreground-subtle">
+                <TableCell className="border px-2 py-1 text-center text-foreground-subtle">
                   {i + 1}
-                </td>
-                <td className="border px-2 py-1 font-medium whitespace-nowrap">
+                </TableCell>
+                <TableCell className="border px-2 py-1 font-medium whitespace-nowrap">
                   {[row.locomotive_name, row.locomotive_model_name]
                     .filter(Boolean)
                     .join(" ")}
-                </td>
-                <td className="border px-2 py-1 text-center">
+                </TableCell>
+                <TableCell className="border px-2 py-1 text-center">
                   {row.inspection_type_name}
-                </td>
-                <td className="border px-2 py-1 whitespace-nowrap">
+                </TableCell>
+                <TableCell className="border px-2 py-1 whitespace-nowrap">
                   {row.branch_name}
-                </td>
+                </TableCell>
                 {/* Pre-formatted local time — rendered as-is, never re-parsed. */}
-                <td className="border px-2 py-1 text-center whitespace-nowrap">
+                <TableCell className="border px-2 py-1 text-center whitespace-nowrap">
                   {row.created_time}
-                </td>
-                <td className="border px-2 py-1 text-center">
+                </TableCell>
+                <TableCell className="border px-2 py-1 text-center">
                   <DelayBadge kind={row.delay_type} />
-                </td>
+                </TableCell>
                 <MetricCells metric={row.hours} />
                 <MetricCells metric={row.mileage} />
-              </tr>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </SectionShell>
   );

@@ -13,6 +13,14 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { DelayEntry } from "@/api/types/delays";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 interface RecoveryInfoModalProps {
   isOpen: boolean;
@@ -116,41 +124,41 @@ export function RecoveryInfoModal({
 
         {/* Per-culprit breakdown */}
         <div className="overflow-hidden rounded-xl border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/40 text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2.5 text-left font-medium">
+          <Table wrapper={false} className="w-full text-sm">
+            <TableHeader className="bg-muted/40 text-muted-foreground">
+              <TableRow>
+                <TableHead className="px-3 py-2.5 text-left font-medium">
                   {t("columns.full_name")}
-                </th>
-                <th className="px-3 py-2.5 text-right font-medium">
+                </TableHead>
+                <TableHead className="px-3 py-2.5 text-right font-medium">
                   {t("columns.amount")}
-                </th>
-                <th className="px-3 py-2.5 text-left font-medium">
+                </TableHead>
+                <TableHead className="px-3 py-2.5 text-left font-medium">
                   {t("columns.payroll")}
-                </th>
-                <th className="px-3 py-2.5 text-left font-medium">
+                </TableHead>
+                <TableHead className="px-3 py-2.5 text-left font-medium">
                   {t("columns.recovered")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {culprits.length === 0 ? (
-                <tr>
-                  <td
+                <TableRow>
+                  <TableCell
                     colSpan={4}
                     className="px-3 py-8 text-center text-muted-foreground"
                   >
                     {t("empty")}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
                 culprits.map((c) => (
-                  <tr key={c.id} className="border-t align-top hover:bg-muted/20">
-                    <td className="px-3 py-2.5 font-medium">{c.full_name}</td>
-                    <td className="px-3 py-2.5 text-right tabular-nums">
+                  <TableRow key={c.id} className="border-t align-top hover:bg-muted/20">
+                    <TableCell className="px-3 py-2.5 font-medium">{c.full_name}</TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
                       {fmt(c.amount)}
-                    </td>
-                    <td className="px-3 py-2.5">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5">
                       <StatusPill
                         active={c.payroll_confirmed}
                         yes={t("yes")}
@@ -163,8 +171,8 @@ export function RecoveryInfoModal({
                             : null
                         }
                       />
-                    </td>
-                    <td className="px-3 py-2.5">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5">
                       <StatusPill
                         active={c.recovered}
                         yes={t("yes")}
@@ -175,12 +183,12 @@ export function RecoveryInfoModal({
                             : null
                         }
                       />
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         <div className="flex justify-end pt-1">

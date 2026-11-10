@@ -27,6 +27,15 @@ import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
 import { Button } from "@/ui/button";
 import { Chip } from "@/ui/chip";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -349,45 +358,45 @@ export function SrivPaymentReport() {
           {/* Per-depo table */}
           <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[820px] border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-surface-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-4 py-3 font-semibold">{t("depo")}</th>
-                    <th className="px-4 py-3 text-right font-semibold">
+              <Table wrapper={false} className="w-full min-w-[820px] border-collapse text-sm">
+                <TableHeader>
+                  <TableRow className="border-b border-border bg-surface-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <TableHead className="px-4 py-3 font-semibold">{t("depo")}</TableHead>
+                    <TableHead className="px-4 py-3 text-right font-semibold">
                       {t("total")}
-                    </th>
+                    </TableHead>
                     {BUCKETS.map((b) => (
-                      <th
+                      <TableHead
                         key={b.key}
                         className="px-4 py-3 text-right font-semibold"
                       >
                         {t(b.labelKey)}
-                      </th>
+                      </TableHead>
                     ))}
-                    <th className="w-[160px] px-4 py-3 font-semibold">
+                    <TableHead className="w-[160px] px-4 py-3 font-semibold">
                       {t("distribution")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {rows.length === 0 ? (
-                    <tr>
-                      <td
+                    <TableRow>
+                      <TableCell
                         colSpan={6}
                         className="px-4 py-10 text-center text-sm text-foreground-subtle"
                       >
                         {t("empty")}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ) : (
                     rows.map((row) => (
-                      <tr
+                      <TableRow
                         key={row.depo}
                         className="border-b border-muted last:border-0 hover:bg-surface-muted/60"
                       >
-                        <td className="px-4 py-3 font-medium text-foreground">
+                        <TableCell className="px-4 py-3 font-medium text-foreground">
                           {row.depo}
-                        </td>
+                        </TableCell>
                         <MoneyCell
                           sum={row.total_sum}
                           count={row.total_count}
@@ -415,19 +424,19 @@ export function SrivPaymentReport() {
                             }
                           />
                         ))}
-                        <td className="px-4 py-3">
+                        <TableCell className="px-4 py-3">
                           <StackedBar row={row} className="h-2.5" />
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))
                   )}
-                </tbody>
+                </TableBody>
                 {rows.length > 0 && (
-                  <tfoot>
-                    <tr className="border-t-2 border-border bg-surface-muted font-semibold">
-                      <td className="px-4 py-3 text-foreground">
+                  <TableFooter>
+                    <TableRow className="border-t-2 border-border bg-surface-muted font-semibold">
+                      <TableCell className="px-4 py-3 text-foreground">
                         {total.depo || t("grand_total")}
-                      </td>
+                      </TableCell>
                       <MoneyCell
                         sum={total.total_sum}
                         count={total.total_count}
@@ -456,13 +465,13 @@ export function SrivPaymentReport() {
                           }
                         />
                       ))}
-                      <td className="px-4 py-3">
+                      <TableCell className="px-4 py-3">
                         <StackedBar row={total} className="h-2.5" />
-                      </td>
-                    </tr>
-                  </tfoot>
+                      </TableCell>
+                    </TableRow>
+                  </TableFooter>
                 )}
-              </table>
+              </Table>
             </div>
           </div>
         </>
@@ -571,7 +580,7 @@ function MoneyCell({
 }) {
   const clickable = !!onClick && count > 0;
   return (
-    <td className="px-4 py-3 text-right">
+    <TableCell className="px-4 py-3 text-right">
       <span
         className={cn(
           "tabular-nums",
@@ -594,7 +603,7 @@ function MoneyCell({
           · {count}
         </span>
       )}
-    </td>
+    </TableCell>
   );
 }
 

@@ -23,6 +23,14 @@ import {
 } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
 import { Button } from "@/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 const SUPERVISOR_ROLES = ["admin", "dispatcher", "operator", "rb_admin"];
 
@@ -255,27 +263,27 @@ export default function DelayedReportPage() {
                         {type.locomotives.length}
                       </span>
                     </div>
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wide">
-                          <th className="text-left px-3 py-1.5 font-semibold">
+                    <Table wrapper={false} className="w-full text-xs">
+                      <TableHeader>
+                        <TableRow className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wide">
+                          <TableHead className="text-left px-3 py-1.5 font-semibold">
                             {t("locomotive")}
-                          </th>
-                          <th className="text-right px-3 py-1.5 font-semibold">
+                          </TableHead>
+                          <TableHead className="text-right px-3 py-1.5 font-semibold">
                             {t("hourKm")}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
                         {type.locomotives.map((loc: DelayedLocomotive) => (
-                          <tr
+                          <TableRow
                             key={loc.id}
                             className="border-t border-muted hover:bg-surface-muted/60"
                           >
-                            <td className="px-3 py-1.5 font-medium text-foreground">
+                            <TableCell className="px-3 py-1.5 font-medium text-foreground">
                               {loc.name}
-                            </td>
-                            <td className="px-3 py-1.5 text-right text-muted-foreground tabular-nums whitespace-nowrap">
+                            </TableCell>
+                            <TableCell className="px-3 py-1.5 text-right text-muted-foreground tabular-nums whitespace-nowrap">
                               {loc.hour
                                 ? `${loc.hour} ${globalT("hour").toLowerCase()}`
                                 : ""}
@@ -283,11 +291,11 @@ export default function DelayedReportPage() {
                               {loc.mileage
                                 ? `${loc.mileage} ${globalT("Km").toLowerCase()}`
                                 : ""}
-                            </td>
-                          </tr>
+                            </TableCell>
+                          </TableRow>
                         ))}
-                      </tbody>
-                    </table>
+                      </TableBody>
+                    </Table>
                   </div>
                 ))}
               </div>

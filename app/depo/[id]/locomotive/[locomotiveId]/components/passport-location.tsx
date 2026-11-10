@@ -32,6 +32,14 @@ import {
   useLocomotiveLocationHistory,
 } from "@/api/hooks/use-emm";
 import type { LocationRecord } from "@/api/services/emm.service";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/ui/table";
 
 const mapLink = (lat: number, lon: number) =>
   `https://yandex.com/maps/?ll=${lon},${lat}&pt=${lon},${lat}&z=15&l=map`;
@@ -143,24 +151,24 @@ function HistoryDialog({ imei }: { imei: string }) {
               )}
             </div>
             <div className="max-h-[52vh] overflow-auto rounded-lg border">
-              <table className="w-full border-collapse text-sm">
-                <thead className="sticky top-0 bg-muted/80 backdrop-blur">
-                  <tr>
-                    <th className="border-b border-r border-border px-3 py-2 text-left font-semibold">
+              <Table wrapper={false} className="w-full border-collapse text-sm">
+                <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur">
+                  <TableRow>
+                    <TableHead className="border-b border-r border-border px-3 py-2 text-left font-semibold">
                       {t("time")}
-                    </th>
-                    <th className="border-b border-border px-3 py-2 text-right font-semibold">
+                    </TableHead>
+                    <TableHead className="border-b border-border px-3 py-2 text-right font-semibold">
                       {t("speed")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {rows.map((r) => {
                     const isSel =
                       selected?.id === r.id &&
                       selected?.tpTimestamp === r.tpTimestamp;
                     return (
-                      <tr
+                      <TableRow
                         key={`${r.id}-${r.tpTimestamp}`}
                         onClick={() => setSelected(r)}
                         className={cn(
@@ -168,17 +176,17 @@ function HistoryDialog({ imei }: { imei: string }) {
                           isSel && "bg-primary/10"
                         )}
                       >
-                        <td className="border-b border-r border-border px-3 py-2 whitespace-nowrap">
+                        <TableCell className="border-b border-r border-border px-3 py-2 whitespace-nowrap">
                           {fmtExact(r.tpTimestamp)}
-                        </td>
-                        <td className="border-b border-border px-3 py-2 text-right tabular-nums">
+                        </TableCell>
+                        <TableCell className="border-b border-border px-3 py-2 text-right tabular-nums">
                           {Math.round(r.speed)} {t("kmh")}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
         )}
