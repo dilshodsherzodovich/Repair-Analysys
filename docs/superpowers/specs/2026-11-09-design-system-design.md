@@ -112,27 +112,29 @@ standard components and no visible regressions.
 Every page is built the same way. No page invents its own header, filter
 strip, buttons or wording.
 
-### Anatomy
+### Anatomy (classic header + filter card, decided 2026-11-10)
 
 ```
+Home › Reports                                                          breadcrumbs (optional)
+Title                                         [view switch] [Add] [Excel][PDF]
+one meta line (org · period · "holatiga")
 ┌──────────────────────────────────────────────────────────────────┐
-│ [icon] Title                               [primary] [Excel][PDF] │  PageHeader
-│        one meta line (org · period · "holatiga")                 │
-├──────────────────────────────────────────────────────────────────┤
-│ LABEL          LABEL                        LABEL                │  FilterBar
+│ LABEL          LABEL                        LABEL                │  filter card
 │ [control  ▾]   [📅 dd.MM.yyyy – dd.MM.yyyy] [control ▾] [↺ Tozalash]
 └──────────────────────────────────────────────────────────────────┘
-  page content (tables, cards) below, 24px gap
+  page content (tiles, tables) below, 24px gap
 ```
 
 ### PageHeader
 
-- One style for every page (list pages and reports): the card. Icon tile
-  (the page's sidebar icon), title, one meta line, actions on the right,
-  FilterBar inside the card. Optional `leading` (Back) and breadcrumbs.
-- Actions order, left to right: page actions (Add, Edit), then exports.
-  Add is `Button` default size sm with a Plus icon and the label
-  `Common.add`.
+- One header for every page (list pages and reports): breadcrumbs
+  (optional), the title (xl / 2xl bold) with one meta line under it, actions
+  right-aligned, optional `leading` (Back). No card, no icon tile.
+- Filters go in the `filters` slot and render in the filter card under the
+  header; sections use `FilterPanel`, the same card with their actions on
+  the right.
+- Actions order, left to right: view switch (SegmentedTabs), page actions
+  (AddButton, ...), then ExportActions.
 
 ### FilterBar
 

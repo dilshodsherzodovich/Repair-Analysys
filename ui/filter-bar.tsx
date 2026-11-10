@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
+import { FILTER_CARD } from "@/ui/page-header";
 
 /**
  * The one filter row used on every page (inside PageHeader's `filters` slot).
@@ -110,7 +111,7 @@ export function SearchInput({
 
 /**
  * Filters for a section inside a page (a tab, an embedded table) whose page
- * header lives elsewhere. Same strip as PageHeader's filter area, with the
+ * header lives elsewhere. Same card as PageHeader's filters, with the
  * section's own actions (Add, exports, bulk) on the right.
  */
 export function FilterPanel({
@@ -125,7 +126,8 @@ export function FilterPanel({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-end justify-between gap-3 rounded-xl border border-border bg-surface-muted/60 px-5 py-3",
+        "flex flex-wrap items-end justify-between gap-3",
+        FILTER_CARD,
         className,
       )}
     >

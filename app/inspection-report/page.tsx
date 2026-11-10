@@ -6,7 +6,7 @@ import { useInspectionCountStats } from "@/api/hooks/use-report-inspections";
 import { useBranches } from "@/api/hooks/use-branches";
 import { format } from "date-fns";
 import { uz } from "date-fns/locale";
-import { FileDown, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useInspectionsReport } from "@/api/hooks/use-report-inspections";
@@ -183,7 +183,6 @@ export default function InspectionReportPage() {
     <Page>
       {/* ─── Header Card ─── */}
       <PageHeader
-        icon={FileDown}
         title="Texnik ko&apos;riklar hisoboti"
         description={new Date().toLocaleDateString(
             locale === "ru" ? "ru-RU" : "uz-UZ",

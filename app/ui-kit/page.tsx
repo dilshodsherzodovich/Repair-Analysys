@@ -3,7 +3,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
   AlertCircle,
-  ClipboardList,
   CheckCircle2,
   Download,
   FileSpreadsheet,
@@ -318,7 +317,6 @@ function UiKit() {
         description="Every page is built exactly like this. No page invents its own header, filter row, buttons or wording."
       >
         <PageHeader
-          icon={ClipboardList}
           title="Buyurtmalar"
           description={"\"O'zbekiston\" lokomotiv depo · 124 ta yozuv"}
           actions={
@@ -368,12 +366,12 @@ function UiKit() {
         />
         <Panel title="Rules">
           <ul className="list-disc space-y-1.5 pl-5 text-sm text-foreground-secondary">
-            <li><b className="text-foreground">PageHeader</b> on every page: page icon (from lib/page-icons), title, one meta line, actions on the right, filters in the strip.</li>
+            <li><b className="text-foreground">PageHeader</b> on every page: breadcrumbs (optional), the title with one meta line, actions on the right, and the filters in the filter card under it.</li>
             <li><b className="text-foreground">Actions order:</b> view switch (SegmentedTabs) → page actions (AddButton, …) → ExportActions.</li>
             <li><b className="text-foreground">Exports:</b> only ExportActions — Excel (green), PDF / Word (outline), size sm, labels from Common.</li>
             <li><b className="text-foreground">Filters:</b> every control in a labelled FilterField, all 36px; a period is one DateRangeField (presets / time optional).</li>
             <li><b className="text-foreground">Apply:</b> filters apply instantly; the only filter action is FilterReset (&quot;Tozalash&quot;), shown when something is set.</li>
-            <li><b className="text-foreground">Sections</b> with their own filters (tabs, embedded tables) use FilterPanel with the same fields and actions on the right.</li>
+            <li><b className="text-foreground">Sections</b> with their own filters (tabs, embedded tables) use FilterPanel: the same filter card, with the section's actions on the right.</li>
             <li><b className="text-foreground">Wording:</b> shared actions and labels come from the Common translations.</li>
           </ul>
         </Panel>
