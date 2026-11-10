@@ -8,6 +8,7 @@ import { Label } from "@/ui/label";
 import { SearchableSelect } from "@/ui/select";
 import { DatePicker } from "@/ui/date-picker";
 import { Button } from "@/ui/button";
+import { Chip } from "@/ui/chip";
 
 export interface DocumentSearchFilters {
   query?: string;
@@ -207,18 +208,12 @@ const DocumentSearch = React.forwardRef<HTMLDivElement, DocumentSearchProps>(
                 </Label>
                 <div className="flex flex-wrap gap-2">
                   {availableTags.map((tag) => (
-                    <button
+                    <Chip selected={selectedTags.includes(tag)} className="text-sm"
                       key={tag}
                       onClick={() => handleTagToggle(tag)}
-                      className={cn(
-                        "px-3 py-1 rounded-full text-sm border transition-colors",
-                        selectedTags.includes(tag)
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-foreground-secondary border-border-strong hover:border-primary"
-                      )}
                     >
                       {tag}
-                    </button>
+                    </Chip>
                   ))}
                 </div>
               </div>

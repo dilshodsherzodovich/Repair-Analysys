@@ -20,7 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/select";
-import { CalendarIcon, Download, FileDown, FileSpreadsheet, Loader2, X } from "lucide-react";
+import {
+  CalendarIcon,
+  Download,
+  FileDown,
+  FileSpreadsheet,
+  Loader2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useReportFilters } from "@/lib/hooks/useReportFilters";
 import { useInspectionsReport } from "@/api/hooks/use-report-inspections";
@@ -33,6 +39,8 @@ import {
   useReportOrganization,
 } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
+import { CardButton } from "@/ui/card-button";
+import { Chip } from "@/ui/chip";
 
 export default function InspectionReportPage() {
   const t = useTranslations("Statistics");
@@ -314,23 +322,15 @@ export default function InspectionReportPage() {
             {statsByType.map(([typeName, count]) => {
               const isSelected = selectedType === typeName;
               return (
-                <button
+                <CardButton selected={isSelected} selectedClassName="border-primary bg-primary-subtle ring-primary/40" className="rounded-lg p-3 shadow-none"
                   key={typeName}
-                  type="button"
                   onClick={() => toggleType(typeName)}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "p-3 rounded-lg border text-left transition-colors",
-                    isSelected
-                      ? "bg-primary-subtle border-primary ring-1 ring-primary"
-                      : "bg-surface-muted border-border hover:border-primary hover:bg-primary-subtle/50",
-                  )}
                 >
                   <div className="text-sm font-medium text-foreground">{typeName}</div>
                   <div className="text-2xl font-bold text-primary mt-1">
                     {count}
                   </div>
-                </button>
+                </CardButton>
               );
             })}
           </div>
@@ -342,14 +342,12 @@ export default function InspectionReportPage() {
         <div className="flex items-center justify-between gap-3 mb-4">
           <h2 className="text-sm font-semibold">{t("inspectionsList")}</h2>
           {selectedType && (
-            <button
-              type="button"
-              onClick={() => setFilters({ inspectionType: "" })}
-              className="flex items-center gap-1 text-xs text-primary hover:underline shrink-0"
+            <Chip
+              className="shrink-0"
+              onRemove={() => setFilters({ inspectionType: "" })}
             >
-              <X className="h-3 w-3" />
               {selectedType}
-            </button>
+            </Chip>
           )}
         </div>
         {isLoadingInspections ? (

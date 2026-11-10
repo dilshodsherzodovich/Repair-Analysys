@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -16,6 +15,7 @@ import {
   ComponentGroupComponent,
   ComponentGroupRegistry,
 } from "@/api/types/component-registry";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 const CELL = "py-2.5 px-3 text-muted-foreground border-r border-border last:border-r-0";
 const HEAD =
@@ -178,23 +178,16 @@ export function ComponentGroupComponents({
             key={component.id}
             className="rounded-md border border-border bg-background overflow-hidden"
           >
-            <button
-              type="button"
+            <DisclosureTrigger
+              open={isOpen}
               onClick={() => toggle(component.id)}
-              aria-expanded={isOpen}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-surface-muted transition-colors cursor-pointer"
+              className="gap-2.5 px-3 py-2.5"
             >
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
-                  !isOpen && "-rotate-90",
-                )}
-              />
               <span className="flex-1 min-w-0 truncate text-sm font-medium text-foreground">
                 {component.name}
               </span>
               <CountBadge count={component.count} />
-            </button>
+            </DisclosureTrigger>
             {isOpen && <RegistryTable registries={component.registries} />}
           </div>
         );

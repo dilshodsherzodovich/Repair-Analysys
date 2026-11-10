@@ -104,7 +104,12 @@ def apply(s, entry):
         if span:
             new_tag = new_tag[: span[0]] + new_tag[span[1]:]
         keep = entry.get("className", "")
-        extra = f' className="{keep}"' if keep else ""
+        if not keep:
+            extra = ""
+        elif keep.startswith("{"):
+            extra = f" className={keep}"  # an expression, e.g. {cn(...)}
+        else:
+            extra = f' className="{keep}"'
     else:
         extra = ""
     if entry.get("dropAttrs"):

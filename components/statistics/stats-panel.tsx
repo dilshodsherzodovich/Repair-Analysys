@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { BarChart3, ChevronDown, Loader2 } from "lucide-react";
+import { BarChart3, Loader2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/ui/chart";
 import type { ChartConfig } from "@/ui/chart";
@@ -23,6 +23,7 @@ import {
   type JournalStatisticsParams,
 } from "@/api/types/statistics";
 import { Label } from "@/ui/label";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 export interface StatMetric {
   key: string;
@@ -249,19 +250,14 @@ export function StatsPanel({
 
               {/* Chart */}
               <div className="mt-4 rounded-lg border border-border">
-                <button
-                  type="button"
+                <DisclosureTrigger
+                  open={chartOpen}
+                  chevronSide="end"
                   onClick={() => setChartOpen((v) => !v)}
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-foreground-secondary transition-colors hover:bg-surface-muted"
+                  className="justify-between px-4 py-2.5 text-sm font-medium text-foreground-secondary"
                 >
                   {t("monthly_dynamics")}
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 transition-transform",
-                      chartOpen && "rotate-180"
-                    )}
-                  />
-                </button>
+                </DisclosureTrigger>
                 {chartOpen && (
                   <div className="px-2 pb-3 pt-1">
                     <ChartContainer

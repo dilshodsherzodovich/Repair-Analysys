@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -21,6 +21,7 @@ import {
   roundCount,
 } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 function getErrorMessage(e: any): string {
   return (
@@ -325,13 +326,11 @@ export function PlanEditGrid({
               className={cn("rounded-xl border bg-card shadow-sm overflow-hidden", accent.ring)}
             >
               {/* Header (toggles) */}
-              <button
-                type="button"
+              <DisclosureTrigger
+                open={open}
+                chevronSide="end"
                 onClick={() => toggleCard(group.type.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30",
-                  open && "border-b border-border"
-                )}
+                className={cn("px-4 py-3", open && "border-b border-border")}
               >
                 <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
                 <div className="min-w-0">
@@ -354,10 +353,7 @@ export function PlanEditGrid({
                   <span className={cn("text-2xs font-medium uppercase tracking-wide", accent.text)}>Yillik</span>
                   <span className={cn("text-base font-bold tabular-nums", accent.text)}>{typeYearly(group)}</span>
                 </div>
-                <ChevronDown
-                  className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")}
-                />
-              </button>
+              </DisclosureTrigger>
 
               {/* Table */}
               {open && (

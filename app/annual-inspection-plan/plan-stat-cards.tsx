@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { QUARTER_LABELS, accentFor } from "./plan-grid-shared";
+import { CardButton } from "@/ui/card-button";
 
 export interface StatItem {
   id: number;
@@ -32,17 +33,9 @@ export function PlanStatCards({
         const accent = accentFor(i);
         const selected = selectedId === item.id;
         return (
-          <button
+          <CardButton selected={selected} selectedClassName={cn("border-transparent", accent.ringColor, accent.soft)} className="px-3.5 py-3"
             key={item.id}
-            type="button"
-            aria-pressed={selected}
             onClick={() => onSelect(selected ? null : item.id)}
-            className={cn(
-              "text-left rounded-xl border bg-card shadow-sm px-3.5 py-3 transition-all",
-              selected
-                ? cn("ring-2 ring-offset-1 ring-offset-background border-transparent", accent.ringColor, accent.soft)
-                : "border-border hover:border-foreground/20 hover:shadow"
-            )}
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
@@ -69,7 +62,7 @@ export function PlanStatCards({
                 </div>
               ))}
             </div>
-          </button>
+          </CardButton>
         );
       })}
     </div>

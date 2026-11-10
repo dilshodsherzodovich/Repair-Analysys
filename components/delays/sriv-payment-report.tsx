@@ -26,6 +26,7 @@ import { SrivPaymentDrilldownModal } from "./sriv-payment-drilldown-modal";
 import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
 import { Button } from "@/ui/button";
+import { Chip } from "@/ui/chip";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -244,21 +245,14 @@ export function SrivPaymentReport() {
 
           <div className="flex items-center gap-1.5 pb-0.5">
             {quickRanges.map((r) => (
-              <button
+              <Chip selected={activeRange === r.key} className="py-1.5"
                 key={r.key}
-                type="button"
                 onClick={() =>
                   updateQuery({ start_date: r.start, end_date: r.end })
                 }
-                className={cn(
-                  "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
-                  activeRange === r.key
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-background text-foreground-secondary hover:border-border-strong hover:bg-surface-muted"
-                )}
               >
                 {r.label}
-              </button>
+              </Chip>
             ))}
           </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { AlertCircle, ChevronDown, ExternalLink } from "lucide-react";
+import { AlertCircle, ExternalLink } from "lucide-react";
 import { Skeleton } from "@/ui/skeleton";
 import { EmptyState } from "@/ui/empty-state";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ import {
   ComponentGroupComponents,
   CountBadge,
 } from "./component-group-components";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 interface ComponentGroupAccordionProps {
   data?: ComponentGroupOverview;
@@ -186,20 +187,13 @@ export function ComponentGroupAccordion({
               <div className="flex items-stretch">
                 {/* Chevron expands in place; the rest of the row opens the
                     group on its own page in a new tab. */}
-                <button
-                  type="button"
+                <DisclosureTrigger
+                  open={isOpen}
                   onClick={() => toggleGroup(group.id)}
-                  aria-expanded={isOpen}
                   aria-label={t("groups_title")}
-                  className="px-3 flex items-center hover:bg-muted transition-colors cursor-pointer shrink-0"
+                  className="w-auto shrink-0 px-3"
                 >
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 text-muted-foreground transition-transform",
-                      !isOpen && "-rotate-90",
-                    )}
-                  />
-                </button>
+                </DisclosureTrigger>
 
                 <a
                   href={groupHref(group.id)}

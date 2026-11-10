@@ -6,6 +6,7 @@ import type {
   ExcludedTypeCount,
   TypeBreakdownRow,
 } from "./use-unified-report-data";
+import { CardButton } from "@/ui/card-button";
 
 /** Share of a type's inspections, as a whole percentage. 0 when the type is empty. */
 const share = (part: number, total: number) =>
@@ -82,20 +83,10 @@ export function TypeBreakdown({
             const active = activeType === row.name;
             const dimmed = activeType !== null && !active;
             return (
-            <button
+            <CardButton selected={active} selectedClassName="border-foreground-subtle ring-border-strong" className={cn("rounded-lg p-3.5 shadow-none", !active && "bg-surface-muted/40", dimmed && "opacity-55 hover:opacity-100")}
               key={row.name}
-              type="button"
               // Clicking the active card clears the filter rather than re-applying it.
               onClick={() => onSelectType(active ? null : row.name)}
-              aria-pressed={active}
-              className={cn(
-                "text-left rounded-lg border p-3.5 transition-all",
-                "hover:border-border-strong hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1",
-                active
-                  ? "border-foreground-subtle bg-background ring-2 ring-border-strong"
-                  : "border-border bg-surface-muted/40",
-                dimmed && "opacity-55 hover:opacity-100",
-              )}
             >
               <h3
                 className="text-xs font-semibold text-foreground-secondary truncate"
@@ -121,7 +112,7 @@ export function TypeBreakdown({
                   tone="duration"
                 />
               </div>
-            </button>
+            </CardButton>
             );
           })}
 

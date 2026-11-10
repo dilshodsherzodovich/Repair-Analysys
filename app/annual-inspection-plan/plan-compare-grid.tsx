@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AnnualPlanReportOrganization,
@@ -10,6 +9,8 @@ import {
   cellCount,
 } from "@/api/types/annual-inspection-plan";
 import { GRID_COLUMNS, MONTHS_SHORT, QUARTER_LABELS, accentFor } from "./plan-grid-shared";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import { CardButton } from "@/ui/card-button";
 
 const mVal = (row: AnnualPlanReportRow | undefined, m: number) => cellCount(row?.months[String(m)]);
 const qVal = (row: AnnualPlanReportRow | undefined, q: number) => cellCount(row?.quarters[String(q)]);
@@ -169,15 +170,9 @@ export function PlanCompareGrid({
           const pct = t.planYearly > 0 ? Math.round((t.factYearly / t.planYearly) * 100) : t.factYearly > 0 ? 100 : 0;
           const selected = selectedId === t.id;
           return (
-            <button
+            <CardButton selected={selected} selectedClassName={cn("border-transparent", accent.ringColor, accent.soft)} className="px-3.5 py-3"
               key={t.id}
-              type="button"
-              aria-pressed={selected}
               onClick={() => setSelectedId(selected ? null : t.id)}
-              className={cn(
-                "text-left rounded-xl border bg-card shadow-sm px-3.5 py-3 transition-all",
-                selected ? cn("ring-2 ring-offset-1 ring-offset-background border-transparent", accent.ringColor, accent.soft) : "border-border hover:border-foreground/20 hover:shadow"
-              )}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
@@ -213,7 +208,7 @@ export function PlanCompareGrid({
                   );
                 })}
               </div>
-            </button>
+            </CardButton>
           );
         })}
       </div>
@@ -225,10 +220,11 @@ export function PlanCompareGrid({
         const pct = t.planYearly > 0 ? Math.round((t.factYearly / t.planYearly) * 100) : t.factYearly > 0 ? 100 : 0;
         return (
           <div key={t.id} className={cn("rounded-xl border bg-card shadow-sm overflow-hidden", accent.ring)}>
-            <button
-              type="button"
+            <DisclosureTrigger
+              open={open}
+              chevronSide="end"
               onClick={() => toggleCard(t.id)}
-              className={cn("w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30", open && "border-b border-border")}
+              className={cn("px-4 py-3", open && "border-b border-border")}
             >
               <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
               <div className="min-w-0">
@@ -240,9 +236,8 @@ export function PlanCompareGrid({
                   {t.factYearly}<span className="text-muted-foreground font-normal">/{t.planYearly}</span>
                 </span>
                 <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-md", accent.soft, accent.text)}>{pct}%</span>
-                <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")} />
               </div>
-            </button>
+            </DisclosureTrigger>
 
             {open && (
               <div className="overflow-x-auto">

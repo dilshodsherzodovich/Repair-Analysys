@@ -22,7 +22,6 @@ import {
 import {
   Loader2,
   Satellite,
-  ChevronDown,
   RotateCcw,
   CheckCircle2,
   XCircle,
@@ -35,6 +34,7 @@ import {
 } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
 import { Button } from "@/ui/button";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 const LOCOMOTIVE_TYPES = [
   "electric_loco",
@@ -278,17 +278,12 @@ function ModelSection({
 
   return (
     <div>
-      <button
+      <DisclosureTrigger
+        open={open}
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between gap-3 px-5 py-3 hover:bg-surface-muted transition-colors text-left"
+        className="justify-between px-5 py-3"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 text-foreground-subtle transition-transform",
-              open && "rotate-180",
-            )}
-          />
           <span className="font-medium text-sm text-foreground truncate">
             {model.model_name}
           </span>
@@ -303,7 +298,7 @@ function ModelSection({
           <Stat label={t("valid")} value={model.valid_count} tone="blue" />
           <Stat label={t("invalid")} value={model.invalid_count} tone="amber" />
         </div>
-      </button>
+      </DisclosureTrigger>
 
       {open && (
         <div className="overflow-x-auto border-t border-muted">

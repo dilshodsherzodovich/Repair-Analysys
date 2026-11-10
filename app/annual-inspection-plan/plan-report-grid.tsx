@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AnnualPlanReportOrganization,
@@ -16,6 +15,7 @@ import {
   computeOrgTotals,
 } from "./plan-grid-shared";
 import { PlanStatCards } from "./plan-stat-cards";
+import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 function num(v: number) {
   return v ? (
@@ -50,13 +50,11 @@ function PlanTypeCard({
   return (
     <div className={cn("rounded-xl border bg-card shadow-sm overflow-hidden", accent.ring)}>
       {/* Header (toggles) */}
-      <button
-        type="button"
+      <DisclosureTrigger
+        open={open}
+        chevronSide="end"
         onClick={() => setOpen((v) => !v)}
-        className={cn(
-          "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30",
-          open && "border-b border-border"
-        )}
+        className={cn("px-4 py-3", open && "border-b border-border")}
       >
         <span className={cn("h-8 w-1.5 rounded-full shrink-0", accent.bar)} />
         <div className="min-w-0">
@@ -80,10 +78,7 @@ function PlanTypeCard({
           <span className={cn("text-base font-bold tabular-nums", accent.text)}>{yearly}</span>
         </div>
 
-        <ChevronDown
-          className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")}
-        />
-      </button>
+      </DisclosureTrigger>
 
       {/* Table */}
       {open && (

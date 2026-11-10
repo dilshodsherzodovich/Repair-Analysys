@@ -10,9 +10,16 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import { DefectiveWorkEntry } from "@/api/types/defective-works";
 import tu152Data from "@/data/tu-152.json";
-import { FileText, CheckCircle, XCircle, TrendingUp, X } from "lucide-react";
+import {
+  FileText,
+  CheckCircle,
+  XCircle,
+  TrendingUp,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authService } from "@/api/services/auth.service";
+import { CardButton } from "@/ui/card-button";
+import { Chip } from "@/ui/chip";
 
 const PAGE_SIZE = 20;
 
@@ -268,14 +275,9 @@ export default function Tu152Page() {
               const ratePct = Math.round(org.fixed_rate * 100);
 
               return (
-                <button
+                <CardButton selected={isActive} selectedClassName={cs.activeBorder} className="p-4"
                   key={org.organization_id}
-                  type="button"
                   onClick={() => toggleOrg(org.organization_id)}
-                  className={cn(
-                    "text-left bg-background rounded-xl border p-4 transition-all hover:shadow-md",
-                    isActive ? cs.activeBorder : "border-border hover:border-border-strong",
-                  )}
                 >
                   <div className="flex items-start gap-2 mb-3">
                     <span className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1", cs.dot)} />
@@ -310,7 +312,7 @@ export default function Tu152Page() {
                       {ratePct}%
                     </span>
                   </div>
-                </button>
+                </CardButton>
               );
             })}
           </div>
@@ -328,14 +330,9 @@ export default function Tu152Page() {
               const isActive = insTypeId === String(ins.id);
 
               return (
-                <button
+                <CardButton selected={isActive} selectedClassName={cs.activeBorder} className="p-3.5"
                   key={String(ins.id)}
-                  type="button"
                   onClick={() => toggleIns(ins.id)}
-                  className={cn(
-                    "text-left bg-background rounded-xl border p-3.5 transition-all hover:shadow-md",
-                    isActive ? cs.activeBorder : "border-border hover:border-border-strong",
-                  )}
                 >
                   <div className="flex items-center gap-2 mb-2.5">
                     <span className={cn("w-2 h-2 rounded-full flex-shrink-0", cs.dot)} />
@@ -355,7 +352,7 @@ export default function Tu152Page() {
                       <span className="font-bold text-success">{fmt(ins.fixed)}</span>
                     </div>
                   </div>
-                </button>
+                </CardButton>
               );
             })}
           </div>
@@ -369,28 +366,20 @@ export default function Tu152Page() {
                 {t("section_records")}
               </h2>
               {selectedOrg && (
-                <span className="inline-flex items-center gap-1.5 bg-category-indigo/10 text-category-indigo text-xs font-semibold px-2.5 py-1 rounded-full border border-category-indigo/25">
+                <Chip
+                  className="font-semibold bg-category-indigo/10 text-category-indigo border-category-indigo/25"
+                  onRemove={() => updateQuery({ org_id: null, page: "1" })}
+                >
                   {selectedOrg.organization_name}
-                  <button
-                    type="button"
-                    onClick={() => updateQuery({ org_id: null, page: "1" })}
-                    className="hover:text-category-indigo ml-0.5"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
+                </Chip>
               )}
               {selectedIns && (
-                <span className="inline-flex items-center gap-1.5 bg-category-violet/10 text-category-violet text-xs font-semibold px-2.5 py-1 rounded-full border border-category-violet/25">
+                <Chip
+                  className="font-semibold bg-category-violet/10 text-category-violet border-category-violet/25"
+                  onRemove={() => updateQuery({ ins_type: null, page: "1" })}
+                >
                   {selectedIns.name}
-                  <button
-                    type="button"
-                    onClick={() => updateQuery({ ins_type: null, page: "1" })}
-                    className="hover:text-category-violet ml-0.5"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
+                </Chip>
               )}
               {!isLoading && (
                 <span className="text-xs text-foreground-subtle">{totalCount} ta yozuv</span>

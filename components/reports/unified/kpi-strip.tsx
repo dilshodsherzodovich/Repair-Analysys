@@ -6,6 +6,7 @@ import type {
   ExcludedTypeCount,
   UnifiedKpis,
 } from "./use-unified-report-data";
+import { CardButton } from "@/ui/card-button";
 
 /** Which detail section a tile drills into. `null` = show every section. */
 export type UnifiedSection = "inspections" | "duration" | "entry";
@@ -52,23 +53,14 @@ function Tile({
   children: React.ReactNode;
 }) {
   return (
-    <button
-      type="button"
+    <CardButton selected={active} selectedClassName={cn("ring-2", TONES[tone].active)} className={cn("border-t-4 px-4 py-3", TONES[tone].idle, dimmed && "opacity-55 hover:opacity-100")}
       onClick={onClick}
-      aria-pressed={active}
-      className={cn(
-        "text-left bg-background rounded-xl border border-border border-t-4 px-4 py-3 shadow-sm transition-all",
-        "hover:border-border-strong hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1",
-        TONES[tone].idle,
-        active && cn("ring-2", TONES[tone].active),
-        dimmed && "opacity-55 hover:opacity-100",
-      )}
     >
       <p className="text-2xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
         {label}
       </p>
       {children}
-    </button>
+    </CardButton>
   );
 }
 
