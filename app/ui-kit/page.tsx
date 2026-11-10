@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
   AlertCircle,
+  ClipboardList,
   CheckCircle2,
   Download,
   FileSpreadsheet,
@@ -33,19 +34,17 @@ import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { Skeleton } from "@/ui/skeleton";
 import { StatCard } from "@/ui/stat-card";
 import { Switch } from "@/ui/switch";
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { Textarea } from "@/ui/textarea";
 import { GridTable, gridCellClass, gridHeadClass } from "@/ui/grid-table";
 import { CardButton } from "@/ui/card-button";
 import { Chip } from "@/ui/chip";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { RadioGroup, RadioGroupItem } from "@/ui/radio-group";
+import { AddButton } from "@/ui/add-button";
+import { ExportActions } from "@/ui/export-actions";
+import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
+import { DateRangeField, type DateRange } from "@/ui/date-range-field";
 
 /**
  * The design system reference: every token and the standard component for
@@ -240,6 +239,7 @@ function Panel({
 }
 
 const NAV = [
+  ["page", "Page standard"],
   ["colors", "Colors"],
   ["typography", "Typography"],
   ["radius-shadow", "Radius & shadow"],
@@ -273,7 +273,9 @@ function UiKit() {
   const [chips, setChips] = useState<string[]>(["7d"]);
   const [card, setCard] = useState<string | null>("tr1");
   const [open, setOpen] = useState(true);
-  const [size, setSize] = useState("km");
+  const [demoSearch, setDemoSearch] = useState("");
+  const [demoOrg, setDemoOrg] = useState("");
+  const [demoRange, setDemoRange] = useState<DateRange>({});
 
   const fakeSave = () => {
     setLoading(true);
@@ -308,6 +310,74 @@ function UiKit() {
           Reach for a component here before writing markup by hand.
         </AlertDescription>
       </Alert>
+
+      {/* ---------------------------------------------------------------- */}
+      <Section
+        id="page"
+        title="Page standard"
+        description="Every page is built exactly like this. No page invents its own header, filter row, buttons or wording."
+      >
+        <PageHeader
+          icon={ClipboardList}
+          title="Buyurtmalar"
+          description={"\"O'zbekiston\" lokomotiv depo · 124 ta yozuv"}
+          actions={
+            <>
+              <AddButton onClick={() => showInfo("Qo'shish", "AddButton")} />
+              <ExportActions onExcel={() => undefined} onPdf={() => undefined} />
+            </>
+          }
+          filters={
+            <FilterBar>
+              <FilterField label="Qidiruv" width="lg">
+                <SearchInput value={demoSearch} onChange={setDemoSearch} />
+              </FilterField>
+              <FilterField label="Tashkilot" width="lg">
+                <SearchableSelect
+                  size="md"
+                  searchable
+                  value={demoOrg}
+                  onValueChange={setDemoOrg}
+                  placeholder="Barchasi"
+                  options={[
+                    { value: "", label: "Barchasi" },
+                    { value: "1", label: "Toshkent depo" },
+                    { value: "2", label: "Qo'qon depo" },
+                  ]}
+                />
+              </FilterField>
+              <FilterField label="Davr" width="lg">
+                <DateRangeField
+                  value={demoRange}
+                  onChange={setDemoRange}
+                  presets={[
+                    { label: "Bugun", range: { from: new Date(new Date().setHours(0, 0, 0, 0)), to: new Date(new Date().setHours(0, 0, 0, 0)) } },
+                  ]}
+                />
+              </FilterField>
+              <FilterReset
+                active={Boolean(demoSearch || demoOrg || demoRange.from)}
+                onReset={() => {
+                  setDemoSearch("");
+                  setDemoOrg("");
+                  setDemoRange({});
+                }}
+              />
+            </FilterBar>
+          }
+        />
+        <Panel title="Rules">
+          <ul className="list-disc space-y-1.5 pl-5 text-sm text-foreground-secondary">
+            <li><b className="text-foreground">PageHeader</b> on every page: page icon (from lib/page-icons), title, one meta line, actions on the right, filters in the strip.</li>
+            <li><b className="text-foreground">Actions order:</b> view switch (SegmentedTabs) → page actions (AddButton, …) → ExportActions.</li>
+            <li><b className="text-foreground">Exports:</b> only ExportActions — Excel (green), PDF / Word (outline), size sm, labels from Common.</li>
+            <li><b className="text-foreground">Filters:</b> every control in a labelled FilterField, all 36px; a period is one DateRangeField (presets / time optional).</li>
+            <li><b className="text-foreground">Apply:</b> filters apply instantly; the only filter action is FilterReset (&quot;Tozalash&quot;), shown when something is set.</li>
+            <li><b className="text-foreground">Sections</b> with their own filters (tabs, embedded tables) use FilterPanel with the same fields and actions on the right.</li>
+            <li><b className="text-foreground">Wording:</b> shared actions and labels come from the Common translations.</li>
+          </ul>
+        </Panel>
+      </Section>
 
       {/* ---------------------------------------------------------------- */}
       <Section
@@ -690,26 +760,8 @@ function UiKit() {
       <Section
         id="selection"
         title="Selection & disclosure"
-        description="CardButton for clickable tiles, Chip for filter pills, DisclosureTrigger for expandable rows, PageHeader variant=card for report pages."
+        description="CardButton for clickable tiles, Chip for filter pills, DisclosureTrigger for expandable rows."
       >
-        <PageHeader
-          icon={FileSpreadsheet}
-          title="Texnik ko'riklar hisoboti"
-          description="PageHeader variant=&quot;card&quot; with actions and a filters strip"
-          actions={<Button variant="success" size="sm"><FileSpreadsheet /> Excel</Button>}
-          filters={
-            <SegmentedTabs
-              size="sm"
-              value={size}
-              onValueChange={setSize}
-              options={[
-                { value: "all", label: "Barchasi" },
-                { value: "km", label: "Km" },
-                { value: "hours", label: "Soat" },
-              ]}
-            />
-          }
-        />
         <div className="grid gap-4 lg:grid-cols-2">
           <Panel title="CardButton">
             <div className="grid grid-cols-2 gap-3">
