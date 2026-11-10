@@ -32,53 +32,51 @@ export function SectionInspections({
       isLoading={isLoading}
       isEmpty={rows.length === 0}
     >
-      <div className="overflow-x-auto">
-        <Table wrapper={false} className="w-full text-xs border-collapse">
-          <TableHeader>
-            <TableRow className="bg-surface-muted text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
-              <TableHead className="border px-2 py-1.5 text-center w-10">
-                {globalT("no")}
-              </TableHead>
-              <TableHead className="border px-2 py-1.5 text-left">{t("locomotive")}</TableHead>
-              <TableHead className="border px-2 py-1.5 text-left">{t("branch")}</TableHead>
-              <TableHead className="border px-2 py-1.5 text-center">
-                {t("inspectionType")}
-              </TableHead>
-              <TableHead className="border px-2 py-1.5 text-center">{t("entryTime")}</TableHead>
-              <TableHead className="border px-2 py-1.5 text-center">{t("closeTime")}</TableHead>
+      <Table bordered density="compact">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-center w-10">
+              {globalT("no")}
+            </TableHead>
+            <TableHead className="text-left">{t("locomotive")}</TableHead>
+            <TableHead className="text-left">{t("branch")}</TableHead>
+            <TableHead className="text-center">
+              {t("inspectionType")}
+            </TableHead>
+            <TableHead className="text-center">{t("entryTime")}</TableHead>
+            <TableHead className="text-center">{t("closeTime")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row, i) => (
+            <TableRow
+              key={row.id}
+              className={cn("", i % 2 === 1 && "")}
+            >
+              <TableCell className="text-center text-foreground-subtle">
+                {i + 1}
+              </TableCell>
+              <TableCell className="font-medium whitespace-nowrap">
+                {[row.locomotive?.name, row.locomotive?.locomotive_model?.name]
+                  .filter(Boolean)
+                  .join(" ")}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">
+                {row.branch?.name}
+              </TableCell>
+              <TableCell className="text-center">
+                {row.inspection_type?.name}
+              </TableCell>
+              <TableCell className="text-center whitespace-nowrap">
+                {formatDate(row.created_time)}
+              </TableCell>
+              <TableCell className="text-center whitespace-nowrap">
+                {row.is_closed_time ? formatDate(row.is_closed_time) : "—"}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row, i) => (
-              <TableRow
-                key={row.id}
-                className={cn("hover:bg-surface-muted", i % 2 === 1 && "bg-surface-muted/40")}
-              >
-                <TableCell className="border px-2 py-1 text-center text-foreground-subtle">
-                  {i + 1}
-                </TableCell>
-                <TableCell className="border px-2 py-1 font-medium whitespace-nowrap">
-                  {[row.locomotive?.name, row.locomotive?.locomotive_model?.name]
-                    .filter(Boolean)
-                    .join(" ")}
-                </TableCell>
-                <TableCell className="border px-2 py-1 whitespace-nowrap">
-                  {row.branch?.name}
-                </TableCell>
-                <TableCell className="border px-2 py-1 text-center">
-                  {row.inspection_type?.name}
-                </TableCell>
-                <TableCell className="border px-2 py-1 text-center whitespace-nowrap">
-                  {formatDate(row.created_time)}
-                </TableCell>
-                <TableCell className="border px-2 py-1 text-center whitespace-nowrap">
-                  {row.is_closed_time ? formatDate(row.is_closed_time) : "—"}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+          ))}
+        </TableBody>
+      </Table>
     </SectionShell>
   );
 }

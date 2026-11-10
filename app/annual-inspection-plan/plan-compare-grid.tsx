@@ -248,43 +248,41 @@ export function PlanCompareGrid({
             </DisclosureTrigger>
 
             {open && (
-              <div className="overflow-x-auto">
-                <Table wrapper={false} className="w-full table-fixed min-w-[1080px] border-collapse text-xs">
-                  <colgroup>
-                    <col style={{ width: 150 }} />
-                    {GRID_COLUMNS.map((c, i) => <col key={i} />)}
-                    <col style={{ width: 84 }} />
-                  </colgroup>
-                  <TableHeader>
-                    <TableRow className="text-muted-foreground bg-muted/40">
-                      <TableHead className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</TableHead>
+              <Table bordered density="compact" className=" table-fixed min-w-[1080px]">
+                <colgroup>
+                  <col style={{ width: 150 }} />
+                  {GRID_COLUMNS.map((c, i) => <col key={i} />)}
+                  <col style={{ width: 84 }} />
+                </colgroup>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-left">Rusum</TableHead>
+                    {GRID_COLUMNS.map((col) =>
+                      col.kind === "month" ? (
+                        <TableHead key={`m${col.month}`} className="text-center">{MONTHS_SHORT[col.month - 1]}</TableHead>
+                      ) : (
+                        <TableHead key={`q${col.quarter}`} className="text-center text-success">{QUARTER_LABELS[col.quarter - 1]}</TableHead>
+                      )
+                    )}
+                    <TableHead className="text-center">Σ</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {t.models.map((m) => (
+                    <TableRow key={m.id}>
+                      <TableCell className="text-left font-medium whitespace-nowrap">{m.name}</TableCell>
                       {GRID_COLUMNS.map((col) =>
                         col.kind === "month" ? (
-                          <TableHead key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">{MONTHS_SHORT[col.month - 1]}</TableHead>
+                          <TableCell key={`m${col.month}`}><Cell plan={mVal(m.plan, col.month)} fact={mVal(m.fact, col.month)} /></TableCell>
                         ) : (
-                          <TableHead key={`q${col.quarter}`} className="border border-border px-1 py-2.5 text-center font-semibold text-success">{QUARTER_LABELS[col.quarter - 1]}</TableHead>
+                          <TableCell key={`q${col.quarter}`}><Cell plan={qVal(m.plan, col.quarter)} fact={qVal(m.fact, col.quarter)} /></TableCell>
                         )
                       )}
-                      <TableHead className="border border-border px-2 py-2.5 text-center font-semibold text-foreground">Σ</TableHead>
+                      <TableCell><Cell plan={yVal(m.plan)} fact={yVal(m.fact)} /></TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {t.models.map((m) => (
-                      <TableRow key={m.id}>
-                        <TableCell className="border border-border px-3 py-2 text-left font-medium text-foreground whitespace-nowrap">{m.name}</TableCell>
-                        {GRID_COLUMNS.map((col) =>
-                          col.kind === "month" ? (
-                            <TableCell key={`m${col.month}`} className="border border-border p-0"><Cell plan={mVal(m.plan, col.month)} fact={mVal(m.fact, col.month)} /></TableCell>
-                          ) : (
-                            <TableCell key={`q${col.quarter}`} className="border border-border p-0"><Cell plan={qVal(m.plan, col.quarter)} fact={qVal(m.fact, col.quarter)} /></TableCell>
-                          )
-                        )}
-                        <TableCell className="border border-border p-0"><Cell plan={yVal(m.plan)} fact={yVal(m.fact)} /></TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </div>
         );

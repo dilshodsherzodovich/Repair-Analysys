@@ -215,13 +215,13 @@ export default function DelayedReportPage() {
                         {type.locomotives.length}
                       </span>
                     </div>
-                    <Table wrapper={false} className="w-full text-xs">
+                    <Table density="compact" wrapper={false}>
                       <TableHeader>
-                        <TableRow className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wide">
-                          <TableHead className="text-left px-3 py-1.5 font-semibold">
+                        <TableRow className=" text-foreground-subtle">
+                          <TableHead className="text-left">
                             {t("locomotive")}
                           </TableHead>
-                          <TableHead className="text-right px-3 py-1.5 font-semibold">
+                          <TableHead className="text-right">
                             {t("hourKm")}
                           </TableHead>
                         </TableRow>
@@ -230,12 +230,11 @@ export default function DelayedReportPage() {
                         {type.locomotives.map((loc: DelayedLocomotive) => (
                           <TableRow
                             key={loc.id}
-                            className="border-t border-muted hover:bg-surface-muted/60"
                           >
-                            <TableCell className="px-3 py-1.5 font-medium text-foreground">
+                            <TableCell className="font-medium">
                               {loc.name}
                             </TableCell>
-                            <TableCell className="px-3 py-1.5 text-right text-muted-foreground tabular-nums whitespace-nowrap">
+                            <TableCell className="text-right text-muted-foreground tabular-nums whitespace-nowrap">
                               {loc.hour
                                 ? `${loc.hour} ${globalT("hour").toLowerCase()}`
                                 : ""}

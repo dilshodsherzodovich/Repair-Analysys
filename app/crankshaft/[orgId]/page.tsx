@@ -5,35 +5,17 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import PageFilters, { FiltersQuery } from "@/ui/filters";
 import { PageHeader } from "@/ui/page-header";
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { cn } from "@/lib/utils";
-import { GridTable, gridCellClass, gridHeadClass } from "@/ui/grid-table";
-import {
-  useGetLocomotiveModels,
-  useGetLocomotives,
-} from "@/api/hooks/use-locomotives";
+import { useGetLocomotiveModels, useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useUpdateSpecialComponent } from "@/api/hooks/use-special-components";
 import { SpecialComponent } from "@/api/types/locomotive";
 import { UserData } from "@/api/types/auth";
-import {
-  canAccessSection,
-  canEditOrganization,
-  hasPermission,
-} from "@/lib/permissions";
+import { canAccessSection, canEditOrganization, hasPermission } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
-import {
-  CellInput,
-  EditActions,
-  firstMessage,
-} from "@/ui/inline-edit";
+import { CellInput, EditActions, firstMessage } from "@/ui/inline-edit";
 import { authService } from "@/api/services/auth.service";
 import { Check } from "lucide-react";
 import { exportCrankshaftExcel } from "@/utils/crankshaft-excel-export";
@@ -251,7 +233,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={component.id}
           className={cn(
-            "group hover:bg-surface-muted transition-colors duration-700",
+            "group duration-700",
             isEditing && "bg-primary-subtle hover:bg-primary-subtle",
             justSaved && "bg-success-subtle hover:bg-success-subtle",
           )}
@@ -261,7 +243,6 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 rowSpan={span}
                 className={cn(
-                  gridCellClass,
                   stickyNo,
                   stickyBg,
                   "z-[5] text-muted-foreground align-top",
@@ -272,11 +253,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 rowSpan={span}
                 className={cn(
-                  gridCellClass,
                   stickyLocomotive,
                   stickyBg,
-                  "z-[5] text-foreground font-medium align-top",
-                  justSaved && "border-l-2 border-l-success",
+                  "z-[5] font-medium align-top",
+                  justSaved && "border-l-success",
                 )}
               >
                 {group.name}-{group.modelName}
@@ -291,10 +271,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
           )}
           <TableCell
             className={cn(
-              gridCellClass,
               stickySection,
               stickyBg,
-              "z-[5] text-foreground",
+              "z-[5]",
             )}
           >
             {component.section?.name ??
@@ -310,10 +289,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 key={field}
                 className={cn(
-                  gridCellClass,
-                  "transition-colors duration-700",
-                  isInfo ? "text-muted-foreground" : "text-center text-foreground",
-                  editable && "px-1 py-1.5",
+                  "duration-700",
+                  isInfo ? "text-muted-foreground" : "text-center",
+                  editable && "",
                   // Changed values stand out while the highlight lasts
                   wasSaved && "bg-success-subtle font-semibold text-success",
                 )}
@@ -346,7 +324,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           {canEdit && componentIndex === 0 && (
             <TableCell
               rowSpan={span}
-              className={`${gridCellClass} text-center align-top border-r-0`}
+              className={`text-center align-top`}
             >
               <EditActions
                 isEditing={isEditing}
@@ -499,35 +477,35 @@ function CrankshaftPageContent({
         </AlertDescription></Alert>
       )}
 
-      <GridTable>
+      <Table frame maxHeight="75vh" bordered>
           {/* Header stays pinned while the rows scroll inside the box */}
           <TableHeader className="sticky top-0 z-10">
-            <TableRow className="hover:bg-transparent">
-              <TableHead rowSpan={2} className={`${gridHeadClass} ${stickyNo} z-20`}>
+            <TableRow>
+              <TableHead rowSpan={2} className={`${stickyNo} z-20`}>
                 {t("columns.no")}
               </TableHead>
               <TableHead
                 rowSpan={2}
-                className={`${gridHeadClass} ${stickyLocomotive} z-20`}
+                className={`${stickyLocomotive} z-20`}
               >
                 {t("columns.locomotive")}
               </TableHead>
               <TableHead
                 rowSpan={2}
-                className={`${gridHeadClass} ${stickySection} z-20`}
+                className={`${stickySection} z-20`}
               >
                 {t("columns.section")}
               </TableHead>
-              <TableHead rowSpan={2} className={gridHeadClass}>
+              <TableHead rowSpan={2}>
                 {tModal("year_of_manufacture")}
               </TableHead>
-              <TableHead rowSpan={2} className={gridHeadClass}>
+              <TableHead rowSpan={2}>
                 {tModal("factory_number")}
               </TableHead>
               {korenFields.length > 0 && (
                 <TableHead
                   colSpan={korenFields.length}
-                  className={cn(gridHeadClass, korenHead, "text-center")}
+                  className={cn(korenHead, "text-center")}
                 >
                   {tModal("koren_prefix")}
                 </TableHead>
@@ -535,7 +513,7 @@ function CrankshaftPageContent({
               {shatunFields.length > 0 && (
                 <TableHead
                   colSpan={shatunFields.length}
-                  className={cn(gridHeadClass, shatunHead, "text-center")}
+                  className={cn(shatunHead, "text-center")}
                 >
                   {tModal("shatun_prefix")}
                 </TableHead>
@@ -543,19 +521,18 @@ function CrankshaftPageContent({
               {canEdit && (
                 <TableHead
                   rowSpan={2}
-                  className={`${gridHeadClass} text-center border-r-0`}
+                  className={`text-center`}
                 >
                   {t("columns.actions")}
                 </TableHead>
               )}
             </TableRow>
-            <TableRow className="hover:bg-transparent">
+            <TableRow>
               {valueFields.map((field) => (
                 <TableHead
                   key={field}
                   className={cn(
-                    gridHeadClass,
-                    "text-center text-xs",
+                    "text-center",
                     field.includes("koren") ? korenHead : shatunHead,
                   )}
                 >
@@ -578,7 +555,7 @@ function CrankshaftPageContent({
               <TableRow>
                 <TableCell
                   colSpan={columnCount}
-                  className="py-8 text-center text-muted-foreground"
+                  className="text-center text-muted-foreground"
                 >
                   {t("empty")}
                 </TableCell>
@@ -597,7 +574,7 @@ function CrankshaftPageContent({
               ))
             )}
           </TableBody>
-        </GridTable>
+        </Table>
     </Page>
   );
 }

@@ -60,9 +60,9 @@ function RegistryTable({
 
   return (
     <div className="overflow-x-auto border-t border-border">
-      <Table className="w-full min-w-[1100px]">
+      <Table className=" min-w-[1100px]">
         <TableHeader>
-          <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
+          <TableRow>
             <TableHead className={cn(HEAD, "w-12")}>{t("columns.no")}</TableHead>
             <TableHead className={HEAD}>{t("columns.defect_date")}</TableHead>
             <TableHead className={HEAD}>{t("columns.locomotive")}</TableHead>
@@ -89,15 +89,14 @@ function RegistryTable({
           {registries.map((registry, index) => (
             <TableRow
               key={registry.id}
-              className="hover:bg-surface-muted border-b border-border last:border-b-0 transition-colors"
             >
-              <TableCell className={cn(CELL, "text-foreground font-medium")}>
+              <TableCell className={cn(CELL, "font-medium")}>
                 {index + 1}
               </TableCell>
               <TableCell className={cn(CELL, "whitespace-nowrap")}>
                 {formatDefectDate(registry.defect_date)}
               </TableCell>
-              <TableCell className={cn(CELL, "text-foreground")}>
+              <TableCell className={cn(CELL, "")}>
                 {registry.locomotive}
                 {registry.locomotive_model ? `-${registry.locomotive_model}` : ""}
               </TableCell>

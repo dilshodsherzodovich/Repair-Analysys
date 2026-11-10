@@ -257,63 +257,58 @@ function ModelSection({
       </DisclosureTrigger>
 
       {open && (
-        <div className="overflow-x-auto border-t border-muted">
-          <Table wrapper={false} className="w-full text-sm border-collapse">
-            <TableHeader>
-              <TableRow className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide">
-                <TableHead className="border-b px-2 py-2 text-center w-8">#</TableHead>
-                <TableHead className="border-b px-3 py-2 text-left whitespace-nowrap">
-                  {t("locomotive")}
-                </TableHead>
-                <TableHead className="border-b px-3 py-2 text-left whitespace-nowrap">
-                  {t("serviceType")}
-                </TableHead>
-                <TableHead className="border-b px-3 py-2 text-center whitespace-nowrap">
-                  {t("imei")}
-                </TableHead>
-                <TableHead className="border-b px-3 py-2 text-center whitespace-nowrap">
-                  {t("gpsStatus")}
-                </TableHead>
-                <TableHead className="border-b px-3 py-2 text-left whitespace-nowrap">
-                  {t("statusDetail")}
-                </TableHead>
+        <Table frame>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center w-8">#</TableHead>
+              <TableHead className="text-left">
+                {t("locomotive")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("serviceType")}
+              </TableHead>
+              <TableHead className="text-center">
+                {t("imei")}
+              </TableHead>
+              <TableHead className="text-center">
+                {t("gpsStatus")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("statusDetail")}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {model.locomotives.map((loco, idx) => (
+              <TableRow
+                key={loco.id}
+                
+              >
+                <TableCell className="text-center text-muted-foreground">
+                  {idx + 1}
+                </TableCell>
+                <TableCell className="font-medium whitespace-nowrap">
+                  {loco.name}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {serviceTypeLabel(loco.service_type)}
+                </TableCell>
+                <TableCell className="text-center font-mono">
+                  {loco.gps_imei_code || "—"}
+                </TableCell>
+                <TableCell className="text-center">
+                  <GpsStatusBadge
+                    hasGps={loco.has_gps}
+                    status={loco.gps_status}
+                  />
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {loco.gps_status_detail || "—"}
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {model.locomotives.map((loco, idx) => (
-                <TableRow
-                  key={loco.id}
-                  className={cn(
-                    "hover:bg-muted/30 transition-colors",
-                    idx % 2 === 0 ? "bg-background" : "bg-muted/10",
-                  )}
-                >
-                  <TableCell className="border-b px-2 py-2 text-center text-muted-foreground text-xs">
-                    {idx + 1}
-                  </TableCell>
-                  <TableCell className="border-b px-3 py-2 font-medium whitespace-nowrap">
-                    {loco.name}
-                  </TableCell>
-                  <TableCell className="border-b px-3 py-2 text-xs whitespace-nowrap">
-                    {serviceTypeLabel(loco.service_type)}
-                  </TableCell>
-                  <TableCell className="border-b px-3 py-2 text-center text-xs font-mono">
-                    {loco.gps_imei_code || "—"}
-                  </TableCell>
-                  <TableCell className="border-b px-3 py-2 text-center">
-                    <GpsStatusBadge
-                      hasGps={loco.has_gps}
-                      status={loco.gps_status}
-                    />
-                  </TableCell>
-                  <TableCell className="border-b px-3 py-2 text-xs text-muted-foreground">
-                    {loco.gps_status_detail || "—"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   );

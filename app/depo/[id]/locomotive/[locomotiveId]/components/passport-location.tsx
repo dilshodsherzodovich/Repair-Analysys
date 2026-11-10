@@ -150,44 +150,42 @@ function HistoryDialog({ imei }: { imei: string }) {
                 </div>
               )}
             </div>
-            <div className="max-h-[52vh] overflow-auto rounded-lg border">
-              <Table wrapper={false} className="w-full border-collapse text-sm">
-                <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur">
-                  <TableRow>
-                    <TableHead className="border-b border-r border-border px-3 py-2 text-left font-semibold">
-                      {t("time")}
-                    </TableHead>
-                    <TableHead className="border-b border-border px-3 py-2 text-right font-semibold">
-                      {t("speed")}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((r) => {
-                    const isSel =
-                      selected?.id === r.id &&
-                      selected?.tpTimestamp === r.tpTimestamp;
-                    return (
-                      <TableRow
-                        key={`${r.id}-${r.tpTimestamp}`}
-                        onClick={() => setSelected(r)}
-                        className={cn(
-                          "cursor-pointer transition-colors hover:bg-primary/5",
-                          isSel && "bg-primary/10"
-                        )}
-                      >
-                        <TableCell className="border-b border-r border-border px-3 py-2 whitespace-nowrap">
-                          {fmtExact(r.tpTimestamp)}
-                        </TableCell>
-                        <TableCell className="border-b border-border px-3 py-2 text-right tabular-nums">
-                          {Math.round(r.speed)} {t("kmh")}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <Table bordered frame maxHeight="52vh">
+              <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur">
+                <TableRow>
+                  <TableHead className="text-left">
+                    {t("time")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("speed")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((r) => {
+                  const isSel =
+                    selected?.id === r.id &&
+                    selected?.tpTimestamp === r.tpTimestamp;
+                  return (
+                    <TableRow
+                      key={`${r.id}-${r.tpTimestamp}`}
+                      onClick={() => setSelected(r)}
+                      className={cn(
+                        "cursor-pointer hover:bg-primary/5",
+                        isSel && "bg-primary/10"
+                      )}
+                    >
+                      <TableCell className="whitespace-nowrap">
+                        {fmtExact(r.tpTimestamp)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {Math.round(r.speed)} {t("kmh")}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
         )}
       </DialogContent>

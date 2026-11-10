@@ -242,124 +242,120 @@ export function SrivPaymentReport() {
           </div>
 
           {/* Per-depo table */}
-          <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
-            <div className="overflow-x-auto">
-              <Table wrapper={false} className="w-full min-w-[820px] border-collapse text-sm">
-                <TableHeader>
-                  <TableRow className="border-b border-border bg-surface-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <TableHead className="px-4 py-3 font-semibold">{t("depo")}</TableHead>
-                    <TableHead className="px-4 py-3 text-right font-semibold">
-                      {t("total")}
-                    </TableHead>
+          <Table frame className=" min-w-[820px]">
+            <TableHeader>
+              <TableRow className="text-left">
+                <TableHead>{t("depo")}</TableHead>
+                <TableHead className="text-right">
+                  {t("total")}
+                </TableHead>
+                {BUCKETS.map((b) => (
+                  <TableHead
+                    key={b.key}
+                    className="text-right"
+                  >
+                    {t(b.labelKey)}
+                  </TableHead>
+                ))}
+                <TableHead className="w-[160px]">
+                  {t("distribution")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-foreground-subtle"
+                  >
+                    {t("empty")}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                rows.map((row) => (
+                  <TableRow
+                    key={row.depo}
+                    className="last:border-0"
+                  >
+                    <TableCell className="font-medium">
+                      {row.depo}
+                    </TableCell>
+                    <MoneyCell
+                      sum={row.total_sum}
+                      count={row.total_count}
+                      bold
+                      onClick={() =>
+                        openDrilldown(undefined, row.depo, t("total"))
+                      }
+                    />
                     {BUCKETS.map((b) => (
-                      <TableHead
-                        key={b.key}
-                        className="px-4 py-3 text-right font-semibold"
-                      >
-                        {t(b.labelKey)}
-                      </TableHead>
-                    ))}
-                    <TableHead className="w-[160px] px-4 py-3 font-semibold">
-                      {t("distribution")}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="px-4 py-10 text-center text-sm text-foreground-subtle"
-                      >
-                        {t("empty")}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    rows.map((row) => (
-                      <TableRow
-                        key={row.depo}
-                        className="border-b border-muted last:border-0 hover:bg-surface-muted/60"
-                      >
-                        <TableCell className="px-4 py-3 font-medium text-foreground">
-                          {row.depo}
-                        </TableCell>
-                        <MoneyCell
-                          sum={row.total_sum}
-                          count={row.total_count}
-                          bold
-                          onClick={() =>
-                            openDrilldown(undefined, row.depo, t("total"))
-                          }
-                        />
-                        {BUCKETS.map((b) => (
-                          <MoneyCell
-                            key={b.key}
-                            sum={
-                              row[
-                                `${b.key}_sum` as keyof SrivPaymentReportRow
-                              ] as number
-                            }
-                            count={
-                              row[
-                                `${b.key}_count` as keyof SrivPaymentReportRow
-                              ] as number
-                            }
-                            textClass={b.text}
-                            onClick={() =>
-                              openDrilldown(b.key, row.depo, t(b.labelKey))
-                            }
-                          />
-                        ))}
-                        <TableCell className="px-4 py-3">
-                          <StackedBar row={row} className="h-2.5" />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-                {rows.length > 0 && (
-                  <TableFooter>
-                    <TableRow className="border-t-2 border-border bg-surface-muted font-semibold">
-                      <TableCell className="px-4 py-3 text-foreground">
-                        {total.depo || t("grand_total")}
-                      </TableCell>
                       <MoneyCell
-                        sum={total.total_sum}
-                        count={total.total_count}
-                        bold
+                        key={b.key}
+                        sum={
+                          row[
+                            `${b.key}_sum` as keyof SrivPaymentReportRow
+                          ] as number
+                        }
+                        count={
+                          row[
+                            `${b.key}_count` as keyof SrivPaymentReportRow
+                          ] as number
+                        }
+                        textClass={b.text}
                         onClick={() =>
-                          openDrilldown(undefined, undefined, t("total"))
+                          openDrilldown(b.key, row.depo, t(b.labelKey))
                         }
                       />
-                      {BUCKETS.map((b) => (
-                        <MoneyCell
-                          key={b.key}
-                          sum={
-                            total[
-                              `${b.key}_sum` as keyof SrivPaymentReportRow
-                            ] as number
-                          }
-                          count={
-                            total[
-                              `${b.key}_count` as keyof SrivPaymentReportRow
-                            ] as number
-                          }
-                          textClass={b.text}
-                          bold
-                          onClick={() =>
-                            openDrilldown(b.key, undefined, t(b.labelKey))
-                          }
-                        />
-                      ))}
-                      <TableCell className="px-4 py-3">
-                        <StackedBar row={total} className="h-2.5" />
-                      </TableCell>
-                    </TableRow>
-                  </TableFooter>
-                )}
-              </Table>
-            </div>
-          </div>
+                    ))}
+                    <TableCell>
+                      <StackedBar row={row} className="h-2.5" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+            {rows.length > 0 && (
+              <TableFooter>
+                <TableRow>
+                  <TableCell>
+                    {total.depo || t("grand_total")}
+                  </TableCell>
+                  <MoneyCell
+                    sum={total.total_sum}
+                    count={total.total_count}
+                    bold
+                    onClick={() =>
+                      openDrilldown(undefined, undefined, t("total"))
+                    }
+                  />
+                  {BUCKETS.map((b) => (
+                    <MoneyCell
+                      key={b.key}
+                      sum={
+                        total[
+                          `${b.key}_sum` as keyof SrivPaymentReportRow
+                        ] as number
+                      }
+                      count={
+                        total[
+                          `${b.key}_count` as keyof SrivPaymentReportRow
+                        ] as number
+                      }
+                      textClass={b.text}
+                      bold
+                      onClick={() =>
+                        openDrilldown(b.key, undefined, t(b.labelKey))
+                      }
+                    />
+                  ))}
+                  <TableCell>
+                    <StackedBar row={total} className="h-2.5" />
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            )}
+          </Table>
         </>
       )}
 
@@ -423,7 +419,7 @@ function MoneyCell({
 }) {
   const clickable = !!onClick && count > 0;
   return (
-    <TableCell className="px-4 py-3 text-right">
+    <TableCell className="text-right">
       <span
         className={cn(
           "tabular-nums",

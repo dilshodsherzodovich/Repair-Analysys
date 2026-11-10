@@ -298,42 +298,37 @@ export default function InspectionReportPage() {
                       {data.count}
                     </span>
                   </div>
-                  <div className="overflow-x-auto">
-                    <Table wrapper={false} className="w-full text-xs border-collapse">
-                      <TableHeader>
-                        <TableRow className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide align-bottom">
-                          <TableHead className="border px-1.5 py-1 text-center w-8">{globalT("no")}</TableHead>
-                          <TableHead className="border px-2 py-1 text-left whitespace-nowrap">{globalT("locomotive")}</TableHead>
-                          <TableHead className="border px-2 py-1 text-left whitespace-nowrap">{t("branch")}</TableHead>
-                          <TableHead className="border px-2 py-1 text-center whitespace-nowrap">{globalT("createdTime")}</TableHead>
-                          <TableHead className="border px-2 py-1 text-center whitespace-nowrap">{inspectsT("closeTime")}</TableHead>
+                  <Table bordered density="compact">
+                    <TableHeader>
+                      <TableRow className=" align-bottom">
+                        <TableHead className="text-center w-8">{globalT("no")}</TableHead>
+                        <TableHead className="text-left">{globalT("locomotive")}</TableHead>
+                        <TableHead className="text-left">{t("branch")}</TableHead>
+                        <TableHead className="text-center">{globalT("createdTime")}</TableHead>
+                        <TableHead className="text-center">{inspectsT("closeTime")}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data.inspections.map((inspection, index) => (
+                        <TableRow
+                          key={inspection.id}
+                          
+                        >
+                          <TableCell className="text-center text-muted-foreground">{index + 1}</TableCell>
+                          <TableCell className="font-medium whitespace-nowrap">
+                            {[inspection.locomotive?.name, inspection.locomotive?.locomotive_model?.name]
+                              .filter(Boolean)
+                              .join(" ")}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">{inspection.branch?.name}</TableCell>
+                          <TableCell className="text-center whitespace-nowrap">{formatDate(inspection.created_time)}</TableCell>
+                          <TableCell className="text-center whitespace-nowrap">
+                            {inspection.is_closed_time ? formatDate(inspection.is_closed_time) : "—"}
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {data.inspections.map((inspection, index) => (
-                          <TableRow
-                            key={inspection.id}
-                            className={cn(
-                              "hover:bg-muted/30 transition-colors",
-                              index % 2 === 0 ? "bg-background" : "bg-muted/10",
-                            )}
-                          >
-                            <TableCell className="border px-1.5 py-1 text-center text-muted-foreground">{index + 1}</TableCell>
-                            <TableCell className="border px-2 py-1 font-medium whitespace-nowrap">
-                              {[inspection.locomotive?.name, inspection.locomotive?.locomotive_model?.name]
-                                .filter(Boolean)
-                                .join(" ")}
-                            </TableCell>
-                            <TableCell className="border px-2 py-1 whitespace-nowrap">{inspection.branch?.name}</TableCell>
-                            <TableCell className="border px-2 py-1 text-center whitespace-nowrap">{formatDate(inspection.created_time)}</TableCell>
-                            <TableCell className="border px-2 py-1 text-center whitespace-nowrap">
-                              {inspection.is_closed_time ? formatDate(inspection.is_closed_time) : "—"}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               ))}
           </div>

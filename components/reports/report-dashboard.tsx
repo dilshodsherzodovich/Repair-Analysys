@@ -283,20 +283,20 @@ export default function ReportDashboard() {
           accent="emerald"
         >
           {activeLocomotives.length === 0 ? <EmptyState /> : (
-            <Table>
+            <Table bordered density="compact">
               <TableHeader>
-                <TableRow className="bg-surface-muted border-b border-border">
-                  <TableHead className="h-8 text-xs text-muted-foreground font-semibold tracking-wide w-40 border-r border-border">{t("station")}</TableHead>
-                  <TableHead className="h-8 text-xs text-muted-foreground font-semibold tracking-wide border-r border-border">{t("locomotives")}</TableHead>
-                  <TableHead className="h-8 text-xs text-muted-foreground font-semibold tracking-wide text-right w-20">{t("total")}</TableHead>
+                <TableRow>
+                  <TableHead className="h-8 w-40">{t("station")}</TableHead>
+                  <TableHead className="h-8">{t("locomotives")}</TableHead>
+                  <TableHead className="h-8 text-right w-20">{t("total")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {activeLocomotives.map((station, i) => (
-                  <TableRow key={station.name} data-pdf-block className="border-b border-border hover:bg-surface-muted/60">
-                    <TableCell className="font-semibold text-foreground text-sm border-r border-border py-2">{station.name}</TableCell>
-                    <TableCell className="text-foreground-secondary text-sm border-r border-border py-2">{station.codes}</TableCell>
-                    <TableCell className="text-right font-semibold text-success text-sm py-2">{station.total}</TableCell>
+                  <TableRow key={station.name} data-pdf-block>
+                    <TableCell className="font-semibold">{station.name}</TableCell>
+                    <TableCell className="text-foreground-secondary">{station.codes}</TableCell>
+                    <TableCell className="text-right font-semibold text-success">{station.total}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -313,18 +313,18 @@ export default function ReportDashboard() {
           ].map((col) => (
             <SectionCard key={col.title} title={col.title} count={col.count} accent="sky">
               {col.items.length === 0 ? <EmptyState /> : (
-                <Table>
+                <Table bordered density="compact">
                   <TableHeader>
-                    <TableRow className="bg-surface-muted border-b border-border">
-                      <TableHead className="h-8 text-xs text-muted-foreground font-semibold tracking-wide border-r border-border">{t("station")}</TableHead>
-                      <TableHead className="h-8 text-xs text-muted-foreground font-semibold tracking-wide">{t("locomotives")}</TableHead>
+                    <TableRow>
+                      <TableHead className="h-8">{t("station")}</TableHead>
+                      <TableHead className="h-8">{t("locomotives")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {col.items.map((station) => (
-                      <TableRow key={station.name} data-pdf-block className="border-b border-border hover:bg-surface-muted/60">
-                        <TableCell className="font-semibold text-foreground text-sm border-r border-border py-2">{station.name}</TableCell>
-                        <TableCell className="text-foreground-secondary text-sm py-2">{station.codes}</TableCell>
+                      <TableRow key={station.name} data-pdf-block>
+                        <TableCell className="font-semibold">{station.name}</TableCell>
+                        <TableCell className="text-foreground-secondary">{station.codes}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -385,18 +385,18 @@ export default function ReportDashboard() {
                           <div className="bg-destructive-subtle px-3 py-1.5 border-b border-destructive/20">
                             <p className="text-2xs font-semibold text-destructive uppercase tracking-wide text-center">{type.name}</p>
                           </div>
-                          <Table>
+                          <Table bordered density="compact">
                             <TableHeader>
-                              <TableRow className="bg-surface-muted border-b border-border">
-                                <TableHead className="h-8 text-xs text-foreground-subtle font-semibold border-r border-border">{t("locomotive")}</TableHead>
-                                <TableHead className="h-8 text-xs text-foreground-subtle font-semibold">{t("hourKm")}</TableHead>
+                              <TableRow>
+                                <TableHead className="h-8">{t("locomotive")}</TableHead>
+                                <TableHead className="h-8">{t("hourKm")}</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
                               {type.locomotives.map((loc: DelayedLocomotive, li: number) => (
-                                <TableRow key={loc.name} data-pdf-block className="border-b border-border hover:bg-surface-muted/60">
-                                  <TableCell className="font-semibold text-foreground text-sm border-r border-border py-1.5">{loc.name}</TableCell>
-                                  <TableCell className="text-foreground-secondary text-sm py-1.5">
+                                <TableRow key={loc.name} data-pdf-block>
+                                  <TableCell className="font-semibold">{loc.name}</TableCell>
+                                  <TableCell className="text-foreground-secondary">
                                     {loc.hour ? loc.hour + " " + globalT("hour").toLowerCase() : loc.mileage + " " + globalT("Km").toLowerCase()}
                                   </TableCell>
                                 </TableRow>
@@ -422,22 +422,22 @@ export default function ReportDashboard() {
                   <div className="bg-category-violet/10 px-3 py-1.5 border-b border-category-violet/20">
                     <p className="text-2xs font-semibold text-category-violet uppercase tracking-wide text-center">{groupName}</p>
                   </div>
-                  <Table>
+                  <Table bordered density="compact">
                     <TableHeader>
-                      <TableRow className="bg-surface-muted border-b border-border">
-                        <TableHead className="h-8 text-xs text-foreground-subtle font-semibold border-r border-border">{t("locomotive")}</TableHead>
-                        <TableHead className="h-8 text-xs text-foreground-subtle font-semibold border-r border-border">{t("entered")}</TableHead>
-                        <TableHead className="h-8 text-xs text-foreground-subtle font-semibold">{t("exited")}</TableHead>
+                      <TableRow>
+                        <TableHead className="h-8">{t("locomotive")}</TableHead>
+                        <TableHead className="h-8">{t("entered")}</TableHead>
+                        <TableHead className="h-8">{t("exited")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {group.map((loco) => (
-                        <TableRow key={`reserved-${loco.loco_id}`} data-pdf-block className="border-b border-border hover:bg-surface-muted/60">
-                          <TableCell className="font-semibold text-foreground text-sm border-r border-border py-1.5">{loco.loco_name}</TableCell>
-                          <TableCell className="text-foreground-secondary text-sm border-r border-border py-1.5">
+                        <TableRow key={`reserved-${loco.loco_id}`} data-pdf-block>
+                          <TableCell className="font-semibold">{loco.loco_name}</TableCell>
+                          <TableCell className="text-foreground-secondary">
                             {loco.reserve_started_time ? formatDate(loco.reserve_started_time) : "—"}
                           </TableCell>
-                          <TableCell className="text-foreground-secondary text-sm py-1.5">
+                          <TableCell className="text-foreground-secondary">
                             {loco.reserve_closed_time ? formatDate(loco.reserve_closed_time) : "—"}
                           </TableCell>
                         </TableRow>
@@ -510,20 +510,20 @@ function RepairTypeTable({ repairType }: { repairType: InspectionTypeGroup }) {
       <div className="bg-warning-subtle px-3 py-1.5 border-b border-warning-subtle">
         <p className="text-2xs font-semibold text-warning uppercase tracking-wide text-center">{repairType.name}</p>
       </div>
-      <Table>
+      <Table bordered density="compact">
         <TableHeader>
-          <TableRow className="bg-surface-muted border-b border-border">
-            <TableHead className="h-8 text-xs text-foreground-subtle font-semibold border-r border-border">{t("locomotive")}</TableHead>
-            <TableHead className="h-8 text-xs text-foreground-subtle font-semibold border-r border-border">{t("entered")}</TableHead>
-            <TableHead className="h-8 text-xs text-foreground-subtle font-semibold">{t("exited")}</TableHead>
+          <TableRow>
+            <TableHead className="h-8">{t("locomotive")}</TableHead>
+            <TableHead className="h-8">{t("entered")}</TableHead>
+            <TableHead className="h-8">{t("exited")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {repairType.locomotives.map((loco: InspectionTypeLocomotive) => (
-            <TableRow key={loco.name} data-pdf-block className="border-b border-border hover:bg-surface-muted/60">
-              <TableCell className="font-semibold text-foreground text-sm border-r border-border py-1.5">{loco.name}</TableCell>
-              <TableCell className="text-foreground-secondary text-sm border-r border-border py-1.5">{formatDate(loco.inspection_started_time)}</TableCell>
-              <TableCell className="text-foreground-secondary text-sm py-1.5">{formatDate(loco.inspection_closed_time)}</TableCell>
+            <TableRow key={loco.name} data-pdf-block>
+              <TableCell className="font-semibold">{loco.name}</TableCell>
+              <TableCell className="text-foreground-secondary">{formatDate(loco.inspection_started_time)}</TableCell>
+              <TableCell className="text-foreground-secondary">{formatDate(loco.inspection_closed_time)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

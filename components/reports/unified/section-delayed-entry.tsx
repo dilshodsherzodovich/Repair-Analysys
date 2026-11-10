@@ -57,18 +57,18 @@ function MetricCells({ metric }: { metric: DelayedInspectionMetric }) {
     <>
       <TableCell
         className={cn(
-          "border px-2 py-1 text-center tabular-nums",
+          "text-center tabular-nums",
           untracked && "text-foreground-subtle",
         )}
       >
         {fmtNum(metric.actual)}
       </TableCell>
-      <TableCell className="border px-2 py-1 text-center tabular-nums text-muted-foreground">
+      <TableCell className="text-center tabular-nums text-muted-foreground">
         {fmtNum(metric.interval)}
       </TableCell>
       <TableCell
         className={cn(
-          "border px-2 py-1 text-center tabular-nums font-semibold",
+          "text-center tabular-nums font-semibold",
           metric.is_delayed ? "text-destructive" : "text-foreground-subtle",
         )}
       >
@@ -146,78 +146,76 @@ export function SectionDelayedEntry({
       isLoading={isLoading}
       isEmpty={rows.length === 0}
     >
-      <div className="overflow-x-auto">
-        <Table wrapper={false} className="w-full text-xs border-collapse">
-          <TableHeader>
-            <TableRow className="bg-surface-muted text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
-              <TableHead rowSpan={2} className="border px-2 py-1.5 text-center w-10">
-                {globalT("no")}
-              </TableHead>
-              <TableHead rowSpan={2} className="border px-2 py-1.5 text-left">
-                {t("locomotive")}
-              </TableHead>
-              <TableHead rowSpan={2} className="border px-2 py-1.5 text-center">
-                {t("inspectionType")}
-              </TableHead>
-              <TableHead rowSpan={2} className="border px-2 py-1.5 text-left">
-                {t("branch")}
-              </TableHead>
-              <TableHead rowSpan={2} className="border px-2 py-1.5 text-center">
-                {t("openedAt")}
-              </TableHead>
-              <TableHead rowSpan={2} className="border px-2 py-1.5 text-center">
-                {t("delayKind")}
-              </TableHead>
-              <TableHead colSpan={3} className="border px-2 py-1 text-center">
-                {t("hoursLabel")}
-              </TableHead>
-              <TableHead colSpan={3} className="border px-2 py-1 text-center">
-                {t("mileageLabel")}
-              </TableHead>
+      <Table bordered density="compact">
+        <TableHeader>
+          <TableRow>
+            <TableHead rowSpan={2} className="text-center w-10">
+              {globalT("no")}
+            </TableHead>
+            <TableHead rowSpan={2} className="text-left">
+              {t("locomotive")}
+            </TableHead>
+            <TableHead rowSpan={2} className="text-center">
+              {t("inspectionType")}
+            </TableHead>
+            <TableHead rowSpan={2} className="text-left">
+              {t("branch")}
+            </TableHead>
+            <TableHead rowSpan={2} className="text-center">
+              {t("openedAt")}
+            </TableHead>
+            <TableHead rowSpan={2} className="text-center">
+              {t("delayKind")}
+            </TableHead>
+            <TableHead colSpan={3} className="text-center">
+              {t("hoursLabel")}
+            </TableHead>
+            <TableHead colSpan={3} className="text-center">
+              {t("mileageLabel")}
+            </TableHead>
+          </TableRow>
+          <TableRow className=" text-foreground-subtle">
+            <TableHead className="text-center">{t("actual")}</TableHead>
+            <TableHead className="text-center">{t("interval")}</TableHead>
+            <TableHead className="text-center">{t("overrunLabel")}</TableHead>
+            <TableHead className="text-center">{t("actual")}</TableHead>
+            <TableHead className="text-center">{t("interval")}</TableHead>
+            <TableHead className="text-center">{t("overrunLabel")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row, i) => (
+            <TableRow
+              key={row.inspection_id}
+              className={cn("", i % 2 === 1 && "")}
+            >
+              <TableCell className="text-center text-foreground-subtle">
+                {i + 1}
+              </TableCell>
+              <TableCell className="font-medium whitespace-nowrap">
+                {[row.locomotive_name, row.locomotive_model_name]
+                  .filter(Boolean)
+                  .join(" ")}
+              </TableCell>
+              <TableCell className="text-center">
+                {row.inspection_type_name}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">
+                {row.branch_name}
+              </TableCell>
+              {/* Pre-formatted local time — rendered as-is, never re-parsed. */}
+              <TableCell className="text-center whitespace-nowrap">
+                {row.created_time}
+              </TableCell>
+              <TableCell className="text-center">
+                <DelayBadge kind={row.delay_type} />
+              </TableCell>
+              <MetricCells metric={row.hours} />
+              <MetricCells metric={row.mileage} />
             </TableRow>
-            <TableRow className="bg-surface-muted text-2xs font-semibold text-foreground-subtle uppercase tracking-wide">
-              <TableHead className="border px-2 py-1 text-center">{t("actual")}</TableHead>
-              <TableHead className="border px-2 py-1 text-center">{t("interval")}</TableHead>
-              <TableHead className="border px-2 py-1 text-center">{t("overrunLabel")}</TableHead>
-              <TableHead className="border px-2 py-1 text-center">{t("actual")}</TableHead>
-              <TableHead className="border px-2 py-1 text-center">{t("interval")}</TableHead>
-              <TableHead className="border px-2 py-1 text-center">{t("overrunLabel")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row, i) => (
-              <TableRow
-                key={row.inspection_id}
-                className={cn("hover:bg-surface-muted", i % 2 === 1 && "bg-surface-muted/40")}
-              >
-                <TableCell className="border px-2 py-1 text-center text-foreground-subtle">
-                  {i + 1}
-                </TableCell>
-                <TableCell className="border px-2 py-1 font-medium whitespace-nowrap">
-                  {[row.locomotive_name, row.locomotive_model_name]
-                    .filter(Boolean)
-                    .join(" ")}
-                </TableCell>
-                <TableCell className="border px-2 py-1 text-center">
-                  {row.inspection_type_name}
-                </TableCell>
-                <TableCell className="border px-2 py-1 whitespace-nowrap">
-                  {row.branch_name}
-                </TableCell>
-                {/* Pre-formatted local time — rendered as-is, never re-parsed. */}
-                <TableCell className="border px-2 py-1 text-center whitespace-nowrap">
-                  {row.created_time}
-                </TableCell>
-                <TableCell className="border px-2 py-1 text-center">
-                  <DelayBadge kind={row.delay_type} />
-                </TableCell>
-                <MetricCells metric={row.hours} />
-                <MetricCells metric={row.mileage} />
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+          ))}
+        </TableBody>
+      </Table>
     </SectionShell>
   );
 }

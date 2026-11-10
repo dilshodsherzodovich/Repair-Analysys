@@ -43,27 +43,24 @@ function BorderedTable({
   children: ReactNode;
 }) {
   return (
-    <div className="overflow-x-auto rounded-lg border">
-      <Table wrapper={false} className="w-full border-collapse text-sm">
-        <TableHeader>
-          <TableRow className="bg-muted/60">
-            {columns.map((c) => (
-              <TableHead
-                key={c.key}
-                className={cn(
-                  "border-b border-r border-border px-3 py-2.5 font-semibold text-foreground last:border-r-0",
-                  c.align === "right" ? "text-right" : "text-left",
-                  c.width
-                )}
-              >
-                {c.header}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>{children}</TableBody>
-      </Table>
-    </div>
+    <Table bordered frame>
+      <TableHeader>
+        <TableRow>
+          {columns.map((c) => (
+            <TableHead
+              key={c.key}
+              className={cn(
+                c.align === "right" ? "text-right" : "text-left",
+                c.width
+              )}
+            >
+              {c.header}
+            </TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>{children}</TableBody>
+    </Table>
   );
 }
 
@@ -80,7 +77,7 @@ function Row({
         <TableCell
           key={c.key}
           className={cn(
-            "border-b border-r border-border px-3 py-2.5 align-top text-foreground-secondary last:border-r-0",
+            "align-top text-foreground-secondary",
             c.align === "right" ? "text-right tabular-nums" : "text-left",
             c.wrap ? "whitespace-normal break-words" : "whitespace-nowrap",
             c.width

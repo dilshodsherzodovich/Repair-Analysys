@@ -259,57 +259,55 @@ export function PassportInspectionHistory({
       ) : rows.length === 0 ? (
         <EmptyBlock icon={History} message={t("empty")} />
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
-          <Table wrapper={false} className="w-full min-w-[900px] table-fixed border-collapse text-sm">
-            <colgroup>
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "14%" }} />
-              <col style={{ width: "9%" }} />
-              <col style={{ width: "23%" }} />
-              <col style={{ width: "11%" }} />
-              <col style={{ width: "19%" }} />
-              <col style={{ width: "10%" }} />
-            </colgroup>
-            <TableHeader>
-              <TableRow className="bg-muted/60">
-                <TableHead className={thBase}>{t("columns.createdTime")}</TableHead>
-                <TableHead className={thBase}>{t("columns.kanavaEntry")}</TableHead>
-                <TableHead className={thBase}>{t("columns.inspectionType")}</TableHead>
-                <TableHead className={thBase}>{t("columns.xkp")}</TableHead>
-                <TableHead className={thBase}>{t("columns.interval")}</TableHead>
-                <TableHead className={thBase}>{t("columns.progress")}</TableHead>
-                <TableHead className={thBase}>{t("columns.status")}</TableHead>
+        <Table frame className=" min-w-[900px] table-fixed">
+          <colgroup>
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "9%" }} />
+            <col style={{ width: "23%" }} />
+            <col style={{ width: "11%" }} />
+            <col style={{ width: "19%" }} />
+            <col style={{ width: "10%" }} />
+          </colgroup>
+          <TableHeader>
+            <TableRow>
+              <TableHead className={thBase}>{t("columns.createdTime")}</TableHead>
+              <TableHead className={thBase}>{t("columns.kanavaEntry")}</TableHead>
+              <TableHead className={thBase}>{t("columns.inspectionType")}</TableHead>
+              <TableHead className={thBase}>{t("columns.xkp")}</TableHead>
+              <TableHead className={thBase}>{t("columns.interval")}</TableHead>
+              <TableHead className={thBase}>{t("columns.progress")}</TableHead>
+              <TableHead className={thBase}>{t("columns.status")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((r) => (
+              <TableRow key={r.id} className="even:bg-muted/20">
+                <TableCell className={cn(tdBase, "whitespace-nowrap")}>
+                  {fmtDateTime(r.created_time)}
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-nowrap")}>
+                  {r.kanava_entry_time ? fmtDateTime(r.kanava_entry_time) : "—"}
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-nowrap font-medium")}>
+                  {r.inspection_type?.name ?? "—"}
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-normal break-words")}>
+                  {r.branch?.name ?? "—"}
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-nowrap")}>
+                  <IntervalBadge inspection={r} />
+                </TableCell>
+                <TableCell className={tdBase}>
+                  <ProgressCell inspection={r} now={now} />
+                </TableCell>
+                <TableCell className={cn(tdBase, "whitespace-nowrap")}>
+                  <StatusBadge inspection={r} />
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((r) => (
-                <TableRow key={r.id} className="even:bg-muted/20">
-                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
-                    {fmtDateTime(r.created_time)}
-                  </TableCell>
-                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
-                    {r.kanava_entry_time ? fmtDateTime(r.kanava_entry_time) : "—"}
-                  </TableCell>
-                  <TableCell className={cn(tdBase, "whitespace-nowrap font-medium")}>
-                    {r.inspection_type?.name ?? "—"}
-                  </TableCell>
-                  <TableCell className={cn(tdBase, "whitespace-normal break-words")}>
-                    {r.branch?.name ?? "—"}
-                  </TableCell>
-                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
-                    <IntervalBadge inspection={r} />
-                  </TableCell>
-                  <TableCell className={tdBase}>
-                    <ProgressCell inspection={r} now={now} />
-                  </TableCell>
-                  <TableCell className={cn(tdBase, "whitespace-nowrap")}>
-                    <StatusBadge inspection={r} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </SectionCard>
   );

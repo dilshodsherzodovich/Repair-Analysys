@@ -305,93 +305,91 @@ export function RecoveryCulpritsModal({
         )}
 
         {/* Table */}
-        <div className="overflow-hidden rounded-xl border">
-          <Table wrapper={false} className="w-full text-sm">
-            <TableHeader className="bg-muted/40 text-muted-foreground">
+        <Table frame>
+          <TableHeader className="text-muted-foreground">
+            <TableRow>
+              <TableHead className="w-10 text-left">
+                <Checkbox
+                  checked={headerChecked}
+                  disabled={selectableIds.length === 0 || anyBusy}
+                  onCheckedChange={toggleAll}
+                  aria-label="select all"
+                />
+              </TableHead>
+              <TableHead className="text-left">
+                {t("columns.full_name")}
+              </TableHead>
+              <TableHead className="text-right">
+                {t("columns.amount")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("columns.payroll")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("columns.recovered")}
+              </TableHead>
+              <TableHead className="text-right">
+                {t("columns.actions")}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {culprits.length === 0 ? (
               <TableRow>
-                <TableHead className="w-10 px-3 py-2.5 text-left">
-                  <Checkbox
-                    checked={headerChecked}
-                    disabled={selectableIds.length === 0 || anyBusy}
-                    onCheckedChange={toggleAll}
-                    aria-label="select all"
-                  />
-                </TableHead>
-                <TableHead className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.full_name")}
-                </TableHead>
-                <TableHead className="px-3 py-2.5 text-right font-medium">
-                  {t("columns.amount")}
-                </TableHead>
-                <TableHead className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.payroll")}
-                </TableHead>
-                <TableHead className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.recovered")}
-                </TableHead>
-                <TableHead className="px-3 py-2.5 text-right font-medium">
-                  {t("columns.actions")}
-                </TableHead>
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground"
+                >
+                  {t("empty")}
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {culprits.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="px-3 py-8 text-center text-muted-foreground"
+            ) : (
+              culprits.map((c) => {
+                const selectable = isSelectable(c);
+                const checked = selected.has(c.id);
+                return (
+                  <TableRow
+                    key={c.id}
+                    className={
+                      "align-top" +
+                      (checked ? "bg-primary/5" : "")
+                    }
                   >
-                    {t("empty")}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                culprits.map((c) => {
-                  const selectable = isSelectable(c);
-                  const checked = selected.has(c.id);
-                  return (
-                    <TableRow
-                      key={c.id}
-                      className={
-                        "border-t align-top transition-colors " +
-                        (checked ? "bg-primary/5" : "hover:bg-muted/30")
-                      }
-                    >
-                      <TableCell className="px-3 py-2.5">
-                        <Checkbox
-                          checked={checked}
-                          disabled={!selectable || anyBusy}
-                          onCheckedChange={() => toggleRow(c.id)}
-                          aria-label={`select ${c.full_name}`}
-                        />
-                      </TableCell>
-                      <TableCell className="px-3 py-2.5 font-medium">{c.full_name}</TableCell>
-                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                        {formatAmount(c.amount)}
-                      </TableCell>
-                      <TableCell className="px-3 py-2.5">
-                        {flagPill(
-                          c.payroll_confirmed,
-                          c.payroll_confirmed_by_name,
-                          t("columns.payroll")
-                        )}
-                      </TableCell>
-                      <TableCell className="px-3 py-2.5">
-                        {flagPill(
-                          c.recovered,
-                          c.recovered_by_name,
-                          t("columns.recovered")
-                        )}
-                      </TableCell>
-                      <TableCell className="px-3 py-2.5">
-                        <div className="flex justify-end">{renderRowAction(c)}</div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                    <TableCell>
+                      <Checkbox
+                        checked={checked}
+                        disabled={!selectable || anyBusy}
+                        onCheckedChange={() => toggleRow(c.id)}
+                        aria-label={`select ${c.full_name}`}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{c.full_name}</TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatAmount(c.amount)}
+                    </TableCell>
+                    <TableCell>
+                      {flagPill(
+                        c.payroll_confirmed,
+                        c.payroll_confirmed_by_name,
+                        t("columns.payroll")
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {flagPill(
+                        c.recovered,
+                        c.recovered_by_name,
+                        t("columns.recovered")
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-end">{renderRowAction(c)}</div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
 
         {/* Footer */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3">

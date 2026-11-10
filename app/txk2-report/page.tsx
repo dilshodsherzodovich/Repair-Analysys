@@ -196,71 +196,66 @@ function Txk2ReportPage() {
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto py-2">
-            <Table wrapper={false} className="w-full text-sm border-collapse">
-              <TableHeader>
-                <TableRow className="bg-muted/40 text-2xs font-semibold text-muted-foreground tracking-wide align-bottom">
-                  <TableHead className="border px-2 py-2 text-center w-8">#</TableHead>
-                  <TableHead className="border px-3 py-2 text-left whitespace-nowrap">{t("locomotive")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-left whitespace-nowrap">{t("serviceLocation")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center whitespace-nowrap">{t("repairType")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[90px]">{t("entryTime")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[120px]">{t("maneuverTime")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[110px]">{t("kanavaEntry")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[120px]">{t("normTime")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[110px]">{t("serviceTime")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[110px]">{t("kanavaExit")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[120px]">{t("nextType")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[130px]">{t("nextEntry")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[130px]">{t("nextExit")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[110px]">{t("totalTime")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[120px]">{t("extraTime")}</TableHead>
-                  <TableHead className="border px-3 py-2 text-center min-w-[170px]">{t("delayReasonCode")}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row: Txk2ReportRow, idx) => (
-                  <TableRow
-                    key={idx}
-                    className={cn(
-                      "hover:bg-muted/30 transition-colors",
-                      idx % 2 === 0 ? "bg-background" : "bg-muted/10",
+          <Table bordered density="compact">
+            <TableHeader>
+              <TableRow className=" align-bottom">
+                <TableHead className="text-center w-8">#</TableHead>
+                <TableHead className="text-left">{t("locomotive")}</TableHead>
+                <TableHead className="text-left">{t("serviceLocation")}</TableHead>
+                <TableHead className="text-center">{t("repairType")}</TableHead>
+                <TableHead className="text-center min-w-[90px]">{t("entryTime")}</TableHead>
+                <TableHead className="text-center min-w-[120px]">{t("maneuverTime")}</TableHead>
+                <TableHead className="text-center min-w-[110px]">{t("kanavaEntry")}</TableHead>
+                <TableHead className="text-center min-w-[120px]">{t("normTime")}</TableHead>
+                <TableHead className="text-center min-w-[110px]">{t("serviceTime")}</TableHead>
+                <TableHead className="text-center min-w-[110px]">{t("kanavaExit")}</TableHead>
+                <TableHead className="text-center min-w-[120px]">{t("nextType")}</TableHead>
+                <TableHead className="text-center min-w-[130px]">{t("nextEntry")}</TableHead>
+                <TableHead className="text-center min-w-[130px]">{t("nextExit")}</TableHead>
+                <TableHead className="text-center min-w-[110px]">{t("totalTime")}</TableHead>
+                <TableHead className="text-center min-w-[120px]">{t("extraTime")}</TableHead>
+                <TableHead className="text-center min-w-[170px]">{t("delayReasonCode")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row: Txk2ReportRow, idx) => (
+                <TableRow
+                  key={idx}
+                  
+                >
+                  <TableCell className="text-center text-muted-foreground">{idx + 1}</TableCell>
+                  <TableCell className="font-medium whitespace-nowrap">{row.locomotive.split("|").join(" ")}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.branch}</TableCell>
+                  <TableCell className="text-center">{row.inspection_type}</TableCell>
+                  <TableCell className="text-center whitespace-nowrap">{fmtTime(row.entry_time)}</TableCell>
+                  <TableCell className="text-center">{fmtNum(row.fixed_maneuver_time)}</TableCell>
+                  <TableCell className="text-center whitespace-nowrap">{fmtTime(row.kanava_entry_time)}</TableCell>
+                  <TableCell className="text-center text-muted-foreground">{fmtNum(row.standard_duration)}</TableCell>
+                  <TableCell className="text-center">{fmtNum(row.technical_service_hours)}</TableCell>
+                  <TableCell className="text-center whitespace-nowrap">{fmtTime(row.kanava_exit_time)}</TableCell>
+                  <TableCell className="text-center whitespace-nowrap">{nextTypeName(row.next_inspection_type, locale) ?? "—"}</TableCell>
+                  <TableCell className="text-center whitespace-nowrap">{fmtTime(row.next_entry_time)}</TableCell>
+                  <TableCell className="text-center whitespace-nowrap">{fmtTime(row.next_exit_time)}</TableCell>
+                  <TableCell className="text-center font-medium">{fmtNum(row.total_time_hours)}</TableCell>
+                  <TableCell className="text-center">{fmtNum(row.time_except_inspection)}</TableCell>
+                  <TableCell className="text-left">
+                    {row.delay_reason_code ? (
+                      <>
+                        <span className="font-medium">{delayLabel(row.delay_reason_code)}</span>
+                        {row.delay_reason_details ? (
+                          <span className="block text-2xs text-muted-foreground mt-0.5">
+                            {row.delay_reason_details}
+                          </span>
+                        ) : null}
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
                     )}
-                  >
-                    <TableCell className="border px-2 py-2 text-center text-muted-foreground text-xs">{idx + 1}</TableCell>
-                    <TableCell className="border px-3 py-2 font-medium whitespace-nowrap">{row.locomotive.split("|").join(" ")}</TableCell>
-                    <TableCell className="border px-3 py-2 whitespace-nowrap text-xs">{row.branch}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs">{row.inspection_type}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.entry_time)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs">{fmtNum(row.fixed_maneuver_time)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.kanava_entry_time)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs text-muted-foreground">{fmtNum(row.standard_duration)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs">{fmtNum(row.technical_service_hours)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.kanava_exit_time)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{nextTypeName(row.next_inspection_type, locale) ?? "—"}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.next_entry_time)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs whitespace-nowrap">{fmtTime(row.next_exit_time)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs font-medium">{fmtNum(row.total_time_hours)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-center text-xs">{fmtNum(row.time_except_inspection)}</TableCell>
-                    <TableCell className="border px-3 py-2 text-left text-xs">
-                      {row.delay_reason_code ? (
-                        <>
-                          <span className="font-medium">{delayLabel(row.delay_reason_code)}</span>
-                          {row.delay_reason_details ? (
-                            <span className="block text-2xs text-muted-foreground mt-0.5">
-                              {row.delay_reason_details}
-                            </span>
-                          ) : null}
-                        </>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
           {rows.length === 0 && !isFetching && (
             <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">

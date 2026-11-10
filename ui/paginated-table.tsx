@@ -260,11 +260,11 @@ export function PaginatedTable<T extends Record<string, any>>({
   if (isLoading) {
     return (
       <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-background", className)}>
-        <Table className="w-full min-w-[900px]">
+        <Table bordered className=" min-w-[900px]">
           <TableHeader>
-            <TableRow className="bg-surface-muted border-b border-border">
+            <TableRow>
               {showCheckbox && (
-                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-foreground-secondary font-medium border-r border-border bg-surface-muted">
+                <TableHead className="w-14 min-w-[3.5rem]">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -278,7 +278,6 @@ export function PaginatedTable<T extends Record<string, any>>({
                   <TableHead
                     key={column.key}
                     className={cn(
-                      "py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0",
                       column.headerClassName
                     )}
                     style={{ width: column.width }}
@@ -310,7 +309,7 @@ export function PaginatedTable<T extends Record<string, any>>({
   //         message={resolvedErrorMessage || error.message}
   //         onRetry={onRetry}
   //         showBack={false}
-  //         className=""
+  //
   //       />
   //     </div>
   //   );
@@ -320,17 +319,16 @@ export function PaginatedTable<T extends Record<string, any>>({
   if (!isLoading && !error && data.length === 0) {
     return (
       <div className={cn("w-full rounded-lg border border-border-strong overflow-hidden bg-background", className)}>
-        <Table className="w-full min-w-[900px]">
+        <Table bordered className=" min-w-[900px]">
           <TableHeader>
-            <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
+            <TableRow>
               {showCheckbox && (
-                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 bg-surface-muted border-r border-border" />
+                <TableHead className="w-14 min-w-[3.5rem]" />
               )}
               {displayColumns.map((column) => (
                 <TableHead
                   key={column.key}
                   className={cn(
-                    "py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0",
                     column.headerClassName
                   )}
                   style={{ width: column.width }}
@@ -341,10 +339,10 @@ export function PaginatedTable<T extends Record<string, any>>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="hover:bg-surface-muted border-b border-border">
+            <TableRow>
               <TableCell
                 colSpan={totalColumnCount}
-                className="py-8 px-4 text-center border-r border-border"
+                className="text-center"
               >
                 <EmptyState
                   icon={<AlertCircle className="h-12 w-12" />}
@@ -362,11 +360,11 @@ export function PaginatedTable<T extends Record<string, any>>({
   return (
     <div className={cn("w-full space-y-4 pb-2", className)}>
       <div className="rounded-lg border border-border-strong overflow-hidden bg-background">
-        <Table className="w-full min-w-[900px]">
+        <Table bordered className=" min-w-[900px]">
           <TableHeader>
-            <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
+            <TableRow>
               {showCheckbox && (
-                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-foreground-secondary font-medium border-r border-border bg-surface-muted">
+                <TableHead className="w-14 min-w-[3.5rem]">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -385,7 +383,6 @@ export function PaginatedTable<T extends Record<string, any>>({
                     <TableHead
                       key={column.key}
                       className={cn(
-                        "py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0",
                         column.headerClassName,
                         headerClassName
                       )}
@@ -398,7 +395,6 @@ export function PaginatedTable<T extends Record<string, any>>({
                   <TableHead
                     key={column.key}
                     className={cn(
-                      "py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0",
                       column.headerClassName,
                       headerClassName
                     )}
@@ -423,7 +419,6 @@ export function PaginatedTable<T extends Record<string, any>>({
                 <TableRow
                   key={rowId}
                   className={cn(
-                    "hover:bg-surface-muted border-b border-border last:border-b-0 transition-colors",
                     isSelected && "bg-primary-subtle hover:bg-primary-subtle/80 [&>td]:bg-primary-subtle [&>td]:hover:bg-primary-subtle/80",
                     rowClass
                   )}
@@ -431,7 +426,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                   {showCheckbox && (
                     <TableCell
                       className={cn(
-                        "py-3 px-4 text-muted-foreground border-r border-border",
+                        "text-muted-foreground",
                         sizeClasses.checkboxCell,
                         isSelected && "bg-primary-subtle"
                       )}
@@ -455,7 +450,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                       <TableCell
                         key={column.key}
                         className={cn(
-                          "py-3 px-4 text-muted-foreground border-r border-border last:border-r-0",
+                          "text-muted-foreground",
                           sizeClasses.rowCell,
                           column.className,
                           isSelected && "bg-primary-subtle"
@@ -476,7 +471,7 @@ export function PaginatedTable<T extends Record<string, any>>({
                   {hasActions && (
                     <TableCell
                       className={cn(
-                        "py-3 px-4 text-center border-r border-border last:border-r-0 transition-colors sticky right-0 z-10 shadow-pin-end",
+                        "text-center sticky right-0 z-10 shadow-pin-end",
                         isSelected ? "bg-primary-subtle" : "bg-background"
                       )}
                     >

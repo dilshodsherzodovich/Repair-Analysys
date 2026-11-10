@@ -92,8 +92,8 @@ export function OrganizationTable({
         <div className="overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 text-foreground-secondary ">
-                <TableHead className="w-12 p-3 ">
+              <TableRow>
+                <TableHead className="w-12">
                   <Checkbox
                     checked={
                       selectedIds.length === organizations?.results?.length &&
@@ -102,12 +102,12 @@ export function OrganizationTable({
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
-                <TableHead className="w-16 p-3 ">#</TableHead>
-                <TableHead className="p-3">Tashkilot</TableHead>
-                <TableHead className="p-3">Huquqiy asos</TableHead>
-                <TableHead className="p-3">Asos fayl</TableHead>
-                <TableHead className="p-3">Yaratilgan sana</TableHead>
-                <TableHead className="w-32 p-3">Amallar</TableHead>
+                <TableHead className="w-16">#</TableHead>
+                <TableHead>Tashkilot</TableHead>
+                <TableHead>Huquqiy asos</TableHead>
+                <TableHead>Asos fayl</TableHead>
+                <TableHead>Yaratilgan sana</TableHead>
+                <TableHead className="w-32">Amallar</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -125,9 +125,9 @@ export function OrganizationTable({
                 organizations?.results?.map((organization, index) => (
                   <TableRow
                     key={organization.id}
-                    className={` transition-colors hover:bg-muted/50 `}
+                    className={``}
                   >
-                    <TableCell className="p-3">
+                    <TableCell>
                       <Checkbox
                         checked={selectedIds.includes(organization.id)}
                         onCheckedChange={(checked) =>
@@ -135,21 +135,21 @@ export function OrganizationTable({
                         }
                       />
                     </TableCell>
-                    <TableCell className="font-semibold text-primary p-3">
+                    <TableCell className="font-semibold text-primary">
                       {index + 1}
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <Building2 className="h-4 w-4 text-primary" />
                         <span className="font-medium">{organization.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <span className="font-medium">
                         {organization.legal_basis}
                       </span>
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <a
                         href={organization.attachment_file}
                         target="_blank"
@@ -159,10 +159,10 @@ export function OrganizationTable({
                         {getFileName(organization.attachment_file)}
                       </a>
                     </TableCell>
-                    <TableCell className="p-3 text-muted-foreground">
+                    <TableCell className="text-muted-foreground">
                       {format(organization.created, "dd.MM.yyyy HH:mm")}
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <PermissionGuard permission="edit_organization">
                           <Button

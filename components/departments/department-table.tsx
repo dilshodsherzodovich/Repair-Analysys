@@ -90,8 +90,8 @@ export function DepartmentTable({
         <div className="overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 text-foreground-secondary sticky top-0 z-10 ">
-                <TableHead className="w-12 p-3 ">
+              <TableRow className="bg-muted/50 sticky top-0 z-10">
+                <TableHead className="w-12">
                   <Checkbox
                     checked={
                       selectedIds.length === departments?.results?.length &&
@@ -100,11 +100,11 @@ export function DepartmentTable({
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
-                <TableHead className="w-16 p-3 ">#</TableHead>
-                <TableHead className="p-3">Quyi tashkilot</TableHead>
-                <TableHead className="p-3">Tashkilot</TableHead>
-                <TableHead className="p-3">Yaratilgan sana</TableHead>
-                <TableHead className="w-32 p-3">Amallar</TableHead>
+                <TableHead className="w-16">#</TableHead>
+                <TableHead>Quyi tashkilot</TableHead>
+                <TableHead>Tashkilot</TableHead>
+                <TableHead>Yaratilgan sana</TableHead>
+                <TableHead className="w-32">Amallar</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -115,9 +115,8 @@ export function DepartmentTable({
                   {departments?.results?.map((department, index) => (
                     <TableRow
                       key={department.id}
-                      className={" transition-colors hover:bg-muted/50 "}
                     >
-                      <TableCell className="p-3">
+                      <TableCell>
                         <Checkbox
                           checked={selectedIds.includes(department.id)}
                           onCheckedChange={(checked) =>
@@ -125,21 +124,21 @@ export function DepartmentTable({
                           }
                         />
                       </TableCell>
-                      <TableCell className="font-semibold text-primary p-3">
+                      <TableCell className="font-semibold text-primary">
                         {index + 1}
                       </TableCell>
-                      <TableCell className="p-3">
+                      <TableCell>
                         <span className="font-medium">{department.name}</span>
                       </TableCell>
-                      <TableCell className="p-3 text-muted-foreground">
+                      <TableCell className="text-muted-foreground">
                         {department.organization}
                       </TableCell>
-                      <TableCell className="p-3 text-muted-foreground">
+                      <TableCell className="text-muted-foreground">
                         {department.created
                           ? format(department.created, "dd.MM.yyyy HH:mm")
                           : ""}
                       </TableCell>
-                      <TableCell className="p-3">
+                      <TableCell>
                         <div className="flex items-center gap-2">
                           <PermissionGuard permission="edit_department">
                             <Button

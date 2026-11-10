@@ -177,13 +177,12 @@ export function InspectionsGroupedTable({
             <div className="bg-primary-subtle px-4 py-3 border-b border-border-strong">
               <Skeleton className="h-5 w-24 rounded-md" />
             </div>
-            <Table className="w-full min-w-[900px]">
+            <Table bordered className=" min-w-[900px]">
               <TableHeader>
-                <TableRow className="bg-surface-muted border-b border-border">
+                <TableRow>
                   {Array.from({ length: columnCount }).map((_, i) => (
                     <TableHead
                       key={i}
-                      className="py-3 px-4 border-r border-border last:border-r-0"
                     >
                       <Skeleton className="h-4 w-full max-w-[80px] rounded-md" />
                     </TableHead>
@@ -229,41 +228,41 @@ export function InspectionsGroupedTable({
               {group?.name}
             </h3>
           </div>
-          <Table className="w-full min-w-[900px]">
+          <Table bordered className=" min-w-[900px]">
             <TableHeader>
-              <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
-                <TableHead className="w-14 min-w-[3.5rem] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+              <TableRow>
+                <TableHead className="w-14 min-w-[3.5rem]">
                   {t("columns.no")}
                 </TableHead>
-                <TableHead className="min-w-[140px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[140px]">
                   {t("columns.locomotive")}
                 </TableHead>
-                <TableHead className="min-w-[160px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[160px]">
                   {t("columns.xkp")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[120px]">
                   {t("columns.inspection_type")}
                 </TableHead>
-                <TableHead className="min-w-[80px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[80px]">
                   {t("columns.section")}
                 </TableHead>
-                <TableHead className="min-w-[100px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[100px]">
                   {t("columns.comment")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[120px]">
                   {t("columns.author")}
                 </TableHead>
-                <TableHead className="min-w-[130px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[130px]">
                   {t("columns.opened_time")}
                 </TableHead>
-                <TableHead className="min-w-[100px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[100px]">
                   {t("columns.interval")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[120px]">
                   {t("columns.status")}
                 </TableHead>
                 {onAction && (
-                  <TableHead className="w-[100px] min-w-[100px] py-3 px-4 text-center text-foreground-secondary font-medium">
+                  <TableHead className="w-[100px] min-w-[100px] text-center">
                     {t("columns.actions")}
                   </TableHead>
                 )}
@@ -275,21 +274,20 @@ export function InspectionsGroupedTable({
                 return (
                   <TableRow
                     key={inspection.id}
-                    className="hover:bg-surface-muted border-b border-border last:border-b-0"
                   >
-                    <TableCell className="py-3 px-4 text-foreground font-medium border-r border-border last:border-r-0">
+                    <TableCell className="font-medium">
                       {index + 1}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-foreground border-r border-border last:border-r-0">
+                    <TableCell>
                       {getLocomotiveDisplay(inspection)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border last:border-r-0">
+                    <TableCell className="text-muted-foreground">
                       {getBranchName(inspection)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border last:border-r-0">
+                    <TableCell className="text-muted-foreground">
                       {inspection?.inspection_type?.name ?? "—"}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border last:border-r-0">
+                    <TableCell className="text-muted-foreground">
                       {isSectionCellUpdating(inspection.id) ? (
                         <span className="inline-flex items-center gap-2 text-muted-foreground">
                           <Loader2 className="h-4 w-4 animate-spin shrink-0" />
@@ -343,18 +341,18 @@ export function InspectionsGroupedTable({
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border last:border-r-0">
+                    <TableCell className="text-muted-foreground">
                       {inspection?.comment || "—"}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border last:border-r-0">
+                    <TableCell className="text-muted-foreground">
                       {inspection?.author?.first_name
                         ? `${inspection?.author?.first_name} ${inspection?.author?.last_name || ""}`.trim()
                         : (inspection?.author?.username ?? "—")}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border last:border-r-0">
+                    <TableCell className="text-muted-foreground">
                       {formatCreatedTime(inspection?.created_time)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 border-r border-border last:border-r-0">
+                    <TableCell>
                       <Badge
                         variant={
                           interval?.variant === "success"
@@ -373,7 +371,7 @@ export function InspectionsGroupedTable({
                         {interval.text}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-3 px-4 border-r border-border last:border-r-0">
+                    <TableCell>
                       <Badge
                         variant="warning"
                         className="bg-warning text-warning-foreground"
@@ -382,7 +380,7 @@ export function InspectionsGroupedTable({
                       </Badge>
                     </TableCell>
                     {onAction && (
-                      <TableCell className="py-3 px-4 text-center">
+                      <TableCell className="text-center">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon-sm"

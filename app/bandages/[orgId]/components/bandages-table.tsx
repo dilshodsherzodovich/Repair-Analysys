@@ -2,25 +2,14 @@
 
 import { memo, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { cn } from "@/lib/utils";
-import { GridTable, gridCellClass, gridHeadClass } from "@/ui/grid-table";
 import { Check } from "lucide-react";
 import { useBulkUpdateBandages } from "@/api/hooks/use-bandages";
 import { Bandage, UpdateBandagePayload } from "@/api/types/bandage";
-import {
-  CellInput,
-  EditActions,
-  firstMessage,
-} from "@/ui/inline-edit";
+import { CellInput, EditActions, firstMessage } from "@/ui/inline-edit";
 import { bandageGroupKey, hasSideMismatch } from "../bandage-groups";
 
 type Side = "left" | "right";
@@ -238,7 +227,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
         <TableRow
           key={section.key}
           className={cn(
-            "group hover:bg-surface-muted transition-colors duration-700",
+            "group duration-700",
             isEditing && "bg-primary-subtle hover:bg-primary-subtle",
             justSaved && "bg-success-subtle hover:bg-success-subtle",
           )}
@@ -248,7 +237,6 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 rowSpan={span}
                 className={cn(
-                  gridCellClass,
                   stickyNo,
                   stickyBg,
                   "z-[5] text-muted-foreground align-top",
@@ -259,11 +247,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
               <TableCell
                 rowSpan={span}
                 className={cn(
-                  gridCellClass,
                   stickyLocomotive,
                   stickyBg,
-                  "z-[5] text-foreground font-medium align-top",
-                  justSaved && "border-l-2 border-l-success",
+                  "z-[5] font-medium align-top",
+                  justSaved && "border-l-success",
                 )}
               >
                 {group.name}-{group.modelName}
@@ -278,10 +265,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
           )}
           <TableCell
             className={cn(
-              gridCellClass,
               stickySection,
               stickyBg,
-              "z-[5] text-foreground",
+              "z-[5]",
             )}
           >
             {section.sectionName}
@@ -301,9 +287,8 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 <TableCell
                   key={`${name}-${side}`}
                   className={cn(
-                    gridCellClass,
-                    "text-center text-foreground transition-colors duration-700",
-                    editable && "px-1 py-1.5",
+                    "text-center duration-700",
+                    editable && "",
                     !editable &&
                       activeGroup &&
                       (inActiveGroup
@@ -345,7 +330,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
           {canEdit && sectionIndex === 0 && (
             <TableCell
               rowSpan={span}
-              className={`${gridCellClass} text-center align-top border-r-0`}
+              className={`text-center align-top`}
             >
               {group.bandages.length > 0 && (
                 <EditActions
@@ -394,22 +379,22 @@ export function BandagesTable({
   const columnCount = 3 + componentNames.length * 2 + (canEdit ? 1 : 0);
 
   return (
-    <GridTable>
+    <Table frame maxHeight="75vh" bordered>
         {/* Header stays pinned while the rows scroll inside the box */}
         <TableHeader className="sticky top-0 z-10">
-          <TableRow className="hover:bg-transparent">
-            <TableHead rowSpan={2} className={`${gridHeadClass} ${stickyNo} z-20`}>
+          <TableRow>
+            <TableHead rowSpan={2} className={`${stickyNo} z-20`}>
               {t("columns.no")}
             </TableHead>
             <TableHead
               rowSpan={2}
-              className={`${gridHeadClass} ${stickyLocomotive} z-20`}
+              className={`${stickyLocomotive} z-20`}
             >
               {t("columns.locomotive")}
             </TableHead>
             <TableHead
               rowSpan={2}
-              className={`${gridHeadClass} ${stickySection} z-20`}
+              className={`${stickySection} z-20`}
             >
               {t("columns.section")}
             </TableHead>
@@ -417,7 +402,7 @@ export function BandagesTable({
               <TableHead
                 key={name}
                 colSpan={2}
-                className={`${gridHeadClass} text-center`}
+                className={`text-center`}
               >
                 {name}
               </TableHead>
@@ -425,18 +410,18 @@ export function BandagesTable({
             {canEdit && (
               <TableHead
                 rowSpan={2}
-                className={`${gridHeadClass} text-center border-r-0`}
+                className={`text-center`}
               >
                 {t("columns.actions")}
               </TableHead>
             )}
           </TableRow>
-          <TableRow className="hover:bg-transparent">
+          <TableRow>
             {componentNames.flatMap((name) =>
               SIDES.map((side) => (
                 <TableHead
                   key={`${name}-${side}`}
-                  className={`${gridHeadClass} text-center text-xs`}
+                  className={`text-center`}
                 >
                   {tModal(side)}
                 </TableHead>
@@ -456,7 +441,7 @@ export function BandagesTable({
             <TableRow>
               <TableCell
                 colSpan={columnCount}
-                className="py-8 text-center text-muted-foreground"
+                className="text-center text-muted-foreground"
               >
                 {t("empty")}
               </TableCell>
@@ -476,6 +461,6 @@ export function BandagesTable({
             ))
           )}
         </TableBody>
-      </GridTable>
+      </Table>
   );
 }

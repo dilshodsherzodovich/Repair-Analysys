@@ -170,8 +170,8 @@ export function UserTable({
         <div className="overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 text-foreground-secondary ">
-                <TableHead className="w-12 p-3 ">
+              <TableRow>
+                <TableHead className="w-12">
                   <Checkbox
                     checked={
                       selectedIds.length === users?.results?.length &&
@@ -180,13 +180,13 @@ export function UserTable({
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
-                <TableHead className="w-16 p-3 ">#</TableHead>
-                <TableHead className="p-3">Foydalanuvchi</TableHead>
-                <TableHead className="p-3">Rol</TableHead>
-                <TableHead className="p-3">Quyi tashkilot</TableHead>
-                <TableHead className="p-3">Yaratilgan sana</TableHead>
-                <TableHead className="p-3">Holat</TableHead>
-                <TableHead className="w-32 p-3">Amallar</TableHead>
+                <TableHead className="w-16">#</TableHead>
+                <TableHead>Foydalanuvchi</TableHead>
+                <TableHead>Rol</TableHead>
+                <TableHead>Quyi tashkilot</TableHead>
+                <TableHead>Yaratilgan sana</TableHead>
+                <TableHead>Holat</TableHead>
+                <TableHead className="w-32">Amallar</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -194,7 +194,7 @@ export function UserTable({
                 <TableSkeleton rows={10} columns={8} />
               ) : users?.results?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="p-3">
+                  <TableCell colSpan={8}>
                     <div className="text-center py-8 text-muted-foreground">
                       Foydalanuvchilar topilmadi.
                     </div>
@@ -204,9 +204,9 @@ export function UserTable({
                 users?.results?.map((user, index) => (
                   <TableRow
                     key={user.id}
-                    className={` transition-colors hover:bg-muted/50 `}
+                    className={``}
                   >
-                    <TableCell className="p-3">
+                    <TableCell>
                       <Checkbox
                         checked={selectedIds.includes(user.id)}
                         onCheckedChange={(checked) =>
@@ -214,10 +214,10 @@ export function UserTable({
                         }
                       />
                     </TableCell>
-                    <TableCell className="font-semibold text-primary p-3">
+                    <TableCell className="font-semibold text-primary">
                       {index + 1}
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center">
                           <User className="w-5 h-5 text-primary" />
@@ -232,7 +232,7 @@ export function UserTable({
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <Shield className="w-4 h-4 text-primary" />
                         <Badge
@@ -243,7 +243,7 @@ export function UserTable({
                         </Badge>
                       </div>
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <Building className="w-4 h-4 text-primary" />
                         <span className="text-muted-foreground">
@@ -251,10 +251,10 @@ export function UserTable({
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground p-3">
+                    <TableCell className="text-muted-foreground">
                       {user.createdAt}
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <Badge
                         variant={user.is_active ? "default" : "secondary"}
                         className={
@@ -266,7 +266,7 @@ export function UserTable({
                         {user.is_active ? "Faol" : "Nofaol"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="p-3">
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <PermissionGuard permission="edit_user">
                           <Button

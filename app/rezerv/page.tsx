@@ -162,30 +162,30 @@ export default function RezervPage() {
 
       <div className="rounded-lg border border-border-strong overflow-hidden bg-background">
         {isLoading ? (
-          <Table className="w-full min-w-[700px]">
+          <Table bordered className=" min-w-[700px]">
             <TableHeader>
-              <TableRow className="bg-surface-muted border-b border-border">
-                <TableHead className="min-w-[50px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+              <TableRow>
+                <TableHead className="min-w-[50px]">
                   {t("columns.no")}
                 </TableHead>
-                <TableHead className="min-w-[140px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                <TableHead className="min-w-[140px]">
                   {t("columns.locomotive")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                <TableHead className="min-w-[120px]">
                   {t("columns.location")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                <TableHead className="min-w-[120px]">
                   {t("columns.start_date")}
                 </TableHead>
                 {isArchiveTab && (
-                  <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                  <TableHead className="min-w-[120px]">
                     {t("columns.end_date")}
                   </TableHead>
                 )}
-                <TableHead className="min-w-[90px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                <TableHead className="min-w-[90px]">
                   {t("columns.status")}
                 </TableHead>
-                <TableHead className="min-w-[100px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[100px]">
                   {t("columns.command_number")}
                 </TableHead>
               </TableRow>
@@ -199,30 +199,30 @@ export default function RezervPage() {
             </TableBody>
           </Table>
         ) : (
-          <Table className="w-full min-w-[700px]">
+          <Table bordered className=" min-w-[700px]">
             <TableHeader>
-              <TableRow className="bg-surface-muted hover:bg-surface-muted border-b border-border">
-                <TableHead className="min-w-[50px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+              <TableRow>
+                <TableHead className="min-w-[50px]">
                   {t("columns.no")}
                 </TableHead>
-                <TableHead className="min-w-[140px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                <TableHead className="min-w-[140px]">
                   {t("columns.locomotive")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                <TableHead className="min-w-[120px]">
                   {t("columns.location")}
                 </TableHead>
-                <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                <TableHead className="min-w-[120px]">
                   {t("columns.start_date")}
                 </TableHead>
                 {isArchiveTab && (
-                  <TableHead className="min-w-[120px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                  <TableHead className="min-w-[120px]">
                     {t("columns.end_date")}
                   </TableHead>
                 )}
-                <TableHead className="min-w-[90px] py-3 px-4 text-foreground-secondary font-medium border-r border-border">
+                <TableHead className="min-w-[90px]">
                   {t("columns.status")}
                 </TableHead>
-                <TableHead className="min-w-[100px] py-3 px-4 text-foreground-secondary font-medium border-r border-border last:border-r-0">
+                <TableHead className="min-w-[100px]">
                   {t("columns.command_number")}
                 </TableHead>
               </TableRow>
@@ -232,7 +232,7 @@ export default function RezervPage() {
                 <TableRow>
                   <TableCell
                     colSpan={columnCount}
-                    className="py-8 text-center text-muted-foreground"
+                    className="text-center text-muted-foreground"
                   >
                     {t("empty_title")}
                   </TableCell>
@@ -241,31 +241,30 @@ export default function RezervPage() {
                 displayRows.map((row) => (
                   <TableRow
                     key={row.id}
-                    className="hover:bg-surface-muted border-b border-border last:border-b-0"
                   >
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border">
+                    <TableCell className="text-muted-foreground">
                       {row.__displayIndex}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-foreground font-medium border-r border-border">
+                    <TableCell className="font-medium">
                       {getLocomotiveDisplay(row)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border">
+                    <TableCell className="text-muted-foreground">
                       {getLocationDisplay(row)}
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-muted-foreground border-r border-border">
+                    <TableCell className="text-muted-foreground">
                       {formatDate(row.start_date)}
                     </TableCell>
                     {isArchiveTab && (
-                      <TableCell className="py-3 px-4 text-muted-foreground border-r border-border">
+                      <TableCell className="text-muted-foreground">
                         {formatDate(row.end_date)}
                       </TableCell>
                     )}
-                    <TableCell className="py-3 px-4 border-r border-border">
+                    <TableCell>
                       <Badge variant={isArchiveTab ? "warning" : "success"}>
                         {isArchiveTab ? t("tab_archive") : t("tab_current")}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-3 px-4 text-foreground border-r border-border last:border-r-0">
+                    <TableCell>
                       {row.command_number || "—"}
                     </TableCell>
                   </TableRow>

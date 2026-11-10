@@ -178,3 +178,17 @@ strip, buttons or wording.
 - A tile that filters the page takes `onClick` + `selected`; the others
   become `muted` while one is selected.
 - Cards with richer content (sub-rows, per-month bars) are `CardButton`s.
+
+### Tables
+
+- Record lists use `PaginatedTable`; report and matrix tables use the kit
+  `Table` parts. `GridTable` is gone: a dense measurement grid is
+  `<Table frame maxHeight bordered>`.
+- The table owns the look: header on surface-muted with small
+  foreground-secondary text, the same cell padding and lines, row hover
+  tint, no zebra striping. A table chooses only `bordered` (full grid),
+  `density="compact"` and `frame` (+ `maxHeight` for a pinned header).
+- Cells set only content decisions: alignment, width, pinning (with a solid
+  background), and status highlights (primary-subtle, destructive-subtle,
+  ...). No per-cell backgrounds, borders, padding or text sizes.
+- A table's scroll box is `frame`, never a hand-built wrapper div.

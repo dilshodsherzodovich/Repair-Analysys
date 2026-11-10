@@ -34,9 +34,8 @@ import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { Skeleton } from "@/ui/skeleton";
 import { StatCard } from "@/ui/stat-card";
 import { Switch } from "@/ui/switch";
-import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
+import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from "@/ui/table";
 import { Textarea } from "@/ui/textarea";
-import { GridTable, gridCellClass, gridHeadClass } from "@/ui/grid-table";
 import { CardButton } from "@/ui/card-button";
 import { Chip } from "@/ui/chip";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
@@ -827,9 +826,9 @@ function UiKit() {
       <Section
         id="table"
         title="Table"
-        description="GridTable + gridHeadClass / gridCellClass (stickyCol to pin columns). Highlight with primary-subtle, flag with destructive-subtle."
+        description="The table owns the look: <Table bordered density frame maxHeight>. Cells set only alignment, width, pinning and status highlights (primary-subtle, destructive-subtle)."
       >
-        <GridTable maxHeight="none">
+        <Table frame bordered>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 {["№", "Lokomotiv", "Sektsiya", "Chap", "O'ng", "Holat"].map(
@@ -837,7 +836,6 @@ function UiKit() {
                     <TableHead
                       key={head}
                       className={cn(
-                        gridHeadClass,
                         "last:border-r-0",
                         index >= 3 && "text-center",
                       )}
@@ -852,19 +850,17 @@ function UiKit() {
               {SAMPLE_ROWS.map((row, index) => {
                 const uneven =
                   row.left !== null && row.right !== null && Math.abs(row.left - row.right) >= 2;
-                const cell = cn(gridCellClass, "last:border-r-0");
                 const value = (v: number | null) =>
                   v === null ? <span className="text-foreground-subtle">—</span> : v.toFixed(1);
                 return (
                   <TableRow key={index} className="hover:bg-surface-muted">
-                    <TableCell className={cn(cell, "text-muted-foreground")}>{index + 1}</TableCell>
-                    <TableCell className={cn(cell, "font-medium text-foreground")}>{row.loco}</TableCell>
-                    <TableCell className={cn(cell, "text-foreground")}>{row.section}</TableCell>
+                    <TableCell className={cn("text-muted-foreground")}>{index + 1}</TableCell>
+                    <TableCell className={cn("font-medium text-foreground")}>{row.loco}</TableCell>
+                    <TableCell className={cn("text-foreground")}>{row.section}</TableCell>
                     {[row.left, row.right].map((v, i) => (
                       <TableCell
                         key={i}
                         className={cn(
-                          cell,
                           "text-center text-foreground",
                           uneven && "bg-destructive-subtle font-semibold text-destructive",
                           index === 0 && "bg-primary-subtle font-semibold text-primary",
@@ -873,7 +869,7 @@ function UiKit() {
                         {value(v)}
                       </TableCell>
                     ))}
-                    <TableCell className={cn(cell, "text-center")}>
+                    <TableCell className={cn("text-center")}>
                       {uneven ? (
                         <Badge variant="danger">Farq ≥ 2</Badge>
                       ) : (
@@ -884,7 +880,7 @@ function UiKit() {
                 );
               })}
             </TableBody>
-        </GridTable>
+        </Table>
       </Section>
 
       {/* ---------------------------------------------------------------- */}

@@ -267,191 +267,186 @@ export default function Tu137ReportsPage() {
 
         {/* Mashinists Table */}
         {!isLoading && !error && (
-          <div className="bg-background rounded-xl border border-border/60 shadow-sm overflow-hidden mt-6">
-            <div className="overflow-x-auto">
-              <Table wrapper={false} className="w-full text-left text-sm whitespace-nowrap">
-                <TableHeader className="bg-surface-muted border-b border-border text-muted-foreground font-bold uppercase text-2xs tracking-wider">
-                  <TableRow>
-                    <TableHead className="px-6 py-4">{t("mashinist")}</TableHead>
-                    <TableHead className="px-6 py-4 text-center">{t("records")}</TableHead>
-                    <TableHead className="px-6 py-4 text-center">{t("open")}</TableHead>
-                    <TableHead className="px-6 py-4 text-center">{t("solved")}</TableHead>
-                    <TableHead className="px-6 py-4 text-right">
-                      {t("percent_solved")}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="divide-y divide-muted text-foreground-secondary">
-                  {filteredMashinists.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={5}
-                        className="px-6 py-12 text-center text-muted-foreground"
+          <Table density="compact" frame className=" text-left whitespace-nowrap">
+            <TableHeader className="text-muted-foreground font-bold uppercase tracking-wider">
+              <TableRow>
+                <TableHead>{t("mashinist")}</TableHead>
+                <TableHead className="text-center">{t("records")}</TableHead>
+                <TableHead className="text-center">{t("open")}</TableHead>
+                <TableHead className="text-center">{t("solved")}</TableHead>
+                <TableHead className="text-right">
+                  {t("percent_solved")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-muted text-foreground-secondary">
+              {filteredMashinists.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-muted-foreground"
+                  >
+                    {t("no_data")}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredMashinists.map((mashinist) => {
+                  const matchKey = String(mashinist.id);
+                  const isExpanded = expandedRow === matchKey;
+
+                  return (
+                    <React.Fragment key={matchKey}>
+                      <TableRow
+                        className="cursor-pointer group"
+                        onClick={() =>
+                          setExpandedRow(isExpanded ? null : matchKey)
+                        }
                       >
-                        {t("no_data")}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredMashinists.map((mashinist) => {
-                      const matchKey = String(mashinist.id);
-                      const isExpanded = expandedRow === matchKey;
-
-                      return (
-                        <React.Fragment key={matchKey}>
-                          <TableRow
-                            className="hover:bg-surface-muted/80 transition-colors cursor-pointer group"
-                            onClick={() =>
-                              setExpandedRow(isExpanded ? null : matchKey)
-                            }
-                          >
-                            <TableCell className="px-6 py-3 flex items-center gap-3">
-                              {isExpanded ? (
-                                <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                              ) : (
-                                <ChevronRight className="w-4 h-4 text-foreground-subtle group-hover:text-foreground-secondary transition-colors" />
-                              )}
-                              <div
-                                className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${isExpanded ? "bg-category-indigo/15" : "bg-muted group-hover:bg-border"}`}
-                              >
-                                <Users
-                                  className={`w-3 h-3 ${isExpanded ? "text-category-indigo" : "text-muted-foreground"}`}
-                                />
-                              </div>
-                              <span
-                                className={`font-medium transition-colors ${isExpanded ? "text-category-indigo" : "text-foreground"}`}
-                              >
-                                {mashinist.fio}
-                              </span>
-                            </TableCell>
-                            <TableCell className="px-6 py-3 text-center font-bold text-foreground">
-                              {mashinist.total}
-                            </TableCell>
-                            <TableCell className="px-6 py-3 text-center font-bold text-warning">
-                              {mashinist.open}
-                            </TableCell>
-                            <TableCell className="px-6 py-3 text-center font-bold text-success">
-                              {mashinist.solved}
-                            </TableCell>
-                            <TableCell className="px-6 py-3 text-right">
-                              <div className="flex items-center justify-end gap-3">
-                                <div className="w-16 bg-muted h-1.5 rounded-full overflow-hidden flex">
-                                  <div
-                                    className={`h-full ${getProgressBgColor(mashinist.percent)}`}
-                                    style={{ width: `${mashinist.percent}%` }}
-                                  />
-                                  <div
-                                    className="bg-border h-full"
-                                    style={{
-                                      width: `${100 - mashinist.percent}%`,
-                                    }}
-                                  />
-                                </div>
-                                <span
-                                  className={`text-xs font-semibold block w-8 text-right ${getProgressTextColor(mashinist.percent)}`}
-                                >
-                                  {mashinist.percent}%
-                                </span>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-
-                          {isExpanded && (
-                            <TableRow className="bg-surface-muted/40 border-b border-t border-muted">
-                              <TableCell colSpan={5} className="p-4 sm:p-6">
-                                <div className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
-                                  <Table wrapper={false} className="w-full text-left text-xs sm:text-sm whitespace-normal">
-                                    <TableHeader className="bg-surface-muted/80 text-muted-foreground font-bold uppercase tracking-wider text-2xs sm:text-xs border-b border-border">
-                                      <TableRow>
-                                        <TableHead className="px-4 py-3">
-                                          {t("table_number")}
-                                        </TableHead>
-                                        <TableHead className="px-4 py-3">
-                                          {t("table_lokomotiv")}
-                                        </TableHead>
-                                        <TableHead className="px-4 py-3">
-                                          {t("table_station")}
-                                        </TableHead>
-                                        <TableHead className="px-4 py-3">
-                                          {t("table_date")}
-                                        </TableHead>
-                                        <TableHead className="px-4 py-3 max-w-lg">
-                                          {t("table_comment")}
-                                        </TableHead>
-                                        <TableHead className="px-4 py-3 text-center">
-                                          {t("table_status")}
-                                        </TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody className="divide-y divide-muted">
-                                      {apiResponse?.results
-                                        ?.filter(
-                                          (r) =>
-                                            String(r.mashinist_id) === matchKey,
-                                        )
-                                        .map((record) => (
-                                          <TableRow
-                                            key={record.id}
-                                            className="hover:bg-surface-muted transition-colors"
-                                          >
-                                            <TableCell className="px-4 py-3 font-medium text-muted-foreground">
-                                              #{record.id}
-                                            </TableCell>
-                                            <TableCell className="px-4 py-3">
-                                              <div className="font-semibold text-foreground-secondary">
-                                                {record.lokomotiv_name}
-                                              </div>
-                                              {record.poezd_number && (
-                                                <div className="text-muted-foreground text-xs mt-0.5">
-                                                  №{record.poezd_number}
-                                                </div>
-                                              )}
-                                            </TableCell>
-                                            <TableCell className="px-4 py-3">
-                                              <div className="font-medium text-foreground">
-                                                {record.group_name}
-                                              </div>
-                                              <div className="text-muted-foreground text-xs mt-0.5">
-                                                {record.station_name}{" "}
-                                                {record.station2_name
-                                                  ? `- ${record.station2_name}`
-                                                  : ""}
-                                              </div>
-                                            </TableCell>
-                                            <TableCell className="px-4 py-3 text-foreground-secondary whitespace-nowrap">
-                                              {formatDate(record.created_at)}
-                                            </TableCell>
-                                            <TableCell className="px-4 py-3 text-foreground-secondary whitespace-pre-wrap max-w-lg">
-                                              {record.comments}
-                                            </TableCell>
-                                            <TableCell className="px-4 py-3 text-center">
-                                              <span
-                                                className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-2xs font-bold uppercase tracking-wider border ${
-                                                  record.finished
-                                                    ? "bg-success-subtle text-success border-success/30"
-                                                    : "bg-warning-subtle text-warning border-warning/30"
-                                                }`}
-                                              >
-                                                {record.finished
-                                                  ? t("status_finished")
-                                                  : t("status_open")}
-                                              </span>
-                                            </TableCell>
-                                          </TableRow>
-                                        ))}
-                                    </TableBody>
-                                  </Table>
-                                </div>
-                              </TableCell>
-                            </TableRow>
+                        <TableCell className="flex items-center gap-3">
+                          {isExpanded ? (
+                            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4 text-foreground-subtle group-hover:text-foreground-secondary transition-colors" />
                           )}
-                        </React.Fragment>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${isExpanded ? "bg-category-indigo/15" : "bg-muted group-hover:bg-border"}`}
+                          >
+                            <Users
+                              className={`w-3 h-3 ${isExpanded ? "text-category-indigo" : "text-muted-foreground"}`}
+                            />
+                          </div>
+                          <span
+                            className={`font-medium transition-colors ${isExpanded ? "text-category-indigo" : "text-foreground"}`}
+                          >
+                            {mashinist.fio}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-center font-bold">
+                          {mashinist.total}
+                        </TableCell>
+                        <TableCell className="text-center font-bold text-warning">
+                          {mashinist.open}
+                        </TableCell>
+                        <TableCell className="text-center font-bold text-success">
+                          {mashinist.solved}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-3">
+                            <div className="w-16 bg-muted h-1.5 rounded-full overflow-hidden flex">
+                              <div
+                                className={`h-full ${getProgressBgColor(mashinist.percent)}`}
+                                style={{ width: `${mashinist.percent}%` }}
+                              />
+                              <div
+                                className="bg-border h-full"
+                                style={{
+                                  width: `${100 - mashinist.percent}%`,
+                                }}
+                              />
+                            </div>
+                            <span
+                              className={`text-xs font-semibold block w-8 text-right ${getProgressTextColor(mashinist.percent)}`}
+                            >
+                              {mashinist.percent}%
+                            </span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+
+                      {isExpanded && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="sm:p-6">
+                            <div className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
+                              <Table density="compact" wrapper={false} className=" text-left sm: whitespace-normal">
+                                <TableHeader className="text-muted-foreground font-bold uppercase tracking-wider sm:text-xs">
+                                  <TableRow>
+                                    <TableHead>
+                                      {t("table_number")}
+                                    </TableHead>
+                                    <TableHead>
+                                      {t("table_lokomotiv")}
+                                    </TableHead>
+                                    <TableHead>
+                                      {t("table_station")}
+                                    </TableHead>
+                                    <TableHead>
+                                      {t("table_date")}
+                                    </TableHead>
+                                    <TableHead className="max-w-lg">
+                                      {t("table_comment")}
+                                    </TableHead>
+                                    <TableHead className="text-center">
+                                      {t("table_status")}
+                                    </TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody className="divide-y divide-muted">
+                                  {apiResponse?.results
+                                    ?.filter(
+                                      (r) =>
+                                        String(r.mashinist_id) === matchKey,
+                                    )
+                                    .map((record) => (
+                                      <TableRow
+                                        key={record.id}
+                                      >
+                                        <TableCell className="font-medium text-muted-foreground">
+                                          #{record.id}
+                                        </TableCell>
+                                        <TableCell>
+                                          <div className="font-semibold text-foreground-secondary">
+                                            {record.lokomotiv_name}
+                                          </div>
+                                          {record.poezd_number && (
+                                            <div className="text-muted-foreground text-xs mt-0.5">
+                                              №{record.poezd_number}
+                                            </div>
+                                          )}
+                                        </TableCell>
+                                        <TableCell>
+                                          <div className="font-medium text-foreground">
+                                            {record.group_name}
+                                          </div>
+                                          <div className="text-muted-foreground text-xs mt-0.5">
+                                            {record.station_name}{" "}
+                                            {record.station2_name
+                                              ? `- ${record.station2_name}`
+                                              : ""}
+                                          </div>
+                                        </TableCell>
+                                        <TableCell className="text-foreground-secondary whitespace-nowrap">
+                                          {formatDate(record.created_at)}
+                                        </TableCell>
+                                        <TableCell className="text-foreground-secondary whitespace-pre-wrap max-w-lg">
+                                          {record.comments}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          <span
+                                            className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-2xs font-bold uppercase tracking-wider border ${
+                                              record.finished
+                                                ? "bg-success-subtle text-success border-success/30"
+                                                : "bg-warning-subtle text-warning border-warning/30"
+                                            }`}
+                                          >
+                                            {record.finished
+                                              ? t("status_finished")
+                                              : t("status_open")}
+                                          </span>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
         )}
       </>
     </Page>

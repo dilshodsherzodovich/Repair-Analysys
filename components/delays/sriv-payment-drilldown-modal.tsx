@@ -73,71 +73,69 @@ export function SrivPaymentDrilldownModal({
             <p className="mb-3 text-xs text-muted-foreground">
               {t("count_n", { n: data?.count ?? results.length })}
             </p>
-            <div className="max-h-[60vh] overflow-auto rounded-lg border border-border">
-              <Table wrapper={false} className="w-full min-w-[720px] border-collapse text-sm">
-                <TableHeader className="sticky top-0 z-10 bg-surface-muted">
-                  <TableRow className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <TableHead className="px-3 py-2.5 font-semibold">{t("dd_date")}</TableHead>
-                    <TableHead className="px-3 py-2.5 font-semibold">{t("dd_train")}</TableHead>
-                    <TableHead className="px-3 py-2.5 font-semibold">
-                      {t("dd_station")}
-                    </TableHead>
-                    <TableHead className="px-3 py-2.5 font-semibold">{t("depo")}</TableHead>
-                    <TableHead className="px-3 py-2.5 text-right font-semibold">
-                      {t("dd_damage")}
-                    </TableHead>
-                    <TableHead className="px-3 py-2.5 font-semibold">
-                      {t("dd_culprits")}
-                    </TableHead>
-                    <TableHead className="px-3 py-2.5 font-semibold">{t("dd_stage")}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {results.map((row) => {
-                    const culprits = row.culprits ?? [];
-                    const recovered = culprits.filter((c) => c.recovered).length;
-                    return (
-                      <TableRow
-                        key={row.id}
-                        className="border-b border-muted last:border-0 hover:bg-surface-muted/60"
-                      >
-                        <TableCell className="whitespace-nowrap px-3 py-2.5 text-foreground-secondary">
-                          {fmtDate(row.incident_date)}
-                        </TableCell>
-                        <TableCell className="px-3 py-2.5 font-medium text-foreground">
-                          {row.train_number || "-"}
-                        </TableCell>
-                        <TableCell className="px-3 py-2.5 text-foreground-secondary">
-                          {row.station || "-"}
-                        </TableCell>
-                        <TableCell className="px-3 py-2.5 text-foreground-secondary">
-                          {row.responsible_org_name ||
-                            row.responsible_org_detail?.name ||
-                            "-"}
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap px-3 py-2.5 text-right font-semibold tabular-nums text-foreground">
-                          {fmtSum(row.damage_amount || 0)}
-                        </TableCell>
-                        <TableCell className="px-3 py-2.5 text-foreground-secondary">
-                          {culprits.length > 0 ? (
-                            <span className="tabular-nums">
-                              {recovered}/{culprits.length}
-                            </span>
-                          ) : (
-                            <span className="text-foreground-subtle">0</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="px-3 py-2.5">
-                          <Badge variant="outline" className="font-medium">
-                            {row.stage_display || row.stage}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <Table frame maxHeight="60vh" className=" min-w-[720px]">
+              <TableHeader className="sticky top-0 z-10 bg-surface-muted">
+                <TableRow className="text-left">
+                  <TableHead>{t("dd_date")}</TableHead>
+                  <TableHead>{t("dd_train")}</TableHead>
+                  <TableHead>
+                    {t("dd_station")}
+                  </TableHead>
+                  <TableHead>{t("depo")}</TableHead>
+                  <TableHead className="text-right">
+                    {t("dd_damage")}
+                  </TableHead>
+                  <TableHead>
+                    {t("dd_culprits")}
+                  </TableHead>
+                  <TableHead>{t("dd_stage")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {results.map((row) => {
+                  const culprits = row.culprits ?? [];
+                  const recovered = culprits.filter((c) => c.recovered).length;
+                  return (
+                    <TableRow
+                      key={row.id}
+                      className="last:border-0"
+                    >
+                      <TableCell className="whitespace-nowrap text-foreground-secondary">
+                        {fmtDate(row.incident_date)}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {row.train_number || "-"}
+                      </TableCell>
+                      <TableCell className="text-foreground-secondary">
+                        {row.station || "-"}
+                      </TableCell>
+                      <TableCell className="text-foreground-secondary">
+                        {row.responsible_org_name ||
+                          row.responsible_org_detail?.name ||
+                          "-"}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-right font-semibold tabular-nums">
+                        {fmtSum(row.damage_amount || 0)}
+                      </TableCell>
+                      <TableCell className="text-foreground-secondary">
+                        {culprits.length > 0 ? (
+                          <span className="tabular-nums">
+                            {recovered}/{culprits.length}
+                          </span>
+                        ) : (
+                          <span className="text-foreground-subtle">0</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-medium">
+                          {row.stage_display || row.stage}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </>
         )}
       </div>

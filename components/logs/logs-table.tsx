@@ -184,7 +184,7 @@ export default function LogsTable({
                 <TableSkeleton rows={8} columns={6} />
               ) : logs?.results.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center">
                     <div className="text-sm whitespace-nowrap text-muted-foreground">
                       Loglar topilmadi.
                     </div>

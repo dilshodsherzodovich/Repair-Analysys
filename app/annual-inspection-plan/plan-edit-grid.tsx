@@ -364,66 +364,64 @@ export function PlanEditGrid({
 
               {/* Table */}
               {open && (
-                <div className="overflow-x-auto">
-                  <Table wrapper={false} className="w-full table-fixed min-w-[900px] border-collapse text-xs">
-                    <colgroup>
-                      <col style={{ width: 150 }} />
-                      {GRID_COLUMNS.map((c, i) => (
-                        <col key={i} />
-                      ))}
-                      <col style={{ width: 72 }} />
-                    </colgroup>
-                    <TableHeader>
-                      <TableRow className="text-muted-foreground bg-muted/40">
-                        <TableHead className="border border-border px-3 py-2.5 text-left font-medium whitespace-nowrap">Rusum</TableHead>
-                        {GRID_COLUMNS.map((col) =>
-                          col.kind === "month" ? (
-                            <TableHead key={`m${col.month}`} className="border border-border px-1 py-2.5 text-center font-medium">
-                              {MONTHS_SHORT[col.month - 1]}
-                            </TableHead>
-                          ) : (
-                            <TableHead key={`q${col.quarter}`} className={cn("border border-border px-1 py-2.5 text-center font-semibold", accent.soft, accent.text)}>
-                              {QUARTER_LABELS[col.quarter - 1]}
-                            </TableHead>
-                          )
-                        )}
-                        <TableHead className={cn("border border-border px-2 py-2.5 text-center font-semibold", accent.soft, accent.text)}>Σ</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {group.models.map((mdl) => (
-                        <TableRow key={mdl.id} className="hover:bg-muted/20 transition-colors">
-                          <TableCell className="border border-border px-3 py-1 text-left font-medium text-foreground whitespace-nowrap">
-                            {mdl.name}
-                          </TableCell>
-                          {GRID_COLUMNS.map((col) => {
-                            if (col.kind === "quarter") {
-                              return (
-                                <TableCell key={`q${col.quarter}`} className={cn("border border-border px-1 text-center font-semibold tabular-nums", accent.soft, accent.text)}>
-                                  {rowQuarter(group.type.id, mdl.id, col.quarter) || 0}
-                                </TableCell>
-                              );
-                            }
+                <Table bordered density="compact" className=" table-fixed min-w-[900px]">
+                  <colgroup>
+                    <col style={{ width: 150 }} />
+                    {GRID_COLUMNS.map((c, i) => (
+                      <col key={i} />
+                    ))}
+                    <col style={{ width: 72 }} />
+                  </colgroup>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-left">Rusum</TableHead>
+                      {GRID_COLUMNS.map((col) =>
+                        col.kind === "month" ? (
+                          <TableHead key={`m${col.month}`} className="text-center">
+                            {MONTHS_SHORT[col.month - 1]}
+                          </TableHead>
+                        ) : (
+                          <TableHead key={`q${col.quarter}`} className={cn("text-center", accent.soft, accent.text)}>
+                            {QUARTER_LABELS[col.quarter - 1]}
+                          </TableHead>
+                        )
+                      )}
+                      <TableHead className={cn("text-center", accent.soft, accent.text)}>Σ</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {group.models.map((mdl) => (
+                      <TableRow key={mdl.id}>
+                        <TableCell className="text-left font-medium whitespace-nowrap">
+                          {mdl.name}
+                        </TableCell>
+                        {GRID_COLUMNS.map((col) => {
+                          if (col.kind === "quarter") {
                             return (
-                              <TableCell key={`m${col.month}`} className="border border-border p-0">
-                                <EditableCell
-                                  value={countAt(group.type.id, mdl.id, col.month)}
-                                  typeId={group.type.id}
-                                  modelId={mdl.id}
-                                  month={col.month}
-                                  onCommit={commit}
-                                />
+                              <TableCell key={`q${col.quarter}`} className={cn("text-center font-semibold tabular-nums", accent.soft, accent.text)}>
+                                {rowQuarter(group.type.id, mdl.id, col.quarter) || 0}
                               </TableCell>
                             );
-                          })}
-                          <TableCell className={cn("border border-border px-2 text-center font-bold tabular-nums", accent.soft, accent.text)}>
-                            {rowYearly(group.type.id, mdl.id) || ""}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                          }
+                          return (
+                            <TableCell key={`m${col.month}`}>
+                              <EditableCell
+                                value={countAt(group.type.id, mdl.id, col.month)}
+                                typeId={group.type.id}
+                                modelId={mdl.id}
+                                month={col.month}
+                                onCommit={commit}
+                              />
+                            </TableCell>
+                          );
+                        })}
+                        <TableCell className={cn("text-center font-bold tabular-nums", accent.soft, accent.text)}>
+                          {rowYearly(group.type.id, mdl.id) || ""}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               )}
             </div>
           );

@@ -123,73 +123,71 @@ export function RecoveryInfoModal({
         </div>
 
         {/* Per-culprit breakdown */}
-        <div className="overflow-hidden rounded-xl border">
-          <Table wrapper={false} className="w-full text-sm">
-            <TableHeader className="bg-muted/40 text-muted-foreground">
+        <Table frame>
+          <TableHeader className="text-muted-foreground">
+            <TableRow>
+              <TableHead className="text-left">
+                {t("columns.full_name")}
+              </TableHead>
+              <TableHead className="text-right">
+                {t("columns.amount")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("columns.payroll")}
+              </TableHead>
+              <TableHead className="text-left">
+                {t("columns.recovered")}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {culprits.length === 0 ? (
               <TableRow>
-                <TableHead className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.full_name")}
-                </TableHead>
-                <TableHead className="px-3 py-2.5 text-right font-medium">
-                  {t("columns.amount")}
-                </TableHead>
-                <TableHead className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.payroll")}
-                </TableHead>
-                <TableHead className="px-3 py-2.5 text-left font-medium">
-                  {t("columns.recovered")}
-                </TableHead>
+                <TableCell
+                  colSpan={4}
+                  className="text-center text-muted-foreground"
+                >
+                  {t("empty")}
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {culprits.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="px-3 py-8 text-center text-muted-foreground"
-                  >
-                    {t("empty")}
+            ) : (
+              culprits.map((c) => (
+                <TableRow key={c.id} className="align-top">
+                  <TableCell className="font-medium">{c.full_name}</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {fmt(c.amount)}
+                  </TableCell>
+                  <TableCell>
+                    <StatusPill
+                      active={c.payroll_confirmed}
+                      yes={t("yes")}
+                      no={t("no")}
+                      by={
+                        c.payroll_confirmed && c.payroll_confirmed_by_name
+                          ? t("confirmed_by", {
+                              name: c.payroll_confirmed_by_name,
+                            })
+                          : null
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <StatusPill
+                      active={c.recovered}
+                      yes={t("yes")}
+                      no={t("no")}
+                      by={
+                        c.recovered && c.recovered_by_name
+                          ? t("recovered_by", { name: c.recovered_by_name })
+                          : null
+                      }
+                    />
                   </TableCell>
                 </TableRow>
-              ) : (
-                culprits.map((c) => (
-                  <TableRow key={c.id} className="border-t align-top hover:bg-muted/20">
-                    <TableCell className="px-3 py-2.5 font-medium">{c.full_name}</TableCell>
-                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                      {fmt(c.amount)}
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5">
-                      <StatusPill
-                        active={c.payroll_confirmed}
-                        yes={t("yes")}
-                        no={t("no")}
-                        by={
-                          c.payroll_confirmed && c.payroll_confirmed_by_name
-                            ? t("confirmed_by", {
-                                name: c.payroll_confirmed_by_name,
-                              })
-                            : null
-                        }
-                      />
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5">
-                      <StatusPill
-                        active={c.recovered}
-                        yes={t("yes")}
-                        no={t("no")}
-                        by={
-                          c.recovered && c.recovered_by_name
-                            ? t("recovered_by", { name: c.recovered_by_name })
-                            : null
-                        }
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            )}
+          </TableBody>
+        </Table>
 
         <div className="flex justify-end pt-1">
           <Button type="button" variant="outline" onClick={onClose}>
