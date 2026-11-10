@@ -16,7 +16,6 @@ import { generateInspectionsPDF } from "@/utils/inspections-pdf-export";
 import { generateInspectionReportExcel } from "@/utils/inspection-report-excel-export";
 import { ReportOrganizationSelect, useReportOrganization } from "@/components/reports/report-organization-select";
 import { PageHeader } from "@/ui/page-header";
-import { CardButton } from "@/ui/card-button";
 import { Chip } from "@/ui/chip";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { ExportActions } from "@/ui/export-actions";
@@ -24,6 +23,7 @@ import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { DateRangeField } from "@/ui/date-range-field";
 import { SearchableSelect } from "@/ui/select";
 import { Page } from "@/ui/page";
+import { StatCard } from "@/ui/stat-card";
 
 export default function InspectionReportPage() {
   const t = useTranslations("Statistics");
@@ -248,15 +248,14 @@ export default function InspectionReportPage() {
             {statsByType.map(([typeName, count]) => {
               const isSelected = selectedType === typeName;
               return (
-                <CardButton selected={isSelected} selectedClassName="border-primary bg-primary-subtle ring-primary/40" className="rounded-lg p-3 shadow-none"
+                <StatCard
                   key={typeName}
+                  label={typeName}
+                  value={count}
+                  tone="primary"
+                  selected={isSelected}
                   onClick={() => toggleType(typeName)}
-                >
-                  <div className="text-sm font-medium text-foreground">{typeName}</div>
-                  <div className="text-2xl font-bold text-primary mt-1">
-                    {count}
-                  </div>
-                </CardButton>
+                />
               );
             })}
           </div>

@@ -21,6 +21,7 @@ import { authService } from "@/api/services/auth.service";
 import { CardButton } from "@/ui/card-button";
 import { Chip } from "@/ui/chip";
 import { Page } from "@/ui/page";
+import { StatCard, StatGrid } from "@/ui/stat-card";
 
 const PAGE_SIZE = 20;
 
@@ -94,6 +95,12 @@ function progressText(rate: number) {
   if (rate >= 0.8) return "text-success";
   if (rate >= 0.5) return "text-warning";
   return "text-destructive";
+}
+
+function rateTone(rate: number) {
+  if (rate >= 0.8) return "success" as const;
+  if (rate >= 0.5) return "warning" as const;
+  return "danger" as const;
 }
 
 function fmt(n: number) {
@@ -213,55 +220,25 @@ export default function Tu152Page() {
         </div>
 
         {/* Global stat cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
-            <div className="flex justify-between items-start">
-              <p className="text-2xs font-bold text-muted-foreground tracking-wider uppercase">
-                {t("stat_total")}
-              </p>
-              <FileText className="w-5 h-5 text-primary" />
-            </div>
-            <p className="text-3xl font-bold text-foreground mt-2">{fmt(totals.total)}</p>
-          </div>
-
-          <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
-            <div className="flex justify-between items-start">
-              <p className="text-2xs font-bold text-success tracking-wider uppercase">
-                {t("stat_fixed")}
-              </p>
-              <CheckCircle className="w-5 h-5 text-success" />
-            </div>
-            <p className="text-3xl font-bold text-success mt-2">{fmt(totals.fixed)}</p>
-          </div>
-
-          <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
-            <div className="flex justify-between items-start">
-              <p className="text-2xs font-bold text-warning tracking-wider uppercase">
-                {t("stat_unfixed")}
-              </p>
-              <XCircle className="w-5 h-5 text-warning" />
-            </div>
-            <p className="text-3xl font-bold text-warning mt-2">{fmt(totals.unfixed)}</p>
-          </div>
-
-          <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
-            <div className="flex justify-between items-start">
-              <p className="text-2xs font-bold text-muted-foreground tracking-wider uppercase">
-                {t("stat_rate")}
-              </p>
-              <TrendingUp className="w-5 h-5 text-category-indigo/60" />
-            </div>
-            <p className={cn("text-3xl font-bold mt-2", progressText(totals.fixed_rate))}>
-              {fixedRatePct}%
-            </p>
-            <div className="mt-2 bg-muted h-1.5 rounded-full overflow-hidden">
-              <div
-                className={cn("h-full rounded-full", progressColor(totals.fixed_rate))}
-                style={{ width: `${fixedRatePct}%` }}
-              />
-            </div>
-          </div>
-        </div>
+        <StatGrid columns={4}>
+          <StatCard label={t("stat_total")} icon={FileText} tone="primary" value={fmt(totals.total)} />
+          <StatCard label={t("stat_fixed")} icon={CheckCircle} tone="success" value={fmt(totals.fixed)} />
+          <StatCard label={t("stat_unfixed")} icon={XCircle} tone="warning" value={fmt(totals.unfixed)} />
+          <StatCard
+            label={t("stat_rate")}
+            icon={TrendingUp}
+            tone={rateTone(totals.fixed_rate)}
+            value={`${fixedRatePct}%`}
+            caption={
+              <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-muted">
+                <span
+                  className={cn("block h-full rounded-full", progressColor(totals.fixed_rate))}
+                  style={{ width: `${fixedRatePct}%` }}
+                />
+              </span>
+            }
+          />
+        </StatGrid>
 
         {/* By Organization */}
         <section>

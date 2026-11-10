@@ -2,28 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Bar,
-  CartesianGrid,
-  ComposedChart,
-  Legend,
-  Line,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Bar, CartesianGrid, ComposedChart, Legend, Line, XAxis, YAxis } from "recharts";
 import { BarChart3, Loader2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/ui/chart";
 import type { ChartConfig } from "@/ui/chart";
 import { SearchableSelect } from "@/ui/select";
 import { cn } from "@/lib/utils";
-import {
-  STAT_MONTHS,
-  type GenericOrgStatistics,
-  type JournalStatisticsParams,
-} from "@/api/types/statistics";
+import { STAT_MONTHS, type GenericOrgStatistics, type JournalStatisticsParams } from "@/api/types/statistics";
 import { Label } from "@/ui/label";
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
+import { StatCard, type StatTone } from "@/ui/stat-card";
 
 export interface StatMetric {
   key: string;
@@ -387,51 +376,45 @@ function KpiCard({
   const max = Math.max(1, ...series);
 
   return (
-    <div
-      className="relative overflow-hidden rounded-xl border border-border bg-background p-4 pl-5 shadow-sm transition-shadow hover:shadow-md"
-      style={{ borderLeft: `4px solid ${metric.color}` }}
-    >
-      <div className="flex items-start justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {metric.label}
-        </p>
-        {Icon && (
-          <span
-            className="flex h-8 w-8 items-center justify-center rounded-lg"
-            style={{ backgroundColor: `${metric.color}1a`, color: metric.color }}
-          >
-            <Icon className="h-4 w-4" strokeWidth={2.25} />
-          </span>
-        )}
-      </div>
-
-      <p
-        className="mt-2 text-2xl font-bold tabular-nums text-foreground"
-        title={
-          metric.kind === "currency"
-            ? (Number(total) || 0).toLocaleString("ru-RU")
-            : undefined
-        }
-      >
-        {formatValue(total, metric.kind)}
-      </p>
-
-      {/* sparkline */}
-      <div className="mt-3 flex h-8 items-end gap-[3px]" aria-hidden>
-        {series.map((v, i) => (
-          <span
-            key={i}
-            className="flex-1 rounded-sm"
-            style={{
-              height: `${Math.max(6, (v / max) * 100)}%`,
-              backgroundColor: metric.color,
-              opacity: v === 0 ? 0.15 : 0.4 + (v / max) * 0.6,
-            }}
-          />
-        ))}
-      </div>
-    </div>
+    <StatCard
+      label={metric.label}
+      icon={Icon}
+      tone={toneOf(metric.color)}
+      value={
+        <span
+          title={metric.kind === "currency" ? (Number(total) || 0).toLocaleString("ru-RU") : undefined}
+        >
+          {formatValue(total, metric.kind)}
+        </span>
+      }
+      caption={
+        // sparkline
+        <span className="mt-2 flex h-8 items-end gap-[3px]" aria-hidden>
+          {series.map((v, i) => (
+            <span
+              key={i}
+              className="flex-1 rounded-sm"
+              style={{
+                height: `${Math.max(6, (v / max) * 100)}%`,
+                backgroundColor: metric.color,
+                opacity: v === 0 ? 0.15 : 0.4 + (v / max) * 0.6,
+              }}
+            />
+          ))}
+        </span>
+      }
+    />
   );
+}
+
+/** The StatCard tone for a metric's token colour. */
+function toneOf(color: string): StatTone {
+  if (color.includes("destructive")) return "danger";
+  if (color.includes("success")) return "success";
+  if (color.includes("warning")) return "warning";
+  if (color.includes("violet")) return "violet";
+  if (color.includes("primary") || color.includes("chart")) return "primary";
+  return "neutral";
 }
 
 export default StatsPanel;

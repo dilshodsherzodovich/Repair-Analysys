@@ -94,46 +94,6 @@ export function SectionCard({
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Stat tile — headline metric shown in the hero strip and overview          */
-/* -------------------------------------------------------------------------- */
-
-export function StatTile({
-  label,
-  value,
-  hint,
-  icon: Icon,
-  accent = "default",
-}: {
-  label: string;
-  value: ReactNode;
-  hint?: string;
-  icon?: LucideIcon;
-  accent?: "default" | "blue" | "green" | "amber" | "red";
-}) {
-  const accents: Record<string, string> = {
-    default: "text-foreground",
-    blue: "text-primary",
-    green: "text-success",
-    amber: "text-warning",
-    red: "text-destructive",
-  };
-  return (
-    <div className="rounded-xl border bg-card p-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        {Icon && <Icon className="h-4 w-4" />}
-        <span className="text-xs font-medium uppercase tracking-wide">
-          {label}
-        </span>
-      </div>
-      <div className={cn("mt-2 text-2xl font-bold leading-tight", accents[accent])}>
-        {value}
-      </div>
-      {hint && <div className="mt-1 text-xs text-muted-foreground">{hint}</div>}
-    </div>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
 /*  Small key/value row                                                       */
 /* -------------------------------------------------------------------------- */
 

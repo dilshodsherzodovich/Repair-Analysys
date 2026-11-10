@@ -27,6 +27,7 @@ import type { PDFExportData } from "@/utils/pdf-export";
 import { PageHeader } from "@/ui/page-header";
 import { FilterBar } from "@/ui/filter-bar";
 import { Page } from "@/ui/page";
+import { StatCard, StatGrid } from "@/ui/stat-card";
 
 export default function ReportDashboard() {
   const t = useTranslations("Reports");
@@ -259,27 +260,21 @@ export default function ReportDashboard() {
 
       <div className="space-y-4 border p-5 rounded-xl shadow-md">
         {/* ─── Fleet Snapshot ─── */}
-        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
-          {[
-            { label: t("inUseShort"),      count: totalActive,         border: "border-t-success", text: "text-success", bg: "bg-success-subtle" },
-            { label: t("switcherShort"),   count: totalSwitcher,       border: "border-t-primary",     text: "text-primary",     bg: "bg-primary-subtle"     },
-            { label: t("maintenanceShort"),count: totalMaintenance,    border: "border-t-primary",     text: "text-primary",     bg: "bg-primary-subtle"     },
-            { label: t("rentedShort"),     count: totalRented,         border: "border-t-primary",     text: "text-primary",     bg: "bg-primary-subtle"     },
-            { label: "TXK-2",             count: totalTxk2,           border: "border-t-warning",   text: "text-warning",   bg: "bg-warning-subtle"   },
-            { label: t("electricShort"),   count: totalElectricRepair, border: "border-t-warning",   text: "text-warning",   bg: "bg-warning-subtle"   },
-            { label: t("dieselShort"),     count: totalDieselRepair,   border: "border-t-warning",   text: "text-warning",   bg: "bg-warning-subtle"   },
-            { label: t("delayedShort"),    count: totalDelayed,        border: "border-t-destructive",    text: "text-destructive",    bg: "bg-destructive-subtle"    },
-            { label: t("reserveShort"),    count: totalReserved,       border: "border-t-category-violet",  text: "text-category-violet",  bg: "bg-category-violet/10"  },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className={`${s.bg} border border-t-4 ${s.border} rounded-xl px-3 py-3 text-center`}
-            >
-              <p className={`text-2xl font-bold ${s.text}`}>{s.count}</p>
-              <p className="text-2xs font-medium text-muted-foreground uppercase tracking-wide mt-0.5 leading-tight">{s.label}</p>
-            </div>
+        <StatGrid columns={9}>
+          {([
+            { label: t("inUseShort"), count: totalActive, tone: "success" },
+            { label: t("switcherShort"), count: totalSwitcher, tone: "primary" },
+            { label: t("maintenanceShort"), count: totalMaintenance, tone: "primary" },
+            { label: t("rentedShort"), count: totalRented, tone: "primary" },
+            { label: "TXK-2", count: totalTxk2, tone: "warning" },
+            { label: t("electricShort"), count: totalElectricRepair, tone: "warning" },
+            { label: t("dieselShort"), count: totalDieselRepair, tone: "warning" },
+            { label: t("delayedShort"), count: totalDelayed, tone: "danger" },
+            { label: t("reserveShort"), count: totalReserved, tone: "violet" },
+          ] as const).map((item) => (
+            <StatCard key={item.label} label={item.label} value={item.count} tone={item.tone} />
           ))}
-        </div>
+        </StatGrid>
 
         {/* ─── Foydalanishda ─── */}
         <SectionCard

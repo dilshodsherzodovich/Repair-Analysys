@@ -19,6 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ExportActions } from "@/ui/export-actions";
 import { FilterBar } from "@/ui/filter-bar";
 import { Page } from "@/ui/page";
+import { StatCard, StatGrid } from "@/ui/stat-card";
 
 const SUPERVISOR_ROLES = ["admin", "dispatcher", "operator", "rb_admin"];
 
@@ -171,29 +172,17 @@ export default function DelayedReportPage() {
       />
 
       {/* ─── Summary: the total leads, the breakdown follows ─── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <div className="bg-foreground rounded-xl px-4 py-3 shadow-sm">
-          <p className="text-2xs font-semibold text-foreground-subtle uppercase tracking-wide">
-            {t("total")}
-          </p>
-          <p className="text-3xl font-bold text-primary-foreground tabular-nums leading-none mt-2">
-            {totalDelayed}
-          </p>
-        </div>
+      <StatGrid columns={5}>
+        <StatCard label={t("total")} tone="primary" value={totalDelayed} />
         {rows.map((trainType) => (
-          <div
+          <StatCard
             key={trainType.name}
-            className="bg-background rounded-xl border border-border border-t-4 border-t-warning px-4 py-3 shadow-sm"
-          >
-            <p className="text-2xs font-semibold text-muted-foreground uppercase tracking-wide leading-tight min-h-[24px]">
-              {trainTypeName(trainType.name)}
-            </p>
-            <p className="text-3xl font-bold text-foreground tabular-nums leading-none mt-2">
-              {countOf(trainType)}
-            </p>
-          </div>
+            label={trainTypeName(trainType.name)}
+            tone="warning"
+            value={countOf(trainType)}
+          />
         ))}
-      </div>
+      </StatGrid>
 
       {/* ─── Detail per train type ─── */}
       {totalDelayed === 0 ? (

@@ -31,6 +31,7 @@ import {
 import { DateRangeField } from "@/ui/date-range-field";
 import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 import { Page } from "@/ui/page";
+import { StatCard, type StatTone } from "@/ui/stat-card";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -38,9 +39,9 @@ interface BucketMeta {
   key: BucketKey;
   labelKey: string;
   icon: LucideIcon;
-  color: string; // solid (bars, dots)
+  tone: StatTone;
+  color: string;
   text: string; // text color class
-  soft: string; // soft bg + ring for the card icon
 }
 
 const BUCKETS: BucketMeta[] = [
@@ -48,25 +49,25 @@ const BUCKETS: BucketMeta[] = [
     key: "paid",
     labelKey: "paid",
     icon: CheckCircle2,
-    color: "var(--success)",
+    tone: "success" as const,
+    color: "var(--success)", // bar fill in the depo breakdown
     text: "text-success",
-    soft: "bg-success-subtle text-success ring-success/30",
   },
   {
     key: "unpaid",
     labelKey: "unpaid",
     icon: Clock3,
-    color: "var(--warning)",
+    tone: "warning" as const,
+    color: "var(--warning)", // bar fill in the depo breakdown
     text: "text-warning",
-    soft: "bg-warning-subtle text-warning ring-warning/30",
   },
   {
     key: "undetermined",
     labelKey: "undetermined",
     icon: CircleDashed,
-    color: "var(--muted-foreground)",
+    tone: "neutral" as const,
+    color: "var(--muted-foreground)", // bar fill in the depo breakdown
     text: "text-foreground-secondary",
-    soft: "bg-muted text-foreground-secondary ring-border",
   },
 ];
 
@@ -181,9 +182,8 @@ export function SrivPaymentReport() {
           {/* Summary cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryCard
-              accent="var(--primary)"
+              tone="primary"
               icon={Wallet}
-              iconClass="bg-primary-subtle text-primary ring-primary/30"
               label={t("total")}
               sum={total.total_sum}
               count={total.total_count}
@@ -194,9 +194,8 @@ export function SrivPaymentReport() {
             {BUCKETS.map((b) => (
               <SummaryCard
                 key={b.key}
-                accent={b.color}
+                tone={b.tone}
                 icon={b.icon}
-                iconClass={b.soft}
                 label={t(b.labelKey)}
                 sum={total[`${b.key}_sum` as keyof SrivPaymentReportRow] as number}
                 count={
@@ -375,9 +374,8 @@ export function SrivPaymentReport() {
 }
 
 function SummaryCard({
-  accent,
-  icon: Icon,
-  iconClass,
+  tone,
+  icon,
   label,
   sum,
   count,
@@ -385,51 +383,28 @@ function SummaryCard({
   t,
   highlight,
 }: {
-  accent: string;
+  tone: StatTone;
   icon: LucideIcon;
-  iconClass: string;
   label: string;
   sum: number;
   count: number;
   share: number;
   t: ReturnType<typeof useTranslations>;
+  /** The total: no share of itself. */
   highlight?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-xl border bg-background p-4 shadow-sm",
-        highlight ? "border-border-strong" : "border-border"
-      )}
-      style={{ borderLeft: `4px solid ${accent}` }}
-    >
-      <div className="flex items-start justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {label}
-        </p>
-        <span
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-lg ring-1",
-            iconClass
-          )}
-        >
-          <Icon className="h-4 w-4" strokeWidth={2.25} />
-        </span>
-      </div>
-      <p className="mt-2 text-2xl font-bold tabular-nums text-foreground">
-        {fmtSum(sum)}
-      </p>
-      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-        <span className="tabular-nums">
-          {t("count_n", { n: count })}
-        </span>
-        {!highlight && (
-          <span className="tabular-nums text-foreground-subtle">
-            · {share.toFixed(1)}%
-          </span>
-        )}
-      </div>
-    </div>
+    <StatCard
+      label={label}
+      icon={icon}
+      tone={tone}
+      value={fmtSum(sum)}
+      caption={
+        highlight
+          ? t("count_n", { n: count })
+          : `${t("count_n", { n: count })} · ${share.toFixed(1)}%`
+      }
+    />
   );
 }
 

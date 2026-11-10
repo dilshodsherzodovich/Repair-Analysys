@@ -167,3 +167,14 @@ strip, buttons or wording.
 - Sections never add their own page gutters or gaps (`px-6`, `py-4`, `mt-6`,
   `mb-4`, `pb-12`, `min-h-screen`, page background). A section that renders
   several blocks (a tab, a report body) uses `<Page>` as its own root.
+
+### Summary tiles
+
+- Every count / total tile is a `StatCard` in a `StatGrid`: small uppercase
+  label (+ optional icon), the number (text-2xl bold, tabular), optional
+  caption (a note, a share, a progress bar or a sparkline).
+- `tone` (neutral / primary / success / warning / danger / violet) colours
+  the top accent bar and the number; nothing else colours a tile.
+- A tile that filters the page takes `onClick` + `selected`; the others
+  become `muted` while one is selected.
+- Cards with richer content (sub-rows, per-month bars) are `CardButton`s.

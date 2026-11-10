@@ -16,6 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ExportActions } from "@/ui/export-actions";
 import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
 import { Page } from "@/ui/page";
+import { StatCard, StatGrid } from "@/ui/stat-card";
 
 const getProgressBgColor = (percent: number) => {
   if (percent < 50) return "bg-destructive";
@@ -171,68 +172,28 @@ export default function Tu137ReportsPage() {
             {t("error")} {(error as Error).message}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
-              <div className="flex justify-between items-start">
-                <p className="text-2xs font-bold text-muted-foreground tracking-wider uppercase">
-                  {t("mashinists_count")}
-                </p>
-                <Users className="w-5 h-5 text-category-indigo/60" />
-              </div>
-              <p className="text-3xl font-bold text-foreground mt-2">
-                {globalStats.mashinistsCount}
-              </p>
-            </div>
-
-            <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
-              <div className="flex justify-between items-start">
-                <p className="text-2xs font-bold text-muted-foreground tracking-wider uppercase">
-                  {t("total_records")}
-                </p>
-                <FileText className="w-5 h-5 text-primary" />
-              </div>
-              <p className="text-3xl font-bold text-foreground mt-2">
-                {globalStats.totalRecords}
-              </p>
-            </div>
-
-            <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
-              <div className="flex justify-between items-start">
-                <p className="text-2xs font-bold text-warning tracking-wider uppercase">
-                  {t("open_records")}
-                </p>
-                <Clock className="w-5 h-5 text-warning" />
-              </div>
-              <p className="text-3xl font-bold text-warning mt-2">
-                {globalStats.totalOpen}
-              </p>
-            </div>
-
-            <div className="bg-background p-5 rounded-xl border border-border/60 shadow-sm flex flex-col justify-between">
-              <div className="flex justify-between items-start">
-                <p className="text-2xs font-bold text-success tracking-wider uppercase">
-                  {t("solved_records")}
-                </p>
-                <CheckCircle className="w-5 h-5 text-success" />
-              </div>
-              <div className="mt-2">
-                <p className="text-3xl font-bold text-success">
-                  {globalStats.totalSolved}
-                </p>
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="flex-1 bg-muted h-1.5 rounded-full overflow-hidden">
-                    <div
-                      className="bg-success h-full rounded-full"
+          <StatGrid columns={4}>
+            <StatCard label={t("mashinists_count")} icon={Users} value={globalStats.mashinistsCount} />
+            <StatCard label={t("total_records")} icon={FileText} tone="primary" value={globalStats.totalRecords} />
+            <StatCard label={t("open_records")} icon={Clock} tone="warning" value={globalStats.totalOpen} />
+            <StatCard
+              label={t("solved_records")}
+              icon={CheckCircle}
+              tone="success"
+              value={globalStats.totalSolved}
+              caption={
+                <span className="mt-1 flex items-center gap-2">
+                  <span className="block h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                    <span
+                      className="block h-full rounded-full bg-success"
                       style={{ width: `${globalStats.overallPercent}%` }}
                     />
-                  </div>
-                  <span className="text-xs font-semibold text-foreground-secondary">
-                    {globalStats.overallPercent}%
                   </span>
-                </div>
-              </div>
-            </div>
-          </div>
+                  <span className="font-semibold text-foreground-secondary">{globalStats.overallPercent}%</span>
+                </span>
+              }
+            />
+          </StatGrid>
         )}
 
         {/* Top Mashinists Grid */}
