@@ -4,7 +4,10 @@ import { useTranslations } from "next-intl";
 import { PageHeader } from "@/ui/page-header";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "@/app/unauthorized/page";
-import { SrivPaymentReport } from "@/components/delays/sriv-payment-report";
+import {
+  SrivPaymentFilters,
+  SrivPaymentReport,
+} from "@/components/delays/sriv-payment-report";
 import { authService } from "@/api/services/auth.service";
 
 export default function SrivPaymentReportPage() {
@@ -27,6 +30,7 @@ export default function SrivPaymentReportPage() {
         title={t("title")}
         description={t("description")}
         breadcrumbs={breadcrumbs}
+        filters={<SrivPaymentFilters />}
       />
       <SrivPaymentReport />
     </div>

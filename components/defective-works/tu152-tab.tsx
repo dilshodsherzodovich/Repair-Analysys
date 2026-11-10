@@ -12,24 +12,11 @@ import {
   useTU152LocomotiveModels,
   useUpdateTU152Entry,
 } from "@/api/hooks/use-tu152";
-import {
-  TU152Entry,
-  TU152_STATUSES,
-  TU152UpdatePayload,
-} from "@/api/types/tu152";
-import { DatePicker } from "@/ui/date-picker";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { TU152Entry, TU152_STATUSES, TU152UpdatePayload } from "@/api/types/tu152";
 import { PaginationEllipsis, PaginationLink } from "@/ui/pagination";
 import { ChevronLeft, ChevronRight, Edit } from "lucide-react";
 import { TU152Modal } from "@/components/defective-works/tu152-modal";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import { Permission } from "@/lib/permissions";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
 import { Button } from "@/ui/button";
 import { FilterPanel } from "@/ui/filter-bar";
@@ -299,25 +286,7 @@ export function TU152Tab() {
     return options;
   }, [t]);
 
-  const handleDateFromChange = useCallback(
-    (date: Date | undefined) => {
-      setDateFrom(date);
-      updateQuery({
-        p_create_date_from: date ? date.toISOString().split("T")[0] : null,
-      });
-    },
-    [updateQuery],
-  );
 
-  const handleDateToChange = useCallback(
-    (date: Date | undefined) => {
-      setDateTo(date);
-      updateQuery({
-        p_create_date_to: date ? date.toISOString().split("T")[0] : null,
-      });
-    },
-    [updateQuery],
-  );
 
   const handleEdit = useCallback((row: TU152Entry) => {
     setSelectedEntry(row);
@@ -356,60 +325,43 @@ export function TU152Tab() {
   return (
     <>
       <div className="px-6 py-4">
-        <div className="bg-background border p-4 mb-4">
-          <div className="flex flex-wrap md:flex-nowrap items-end gap-4">
-            <div className="min-w-[200px] flex-1">
-              <DatePicker
-                label=""
-                value={dateFrom}
-                onValueChange={handleDateFromChange}
-                placeholder={t("date_from")}
-              />
-            </div>
-            <div className="min-w-[200px] flex-1">
-              <DatePicker
-                label=""
-                value={dateTo}
-                onValueChange={handleDateToChange}
-                placeholder={t("date_to")}
-              />
-            </div>
-            <FilterPanel>
-              <PageFilters
-                filters={[
-                  {
-                    name: "p_lokomotiv_id",
-                    label: t("filters.locomotive"),
-                    isSelect: true,
-                    options: locomotiveOptions,
-                    placeholder: t("filters.locomotive_placeholder"),
-                    searchable: false,
-                    loading: isLoadingLocomotives,
-                  },
-                  {
-                    name: "p_lokomotiv_seriya_id",
-                    label: t("filters.seriya"),
-                    isSelect: true,
-                    options: locomotiveModelOptions,
-                    placeholder: t("filters.seriya_placeholder"),
-                    searchable: false,
-                    loading: isLoadingLocomotiveModels,
-                  },
-                  {
-                    name: "p_status_id",
-                    label: t("filters.status"),
-                    isSelect: true,
-                    options: statusOptions,
-                    placeholder: t("filters.status_placeholder"),
-                    searchable: false,
-                  },
-                ]}
-                hasSearch={false}
-                className="!mb-0 flex-nowrap"
-              />
-            </FilterPanel>
-          </div>
-        </div>
+        <FilterPanel className="mb-4">
+          <PageFilters
+            filters={[
+              {
+                name: "p_lokomotiv_id",
+                label: t("filters.locomotive"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotive_placeholder"),
+                searchable: false,
+                loading: isLoadingLocomotives,
+              },
+              {
+                name: "p_lokomotiv_seriya_id",
+                label: t("filters.seriya"),
+                isSelect: true,
+                options: locomotiveModelOptions,
+                placeholder: t("filters.seriya_placeholder"),
+                searchable: false,
+                loading: isLoadingLocomotiveModels,
+              },
+              {
+                name: "p_status_id",
+                label: t("filters.status"),
+                isSelect: true,
+                options: statusOptions,
+                placeholder: t("filters.status_placeholder"),
+                searchable: false,
+              },
+            ]}
+            hasSearch={false}
+            hasDateRangePicker
+            dateRangeStartKey="p_create_date_from"
+            dateRangeEndKey="p_create_date_to"
+            className="!mb-0 flex-nowrap"
+          />
+        </FilterPanel>
       </div>
 
       <div className="px-6 pb-6">

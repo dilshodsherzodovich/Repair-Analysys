@@ -3,13 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { format, startOfYear, startOfMonth, subDays } from "date-fns";
-import {
-  Wallet,
-  CheckCircle2,
-  Clock3,
-  CircleDashed,
-  Layers,
-} from "lucide-react";
+import { Wallet, CheckCircle2, Clock3, CircleDashed, Layers } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { useOrganizations } from "@/api/hooks/use-organizations";
@@ -19,14 +13,12 @@ import type {
   SrivPaymentBucket,
   SrivPaymentReportDetailsParams,
 } from "@/api/types/delays";
-import { DatePicker } from "@/ui/date-picker";
 import { MultiSelect } from "@/ui/multi-select";
 import { cn } from "@/lib/utils";
 import { SrivPaymentDrilldownModal } from "./sriv-payment-drilldown-modal";
 import { authService } from "@/api/services/auth.service";
 import { Alert, AlertDescription } from "@/ui/alert";
 import { Button } from "@/ui/button";
-import { Chip } from "@/ui/chip";
 import {
   Table,
   TableBody,
@@ -36,6 +28,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/ui/table";
+import { DateRangeField } from "@/ui/date-range-field";
+import { FilterBar, FilterField, FilterReset } from "@/ui/filter-bar";
 
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
@@ -121,14 +115,6 @@ export function SrivPaymentReport() {
     return organizationsParam ? organizationsParam.split(",").filter(Boolean) : [];
   }, [organizationsParam, scopedOrgId]);
 
-  const organizationOptions = useMemo(
-    () =>
-      (organizationsData ?? []).map((org) => ({
-        value: String(org.id),
-        label: org.name,
-      })),
-    [organizationsData]
-  );
 
   const params = useMemo(() => {
     if (!start_date || !end_date) return undefined;
@@ -174,115 +160,15 @@ export function SrivPaymentReport() {
     [start_date, end_date, orgIdByName, selectedOrganizations]
   );
 
-  const startDate = start_date ? new Date(start_date) : undefined;
-  const endDate = end_date ? new Date(end_date) : undefined;
 
-  const handleStartDate = useCallback(
-    (d: Date | undefined) =>
-      updateQuery({ start_date: d ? format(d, "yyyy-MM-dd") : "" }),
-    [updateQuery]
-  );
-  const handleEndDate = useCallback(
-    (d: Date | undefined) =>
-      updateQuery({ end_date: d ? format(d, "yyyy-MM-dd") : "" }),
-    [updateQuery]
-  );
-  const handleOrganizations = useCallback(
-    (values: string[]) =>
-      updateQuery({ organizations: values.length ? values.join(",") : null }),
-    [updateQuery]
-  );
 
-  const quickRanges = useMemo(
-    () => {
-      const today = new Date();
-      const todayStr = format(today, "yyyy-MM-dd");
-      return [
-        {
-          key: "30days",
-          label: t("range_30days"),
-          start: format(subDays(today, 30), "yyyy-MM-dd"),
-          end: todayStr,
-        },
-        {
-          key: "thismonth",
-          label: t("range_thismonth"),
-          start: format(startOfMonth(today), "yyyy-MM-dd"),
-          end: todayStr,
-        },
-        {
-          key: "thisyear",
-          label: t("range_thisyear"),
-          start: format(startOfYear(today), "yyyy-MM-dd"),
-          end: todayStr,
-        },
-      ];
-    },
-    [t]
-  );
 
-  const activeRange = quickRanges.find(
-    (r) => r.start === start_date && r.end === end_date
-  )?.key;
 
   const total = data?.total;
   const rows = data?.rows ?? [];
 
   return (
     <div className="space-y-5 px-6 pb-8">
-      {/* Filters */}
-      <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
-        <div className="flex flex-wrap items-end gap-4">
-          <Field label={t("date_start")}>
-            <DatePicker
-              placeholder={t("date_start")}
-              value={startDate}
-              onValueChange={handleStartDate}
-              size="md"
-              className="w-[180px]"
-            />
-          </Field>
-          <Field label={t("date_end")}>
-            <DatePicker
-              placeholder={t("date_end")}
-              value={endDate}
-              onValueChange={handleEndDate}
-              size="md"
-              className="w-[180px]"
-            />
-          </Field>
-
-          <div className="flex items-center gap-1.5 pb-0.5">
-            {quickRanges.map((r) => (
-              <Chip selected={activeRange === r.key} className="py-1.5"
-                key={r.key}
-                onClick={() =>
-                  updateQuery({ start_date: r.start, end_date: r.end })
-                }
-              >
-                {r.label}
-              </Chip>
-            ))}
-          </div>
-
-          {!isOrgScoped && (
-            <Field
-              label={t("organizations")}
-              className="min-w-[280px] flex-1 max-w-[420px]"
-            >
-              <MultiSelect
-                options={organizationOptions}
-                selectedValues={selectedOrganizations}
-                onSelectionChange={handleOrganizations}
-                placeholder={t("organizations_placeholder")}
-                disabled={isLoadingOrganizations}
-                className="border-border-strong"
-              />
-            </Field>
-          )}
-        </div>
-      </div>
-
       {isLoading ? (
         <SkeletonState />
       ) : error ? (
@@ -487,25 +373,6 @@ export function SrivPaymentReport() {
   );
 }
 
-function Field({
-  label,
-  children,
-  className,
-}: {
-  label: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={cn("flex flex-col gap-1", className)}>
-      <span className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
-      {children}
-    </div>
-  );
-}
-
 function SummaryCard({
   accent,
   icon: Icon,
@@ -659,3 +526,67 @@ function SkeletonState() {
 }
 
 export default SrivPaymentReport;
+
+/**
+ * Filters of the sriv payment report (standard FilterBar), rendered in the
+ * page header: the period with quick ranges, and organizations.
+ */
+export function SrivPaymentFilters() {
+  const t = useTranslations("SrivPaymentReportPage");
+  const tc = useTranslations("Common");
+  const { getAllQueryValues, updateQuery } = useFilterParams();
+  const { start_date, end_date, organizations: organizationsParam } = getAllQueryValues();
+  const { data: organizationsData, isLoading: isLoadingOrganizations } = useOrganizations();
+
+  // sriv_moderator is pinned to its own depo (the backend scopes it too)
+  const currentUser = authService.getUser();
+  const isOrgScoped = currentUser?.role === "sriv_moderator";
+
+  const today = new Date();
+  const day = (value: string | undefined) => (value ? new Date(value) : undefined);
+  const presets = [
+    { label: t("range_30days"), from: subDays(today, 30) },
+    { label: t("range_thismonth"), from: startOfMonth(today) },
+    { label: t("range_thisyear"), from: startOfYear(today) },
+  ].map(({ label, from }) => ({
+    label,
+    range: { from: day(format(from, "yyyy-MM-dd")), to: day(format(today, "yyyy-MM-dd")) },
+  }));
+  const yearStart = format(startOfYear(today), "yyyy-MM-dd");
+  const todayStr = format(today, "yyyy-MM-dd");
+
+  return (
+    <FilterBar>
+      <FilterField label={tc("period")} width="lg">
+        <DateRangeField
+          presets={presets}
+          value={{ from: day(start_date), to: day(end_date) }}
+          onChange={({ from, to }) =>
+            updateQuery({
+              start_date: from ? format(from, "yyyy-MM-dd") : "",
+              end_date: to ? format(to, "yyyy-MM-dd") : "",
+            })
+          }
+        />
+      </FilterField>
+      {!isOrgScoped && (
+        <FilterField label={t("organizations")} width="lg">
+          <MultiSelect
+            options={(organizationsData ?? []).map((org) => ({ value: String(org.id), label: org.name }))}
+            selectedValues={organizationsParam ? organizationsParam.split(",").filter(Boolean) : []}
+            onSelectionChange={(values) =>
+              updateQuery({ organizations: values.length ? values.join(",") : null })
+            }
+            placeholder={tc("all")}
+            disabled={isLoadingOrganizations}
+            className="min-h-9 py-0"
+          />
+        </FilterField>
+      )}
+      <FilterReset
+        active={Boolean(organizationsParam) || start_date !== yearStart || end_date !== todayStr}
+        onReset={() => updateQuery({ start_date: yearStart, end_date: todayStr, organizations: null })}
+      />
+    </FilterBar>
+  );
+}

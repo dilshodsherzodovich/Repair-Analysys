@@ -10,10 +10,17 @@ import { Calendar } from "@/ui/calendar";
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/popover";
+import { Chip } from "@/ui/chip";
 
 export interface DateRange {
   from?: Date;
   to?: Date;
+}
+
+/** A named range offered as a one-click chip above the calendar. */
+export interface DateRangePreset {
+  label: string;
+  range: DateRange;
 }
 
 const DAY = "dd.MM.yyyy";
@@ -39,6 +46,7 @@ export function DateRangeField({
   value,
   onChange,
   showTime = false,
+  presets,
   placeholder,
   className,
   id,
@@ -47,6 +55,8 @@ export function DateRangeField({
   onChange: (range: DateRange) => void;
   /** Adds start / end time inputs under the calendar. */
   showTime?: boolean;
+  /** Quick ranges ("30 kun", "Bu oy", ...); picking one applies it at once. */
+  presets?: DateRangePreset[];
   placeholder?: string;
   className?: string;
   id?: string;
@@ -101,6 +111,22 @@ export function DateRangeField({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
+        {presets && presets.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 border-b border-border p-3">
+            {presets.map((preset) => (
+              <Chip
+                key={preset.label}
+                selected={sameRange(preset.range, value)}
+                onClick={() => {
+                  setOpen(false);
+                  if (!sameRange(preset.range, value)) onChange(preset.range);
+                }}
+              >
+                {preset.label}
+              </Chip>
+            ))}
+          </div>
+        )}
         <Calendar
           mode="range"
           numberOfMonths={2}

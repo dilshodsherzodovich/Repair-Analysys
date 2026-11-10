@@ -13,7 +13,6 @@ import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
 import { Badge } from "@/ui/badge";
 import { Edit, Trash2 } from "lucide-react";
-import { DepartmentsFilters } from "@/components/departments/department-filters";
 import { Card } from "@/ui/card";
 import { PaginatedData } from "@/api/types/general";
 import { Department } from "@/api/types/deparments";
