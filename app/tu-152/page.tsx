@@ -10,12 +10,7 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { PaginatedTable, TableColumn } from "@/ui/paginated-table";
 import { DefectiveWorkEntry } from "@/api/types/defective-works";
 import tu152Data from "@/data/tu-152.json";
-import {
-  FileText,
-  CheckCircle,
-  XCircle,
-  TrendingUp,
-} from "lucide-react";
+import { FileText, CheckCircle, XCircle, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authService } from "@/api/services/auth.service";
 import { CardButton } from "@/ui/card-button";
@@ -23,6 +18,7 @@ import { Chip } from "@/ui/chip";
 import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
+import { formatNumber } from "@/lib/format";
 const PAGE_SIZE = 20;
 
 const ALL_INSPECTION_TYPES = (() => {
@@ -103,9 +99,7 @@ function rateTone(rate: number) {
   return "danger" as const;
 }
 
-function fmt(n: number) {
-  return n.toLocaleString();
-}
+const fmt = (n: number) => formatNumber(n);
 
 export default function Tu152Page() {
   const t = useTranslations("Tu152Page");

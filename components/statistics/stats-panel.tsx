@@ -15,6 +15,7 @@ import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 import { StatCard, type StatTone } from "@/ui/stat-card";
 
 import { LoadingState, EmptyState, ErrorState } from "@/ui/empty-state";
+import { formatNumber } from "@/lib/format";
 export interface StatMetric {
   key: string;
   totalKey: string;
@@ -49,13 +50,13 @@ interface StatsPanelProps {
 
 const ALL = "all";
 
-const formatCount = (v: number) => (v ?? 0).toLocaleString("ru-RU");
+const formatCount = (v: number) => formatNumber(v ?? 0);
 const formatCurrencyCompact = (value: number) => {
   const v = Number(value) || 0;
   if (Math.abs(v) >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)} mlrd`;
   if (Math.abs(v) >= 1_000_000) return `${(v / 1_000_000).toFixed(1)} mln`;
   if (Math.abs(v) >= 1_000) return `${(v / 1_000).toFixed(0)} ming`;
-  return v.toLocaleString("ru-RU");
+  return formatNumber(v);
 };
 const formatValue = (v: number, kind?: StatMetric["kind"]) =>
   kind === "currency" ? formatCurrencyCompact(v) : formatCount(v);
@@ -376,7 +377,7 @@ function KpiCard({
       tone={toneOf(metric.color)}
       value={
         <span
-          title={metric.kind === "currency" ? (Number(total) || 0).toLocaleString("ru-RU") : undefined}
+          title={metric.kind === "currency" ? formatNumber(Number(total) || 0) : undefined}
         >
           {formatValue(total, metric.kind)}
         </span>

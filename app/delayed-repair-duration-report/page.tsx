@@ -19,6 +19,7 @@ import { SearchableSelect } from "@/ui/select";
 import { Page } from "@/ui/page";
 
 import { LoadingState, EmptyState } from "@/ui/empty-state";
+import { formatNumber, formatShortDateTime } from "@/lib/format";
 const DATE_FMT = "yyyy-MM-dd";
 
 function firstOfMonth(d: Date) {
@@ -27,17 +28,10 @@ function firstOfMonth(d: Date) {
 
 // Time fields arrive as "yyyy-MM-dd HH:mm" (or ISO, or null). Show "dd.MM HH:mm".
 function fmtTime(value: string | null): string {
-  if (!value) return "—";
-  const normalized = value.includes("T") ? value : value.replace(" ", "T");
-  const d = new Date(normalized);
-  if (!isNaN(d.getTime())) return format(d, "dd.MM HH:mm");
-  return value;
+  return formatShortDateTime(value);
 }
 
-function fmtNum(value: number | null): string {
-  if (value == null) return "—";
-  return value.toLocaleString();
-}
+const fmtNum = (value: number | null) => formatNumber(value);
 
 // Overrun = spent time − norm time. Null if either side is missing.
 function delayedAmount(row: DelayedRepairDurationRow): number | null {

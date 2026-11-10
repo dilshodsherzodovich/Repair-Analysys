@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslations } from "next-intl";
 import { useState, useEffect, useMemo } from "react";
 import { Modal, ModalFooter } from "@/ui/modal";
 import { Input } from "@/ui/input";
@@ -31,6 +33,7 @@ export function UserModal({
   onSubmit,
   isLoading = false,
 }: UserModalProps) {
+  const tc = useTranslations("Common");
   const { data: organizations, isPending: isLoadingOrganizations } =
     useOrganizations({
       no_page: true,
@@ -406,7 +409,7 @@ export function UserModal({
               onClick={onClose}
               disabled={isLoading}
             >
-              Bekor qilish
+              {tc("cancel")}
             </Button>
             <Button
               type="submit"

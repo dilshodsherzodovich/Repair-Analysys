@@ -8,6 +8,7 @@ import { ComponentGroupComponent, ComponentGroupRegistry } from "@/api/types/com
 import { DisclosureTrigger } from "@/ui/disclosure-trigger";
 
 import { EmptyState } from "@/ui/empty-state";
+import { Badge } from "@/ui/badge";
 const CELL = "py-2.5 px-3 text-muted-foreground border-r border-border last:border-r-0";
 const HEAD =
   "py-2.5 px-3 text-foreground-secondary font-medium border-r border-border last:border-r-0 whitespace-nowrap";
@@ -27,9 +28,9 @@ export function formatDefectDate(dateString: string): string {
 
 export function CountBadge({ count }: { count: number }) {
   return (
-    <span className="inline-flex items-center justify-center rounded-full bg-primary-subtle px-2.5 py-0.5 text-xs font-semibold text-primary-hover shrink-0">
+    <Badge variant="primary" className="shrink-0">
       {count}
-    </span>
+    </Badge>
   );
 }
 

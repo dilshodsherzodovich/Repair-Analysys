@@ -21,14 +21,9 @@ import { RecoveryCulpritsModal } from "@/components/recovery/recovery-culprits-m
 import { authService } from "@/api/services/auth.service";
 import { Page } from "@/ui/page";
 
+import { formatMoney } from "@/lib/format";
 function formatAmount(amount: string | number): string {
-  const value = typeof amount === "string" ? Number(amount) : amount;
-  if (!value) return "0";
-  return new Intl.NumberFormat("uz-UZ", {
-    style: "currency",
-    currency: "UZS",
-    minimumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(amount);
 }
 
 export default function RecoveryPage() {
@@ -103,11 +98,11 @@ export default function RecoveryPage() {
       case "accountant_confirmed":
         return "success" as const;
       case "payroll_confirmed":
-        return "info" as const;
+        return "primary" as const;
       case "disruption":
-        return "destructive_outline" as const;
+        return "danger" as const;
       default:
-        return "outline" as const;
+        return "neutral" as const;
     }
   };
 

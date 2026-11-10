@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -23,6 +25,7 @@ export function PasswordChangeModal({
   onClose,
   onSubmit,
 }: PasswordChangeModalProps) {
+  const tc = useTranslations("Common");
   const [showPassword, setShowPassword] = useState(false);
   const [passwordData, setPasswordData] = useState<PasswordChangeData>({
     currentPassword: "",
@@ -223,7 +226,7 @@ export function PasswordChangeModal({
               variant="outline"
               disabled={isChangingPassword}
             >
-              Bekor qilish
+              {tc("cancel")}
             </Button>
           </div>
         </div>

@@ -561,7 +561,6 @@ function UiKit() {
               </Badge>
               <Badge variant="warning">Kutilmoqda</Badge>
               <Badge variant="danger">Rad etildi</Badge>
-              <Badge variant="outline">Outline</Badge>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="primary_solid">12</Badge>

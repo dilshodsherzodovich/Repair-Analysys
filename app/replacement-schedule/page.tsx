@@ -26,6 +26,7 @@ import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 
+import { formatNumber as formatNumberShared } from "@/lib/format";
 export default function ReplacementSchedulePage() {
   const t = useTranslations("ReplacementSchedulePage");
   const searchParams = useSearchParams();
@@ -92,8 +93,7 @@ export default function ReplacementSchedulePage() {
 
   // Format number helper
   const formatNumber = (value: number | null | undefined): string => {
-    if (value === null || value === undefined) return "—";
-    return new Intl.NumberFormat("uz-UZ").format(value);
+    return formatNumberShared(value, { digits: 3 });
   };
 
   // Handle export

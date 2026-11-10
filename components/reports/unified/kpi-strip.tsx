@@ -5,12 +5,13 @@ import type { ExcludedTypeCount, UnifiedKpis } from "./use-unified-report-data";
 import { Skeleton } from "@/ui/skeleton";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
+import { formatNumber } from "@/lib/format";
 /** Which detail section a tile drills into. `null` = show every section. */
 export type UnifiedSection = "inspections" | "duration" | "entry";
 
 /** Unresolved values render as a skeleton, never as a misleading `0`. */
 function value(n: number | null) {
-  return n == null ? <Skeleton className="h-7 w-16" /> : n.toLocaleString();
+  return n == null ? <Skeleton className="h-7 w-16" /> : formatNumber(n);
 }
 
 export function KpiStrip({
@@ -43,7 +44,7 @@ export function KpiStrip({
         caption={
           kpis.total != null && excludedTypes.length > 0
             ? `${t("excludedNote")}: ${excludedTypes
-                .map((type) => `${type.name} · ${type.total.toLocaleString()}`)
+                .map((type) => `${type.name} · ${formatNumber(type.total)}`)
                 .join(", ")}`
             : undefined
         }

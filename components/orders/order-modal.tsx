@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslations } from "next-intl";
 import { useState, useEffect, useCallback, useMemo, memo, type FormEvent } from "react";
 import { Modal, ModalFooter } from "@/ui/modal";
 import {
@@ -100,6 +102,7 @@ export function OrderModal({
   mode,
   isPending,
 }: OrderModalProps) {
+  const tc = useTranslations("Common");
   const [formData, setFormData] = useState<OrderFormState>(() => ({
     ...INITIAL_FORM_STATE,
   }));
@@ -386,7 +389,7 @@ export function OrderModal({
               onClick={handleClose}
               disabled={isPending}
             >
-              Bekor qilish
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? actionText : submitText}

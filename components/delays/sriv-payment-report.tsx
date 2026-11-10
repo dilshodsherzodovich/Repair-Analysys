@@ -33,6 +33,7 @@ import { Page } from "@/ui/page";
 import { StatCard, type StatTone } from "@/ui/stat-card";
 
 import { EmptyState, TableStateRow, ErrorState } from "@/ui/empty-state";
+import { formatNumber } from "@/lib/format";
 type BucketKey = "paid" | "unpaid" | "undetermined";
 
 interface BucketMeta {
@@ -71,10 +72,7 @@ const BUCKETS: BucketMeta[] = [
   },
 ];
 
-const fmtSum = (v: number) =>
-  new Intl.NumberFormat("uz-UZ", { maximumFractionDigits: 0 }).format(
-    Math.round(Number(v) || 0)
-  );
+const fmtSum = (v: number) => formatNumber(Number(v) || 0);
 
 const pct = (part: number, whole: number) =>
   whole > 0 ? (Number(part) / Number(whole)) * 100 : 0;

@@ -361,14 +361,14 @@ export default function InspectionsPage() {
         accessor: (row) => {
           if (row.is_cancelled)
             return (
-              <Badge variant="destructive_outline">{t("status_cancelled")}</Badge>
+              <Badge variant="danger">{t("status_cancelled")}</Badge>
             );
           if (row.is_closed)
             return (
-              <Badge variant="success_outline">{t("status_archive")}</Badge>
+              <Badge variant="success">{t("status_archive")}</Badge>
             );
           return (
-            <Badge variant="warning_outline">{t("status_in_progress")}</Badge>
+            <Badge variant="warning">{t("status_in_progress")}</Badge>
           );
         },
         className: "w-[140px]",

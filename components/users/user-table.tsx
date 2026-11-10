@@ -1,14 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { useMemo } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { Button } from "@/ui/button";
 import { Checkbox } from "@/ui/checkbox";
 import { Badge } from "@/ui/badge";
@@ -23,7 +16,7 @@ import { getPageCount, getRoleName } from "@/lib/utils";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { PermissionGuard } from "../permission-guard";
 import { Pagination } from "@/ui/pagination";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { userRoles } from "@/lib/users";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useDepartments } from "@/api/hooks/use-departmants";
@@ -236,7 +229,7 @@ export function UserTable({
                       <div className="flex items-center gap-2">
                         <Shield className="w-4 h-4 text-primary" />
                         <Badge
-                          variant="secondary"
+                          variant="neutral"
                           className="bg-muted text-foreground border-none"
                         >
                           {getRoleName(user.role as UserRole).toUpperCase()}
@@ -256,7 +249,7 @@ export function UserTable({
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant={user.is_active ? "default" : "secondary"}
+                        variant={user.is_active ? "neutral" : "neutral"}
                         className={
                           user.is_active
                             ? "bg-success-subtle text-success border-none"

@@ -24,6 +24,7 @@ import type { Culprit } from "@/api/types/culprits";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 import { EmptyState, TableStateRow } from "@/ui/empty-state";
+import { formatNumber } from "@/lib/format";
 type RecoveryMode = "payroll" | "accountant";
 
 interface RecoveryCulpritsModalProps {
@@ -34,11 +35,7 @@ interface RecoveryCulpritsModalProps {
 }
 
 function formatAmount(amount: string | number): string {
-  const value = typeof amount === "string" ? Number(amount) : amount;
-  if (!value) return "0";
-  return new Intl.NumberFormat("uz-UZ", {
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatNumber(amount, { fallback: "0" });
 }
 
 export function RecoveryCulpritsModal({

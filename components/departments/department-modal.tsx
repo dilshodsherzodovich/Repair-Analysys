@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { Modal, ModalFooter } from "@/ui/modal";
 import { Input } from "@/ui/input";
@@ -26,6 +28,7 @@ export function DepartmentModal({
   mode,
   isDoingAction,
 }: DepartmentModalProps) {
+  const tc = useTranslations("Common");
   const [formData, setFormData] = useState({
     name: "",
     organization: "",
@@ -145,7 +148,7 @@ export function DepartmentModal({
           </FieldGrid>
           <ModalFooter>
             <Button type="button" variant="outline" onClick={handleClose}>
-              Bekor qilish
+              {tc("cancel")}
             </Button>
             <Button
               type="submit"

@@ -5,21 +5,12 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { DelayedRepairDurationRow } from "@/api/types/delayed-repair-duration-report";
 import { SectionShell } from "./section-shell";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { formatNumber, formatShortDateTime } from "@/lib/format";
 /** Times arrive as "yyyy-MM-dd HH:mm", ISO, or null. */
 export function fmtTime(value: string | null): string {
-  if (!value) return "—";
-  const normalized = value.includes("T") ? value : value.replace(" ", "T");
-  const d = new Date(normalized);
-  return isNaN(d.getTime()) ? value : format(d, "dd.MM HH:mm");
+  return formatShortDateTime(value);
 }
 
 /** Overrun = spent − norm. Null if either side is missing. */
@@ -28,7 +19,7 @@ export function overrun(row: DelayedRepairDurationRow): number | null {
   return row.delayed_hours - row.interval_hours;
 }
 
-export const fmtNum = (v: number | null) => (v == null ? "—" : v.toLocaleString());
+export const fmtNum = (v: number | null) => formatNumber(v);
 
 export function SectionDelayedDuration({
   rows,

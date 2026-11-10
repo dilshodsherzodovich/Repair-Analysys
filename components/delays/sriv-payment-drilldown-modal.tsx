@@ -8,6 +8,7 @@ import type { SrivPaymentReportDetailsParams } from "@/api/types/delays";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 import { LoadingState, EmptyState, ErrorState } from "@/ui/empty-state";
+import { formatNumber } from "@/lib/format";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -15,10 +16,7 @@ interface Props {
   title: string;
 }
 
-const fmtSum = (v: number) =>
-  new Intl.NumberFormat("uz-UZ", { maximumFractionDigits: 0 }).format(
-    Math.round(Number(v) || 0)
-  );
+const fmtSum = (v: number) => formatNumber(Number(v) || 0);
 
 const fmtDate = (s?: string) => {
   if (!s) return "-";
@@ -113,7 +111,7 @@ export function SrivPaymentDrilldownModal({
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="font-medium">
+                        <Badge variant="neutral" className="font-medium">
                           {row.stage_display || row.stage}
                         </Badge>
                       </TableCell>

@@ -23,6 +23,7 @@ import { authService } from "@/api/services/auth.service";
 import { AddButton } from "@/ui/add-button";
 import { Page } from "@/ui/page";
 
+import { formatNumber as formatNumberShared } from "@/lib/format";
 export default function LocomotivePassportInspectionsPage() {
   const t = useTranslations("LocomotivePassportInspectionsPage");
   const searchParams = useSearchParams();
@@ -180,8 +181,7 @@ export default function LocomotivePassportInspectionsPage() {
 
   // Format number helper
   const formatNumber = (value: number | null | undefined): string => {
-    if (value === null || value === undefined) return "—";
-    return value.toLocaleString();
+    return formatNumberShared(value);
   };
 
   // Simple inspection field component

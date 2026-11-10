@@ -36,11 +36,7 @@ import { DelayTimelineModal } from "@/components/delays/delay-timeline-modal";
 import { RecoveryInfoModal } from "@/components/delays/recovery-info-modal";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { useSnackbar } from "@/providers/snackbar-provider";
-import {
-  canAccessSection,
-  hasPermission,
-  type Permission,
-} from "@/lib/permissions";
+import { canAccessSection, hasPermission, type Permission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
@@ -59,7 +55,6 @@ import {
   CornerDownRight,
   Archive,
   Info,
-  FileSpreadsheet,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { authService } from "@/api/services/auth.service";
@@ -68,6 +63,7 @@ import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 
+import { formatNumber } from "@/lib/format";
 // Stages that still have a "next" awaited step (terminal stages excluded)
 const STAGES_WITH_NEXT: DelayStage[] = [
   "created",
@@ -439,19 +435,19 @@ export default function DelaysPage() {
   const getStageVariant = useCallback((s?: DelayStage) => {
     switch (s) {
       case "disruption":
-        return "destructive_outline" as const;
+        return "danger" as const;
       case "not_disruption":
-        return "success_outline" as const;
+        return "success" as const;
       case "payroll_confirmed":
-        return "info" as const;
+        return "primary" as const;
       case "accountant_confirmed":
         return "success" as const;
       case "protocol_uploaded":
-        return "warning_outline" as const;
+        return "warning" as const;
       case "accepted":
-        return "secondary" as const;
+        return "neutral_solid" as const;
       default:
-        return "outline" as const;
+        return "neutral" as const;
     }
   }, []);
 
@@ -569,8 +565,7 @@ export default function DelaysPage() {
       header: t("columns.damage_amount"),
       width: "180px",
       accessor: (row) => {
-        const fmt = (v: number) =>
-          new Intl.NumberFormat("uz-UZ", { maximumFractionDigits: 0 }).format(v);
+        const fmt = (v: number) => formatNumber(v);
         const culprits = row?.culprits ?? [];
         const totalCount = culprits.length;
         const recoveredList = culprits.filter((c) => c.recovered);
@@ -630,18 +625,18 @@ export default function DelaysPage() {
             {next && (
               <div className="flex items-center gap-1 pl-0.5 text-muted-foreground">
                 <CornerDownRight className="h-3 w-3 shrink-0 opacity-50" />
-                <span className="inline-flex items-center gap-1 rounded-full bg-warning-subtle px-2 py-0.5 text-2xs font-medium text-warning ring-1 ring-warning/70">
+                <Badge variant="warning" size="sm">
                   <Clock className="h-3 w-3 shrink-0" />
                   {next}
-                </span>
+                </Badge>
               </div>
             )}
 
             {row?.protocol_overdue && (
-              <span className="inline-flex w-fit items-center gap-1 rounded-full bg-destructive-subtle px-2 py-0.5 text-2xs font-medium text-destructive ring-1 ring-destructive/30">
+              <Badge variant="danger" size="sm" className="w-fit">
                 <AlertTriangle className="h-3 w-3 shrink-0" />
                 {t("protocol_overdue")}
-              </span>
+              </Badge>
             )}
           </div>
         );

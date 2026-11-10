@@ -5,22 +5,10 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
 import { AlertTriangle, History } from "lucide-react";
-import {
-  SectionCard,
-  EmptyBlock,
-  LoadingBlock,
-  fmtDateTime,
-} from "./passport-shared";
+import { SectionCard, EmptyBlock, LoadingBlock, fmtDateTime } from "./passport-shared";
 import { useInspections } from "@/api/hooks/use-inspections";
 import type { Inspection } from "@/api/types/inspections";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 /* -------------------------------------------------------------------------- */
 /*  Interval + duration helpers (ported from dejurniy)                         */
@@ -80,7 +68,7 @@ function IntervalBadge({ inspection }: { inspection: Inspection }) {
     <Badge
       variant={
         status === "critical"
-          ? "destructive"
+          ? "danger"
           : status === "warning"
           ? "warning"
           : "success"
@@ -216,7 +204,7 @@ function ProgressCell({
 function StatusBadge({ inspection }: { inspection: Inspection }) {
   const t = useTranslations("locomotivePassport.history");
   if (inspection.is_cancelled)
-    return <Badge variant="destructive">{t("statusCancelled")}</Badge>;
+    return <Badge variant="danger">{t("statusCancelled")}</Badge>;
   if (inspection.is_closed)
     return <Badge variant="success">{t("statusClosed")}</Badge>;
   return <Badge variant="warning">{t("statusInProgress")}</Badge>;

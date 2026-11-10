@@ -6,6 +6,7 @@ import type { ExcludedTypeCount, TypeBreakdownRow } from "./use-unified-report-d
 import { CardButton } from "@/ui/card-button";
 
 import { EmptyState } from "@/ui/empty-state";
+import { Badge } from "@/ui/badge";
 /** Share of a type's inspections, as a whole percentage. 0 when the type is empty. */
 const share = (part: number, total: number) =>
   total === 0 ? 0 : Math.round((part / total) * 100);
@@ -129,9 +130,9 @@ export function TypeBreakdown({
                 >
                   {type.name}
                 </h3>
-                <span className="shrink-0 rounded-full border border-border-strong bg-background px-1.5 py-0.5 text-2xs font-medium text-muted-foreground">
+                <Badge variant="neutral" size="sm" className="shrink-0">
                   {t("excludedNote")}
-                </span>
+                </Badge>
               </div>
               <p className="text-2xl font-bold text-foreground-subtle tabular-nums leading-none mt-1.5">
                 {type.total}

@@ -9,15 +9,9 @@ import type {
   DelayedInspectionsSummary,
 } from "@/api/types/delayed-inspections-report";
 import { SectionShell } from "./section-shell";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
+import { formatNumber } from "@/lib/format";
 /** One flat row per late inspection, carrying its locomotive down with it. */
 export interface FlatDelayedEntryRow extends DelayedInspectionRow {
   locomotive_name: string;
@@ -44,7 +38,7 @@ export function flattenDelayedEntry(
   return out;
 }
 
-const fmtNum = (v: number | null) => (v == null ? "—" : v.toLocaleString());
+const fmtNum = (v: number | null) => formatNumber(v);
 
 /**
  * A dimension cell. `interval === null` means the dimension is not tracked for

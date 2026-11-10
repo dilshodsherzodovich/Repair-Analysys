@@ -2,14 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { TableSkeleton } from "@/ui/table-skeleton";
 import { Skeleton } from "@/ui/skeleton";
 import { Badge } from "@/ui/badge";
@@ -19,13 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { MoreVertical, Pencil, Loader2 } from "lucide-react";
 import { Inspection } from "@/api/types/inspections";
 import { format } from "date-fns";
@@ -359,7 +346,7 @@ export function InspectionsGroupedTable({
                             ? "success"
                             : interval?.variant === "warning"
                               ? "warning"
-                              : "secondary"
+                              : "neutral"
                         }
                         className={cn(
                           interval?.variant === "success" &&

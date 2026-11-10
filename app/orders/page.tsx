@@ -8,11 +8,7 @@ import PageFilters from "@/ui/filters";
 import { CheckCircle } from "lucide-react";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { getPageCount } from "@/lib/utils";
-import {
-  OrderData,
-  CreateOrderPayload,
-  UpdateOrderPayload,
-} from "@/api/types/orders";
+import { OrderData, CreateOrderPayload, UpdateOrderPayload } from "@/api/types/orders";
 import {
   useOrders,
   useCreateOrder,
@@ -28,7 +24,6 @@ import { truncateFilename } from "@/utils/format-filename";
 import { exportOrdersExcel } from "@/api/services/orders.service";
 import { authService } from "@/api/services/auth.service";
 import { format } from "date-fns";
-import { FileSpreadsheet } from "lucide-react";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useOrganizations } from "@/api/hooks/use-organizations";
 import { useMprStatistics } from "@/api/hooks/use-statistics";
@@ -38,11 +33,11 @@ import { Wrench, Ban, AlertTriangle, Coins } from "lucide-react";
 import { hasPermission, type Permission } from "@/lib/permissions";
 import { Badge } from "@/ui/badge";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
-import { responsibleOrganizations } from "@/data";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 
+import { formatDateTime, formatNumber } from "@/lib/format";
 export default function OrdersPage() {
   const t = useTranslations("OrdersPage");
   const { updateQuery, getAllQueryValues } = useFilterParams();
@@ -316,31 +311,9 @@ export default function OrdersPage() {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      return `${day}.${month}.${year} ${hours}:${minutes}`;
-    } catch {
-      return dateString;
-    }
-  };
+  const formatDate = (dateString: string): string => formatDateTime(dateString, dateString);
 
-  const formatDamageAmount = (amount: string): string => {
-    try {
-      const numAmount = parseFloat(amount);
-      return numAmount.toLocaleString("uz-UZ", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } catch {
-      return amount;
-    }
-  };
+  const formatDamageAmount = (amount: string): string => formatNumber(amount, { digits: 2, fallback: amount });
 
   const columns: TableColumn<OrderData>[] = [
     {
@@ -411,7 +384,7 @@ export default function OrdersPage() {
       key: "confirm",
       header: t("columns.status"),
       accessor: (row) => (
-        <Badge variant={row.confirm ? "success_outline" : "warning_outline"}>
+        <Badge variant={row.confirm ? "success" : "warning"}>
           {row.confirm ? t("status_confirmed") : t("status_not_confirmed")}
         </Badge>
       ),

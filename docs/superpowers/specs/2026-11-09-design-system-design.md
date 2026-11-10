@@ -236,3 +236,27 @@ one meta line (org · period · "holatiga")
 - Inline progress (a "Saving…" next to a toolbar, a spinner in a button)
   stays inline; it is not a data state.
 - Default texts come from `Common` (loading, no_data, load_error, retry).
+
+### Badges
+
+- Status pills are `Badge` with a subtle variant: neutral, primary, success,
+  warning, danger. Solid variants (`*_solid`) are for counts and strong
+  emphasis only. `size="sm"` inside dense table cells. No hand-made
+  rounded-full spans; the old alias names (info, destructive, *_outline,
+  secondary, default, outline) are gone.
+
+### Formats
+
+- Display formatting goes through `lib/format`: `formatNumber` (thousands
+  grouped with a space, optional `digits`), `formatMoney` ("1 234 so'm"),
+  `formatDate` (dd.MM.yyyy), `formatDateTime` (dd.MM.yyyy HH:mm),
+  `formatTime` (HH:mm), `formatShortDateTime` (dd.MM HH:mm, dense report
+  cells). A missing value prints "—".
+- API parameters keep "yyyy-MM-dd". Timeline headings may spell the month
+  ("10 noy 2026"); nowhere else.
+
+### Wording
+
+- Shared actions and states read from `Common` (add, edit, delete, save,
+  cancel, reset, search, all, loading, no_data, load_error, retry, close,
+  back); no hard-coded copies in components.

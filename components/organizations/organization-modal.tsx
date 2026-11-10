@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { Modal, ModalFooter } from "@/ui/modal";
 import { Input } from "@/ui/input";
@@ -26,6 +28,7 @@ export function OrganizationModal({
   mode,
   isDoingAction,
 }: OrganizationModalProps) {
+  const tc = useTranslations("Common");
   const [formData, setFormData] = useState({
     name: "",
     legal_basis: "",
@@ -116,7 +119,7 @@ export function OrganizationModal({
           </FieldGrid>
           <ModalFooter>
             <Button type="button" variant="outline" onClick={onClose}>
-              Bekor qilish
+              {tc("cancel")}
             </Button>
             <Button type="submit" loading={isDoingAction} className="min-w-24">
               {submitText}

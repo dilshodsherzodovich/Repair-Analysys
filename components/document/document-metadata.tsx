@@ -56,15 +56,7 @@ const DocumentMetadataComponent = React.forwardRef<HTMLDivElement, DocumentMetad
       }
     }
 
-    const formatDate = (dateString: string) => {
-      return new Date(dateString).toLocaleDateString("ru-RU", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    }
+    const formatDate = (dateString: string) => formatDateTime(dateString)
 
     return (
       <div ref={ref} className={cn("bg-background rounded-lg border p-6 space-y-6", className)} {...props}>
@@ -185,3 +177,5 @@ const DocumentMetadataComponent = React.forwardRef<HTMLDivElement, DocumentMetad
   },
 )
 DocumentMetadataComponent.displayName = "DocumentMetadata"
+
+import { formatDateTime } from "@/lib/format";

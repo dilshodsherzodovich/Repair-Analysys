@@ -16,6 +16,7 @@ import { DateRangeField } from "@/ui/date-range-field";
 import { Page } from "@/ui/page";
 
 import { LoadingState, EmptyState } from "@/ui/empty-state";
+import { formatNumber } from "@/lib/format";
 const DATE_FMT = "yyyy-MM-dd";
 
 function firstOfMonth(d: Date) {
@@ -45,8 +46,7 @@ function fmtTime(value: string | null): string {
 }
 
 function fmtNum(value: number | null): string {
-  if (value == null) return "—";
-  return value.toLocaleString();
+  return formatNumber(value);
 }
 
 function Txk2ReportPage() {

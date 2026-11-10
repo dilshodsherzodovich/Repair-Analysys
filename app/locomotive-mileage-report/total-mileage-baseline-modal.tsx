@@ -14,6 +14,7 @@ import {
 
 import { Field } from "@/ui/field";
 import { Modal, ModalFooter } from "@/ui/modal";
+import { formatNumber } from "@/lib/format";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -110,7 +111,7 @@ export function TotalMileageBaselineModal({ isOpen, onClose, locomotiveId, locom
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Oxirgi yangilashdagi probegi</span>
                   <span className="font-medium text-foreground">
-                    {existing.last_mileage.toLocaleString("en-US")} km
+                    {formatNumber(existing.last_mileage)} km
                   </span>
                 </div>
                 <div className="flex justify-between">

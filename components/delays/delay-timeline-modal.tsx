@@ -109,7 +109,7 @@ export function DelayTimelineModal({
                   <CheckCircle2 className="h-4 w-4 text-primary" />
                 </span>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{stageLabel(entry.stage)}</Badge>
+                  <Badge variant="neutral">{stageLabel(entry.stage)}</Badge>
                   <span className="text-xs text-muted-foreground">
                     {formatDateTime(entry.at)}
                   </span>

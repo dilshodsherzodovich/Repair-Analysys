@@ -125,15 +125,15 @@ export function TU152Tab() {
     if (!status) return null;
 
     let variant:
-      | "default"
-      | "success_outline"
-      | "destructive_outline"
-      | "warning_outline"
-      | "info_outline" = "default";
-    if (statusId === 24) variant = "success_outline";
-    else if (statusId === 22) variant = "warning_outline";
-    else if (statusId === 23) variant = "destructive_outline";
-    else if (statusId === 21) variant = "info_outline";
+      | "neutral"
+      | "success"
+      | "danger"
+      | "warning"
+      | "primary" = "neutral";
+    if (statusId === 24) variant = "success";
+    else if (statusId === 22) variant = "warning";
+    else if (statusId === 23) variant = "danger";
+    else if (statusId === 21) variant = "primary";
 
     return <Badge variant={variant}>{status.name}</Badge>;
   }, []);

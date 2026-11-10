@@ -9,18 +9,10 @@ import { getPageCount } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
 import { Edit, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  canAccessSection,
-  hasPermission,
-  type Permission,
-} from "@/lib/permissions";
+import { canAccessSection, hasPermission, type Permission } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
 import { useOrganizations } from "@/api/hooks/use-organizations";
-import {
-  useCulprits,
-  useUpdateCulprit,
-  useDeleteCulprit,
-} from "@/api/hooks/use-culprits";
+import { useCulprits, useUpdateCulprit, useDeleteCulprit } from "@/api/hooks/use-culprits";
 import type { Culprit } from "@/api/types/culprits";
 import { CulpritFormModal } from "@/components/culprits/culprit-form-modal";
 import { ConfirmationDialog } from "@/ui/confirmation-dialog";
@@ -28,14 +20,9 @@ import { useSnackbar } from "@/providers/snackbar-provider";
 import { authService } from "@/api/services/auth.service";
 import { Page } from "@/ui/page";
 
+import { formatMoney } from "@/lib/format";
 function formatAmount(amount: string | number): string {
-  const value = typeof amount === "string" ? Number(amount) : amount;
-  if (!value) return "0";
-  return new Intl.NumberFormat("uz-UZ", {
-    style: "currency",
-    currency: "UZS",
-    minimumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(amount);
 }
 
 export default function CulpritsPage() {
@@ -195,7 +182,7 @@ export default function CulpritsPage() {
       key: "payroll_confirmed",
       header: t("columns.payroll_confirmed"),
       accessor: (row) => (
-        <Badge variant={row.payroll_confirmed ? "info" : "outline"}>
+        <Badge variant={row.payroll_confirmed ? "primary" : "neutral"}>
           {row.payroll_confirmed
             ? t("filters.yes")
             : t("filters.no")}
@@ -206,7 +193,7 @@ export default function CulpritsPage() {
       key: "recovered",
       header: t("columns.recovered"),
       accessor: (row) => (
-        <Badge variant={row.recovered ? "success" : "outline"}>
+        <Badge variant={row.recovered ? "success" : "neutral"}>
           {row.recovered ? t("filters.yes") : t("filters.no")}
         </Badge>
       ),

@@ -4,24 +4,12 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
 import { ClipboardList, FileText, Zap } from "lucide-react";
-import {
-  SectionCard,
-  EmptyBlock,
-  LoadingBlock,
-  fmtDate,
-} from "./passport-shared";
+import { SectionCard, EmptyBlock, LoadingBlock, fmtDate } from "./passport-shared";
 import { useRevisionJournal } from "@/api/hooks/use-revision-journal";
 import { useOrders } from "@/api/hooks/use-orders";
 import { usePantographJournal } from "@/api/hooks/use-pantograph";
 import type { ReactNode } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 /* -------------------------------------------------------------------------- */
 /*  Bordered table primitives — every cell is boxed so columns never merge     */
@@ -230,7 +218,7 @@ function RevisionJournalSection({ locomotiveId }: { locomotiveId: number }) {
                 status: r.table_number ? (
                   <Badge variant="success">{t("done")}</Badge>
                 ) : (
-                  <Badge variant="destructive">{t("notDone")}</Badge>
+                  <Badge variant="danger">{t("notDone")}</Badge>
                 ),
               }}
             />

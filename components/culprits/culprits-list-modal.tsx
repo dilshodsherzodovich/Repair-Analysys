@@ -16,6 +16,7 @@ import type { DelayEntry } from "@/api/types/delays";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 
 import { LoadingState, EmptyState, TableStateRow } from "@/ui/empty-state";
+import { formatMoney } from "@/lib/format";
 interface CulpritsListModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -42,13 +43,7 @@ function parseThousands(formatted: string): number {
 }
 
 function formatAmount(amount: string | number): string {
-  const value = typeof amount === "string" ? Number(amount) : amount;
-  if (!value) return "0";
-  return new Intl.NumberFormat("uz-UZ", {
-    style: "currency",
-    currency: "UZS",
-    minimumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(amount);
 }
 
 export function CulpritsListModal({
@@ -265,9 +260,9 @@ export function CulpritsListModal({
       return <Badge variant="success">{t("status.recovered")}</Badge>;
     }
     if (culprit.payroll_confirmed) {
-      return <Badge variant="info">{t("status.payroll_confirmed")}</Badge>;
+      return <Badge variant="primary">{t("status.payroll_confirmed")}</Badge>;
     }
-    return <Badge variant="outline">{t("status.pending")}</Badge>;
+    return <Badge variant="neutral">{t("status.pending")}</Badge>;
   };
 
   const colSpan = canManage ? 4 : 3;
@@ -567,7 +562,7 @@ export function CulpritsListModal({
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{t("status.pending")}</Badge>
+                        <Badge variant="neutral">{t("status.pending")}</Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center justify-end gap-2">

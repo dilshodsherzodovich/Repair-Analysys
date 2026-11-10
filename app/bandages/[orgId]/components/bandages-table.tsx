@@ -13,6 +13,7 @@ import { CellInput, EditActions, firstMessage } from "@/ui/inline-edit";
 import { bandageGroupKey, hasSideMismatch } from "../bandage-groups";
 
 import { EmptyState, TableStateRow } from "@/ui/empty-state";
+import { Badge } from "@/ui/badge";
 type Side = "left" | "right";
 
 /** How long the cells changed by a save stay highlighted. */
@@ -256,10 +257,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
               >
                 {group.name}-{group.modelName}
                 {justSaved && (
-                  <span className="mt-1 flex w-fit items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success">
+                  <Badge variant="success" className="mt-1 w-fit">
                     <Check className="h-3 w-3" />
                     {t("just_saved")}
-                  </span>
+                  </Badge>
                 )}
               </TableCell>
             </>

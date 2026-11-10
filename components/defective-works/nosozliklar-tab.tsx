@@ -336,7 +336,7 @@ export function NosozliklarTab() {
       accessor: (row) => {
         const isDone = !!row?.table_number;
         return (
-          <Badge variant={isDone ? "success" : "destructive"}>
+          <Badge variant={isDone ? "success" : "danger"}>
             {isDone ? t("status_done") : t("status_not_done")}
           </Badge>
         );

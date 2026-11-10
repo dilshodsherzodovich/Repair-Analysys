@@ -19,7 +19,6 @@ import { useTranslations, useLocale } from "next-intl";
 import ReportsDateFilter from "./reports-date-filter";
 import { ReportOrganizationSelect, useReportOrganization } from "./report-organization-select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
-import { formatDate } from "@/utils/formatDate";
 import { defineGridColsCount } from "@/lib/utils";
 import { PDFExportButton } from "./pdf-export-button";
 import type { PDFExportData } from "@/utils/pdf-export";
@@ -29,6 +28,7 @@ import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
 import { EmptyState, LoadingState } from "@/ui/empty-state";
+import { formatDate, formatDateTime, formatTime } from "@/lib/format";
 export default function ReportDashboard() {
   const t = useTranslations("Reports");
   const globalT = useTranslations();
@@ -127,11 +127,8 @@ export default function ReportDashboard() {
   // Prepare data for PDF export
   const preparePDFData = (): PDFExportData => {
     const currentDate = new Date();
-    const date = currentDate.toLocaleDateString(locale === "ru" ? "ru-RU" : "en-US");
-    const time = currentDate.toLocaleTimeString(locale === "ru" ? "ru-RU" : "en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const date = formatDate(currentDate);
+    const time = formatTime(currentDate);
 
     const electricRepair = inspectionData?.electric_loco?.map((type: InspectionTypeGroup) => ({
       name: type.name,
@@ -435,10 +432,10 @@ export default function ReportDashboard() {
                         <TableRow key={`reserved-${loco.loco_id}`} data-pdf-block>
                           <TableCell className="font-semibold">{loco.loco_name}</TableCell>
                           <TableCell className="text-foreground-secondary">
-                            {loco.reserve_started_time ? formatDate(loco.reserve_started_time) : "—"}
+                            {formatDateTime(loco.reserve_started_time)}
                           </TableCell>
                           <TableCell className="text-foreground-secondary">
-                            {loco.reserve_closed_time ? formatDate(loco.reserve_closed_time) : "—"}
+                            {formatDateTime(loco.reserve_closed_time)}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -522,8 +519,8 @@ function RepairTypeTable({ repairType }: { repairType: InspectionTypeGroup }) {
           {repairType.locomotives.map((loco: InspectionTypeLocomotive) => (
             <TableRow key={loco.name} data-pdf-block>
               <TableCell className="font-semibold">{loco.name}</TableCell>
-              <TableCell className="text-foreground-secondary">{formatDate(loco.inspection_started_time)}</TableCell>
-              <TableCell className="text-foreground-secondary">{formatDate(loco.inspection_closed_time)}</TableCell>
+              <TableCell className="text-foreground-secondary">{formatDateTime(loco.inspection_started_time)}</TableCell>
+              <TableCell className="text-foreground-secondary">{formatDateTime(loco.inspection_closed_time)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

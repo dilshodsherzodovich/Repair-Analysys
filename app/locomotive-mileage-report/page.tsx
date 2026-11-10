@@ -25,12 +25,12 @@ import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 
 import { EmptyState, TableStateRow } from "@/ui/empty-state";
+import { formatNumber } from "@/lib/format";
 const DEFAULT_INSPECTION_IDS = [5, 6, 8, 15];
 
 
 function formatNum(n: number): string {
-  if (n == null) return "0";
-  return n.toLocaleString("en-US");
+  return formatNumber(n, { fallback: "0" });
 }
 
 function getInspectionMap(loco: Txk13Locomotive): Map<number, Txk13Inspection> {

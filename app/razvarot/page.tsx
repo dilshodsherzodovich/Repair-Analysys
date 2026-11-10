@@ -206,7 +206,7 @@ export default function RazvarotPage() {
       header: t("columns.section"),
       accessor: (row) => (
         <div className="flex items-center gap-1">
-          <Badge variant="info">{row.from_section}</Badge>{" "}
+          <Badge variant="primary">{row.from_section}</Badge>{" "}
           <MoveRight width={16} height={16} />{" "}
           <Badge variant="success">{row.to_section}</Badge>
         </div>
