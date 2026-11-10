@@ -519,37 +519,27 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
             <div className="px-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
               {t("organization_label")}
             </div>
-            {isAdmin ? (
-              <Select
-                value={selectedOrgId ? String(selectedOrgId) : undefined}
-                onValueChange={handleOrgChange}
-              >
-                <SelectTrigger className="w-full">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <Building2 className="size-4 flex-shrink-0 text-muted-foreground" />
-                    <span className="truncate">
-                      <SelectValue />
-                    </span>
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {pickerOrgs.map((org) => (
-                    <SelectItem key={org.id} value={String(org.id)}>
-                      {org.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              // Bound to one organization: shown as text, not a locked dropdown
-              <div
-                className="flex min-w-0 items-center gap-2 px-1 text-sm font-medium text-foreground"
-                title={pickerOrgs[0]?.name}
-              >
-                <Building2 className="size-4 flex-shrink-0 text-muted-foreground" />
-                <span className="truncate">{pickerOrgs[0]?.name}</span>
-              </div>
-            )}
+            <Select
+              value={selectedOrgId ? String(selectedOrgId) : undefined}
+              onValueChange={handleOrgChange}
+              disabled={!isAdmin}
+            >
+              <SelectTrigger className="w-full disabled:cursor-default disabled:opacity-100">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Building2 className="size-4 flex-shrink-0 text-muted-foreground" />
+                  <span className="truncate">
+                    <SelectValue />
+                  </span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {pickerOrgs.map((org) => (
+                  <SelectItem key={org.id} value={String(org.id)}>
+                    {org.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 
