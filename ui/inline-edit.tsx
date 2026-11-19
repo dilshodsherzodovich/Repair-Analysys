@@ -1,10 +1,15 @@
 "use client";
 
-import { Check, Loader2, Pencil, X } from "lucide-react";
+import { Ban, Check, Loader2, Pencil, Undo2, X } from "lucide-react";
+import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { cn } from "@/lib/utils";
 
-/** Compact input that fits a table cell; Enter saves, Escape cancels. */
+/**
+ * Compact input that fits a table cell; Enter saves, Escape cancels. With
+ * `missing`, a small button next to it marks the cell as "does not exist"
+ * (the input turns into a dashed placeholder) and brings it back.
+ */
 export function CellInput({
   value,
   onChange,
@@ -15,6 +20,7 @@ export function CellInput({
   type = "text",
   label,
   autoFocus,
+  missing,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -25,8 +31,26 @@ export function CellInput({
   type?: "text" | "number";
   label: string;
   autoFocus?: boolean;
+  missing?: {
+    active: boolean;
+    onToggle: () => void;
+    /** Shown in place of the input, e.g. "Yo'q". */
+    text: string;
+    markLabel: string;
+    restoreLabel: string;
+  };
 }) {
-  return (
+  const input = missing?.active ? (
+    <span
+      className={cn(
+        "flex h-8 w-[72px] items-center justify-center rounded-md border border-dashed border-border-strong bg-muted text-xs text-muted-foreground",
+        error && "border-destructive",
+      )}
+      title={error}
+    >
+      {missing.text}
+    </span>
+  ) : (
     <Input
       type={type}
       step={type === "number" ? "0.1" : undefined}
@@ -47,6 +71,27 @@ export function CellInput({
         error && "border-destructive"
       )}
     />
+  );
+
+  if (!missing) return input;
+
+  const toggleLabel = missing.active ? missing.restoreLabel : missing.markLabel;
+  return (
+    <div className="mx-auto flex w-fit items-center gap-0.5">
+      {input}
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        onClick={missing.onToggle}
+        disabled={disabled}
+        aria-label={`${label}: ${toggleLabel}`}
+        title={toggleLabel}
+        className="size-6"
+      >
+        {missing.active ? <Undo2 /> : <Ban />}
+      </Button>
+    </div>
   );
 }
 

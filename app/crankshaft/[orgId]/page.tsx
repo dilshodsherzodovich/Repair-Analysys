@@ -29,8 +29,10 @@ import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { CrankshaftGroupCards } from "./components/crankshaft-group-cards";
 import { CrankshaftServiceCards } from "./components/crankshaft-service-cards";
 import {
+  MISSING_VALUE,
   ServiceKind,
   crankshaftGroupKey,
+  isMissingValue,
   isServiceKind,
   serviceKind,
 } from "./crankshaft-groups";
@@ -309,6 +311,9 @@ const LocomotiveRows = memo(function LocomotiveRows({
             const autoFocus = editable && isFirstInput;
             if (editable) isFirstInput = false;
             const wasSaved = !!savedCells?.has(`${component.id}-${field}`);
+            const value =
+              drafts[component.id]?.[field] ?? toInputValue(component[field]);
+            const isMissing = !isInfo && isMissingValue(value);
             const inActiveGroup =
               !isInfo &&
               !!activeGroup &&
@@ -319,8 +324,10 @@ const LocomotiveRows = memo(function LocomotiveRows({
                 className={cn(
                   "duration-700",
                   isInfo ? "" : "text-center",
+                  !editable && isMissing && "text-foreground-subtle",
                   !editable &&
                     !isInfo &&
+                    !isMissing &&
                     activeGroup &&
                     (inActiveGroup
                       ? "bg-primary-subtle font-semibold text-primary-hover"
@@ -331,10 +338,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
               >
                 {editable ? (
                   <CellInput
-                    value={
-                      drafts[component.id]?.[field] ??
-                      toInputValue(component[field])
-                    }
+                    value={value}
                     onChange={(value) =>
                       handleChange(component.id, field, value)
                     }
@@ -347,7 +351,26 @@ const LocomotiveRows = memo(function LocomotiveRows({
                     disabled={isSaving}
                     autoFocus={autoFocus}
                     label={`${component.section?.name ?? ""} ${fieldLabel(field)}`}
+                    missing={
+                      isInfo
+                        ? undefined
+                        : {
+                            active: isMissing,
+                            onToggle: () =>
+                              handleChange(
+                                component.id,
+                                field,
+                                // Brought back positions start at 0, not empty
+                                isMissing ? "0" : MISSING_VALUE,
+                              ),
+                            text: tModal("missing"),
+                            markLabel: tModal("mark_missing"),
+                            restoreLabel: tModal("restore_value"),
+                          }
+                    }
                   />
+                ) : isMissing ? (
+                  tModal("missing")
                 ) : (
                   formatValue(component[field])
                 )}

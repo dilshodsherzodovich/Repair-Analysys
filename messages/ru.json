@@ -1276,6 +1276,9 @@
     "save": "Сохранить",
     "koren_prefix": "Коренной",
     "shatun_prefix": "Шатунный",
+    "missing": "Нет",
+    "mark_missing": "Отметить как отсутствующий",
+    "restore_value": "Ввести значение",
     "section": "Секция"
   },
   "BandagesPage": {

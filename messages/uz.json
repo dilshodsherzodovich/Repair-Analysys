@@ -1276,6 +1276,9 @@
     "save": "Saqlash",
     "koren_prefix": "Коренной",
     "shatun_prefix": "Шатунный",
+    "missing": "Yo'q",
+    "mark_missing": "Mavjud emas deb belgilash",
+    "restore_value": "Qiymat kiritish",
     "section": "Sektsiya"
   },
   "BandagesPage": {

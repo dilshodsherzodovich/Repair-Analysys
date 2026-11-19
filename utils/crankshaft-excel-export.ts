@@ -10,6 +10,7 @@ import {
   CRANKSHAFT_GROUPS,
   ServiceKind,
   crankshaftGroupKey,
+  isMissingValue,
 } from "@/app/crankshaft/[orgId]/crankshaft-groups";
 
 /**
@@ -208,7 +209,12 @@ export async function exportCrankshaftExcel(
         // Kept as text: factory numbers can carry leading zeros
         textValue(component.year_of_manufacture),
         textValue(component.factory_number),
-        ...valueFields.map((field) => cellValue(component[field])),
+        // Positions the locomotive does not have read "Yo'q", not "none"
+        ...valueFields.map((field) =>
+          isMissingValue(component[field])
+            ? tModal("missing")
+            : cellValue(component[field]),
+        ),
       ];
       values.forEach((value, index) => {
         const cell = ws.getCell(row, index + 1);
@@ -216,7 +222,14 @@ export async function exportCrankshaftExcel(
         cell.font = {
           size: 10,
           bold: index === 1,
-          color: { argb: index === 3 || index === 4 ? MUTED_TXT : INK },
+          color: {
+            argb:
+              index === 3 ||
+              index === 4 ||
+              (index >= infoColumns && isMissingValue(component[valueFields[index - infoColumns]]))
+                ? MUTED_TXT
+                : INK,
+          },
         };
         cell.alignment = {
           horizontal: index === 1 ? "left" : "center",

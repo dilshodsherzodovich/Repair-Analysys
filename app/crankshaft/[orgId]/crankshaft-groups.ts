@@ -10,9 +10,19 @@ export const CRANKSHAFT_GROUPS = [0, 1, 2, 3, 4, 5, 6, 7].map((n) => ({
 
 const LAST_GROUP = 7;
 
-/** The group of one koren / shatun value; null when the cell is empty. */
+/**
+ * Stored for a koren / shatun position the locomotive does not have (models
+ * have 7–12 koren and 5–12 shatun). Such cells are never counted.
+ */
+export const MISSING_VALUE = "none";
+
+export const isMissingValue = (value: unknown) =>
+  typeof value === "string" && value.trim().toLowerCase() === MISSING_VALUE;
+
+/** The group of one koren / shatun value; null when the cell is empty or missing. */
 export const crankshaftGroupKey = (value: unknown): string | null => {
   if (value === null || value === undefined || value === "") return null;
+  if (isMissingValue(value)) return null;
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0) return null;
   return String(Math.min(LAST_GROUP, Math.floor(n)));
