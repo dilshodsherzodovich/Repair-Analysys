@@ -6,10 +6,17 @@ import ExcelJS from "exceljs/dist/exceljs.min.js";
 import { saveAs } from "file-saver";
 import { format } from "date-fns";
 import { SpecialComponent } from "@/api/types/locomotive";
+import {
+  CRANKSHAFT_GROUPS,
+  ServiceKind,
+  crankshaftGroupKey,
+} from "@/app/crankshaft/[orgId]/crankshaft-groups";
 
 /**
- * Crankshaft workbook: the table as it is on screen (filters applied), with
- * the koren and shatun headers tinted apart like on the page. Styling follows the duty-uzel and bandages exports.
+ * Crankshaft workbook: the table as it is on screen (filters, magistral /
+ * manyovr and the picked value group applied), with the koren and shatun
+ * headers tinted apart and the picked group's values highlighted like on the
+ * page. Styling follows the duty-uzel and bandages exports.
  */
 
 type Translate = (key: string, values?: Record<string, unknown>) => string;
@@ -17,6 +24,10 @@ type Translate = (key: string, values?: Record<string, unknown>) => string;
 interface ExportContext {
   t: Translate;
   tModal: Translate;
+  /** Value group picked from the cards; its values are highlighted. */
+  activeGroup: string | null;
+  /** Magistral / manyovr picked from the service cards. */
+  activeService: ServiceKind | null;
 }
 
 export interface CrankshaftExportLocomotive {
@@ -32,6 +43,8 @@ const KOREN_HEAD = "FFDBEAFE"; // blue-100
 const KOREN_HEAD_TXT = "FF1E40AF"; // blue-800
 const SHATUN_HEAD = "FFFFEDD5"; // orange-100
 const SHATUN_HEAD_TXT = "FF9A3412"; // orange-800
+const HIGHLIGHT = "FFDBEAFE"; // blue-100
+const HIGHLIGHT_TXT = "FF1E40AF"; // blue-800
 const ZEBRA = "FFF8FAFC"; // slate-50
 const MUTED_TXT = "FF64748B"; // slate-500
 const INK = "FF0F172A"; // slate-900
@@ -71,6 +84,19 @@ function fileName(name: string): string {
   )}.xlsx`;
 }
 
+/** "Sana: 09.11.2026 • Magistral • Guruh: 3 (3–4)" */
+function subtitleFor({ t, activeGroup, activeService }: ExportContext) {
+  const parts = [`${t("excel.date")}: ${format(new Date(), "dd.MM.yyyy")}`];
+  if (activeService) parts.push(t(activeService));
+  if (activeGroup) {
+    const group = CRANKSHAFT_GROUPS.find((item) => item.key === activeGroup);
+    parts.push(
+      `${t("excel.group")}: ${activeGroup}${group ? ` (${group.range})` : ""}`,
+    );
+  }
+  return parts.join("    •    ");
+}
+
 function styleHeaderCell(
   cell: ExcelJS.Cell,
   fill: string,
@@ -92,8 +118,9 @@ export async function exportCrankshaftExcel(
     korenFields: string[];
     shatunFields: string[];
   },
-  { t, tModal }: ExportContext,
+  context: ExportContext,
 ) {
+  const { t, tModal, activeGroup, activeService } = context;
   const wb = new ExcelJS.Workbook();
   wb.creator = "Repair Analysys";
   const ws = wb.addWorksheet(t("excel.sheet").slice(0, 31) || "Crankshaft");
@@ -113,7 +140,7 @@ export async function exportCrankshaftExcel(
 
   ws.mergeCells(2, 1, 2, columnCount);
   const subtitleCell = ws.getCell(2, 1);
-  subtitleCell.value = `${t("excel.date")}: ${format(new Date(), "dd.MM.yyyy")}`;
+  subtitleCell.value = subtitleFor(context);
   subtitleCell.font = { size: 10, italic: true, color: { argb: MUTED_TXT } };
   subtitleCell.alignment = { horizontal: "center", vertical: "middle" };
   ws.getRow(2).height = 18;
@@ -196,7 +223,15 @@ export async function exportCrankshaftExcel(
           vertical: "middle",
         };
         cell.border = border;
-        if (zebra) cell.fill = solid(ZEBRA);
+        const field = valueFields[index - infoColumns];
+        const inActiveGroup =
+          !!activeGroup &&
+          !!field &&
+          crankshaftGroupKey(component[field]) === activeGroup;
+        if (inActiveGroup) {
+          cell.fill = solid(HIGHLIGHT);
+          cell.font = { size: 10, bold: true, color: { argb: HIGHLIGHT_TXT } };
+        } else if (zebra) cell.fill = solid(ZEBRA);
       });
       row++;
     });
@@ -221,5 +256,9 @@ export async function exportCrankshaftExcel(
   const blob = new Blob([buffer], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
-  saveAs(blob, fileName(t("title")));
+  const suffix = [activeService && t(activeService), activeGroup]
+    .filter(Boolean)
+    .map((part) => `-${part}`)
+    .join("");
+  saveAs(blob, fileName(`${t("title")}${suffix}`));
 }

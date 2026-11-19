@@ -27,7 +27,13 @@ import {
   naturalCompare,
 } from "./components/bandages-table";
 import { BandageGroupCards } from "./components/bandage-group-cards";
-import { bandageGroupKey } from "./bandage-groups";
+import { BandageWheelCards } from "./components/bandage-wheel-cards";
+import {
+  WheelKind,
+  bandageGroupKey,
+  isWheelKind,
+  wheelKind,
+} from "./bandage-groups";
 import { exportBandagesExcel } from "@/utils/bandages-excel-export";
 import { useSnackbar } from "@/providers/snackbar-provider";
 import { Alert, AlertDescription } from "@/ui/alert";
@@ -47,6 +53,8 @@ function BandagesPageContent({
   const searchParams = useSearchParams();
   const { q, locModel } = Object.fromEntries(searchParams.entries());
   const activeGroup = searchParams.get("group") || null;
+  const wheelParam = searchParams.get("wheel");
+  const activeWheel = isWheelKind(wheelParam) ? wheelParam : null;
   const { updateQuery } = useFilterParams();
 
   // Editing is limited to the user's own organization
@@ -89,6 +97,13 @@ function BandagesPageContent({
     },
     [updateQuery],
   );
+  const handleWheelSelect = useCallback(
+    (wheel: WheelKind | null) => {
+      setEditingId(null);
+      updateQuery({ wheel });
+    },
+    [updateQuery],
+  );
 
   // Locomotives drive the list (filters apply to them); bandages fill the cells.
   // One table row per locomotive section.
@@ -126,6 +141,7 @@ function BandagesPageContent({
         index: i + 1,
         name: locomotive.name,
         modelName: locomotive.model_name,
+        modelId: locomotive.model_id,
         bandages,
         sections: sections.size
           ? Array.from(sections.values()).sort((a, b) =>
@@ -141,34 +157,39 @@ function BandagesPageContent({
     };
   }, [locomotivesData, bandagesData, tModal]);
 
-  // Cards count what the filters left; the table also narrows to the picked group
-  const listedBandages = useMemo(
-    () => groups.flatMap((group) => group.bandages),
-    [groups],
+  // Bandajli / quyma narrows the group cards and the table; the wheel cards
+  // keep counting both so the split stays visible
+  const wheelGroups = useMemo(
+    () =>
+      activeWheel
+        ? groups.filter((group) => wheelKind(group.modelId) === activeWheel)
+        : groups,
+    [groups, activeWheel],
   );
+
+  // Cards count what the filters left; the table also narrows to the picked group
   const visibleGroups = useMemo(
     () =>
-      activeGroup
-        ? groups
-            .filter((group) =>
-              group.bandages.some(
-                (bandage) => bandageGroupKey(bandage) === activeGroup,
-              ),
-            )
-            .map((group, i) => ({ ...group, index: i + 1 }))
-        : groups,
-    [groups, activeGroup],
+      (activeGroup
+        ? wheelGroups.filter((group) =>
+            group.bandages.some(
+              (bandage) => bandageGroupKey(bandage) === activeGroup,
+            ),
+          )
+        : wheelGroups
+      ).map((group, i) => ({ ...group, index: i + 1 })),
+    [wheelGroups, activeGroup],
   );
 
   const [isExporting, setIsExporting] = useState(false);
 
-  // Exports the table as shown: current filters and the picked group
+  // Exports the table as shown: current filters, bandajli / quyma and the picked group
   const handleExport = useCallback(async () => {
     setIsExporting(true);
     try {
       await exportBandagesExcel(
-        { visibleGroups, allGroups: groups, componentNames },
-        { t, tModal, activeGroup },
+        { visibleGroups, allGroups: wheelGroups, componentNames },
+        { t, tModal, activeGroup, activeWheel },
       );
     } catch (error) {
       console.error("Error exporting bandages:", error);
@@ -176,7 +197,7 @@ function BandagesPageContent({
     } finally {
       setIsExporting(false);
     }
-  }, [visibleGroups, groups, componentNames, t, tModal, activeGroup, showError]);
+  }, [visibleGroups, wheelGroups, componentNames, t, tModal, activeGroup, activeWheel, showError]);
 
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
@@ -221,8 +242,15 @@ function BandagesPageContent({
         </AlertDescription></Alert>
       )}
 
+      <BandageWheelCards
+        locomotives={groups}
+        activeWheel={activeWheel}
+        onSelect={handleWheelSelect}
+        isLoading={isLoading}
+      />
+
       <BandageGroupCards
-        bandages={listedBandages}
+        locomotives={wheelGroups}
         activeGroup={activeGroup}
         onSelect={handleGroupSelect}
         isLoading={isLoading}

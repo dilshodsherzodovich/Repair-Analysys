@@ -59,6 +59,7 @@ export interface LocomotiveGroup {
   index: number;
   name: string;
   modelName: string;
+  modelId: string;
   sections: SectionRow[];
   bandages: Bandage[];
 }

@@ -1298,6 +1298,9 @@
     "group_kp_count": "{count} КП",
     "group_locomotives_count": "Локомотивов: {count}",
     "group_out_of_range": "Прочие",
+    "total_kp": "Общее количество КП",
+    "bandaged": "Бандажные",
+    "cast": "Литые",
     "columns": {
       "no": "№",
       "locomotive": "Локомотив",
@@ -1333,6 +1336,10 @@
     "success_updated": "Успешно сохранено",
     "just_saved": "Сохранено",
     "error_save": "Ошибка при сохранении",
+    "total_crankshafts": "Общее количество коленвалов",
+    "mainline": "Магистраль",
+    "switcher": "Манёвр",
+    "locomotives_count": "{count, plural, one {# локомотив} few {# локомотива} other {# локомотивов}}",
     "columns": {
       "no": "№",
       "locomotive": "Локомотив",
@@ -1340,6 +1347,7 @@
       "actions": "Действия"
     },
     "excel": {
+      "group": "Группа",
       "sheet": "Коленчатый вал",
       "date": "Дата",
       "error": "Ошибка при создании Excel-файла"

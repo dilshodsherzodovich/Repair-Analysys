@@ -48,3 +48,14 @@ export const bandageGroupKey = (bandage: Bandage): string | null => {
   }
   return OUT_OF_RANGE;
 };
+
+export type WheelKind = "bandaged" | "cast";
+
+/** Locomotive models with cast (quyma) wheels; every other model is bandaged. */
+const CAST_WHEEL_MODEL_IDS = new Set([39, 8, 7, 46]);
+
+export const wheelKind = (modelId: string | number | null | undefined): WheelKind =>
+  CAST_WHEEL_MODEL_IDS.has(Number(modelId)) ? "cast" : "bandaged";
+
+export const isWheelKind = (value: string | null): value is WheelKind =>
+  value === "bandaged" || value === "cast";

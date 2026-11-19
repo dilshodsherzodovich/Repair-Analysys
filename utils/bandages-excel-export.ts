@@ -9,13 +9,16 @@ import { LocomotiveGroup } from "@/app/bandages/[orgId]/components/bandages-tabl
 import {
   BANDAGE_GROUPS,
   OUT_OF_RANGE,
+  WheelKind,
   bandageGroupKey,
   hasSideMismatch,
+  wheelKind,
 } from "@/app/bandages/[orgId]/bandage-groups";
 
 /**
- * Bandages workbook: the table as it is on screen (filters and the picked
- * group applied) plus a sheet of per-group counts. Styling follows the
+ * Bandages workbook: the table as it is on screen (filters, bandajli / quyma
+ * and the picked group applied) plus a sheet of per-group counts split into
+ * bandajli and quyma. Styling follows the
  * duty-uzel export.
  */
 
@@ -26,6 +29,8 @@ interface ExportContext {
   tModal: Translate;
   /** Group picked from the cards; its KPs are highlighted like on screen. */
   activeGroup: string | null;
+  /** Bandajli / quyma picked from the wheel cards. */
+  activeWheel: WheelKind | null;
 }
 
 const NAVY = "FF1E3A5F";
@@ -95,9 +100,10 @@ function styleHeaderCell(cell: ExcelJS.Cell, fill: string) {
   cell.border = border;
 }
 
-/** "Sana: 09.11.2026 • Guruh: 50 (49–55)" */
-function subtitleFor({ t, activeGroup }: ExportContext) {
+/** "Sana: 09.11.2026 • Bandajli • Guruh: 50 (49–55)" */
+function subtitleFor({ t, activeGroup, activeWheel }: ExportContext) {
   const parts = [`${t("excel.date")}: ${format(new Date(), "dd.MM.yyyy")}`];
+  if (activeWheel) parts.push(t(activeWheel));
   if (activeGroup) {
     const range = groupRange(activeGroup);
     parts.push(
@@ -241,15 +247,20 @@ function writeGroupsSheet(
 
   const kps = new Map<string, number>();
   const locomotives = new Map<string, Set<number>>();
-  groups.forEach((group) =>
+  const wheel = { bandaged: new Map<string, number>(), cast: new Map<string, number>() };
+  groups.forEach((group) => {
+    const byWheel = wheel[wheelKind(group.modelId)];
     group.bandages.forEach((bandage) => {
       const key = bandageGroupKey(bandage);
       if (!key) return;
       kps.set(key, (kps.get(key) ?? 0) + 1);
+      byWheel.set(key, (byWheel.get(key) ?? 0) + 1);
       if (!locomotives.has(key)) locomotives.set(key, new Set());
       locomotives.get(key)!.add(bandage.locomotive);
-    }),
-  );
+    });
+  });
+  const sum = (counts: Map<string, number>) =>
+    Array.from(counts.values()).reduce((total, count) => total + count, 0);
 
   const keys: string[] = BANDAGE_GROUPS.map((group) => group.key);
   if (kps.has(OUT_OF_RANGE)) keys.push(OUT_OF_RANGE);
@@ -258,6 +269,8 @@ function writeGroupsSheet(
     t("excel.group"),
     t("excel.range"),
     t("excel.kp_count"),
+    t("bandaged"),
+    t("cast"),
     t("excel.locomotive_count"),
   ];
   writeTitle(ws, headers.length, t("title"), subtitleFor(context));
@@ -267,7 +280,7 @@ function writeGroupsSheet(
     styleHeaderCell(cell, NAVY);
   });
   ws.getRow(3).height = 24;
-  [12, 14, 14, 18].forEach((width, index) => {
+  [12, 14, 14, 14, 14, 18].forEach((width, index) => {
     ws.getColumn(index + 1).width = width;
   });
 
@@ -277,6 +290,8 @@ function writeGroupsSheet(
       groupLabel(key, t),
       groupRange(key),
       kps.get(key) ?? 0,
+      wheel.bandaged.get(key) ?? 0,
+      wheel.cast.get(key) ?? 0,
       locomotives.get(key)?.size ?? 0,
     ];
     const isActive = key === activeGroup;
@@ -297,9 +312,15 @@ function writeGroupsSheet(
   });
 
   // Total of KPs; locomotives are not summed since one can sit in several groups
-  const total = Array.from(kps.values()).reduce((sum, count) => sum + count, 0);
   ws.mergeCells(row, 1, row, 2);
-  [t("excel.total"), "", total, ""].forEach((value, col) => {
+  [
+    t("excel.total"),
+    "",
+    sum(kps),
+    sum(wheel.bandaged),
+    sum(wheel.cast),
+    "",
+  ].forEach((value, col) => {
     const cell = ws.getCell(row, col + 1);
     if (value !== "") cell.value = value;
     cell.font = { size: 10, bold: true, color: { argb: INK } };
@@ -317,7 +338,7 @@ export async function exportBandagesExcel(
   }: {
     /** Rows of the table on screen (narrowed to the picked group). */
     visibleGroups: LocomotiveGroup[];
-    /** Every listed locomotive, so the counts match the cards. */
+    /** Listed locomotives (bandajli / quyma applied), so the counts match the cards. */
     allGroups: LocomotiveGroup[];
     componentNames: string[];
   },
@@ -333,8 +354,12 @@ export async function exportBandagesExcel(
   const blob = new Blob([buffer], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
-  const suffix = context.activeGroup
-    ? `-${groupLabel(context.activeGroup, context.t)}`
-    : "";
+  const suffix = [
+    context.activeWheel && context.t(context.activeWheel),
+    context.activeGroup && groupLabel(context.activeGroup, context.t),
+  ]
+    .filter(Boolean)
+    .map((part) => `-${part}`)
+    .join("");
   saveAs(blob, fileName(`${context.t("title")}${suffix}`));
 }

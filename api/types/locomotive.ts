@@ -29,6 +29,8 @@ export interface SortedLocomotiveData {
   model_id: string;
   sections: { id: number; name: string }[];
   special_components: SpecialComponent[];
+  /** passenger, freight, switcher, ... */
+  service_type?: string | null;
 }
 
 export interface LokomotiveDataGetParams {

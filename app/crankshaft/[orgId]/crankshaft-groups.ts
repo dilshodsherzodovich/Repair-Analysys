@@ -20,3 +20,12 @@ export const crankshaftGroupKey = (value: unknown): string | null => {
 
 export const isKorenField = (field: string) => field.includes("koren");
 export const isShatunField = (field: string) => field.includes("shatun");
+
+export type ServiceKind = "mainline" | "switcher";
+
+/** Switcher locomotives count as manyovr; every other service type is magistral. */
+export const serviceKind = (serviceType: string | null | undefined): ServiceKind =>
+  serviceType === "switcher" ? "switcher" : "mainline";
+
+export const isServiceKind = (value: string | null): value is ServiceKind =>
+  value === "mainline" || value === "switcher";

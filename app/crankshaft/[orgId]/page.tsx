@@ -27,7 +27,13 @@ import { EmptyState, TableStateRow } from "@/ui/empty-state";
 import { Badge } from "@/ui/badge";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { CrankshaftGroupCards } from "./components/crankshaft-group-cards";
-import { crankshaftGroupKey } from "./crankshaft-groups";
+import { CrankshaftServiceCards } from "./components/crankshaft-service-cards";
+import {
+  ServiceKind,
+  crankshaftGroupKey,
+  isServiceKind,
+  serviceKind,
+} from "./crankshaft-groups";
 /** Edited input text per component id, then per field. */
 type Drafts = Record<number, Record<string, string>>;
 /** 400 messages per component id, keyed by field name like the API returns them. */
@@ -73,6 +79,7 @@ interface LocomotiveGroup {
   index: number;
   name: string;
   modelName: string;
+  serviceType?: string | null;
   components: SpecialComponent[];
 }
 
@@ -384,6 +391,8 @@ function CrankshaftPageContent({
   const searchParams = useSearchParams();
   const { q, locModel } = Object.fromEntries(searchParams.entries());
   const activeGroup = searchParams.get("group") || null;
+  const serviceParam = searchParams.get("service");
+  const activeService = isServiceKind(serviceParam) ? serviceParam : null;
   const { updateQuery } = useFilterParams();
 
   // Editing is limited to the user's own organization
@@ -412,6 +421,13 @@ function CrankshaftPageContent({
     },
     [updateQuery],
   );
+  const handleServiceSelect = useCallback(
+    (service: ServiceKind | null) => {
+      setEditingId(null);
+      updateQuery({ service });
+    },
+    [updateQuery],
+  );
 
   // Only locomotives that have a crankshaft; one table row per section
   const { groups, korenFields, shatunFields, valueFields } = useMemo(() => {
@@ -435,6 +451,7 @@ function CrankshaftPageContent({
         index: result.length + 1,
         name: locomotive.name,
         modelName: locomotive.model_name,
+        serviceType: locomotive.service_type,
         components,
       });
     });
@@ -449,15 +466,21 @@ function CrankshaftPageContent({
     };
   }, [data]);
 
-  // Cards count what the filters left; the table also narrows to the picked group
-  const listedComponents = useMemo(
-    () => groups.flatMap((group) => group.components),
-    [groups],
+  // Magistral / manyovr narrows the group cards and the table; the service
+  // cards keep counting both so the split stays visible
+  const serviceGroups = useMemo(
+    () =>
+      activeService
+        ? groups.filter((group) => serviceKind(group.serviceType) === activeService)
+        : groups,
+    [groups, activeService],
   );
+
+  // Cards count what the filters left; the table also narrows to the picked group
   const visibleGroups = useMemo(
     () =>
-      activeGroup
-        ? groups
+      (activeGroup
+        ? serviceGroups
             .filter((group) =>
               group.components.some((component) =>
                 valueFields.some(
@@ -467,9 +490,9 @@ function CrankshaftPageContent({
                 ),
               ),
             )
-            .map((group, i) => ({ ...group, index: i + 1 }))
-        : groups,
-    [groups, valueFields, activeGroup],
+        : serviceGroups
+      ).map((group, i) => ({ ...group, index: i + 1 })),
+    [serviceGroups, valueFields, activeGroup],
   );
 
   const [isExporting, setIsExporting] = useState(false);
@@ -477,9 +500,10 @@ function CrankshaftPageContent({
   const handleExport = useCallback(async () => {
     setIsExporting(true);
     try {
+      // The table as shown: filters, magistral / manyovr and the picked group
       await exportCrankshaftExcel(
-        { groups, korenFields, shatunFields },
-        { t, tModal },
+        { groups: visibleGroups, korenFields, shatunFields },
+        { t, tModal, activeGroup, activeService },
       );
     } catch (error) {
       console.error("Error exporting crankshaft:", error);
@@ -487,7 +511,16 @@ function CrankshaftPageContent({
     } finally {
       setIsExporting(false);
     }
-  }, [groups, korenFields, shatunFields, t, tModal, showError]);
+  }, [
+    visibleGroups,
+    korenFields,
+    shatunFields,
+    t,
+    tModal,
+    activeGroup,
+    activeService,
+    showError,
+  ]);
 
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
@@ -534,8 +567,15 @@ function CrankshaftPageContent({
         </AlertDescription></Alert>
       )}
 
+      <CrankshaftServiceCards
+        locomotives={groups}
+        activeService={activeService}
+        onSelect={handleServiceSelect}
+        isLoading={isPending}
+      />
+
       <CrankshaftGroupCards
-        components={listedComponents}
+        locomotives={serviceGroups}
         valueFields={valueFields}
         activeGroup={activeGroup}
         onSelect={handleGroupSelect}

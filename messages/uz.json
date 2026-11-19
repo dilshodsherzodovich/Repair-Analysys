@@ -1298,6 +1298,9 @@
     "group_kp_count": "{count} ta KP",
     "group_locomotives_count": "{count} ta lokomotiv",
     "group_out_of_range": "Boshqa",
+    "total_kp": "Umumiy KP soni",
+    "bandaged": "Bandajli",
+    "cast": "Quyma",
     "columns": {
       "no": "№",
       "locomotive": "Lokomotiv",
@@ -1333,6 +1336,10 @@
     "success_updated": "Muvaffaqiyatli saqlandi",
     "just_saved": "Saqlandi",
     "error_save": "Saqlashda xatolik yuz berdi",
+    "total_crankshafts": "Umumiy коленваллар soni",
+    "mainline": "Magistral",
+    "switcher": "Manyovr",
+    "locomotives_count": "{count} ta lokomotiv",
     "columns": {
       "no": "№",
       "locomotive": "Lokomotiv",
@@ -1340,6 +1347,7 @@
       "actions": "Amallar"
     },
     "excel": {
+      "group": "Guruh",
       "sheet": "Коленчатый вал",
       "date": "Sana",
       "error": "Excel faylini yaratishda xatolik yuz berdi"
