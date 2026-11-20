@@ -20,6 +20,7 @@ import {
   useUpdateDefectiveWork,
   useRevisionRemarkGroups,
   useEchRemarkGroups,
+  useEchOrganizations,
   useEchDefectiveWorks,
   useCreateEchDefectiveWork,
 } from "@/api/hooks/use-defective-works";
@@ -34,7 +35,7 @@ import { StatsPanel } from "@/components/statistics/stats-panel";
 import type { StatMetric, StatsHook } from "@/components/statistics/stats-panel";
 import { ClipboardCheck, ClipboardX } from "lucide-react";
 import { authService } from "@/api/services/auth.service";
-import { isEchAccount } from "@/lib/permissions";
+import { isEchAccount, isEchAdmin } from "@/lib/permissions";
 import { FilterPanel } from "@/ui/filter-bar";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
@@ -57,12 +58,14 @@ export function NosozliklarTab() {
     remark_group,
     remark,
     ech_remark_group,
+    ech_organization,
     start_date,
     end_date,
   } = getAllQueryValues();
   const { showSuccess, showError } = useSnackbar();
   const currentUser = authService.getUser();
   const isEchUser = isEchAccount(currentUser);
+  const canFilterEchOrg = isEchUser && (isEchAdmin(currentUser) || currentUser?.role === "admin");
   const [isExporting, setIsExporting] = useState(false);
 
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
@@ -113,6 +116,10 @@ export function NosozliklarTab() {
       { only_active: true, no_page: true, ordering: "order" },
       { enabled: canLoadEchGroups },
     );
+  const { data: echOrganizations } = useEchOrganizations(
+    { is_active: true },
+    { enabled: canFilterEchOrg },
+  );
   const { data: locomotiveModelsData, isLoading: isLoadingModels } =
     useLocomotiveModels(true, {
       locomotive_type: locomotive_type || undefined,
@@ -133,6 +140,7 @@ export function NosozliklarTab() {
     remark_group: remark_group || undefined,
     remark: remark || undefined,
     ech_remark_group: ech_remark_group || undefined,
+    ech_organization: ech_organization || undefined,
     fromDate: start_date || undefined,
     toDate: end_date || undefined,
   };
@@ -200,9 +208,18 @@ export function NosozliklarTab() {
             setSelectedEntry(null);
           },
           onError: (error: any) => {
+            const data = error?.response?.data;
+            // DRF field errors: {"field": ["msg"]} — show the first one
+            const fieldMsg =
+              data && typeof data === "object"
+                ? Object.values(data)
+                    .flat()
+                    .find((v) => typeof v === "string")
+                : undefined;
             showError(
               t("errors.generic"),
-              error?.response?.data?.message ||
+              data?.message ||
+                (fieldMsg as string | undefined) ||
                 error?.message ||
                 t("errors.create"),
             );
@@ -307,6 +324,27 @@ export function NosozliklarTab() {
       header: t("columns.group_ech"),
       accessor: (row) => row.ech_remark_group_info?.name || "-",
     },
+    ...(isEchUser
+      ? [
+          {
+            key: "ech_organization_info",
+            header: t("columns.ech_organization"),
+            accessor: (row: DefectiveWorkEntry) => {
+              const org = row.ech_organization_info;
+              if (!org) return "-";
+              return org.parent ? `${org.name} (${org.parent.name})` : org.name;
+            },
+          },
+          {
+            key: "locomotive_type",
+            header: t("columns.locomotive_type"),
+            accessor: (row: DefectiveWorkEntry) =>
+              row.locomotive_type
+                ? t(`locomotive_types.${row.locomotive_type}`)
+                : "-",
+          },
+        ]
+      : []),
     {
       key: "train_driver",
       header: t("columns.train_driver"),
@@ -335,7 +373,9 @@ export function NosozliklarTab() {
       key: "status",
       header: t("columns.status"),
       accessor: (row) => {
-        const isDone = !!row?.table_number;
+        const isDone = row?.status
+          ? row.status === "completed"
+          : !!row?.table_number;
         return (
           <Badge variant={isDone ? "success" : "danger"}>
             {isDone ? t("status_done") : t("status_not_done")}
@@ -445,6 +485,17 @@ export function NosozliklarTab() {
       })),
     ],
     [echGroupsData, t],
+  );
+
+  const echOrganizationOptions = useMemo(
+    () => [
+      { value: "", label: t("filters.ech_organization_all") },
+      ...(echOrganizations ?? []).map((o) => ({
+        value: String(o.id),
+        label: o.parent_name ? `${o.name} (${o.parent_name})` : o.name,
+      })),
+    ],
+    [echOrganizations, t],
   );
 
   const locomotiveTypeOptions = useMemo(
@@ -608,6 +659,18 @@ export function NosozliklarTab() {
                   searchable: true,
                   loading: isLoadingEchGroups,
                 },
+                ...(canFilterEchOrg
+                  ? [
+                      {
+                        name: "ech_organization",
+                        label: t("filters.ech_organization"),
+                        isSelect: true,
+                        options: echOrganizationOptions,
+                        placeholder: t("filters.ech_organization_placeholder"),
+                        searchable: true,
+                      },
+                    ]
+                  : []),
                 {
                   name: "tab",
                 primary: true,

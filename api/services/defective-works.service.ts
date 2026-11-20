@@ -11,9 +11,21 @@ import {
   RevisionJournalGroupParams,
   EchRemarkGroup,
   EchRemarkGroupParams,
+  EchOrganization,
+  EchOrganizationParams,
 } from "../types/defective-works";
 
 export const defectiveWorksService = {
+  async getEchOrganizations(
+    params?: EchOrganizationParams,
+  ): Promise<EchOrganization[]> {
+    const response = await api.get<
+      EchOrganization[] | PaginatedData<EchOrganization>
+    >("/ech-organizations/", { params });
+    const data = response.data;
+    return Array.isArray(data) ? data : (data?.results ?? []);
+  },
+
   async getEchRemarkGroups(
     params?: EchRemarkGroupParams,
   ): Promise<EchRemarkGroup[]> {
@@ -36,6 +48,7 @@ export const defectiveWorksService = {
           page_size: params?.page_size,
           search: params?.search,
           ech_remark_group: params?.ech_remark_group,
+          ech_organization: params?.ech_organization,
           locomotive: params?.locomotive,
           locomotive_model: params?.locomotive_model,
           locomotive_type: params?.locomotive_type,

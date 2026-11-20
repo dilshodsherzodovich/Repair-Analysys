@@ -22,6 +22,8 @@ import {
 } from "@/api/types/defective-works";
 import { useGetLocomotives } from "@/api/hooks/use-locomotives";
 import { useGetInspectionTypes } from "@/api/hooks/use-inspection-types";
+import { useOrganizations } from "@/api/hooks/use-organizations";
+import { useLocomotiveModels } from "@/api/hooks/use-locomotive-models";
 import { useEchRemarkGroups, useRevisionRemarkGroups } from "@/api/hooks/use-defective-works";
 import { LocomotiveData } from "@/api/types/locomotive";
 import { InspectionType } from "@/api/types/inspectionTypes";
@@ -188,6 +190,7 @@ export function DefectiveWorkModal({
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedLocomotive, setSelectedLocomotive] = useState("");
   const [selectedEchGroup, setSelectedEchGroup] = useState("");
+  const [selectedDepot, setSelectedDepot] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedRemark, setSelectedRemark] = useState("");
   const { showError } = useSnackbar();
@@ -195,6 +198,25 @@ export function DefectiveWorkModal({
 
   const { data: locomotivesData, isPending: isLoadingLocomotives } =
     useGetLocomotives(isOpen);
+
+  // ECH journal: depot (TCh) is required; only electric locos / EMUs allowed
+  const { data: depots = [], isPending: isLoadingDepots } = useOrganizations();
+  const { data: electricLocoModels = [] } = useLocomotiveModels(
+    isOpen && isEchUser,
+    { locomotive_type: "electric_loco" },
+  );
+  const { data: electricTrainModels = [] } = useLocomotiveModels(
+    isOpen && isEchUser,
+    { locomotive_type: "electric_train" },
+  );
+  const allowedLocomotives = useMemo(() => {
+    const all = locomotivesData?.results ?? [];
+    if (!isEchUser) return all;
+    const ids = new Set(
+      [...electricLocoModels, ...electricTrainModels].map((m) => String(m.id)),
+    );
+    return all.filter((loc) => ids.has(String(loc.model_id)));
+  }, [locomotivesData, isEchUser, electricLocoModels, electricTrainModels]);
 
   const { data: inspectionTypes, isPending: isLoadingInspectionTypes } =
     useGetInspectionTypes(isOpen);
@@ -238,6 +260,9 @@ export function DefectiveWorkModal({
       setSelectedEchGroup(
         entry.ech_remark_group ? String(entry.ech_remark_group) : "",
       );
+      setSelectedDepot(
+        entry.organization_info?.id ? String(entry.organization_info.id) : "",
+      );
       setSelectedGroup(entry.remark_group ? String(entry.remark_group) : "");
       setSelectedRemark(entry.remark ? String(entry.remark) : "");
     } else {
@@ -245,6 +270,7 @@ export function DefectiveWorkModal({
       setSelectedDate(undefined);
       setSelectedLocomotive("");
       setSelectedEchGroup("");
+      setSelectedDepot("");
       setSelectedGroup("");
       setSelectedRemark("");
     }
@@ -269,6 +295,10 @@ export function DefectiveWorkModal({
       showError(t("error_group_ech_required"));
       return;
     }
+    if (isEchUser && !selectedDepot) {
+      showError(t("error_depot_required"));
+      return;
+    }
 
     const payload = {
       locomotive: Number(locomotive),
@@ -278,6 +308,9 @@ export function DefectiveWorkModal({
       issue: issue.trim(),
       code: code.trim(),
       date: selectedDate?.toISOString() || "",
+      ...(isEchUser && selectedDepot
+        ? { organization_id: Number(selectedDepot) }
+        : {}),
       ...(selectedEchGroup
         ? { ech_remark_group: Number(selectedEchGroup) }
         : {}),
@@ -297,6 +330,7 @@ export function DefectiveWorkModal({
     setSelectedDate(undefined);
     setSelectedLocomotive("");
     setSelectedEchGroup("");
+    setSelectedDepot("");
     setSelectedGroup("");
     setSelectedRemark("");
     setFormKey((prev) => prev + 1);
@@ -378,7 +412,7 @@ export function DefectiveWorkModal({
             <LocomotiveSelectField
               name="locomotive"
               defaultValue={formDefaults.locomotive}
-              locomotives={locomotivesData?.results || []}
+              locomotives={allowedLocomotives}
               isLoading={isLoadingLocomotives}
               label={t("locomotive")}
               placeholder={t("locomotive_placeholder")}
@@ -401,6 +435,34 @@ export function DefectiveWorkModal({
               loadingText={t("locomotive_loading")}
               emptyText={t("inspection_type_empty")}
             />
+
+            {/* Depot (TCh) — required for ECH journal */}
+            {isEchUser && (
+              <Field label={t("depot")} htmlFor="depot" className="mb-4">
+                <Select
+                  value={selectedDepot}
+                  onValueChange={setSelectedDepot}
+                  disabled={isLoadingDepots}
+                >
+                  <SelectTrigger id="depot">
+                    <SelectValue
+                      placeholder={
+                        isLoadingDepots
+                          ? t("locomotive_loading")
+                          : t("depot_placeholder")
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Array.isArray(depots) ? depots : []).map((d) => (
+                      <SelectItem key={d.id} value={String(d.id)}>
+                        {d.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            )}
 
             {/* ECH group */}
             {isEchUser && <Field label={t("group_ech")} htmlFor="group_ech" className="mb-4">

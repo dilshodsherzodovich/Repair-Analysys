@@ -15,6 +15,7 @@ export type UserRole =
   | "payroll_admin"
   | "accountant"
   | "ech_staff"
+  | "ech_admin"
   | "observer"
 
 // Interface for the ProfileModel object

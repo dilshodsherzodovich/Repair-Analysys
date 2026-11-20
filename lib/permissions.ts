@@ -81,6 +81,7 @@ export type Permission =
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   ech_staff: [],
+  ech_admin: [],
   observer: [],
   admin: [
     "edit_bandage",
@@ -234,6 +235,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "view_culprits",
   ],
   sriv_moderator: [
+    "view_orders",
+    "create_order",
+    "edit_order",
+    "delete_order",
     "view_delays",
     "view_delays_reports",
     "create_delay",
@@ -261,9 +266,16 @@ const ECH_PERMISSIONS: Permission[] = [
   "edit_defective_work",
 ];
 
+/** ech_admin: sees the ECH journal of all organizations, read-only. */
+export function isEchAdmin(user: UserData | null): boolean {
+  return user?.role?.toLowerCase() === "ech_admin";
+}
+
 export function isEchAccount(user: UserData | null): boolean {
   return (
-    user?.is_ech_user === true || user?.role?.toLowerCase() === "ech_staff"
+    user?.is_ech_user === true ||
+    user?.role?.toLowerCase() === "ech_staff" ||
+    isEchAdmin(user)
   );
 }
 
@@ -272,6 +284,9 @@ export function hasPermission(
   permission: Permission,
 ): boolean {
   if (!user) return false;
+  if (isEchAdmin(user)) {
+    return permission === "view_defective_works";
+  }
   if (isEchAccount(user)) {
     return ECH_PERMISSIONS.includes(permission);
   }

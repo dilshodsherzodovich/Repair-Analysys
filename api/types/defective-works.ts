@@ -54,6 +54,29 @@ export interface RevisionJournalGroupParams {
   no_page?: boolean;
 }
 
+export type EchOrganizationType = "ech" | "echk";
+
+export interface EchOrganization {
+  id: number;
+  name: string;
+  type: EchOrganizationType;
+  parent: number | null;
+  parent_name: string | null;
+  is_active: boolean;
+}
+
+export interface EchOrganizationParams {
+  parent?: number | string;
+  is_active?: boolean;
+}
+
+export interface EchOrganizationInfo {
+  id: number;
+  name: string;
+  type: EchOrganizationType;
+  parent: { id: number; name: string } | null;
+}
+
 export interface EchRemarkGroup {
   id: number;
   name: string;
@@ -106,17 +129,22 @@ export interface DefectiveWorkEntry {
   remark_info?: RevisionRemarkInfo | null;
   group_ech_info?: RevisionJournalGroup | null;
   ech_remark_group_info?: EchRemarkGroup | null;
+  /** ECH journal only */
+  locomotive_type?: "electric_loco" | "electric_train" | null;
+  status?: "created" | "completed";
+  ech_organization_info?: EchOrganizationInfo | null;
   user_info: string;
 }
 
 export interface DefectiveWorkCreatePayload {
+  /** Depot (TCh) id — required by the ECH journal */
+  organization_id?: number;
   group_ech?: number;
   ech_remark_group?: number;
   locomotive: number;
   inspection_type?: number;
   train_driver?: string;
   table_number?: string;
-  organization_id?: number;
   issue: string;
   code?: string;
   date?: string;
@@ -153,6 +181,7 @@ export interface DefectiveWorkListParams {
   remark?: number | string;
   group_ech?: number | string;
   ech_remark_group?: number | string;
+  ech_organization?: number | string;
   createdFrom?: string;
   createdTo?: string;
   ordering?: string;

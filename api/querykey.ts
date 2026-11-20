@@ -92,6 +92,7 @@ export const queryKeys = {
     remarkGroups: "revision-remark-groups",
     journalGroups: "revision-journal-groups",
     echRemarkGroups: "ech-remark-groups",
+    echOrganizations: "ech-organizations",
     echJournal: "ech-revision-journal",
   },
   delays: {

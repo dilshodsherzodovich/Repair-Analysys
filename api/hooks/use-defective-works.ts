@@ -9,6 +9,7 @@ import {
   RevisionRemarkGroupParams,
   RevisionJournalGroupParams,
   EchRemarkGroupParams,
+  EchOrganizationParams,
 } from "../types/defective-works";
 import { queryKeys } from "../querykey";
 
@@ -55,6 +56,18 @@ export function useRevisionJournalGroups(
       }
       return failureCount < 2;
     },
+  });
+}
+
+export function useEchOrganizations(
+  params?: EchOrganizationParams,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: [queryKeys.defectiveWorks.echOrganizations, params],
+    queryFn: () => defectiveWorksService.getEchOrganizations(params),
+    staleTime: 30 * 60 * 1000,
+    enabled: options?.enabled ?? true,
   });
 }
 
