@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../../unauthorized/page";
 import { PageHeader } from "@/ui/page-header";
-import { useTu137Records } from "@/api/hooks/use-tu137";
+import { useTu137Records, useTu137Recurring } from "@/api/hooks/use-tu137";
 import { exportTu137ToDocx } from "@/lib/export-tu137-docx";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 
@@ -16,11 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ExportActions } from "@/ui/export-actions";
 import PageFilters from "@/ui/filters";
 import { Repeat } from "lucide-react";
-import {
-  filterTu137,
-  getRecurringGroups,
-  getRespOrganizations,
-} from "@/lib/tu137-filters";
+import { getRespOrganizations } from "@/lib/tu137-filters";
 import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
@@ -71,32 +67,51 @@ export default function Tu137ReportsPage() {
     depo_id: pDepoId,
     page: 1,
     page_size: 500,
+    search: searchQuery || undefined,
+    fromDate: startDate || undefined,
+    toDate: endDate || undefined,
+    responsible_organization: respOrg || undefined,
   });
 
-  const depoRecords = apiResponse?.results ?? [];
+  // options for the organization select: the depo's organizations, unfiltered
+  const { data: orgSource } = useTu137Records({
+    depo_id: pDepoId,
+    page: 1,
+    page_size: 500,
+  });
+  const { data: recurringData } = useTu137Recurring({
+    depo_id: pDepoId as number | string,
+    search: searchQuery || undefined,
+    fromDate: startDate || undefined,
+    toDate: endDate || undefined,
+    responsible_organization: respOrg || undefined,
+  });
+  const recurringGroups = useMemo(
+    () =>
+      (recurringData ?? []).map((g) => ({
+        ...g,
+        key: `${g.group_id}|${g.station_code}|${g.station2_code ?? ""}`,
+        station: g.station2_name
+          ? `${g.station_name} - ${g.station2_name}`
+          : g.station_name,
+        open: g.open_count,
+      })),
+    [recurringData],
+  );
+
+  const filteredRecords = useMemo(
+    () => apiResponse?.results ?? [],
+    [apiResponse],
+  );
   const orgOptions = useMemo(
     () => [
       { value: "", label: t("filters_all_orgs") },
-      ...getRespOrganizations(depoRecords).map((o) => ({
+      ...getRespOrganizations(orgSource?.results ?? []).map((o) => ({
         value: String(o.id),
         label: o.name,
       })),
     ],
-    [depoRecords, t],
-  );
-  const filteredRecords = useMemo(
-    () =>
-      filterTu137(depoRecords, {
-        q: searchQuery,
-        start_date: startDate,
-        end_date: endDate,
-        resp_org: respOrg,
-      }),
-    [depoRecords, searchQuery, startDate, endDate, respOrg],
-  );
-  const recurringGroups = useMemo(
-    () => getRecurringGroups(filteredRecords),
-    [filteredRecords],
+    [orgSource, t],
   );
 
   if (!currentUser || !canAccessSection(currentUser, "tu-137")) {

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { tu137Service } from "../services/tu137.service";
-import { Tu137Params } from "../types/tu137";
+import { Tu137Params, Tu137RecurringParams } from "../types/tu137";
 import { queryKeys } from "../querykey";
 
 export function useTu137Records(params?: Tu137Params) {
@@ -9,5 +9,14 @@ export function useTu137Records(params?: Tu137Params) {
     queryFn: () => tu137Service.getRecords(params),
     staleTime: 5 * 60 * 1000,
     enabled: params?.depo_id !== undefined && params?.depo_id !== null,
+  });
+}
+
+export function useTu137Recurring(params: Tu137RecurringParams) {
+  return useQuery({
+    queryKey: [queryKeys.tu137.all, "recurring", params],
+    queryFn: () => tu137Service.getRecurring(params),
+    staleTime: 5 * 60 * 1000,
+    enabled: params.depo_id !== undefined && params.depo_id !== null,
   });
 }

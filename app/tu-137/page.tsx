@@ -17,12 +17,7 @@ import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
 import PageFilters from "@/ui/filters";
 import { Repeat } from "lucide-react";
-import {
-  filterTu137,
-  getRecurringCounts,
-  getRespOrganizations,
-  recurringKey,
-} from "@/lib/tu137-filters";
+import { getRespOrganizations } from "@/lib/tu137-filters";
 
 import { LoadingState, ErrorState } from "@/ui/empty-state";
 const PAGE_SIZE = 20;
@@ -49,46 +44,38 @@ export default function Tu137Page() {
   const { data: apiResponse, isLoading, error } = useTu137Records({
     depo_id: pDepoId,
     finished: tab === "hal_qilingan" ? true : false,
-    // the depo's records come in one batch; filters and paging run client-side
+    page,
+    page_size: PAGE_SIZE,
+    search: q || undefined,
+    fromDate: startDate || undefined,
+    toDate: endDate || undefined,
+    responsible_organization: respOrg || undefined,
+    is_repeat: onlyRepeating ? true : undefined,
+  });
+
+  // options for the organization select: the depo's organizations, unfiltered
+  const { data: orgSource } = useTu137Records({
+    depo_id: pDepoId,
     page: 1,
     page_size: 500,
   });
-
-  const allRecords = apiResponse?.results ?? [];
   const orgOptions = useMemo(
     () => [
       { value: "", label: t("filters_all_orgs") },
-      ...getRespOrganizations(allRecords).map((o) => ({
+      ...getRespOrganizations(orgSource?.results ?? []).map((o) => ({
         value: String(o.id),
         label: o.name,
       })),
     ],
-    [allRecords, t],
-  );
-  // repeat counts are taken over the whole depo, not the filtered slice
-  const repeatCounts = useMemo(
-    () => getRecurringCounts(allRecords),
-    [allRecords],
-  );
-  const filtered = useMemo(
-    () =>
-      filterTu137(allRecords, {
-        q,
-        start_date: startDate,
-        end_date: endDate,
-        resp_org: respOrg,
-      }).filter(
-        (r) => !onlyRepeating || (repeatCounts.get(recurringKey(r)) ?? 0) > 1,
-      ),
-    [allRecords, q, startDate, endDate, respOrg, onlyRepeating, repeatCounts],
+    [orgSource, t],
   );
 
   if (!currentUser || !canAccessSection(currentUser, "tu-137")) {
     return <UnauthorizedPage />;
   }
 
-  const totalCount = filtered.length;
-  const records = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const records = apiResponse?.results ?? [];
+  const totalCount = apiResponse?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   const recordsColumns: TableColumn<Tu137Record>[] = [
@@ -136,10 +123,10 @@ export default function Tu137Page() {
             {r.station_name}
             {r.station2_name ? ` - ${r.station2_name}` : ""}
           </div>
-          {(repeatCounts.get(recurringKey(r)) ?? 0) > 1 && (
+          {(r.is_repeat || (r.repeat_count ?? 0) > 1) && (
             <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-destructive/30 bg-destructive-subtle px-2 py-0.5 text-2xs font-bold text-destructive">
               <Repeat className="h-3 w-3" />
-              {t("repeat_badge", { count: repeatCounts.get(recurringKey(r)) ?? 0 })}
+              {t("repeat_badge", { count: r.repeat_count ?? 2 })}
             </span>
           )}
         </div>
