@@ -20,6 +20,7 @@ import {
 import UnauthorizedPage from "@/app/unauthorized/page";
 import { authService } from "@/api/services/auth.service";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { useOrganizationFilter } from "@/lib/hooks/useOrganizationFilter";
 import {
   BandagesTable,
   LocomotiveGroup,
@@ -56,6 +57,11 @@ function BandagesPageContent({
   const wheelParam = searchParams.get("wheel");
   const activeWheel = isWheelKind(wheelParam) ? wheelParam : null;
   const { updateQuery } = useFilterParams();
+  const { filter: organizationFilter, allOrganizations } =
+    useOrganizationFilter("bandages", organizationId, {
+      label: t("organization_label"),
+      allLabel: t("all"),
+    });
 
   // Editing is limited to the user's own organization
   const canEdit =
@@ -73,7 +79,7 @@ function BandagesPageContent({
     no_page: true,
     locomotive_model: +locModel || undefined,
     search: q || undefined,
-    registered_organization: organizationId,
+    registered_organization: allOrganizations ? undefined : organizationId,
   });
   const {
     data: bandagesData,
@@ -201,6 +207,7 @@ function BandagesPageContent({
 
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
+      organizationFilter,
       {
         name: "locModel",
         label: t("locModel_label"),
@@ -218,7 +225,7 @@ function BandagesPageContent({
         loading: loadingModels,
       },
     ],
-    [t, locomotiveModelsData, loadingModels],
+    [organizationFilter, t, locomotiveModelsData, loadingModels],
   );
 
   return (

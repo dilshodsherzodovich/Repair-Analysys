@@ -11,6 +11,7 @@ import {
   ServiceKind,
   crankshaftGroupKey,
   isMissingValue,
+  positionLabel,
 } from "@/app/crankshaft/[orgId]/crankshaft-groups";
 
 /**
@@ -126,7 +127,14 @@ export async function exportCrankshaftExcel(
   wb.creator = "Repair Analysys";
   const ws = wb.addWorksheet(t("excel.sheet").slice(0, 31) || "Crankshaft");
 
-  const infoColumns = 5; // №, locomotive, section, year, factory number
+  // №, locomotive, section, [Верх / Низ], year, factory number. The position
+  // is its own column (only when a 2ТЭ-10М-series locomotive is listed)
+  const hasPositions = groups.some((group) =>
+    group.components.some((component) => component.position),
+  );
+  const infoColumns = hasPositions ? 6 : 5;
+  const yearIndex = infoColumns - 2;
+  const factoryIndex = infoColumns - 1;
   const korenStart = infoColumns + 1;
   const shatunStart = korenStart + korenFields.length;
   const columnCount = infoColumns + korenFields.length + shatunFields.length;
@@ -153,6 +161,7 @@ export async function exportCrankshaftExcel(
     t("columns.no"),
     t("columns.locomotive"),
     t("columns.section"),
+    ...(hasPositions ? [t("columns.position")] : []),
     tModal("year_of_manufacture"),
     tModal("factory_number"),
   ].forEach((label, index) => {
@@ -188,8 +197,9 @@ export async function exportCrankshaftExcel(
   ws.getColumn(1).width = 6;
   ws.getColumn(2).width = 20;
   ws.getColumn(3).width = 12;
-  ws.getColumn(4).width = 14;
-  ws.getColumn(5).width = 16;
+  if (hasPositions) ws.getColumn(4).width = 10;
+  ws.getColumn(yearIndex + 1).width = 14;
+  ws.getColumn(factoryIndex + 1).width = 16;
   for (let col = korenStart; col <= columnCount; col++) {
     ws.getColumn(col).width = 8;
   }
@@ -206,6 +216,7 @@ export async function exportCrankshaftExcel(
         group.index,
         `${group.name}-${group.modelName}`,
         component.section?.name ?? `${tModal("section")} ${componentIndex + 1}`,
+        ...(hasPositions ? [positionLabel(component, tModal) ?? "—"] : []),
         // Kept as text: factory numbers can carry leading zeros
         textValue(component.year_of_manufacture),
         textValue(component.factory_number),
@@ -224,8 +235,8 @@ export async function exportCrankshaftExcel(
           bold: index === 1,
           color: {
             argb:
-              index === 3 ||
-              index === 4 ||
+              index === yearIndex ||
+              index === factoryIndex ||
               (index >= infoColumns && isMissingValue(component[valueFields[index - infoColumns]]))
                 ? MUTED_TXT
                 : INK,

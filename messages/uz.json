@@ -1268,6 +1268,8 @@
     "img_fallback": "IMG"
   },
   "SpecialComponentsModal": {
+    "position_top": "Yuqori",
+    "position_bottom": "Pastki",
     "title": "Коленчатый вал",
     "not_found": "Коленчатый вал topilmadi",
     "close": "Yopish",
@@ -1352,6 +1354,7 @@
     "switcher": "Manyovr",
     "locomotives_count": "{count} ta lokomotiv",
     "columns": {
+      "position": "Joylashuvi",
       "no": "№",
       "locomotive": "Lokomotiv",
       "section": "Sektsiya",

@@ -1268,6 +1268,8 @@
     "img_fallback": "IMG"
   },
   "SpecialComponentsModal": {
+    "position_top": "Верх",
+    "position_bottom": "Низ",
     "title": "Коленчатый вал",
     "not_found": "Коленчатый вал не найден",
     "close": "Закрыть",
@@ -1352,6 +1354,7 @@
     "switcher": "Манёвр",
     "locomotives_count": "{count, plural, one {# локомотив} few {# локомотива} other {# локомотивов}}",
     "columns": {
+      "position": "Позиция",
       "no": "№",
       "locomotive": "Локомотив",
       "section": "Секция",

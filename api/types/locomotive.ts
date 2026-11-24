@@ -15,11 +15,16 @@ export interface SpecialComponentSection {
   name: string;
 }
 
+export type SpecialComponentPosition = "top" | "bottom";
+
 export type SpecialComponent = {
   id: number;
   year_of_manufacture: string;
   factory_number: string;
   section?: SpecialComponentSection | null;
+  /** Верх / Низ crankshaft of a 2ТЭ-10М-series section; null on other models. */
+  position?: SpecialComponentPosition | null;
+  position_display?: string | null;
 } & Record<string, string | number | SpecialComponentSection | null | undefined>;
 
 export interface SortedLocomotiveData {

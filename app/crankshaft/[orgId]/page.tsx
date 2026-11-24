@@ -26,14 +26,18 @@ import { Page } from "@/ui/page";
 import { EmptyState, TableStateRow } from "@/ui/empty-state";
 import { Badge } from "@/ui/badge";
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { useOrganizationFilter } from "@/lib/hooks/useOrganizationFilter";
 import { CrankshaftGroupCards } from "./components/crankshaft-group-cards";
 import { CrankshaftServiceCards } from "./components/crankshaft-service-cards";
 import {
   MISSING_VALUE,
   ServiceKind,
+  compareComponents,
   crankshaftGroupKey,
   isMissingValue,
   isServiceKind,
+  positionLabel,
+  sectionLabel,
   serviceKind,
 } from "./crankshaft-groups";
 /** Edited input text per component id, then per field. */
@@ -93,6 +97,7 @@ interface LocomotiveGroup {
 const LocomotiveRows = memo(function LocomotiveRows({
   group,
   valueFields,
+  hasPositions,
   canEdit,
   isEditing,
   onEdit,
@@ -101,6 +106,8 @@ const LocomotiveRows = memo(function LocomotiveRows({
 }: {
   group: LocomotiveGroup;
   valueFields: string[];
+  /** Some listed locomotive is 2ТЭ-10М-series: the Верх / Низ column shows. */
+  hasPositions: boolean;
   canEdit: boolean;
   isEditing: boolean;
   onEdit: (locomotiveId: number) => void;
@@ -305,6 +312,12 @@ const LocomotiveRows = memo(function LocomotiveRows({
             {component.section?.name ??
               `${tModal("section")} ${componentIndex + 1}`}
           </TableCell>
+          {/* 2ТЭ-10М series: a top and a bottom crankshaft per section */}
+          {hasPositions && (
+            <TableCell className="text-center">
+              {positionLabel(component, tModal) ?? "—"}
+            </TableCell>
+          )}
           {[...INFO_FIELDS, ...valueFields].map((field) => {
             const isInfo = (INFO_FIELDS as readonly string[]).includes(field);
             const editable = isEditing && (isInfo || field in component);
@@ -350,7 +363,7 @@ const LocomotiveRows = memo(function LocomotiveRows({
                     }
                     disabled={isSaving}
                     autoFocus={autoFocus}
-                    label={`${component.section?.name ?? ""} ${fieldLabel(field)}`}
+                    label={`${sectionLabel(component, componentIndex, tModal)} ${fieldLabel(field)}`}
                     missing={
                       isInfo
                         ? undefined
@@ -417,6 +430,11 @@ function CrankshaftPageContent({
   const serviceParam = searchParams.get("service");
   const activeService = isServiceKind(serviceParam) ? serviceParam : null;
   const { updateQuery } = useFilterParams();
+  const { filter: organizationFilter, allOrganizations } =
+    useOrganizationFilter("crankshaft", organizationId, {
+      label: t("organization_label"),
+      allLabel: t("all"),
+    });
 
   // Editing is limited to the user's own organization
   const canEdit =
@@ -430,7 +448,7 @@ function CrankshaftPageContent({
     no_page: true,
     locomotive_model: +locModel || undefined,
     search: q || undefined,
-    registered_organization: organizationId,
+    registered_organization: allOrganizations ? undefined : organizationId,
   });
 
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -460,9 +478,7 @@ function CrankshaftPageContent({
 
     (data?.results ?? []).forEach((locomotive) => {
       if (!locomotive.special_components?.length) return;
-      const components = [...locomotive.special_components].sort(
-        (a, b) => (a.section?.id ?? 0) - (b.section?.id ?? 0),
-      );
+      const components = [...locomotive.special_components].sort(compareComponents);
       components.forEach((component) => {
         Object.keys(component).forEach((key) => {
           if (key.includes("koren")) koren.add(key);
@@ -547,6 +563,7 @@ function CrankshaftPageContent({
 
   const pageFilters: FiltersQuery[] = useMemo(
     () => [
+      organizationFilter,
       {
         name: "locModel",
         label: t("locModel_label"),
@@ -564,10 +581,14 @@ function CrankshaftPageContent({
         loading: loadingModels,
       },
     ],
-    [t, locomotiveModelsData, loadingModels],
+    [organizationFilter, t, locomotiveModelsData, loadingModels],
   );
 
-  const columnCount = 5 + valueFields.length + (canEdit ? 1 : 0);
+  const hasPositions = visibleGroups.some((group) =>
+    group.components.some((component) => component.position),
+  );
+  const columnCount =
+    5 + (hasPositions ? 1 : 0) + valueFields.length + (canEdit ? 1 : 0);
 
   return (
     <Page>
@@ -624,6 +645,9 @@ function CrankshaftPageContent({
               >
                 {t("columns.section")}
               </TableHead>
+              {hasPositions && (
+                <TableHead rowSpan={2}>{t("columns.position")}</TableHead>
+              )}
               <TableHead rowSpan={2}>
                 {tModal("year_of_manufacture")}
               </TableHead>
@@ -691,6 +715,7 @@ function CrankshaftPageContent({
                   key={group.locomotiveId}
                   group={group}
                   valueFields={valueFields}
+                  hasPositions={hasPositions}
                   canEdit={canEdit}
                   isEditing={editingId === group.locomotiveId}
                   onEdit={handleEdit}

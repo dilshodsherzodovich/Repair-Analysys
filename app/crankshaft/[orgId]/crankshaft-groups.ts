@@ -1,3 +1,5 @@
+import type { SpecialComponent } from "@/api/types/locomotive";
+
 /**
  * Crankshaft value groups. A value lands in the group of its whole part:
  * 0 ≤ v < 1 is group 0, 1 ≤ v < 2 is group 1, ... 6 ≤ v < 7 is group 6,
@@ -39,3 +41,37 @@ export const serviceKind = (serviceType: string | null | undefined): ServiceKind
 
 export const isServiceKind = (value: string | null): value is ServiceKind =>
   value === "mainline" || value === "switcher";
+
+const POSITION_ORDER: Record<string, number> = { top: 0, bottom: 1 };
+
+/**
+ * Table order: by section (rows without one last), then Верх before Низ.
+ * 2ТЭ-10М-series sections have a top and a bottom crankshaft; other models
+ * one per section with no position.
+ */
+export const compareComponents = (a: SpecialComponent, b: SpecialComponent) =>
+  (a.section?.id ?? Number.POSITIVE_INFINITY) -
+    (b.section?.id ?? Number.POSITIVE_INFINITY) ||
+  (POSITION_ORDER[a.position ?? ""] ?? 2) - (POSITION_ORDER[b.position ?? ""] ?? 2);
+
+/** "Верх" / "Низ" in the UI language; null for models without positions. */
+export const positionLabel = (
+  component: SpecialComponent,
+  tModal: (key: string) => string,
+): string | null =>
+  component.position === "top"
+    ? tModal("position_top")
+    : component.position === "bottom"
+      ? tModal("position_bottom")
+      : (component.position_display ?? null);
+
+/** Section name with the position: "A · Верх", or just "A". */
+export const sectionLabel = (
+  component: SpecialComponent,
+  index: number,
+  tModal: (key: string) => string,
+) => {
+  const section = component.section?.name ?? `${tModal("section")} ${index + 1}`;
+  const position = positionLabel(component, tModal);
+  return position ? `${section} · ${position}` : section;
+};

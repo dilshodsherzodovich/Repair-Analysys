@@ -45,6 +45,12 @@ export interface FiltersQuery {
    */
   primary?: boolean;
   permission?: Permission;
+  /**
+   * Bound by the page instead of the query string (e.g. the organization in
+   * the route): always set, so it gets no chip and "Tozalash" leaves it.
+   */
+  value?: string;
+  onValueChange?: (value: string) => void;
 }
 
 interface PageFiltersProps {
@@ -127,7 +133,7 @@ export default function PageFilters({
   // Every query key this bar owns, for "Tozalash"
   const ownedKeys = [
     ...textKeys,
-    ...filters.filter((f) => f.isSelect).map((f) => f.name),
+    ...filters.filter((f) => f.isSelect && !f.onValueChange).map((f) => f.name),
     ...(hasDatePicker ? ["date"] : []),
     ...(hasDateRangePicker ? [dateRangeStartKey, dateRangeEndKey] : []),
   ];
@@ -153,8 +159,10 @@ export default function PageFilters({
           loading={filter.loading}
           placeholder={filter.placeholder || tc("all")}
           options={filter.options || []}
-          value={getQueryValue(filter.name)}
-          onValueChange={(value) => updateQuery({ [filter.name]: value })}
+          value={filter.value ?? getQueryValue(filter.name)}
+          onValueChange={
+            filter.onValueChange ?? ((value) => updateQuery({ [filter.name]: value }))
+          }
         />
       ) : (
         <SearchInput
@@ -175,7 +183,7 @@ export default function PageFilters({
     ? allowed.filter((f) => f.primary)
     : allowed.slice(0, Math.max(0, TOOLBAR_SLOTS - dateSlots));
   const panel = allowed.filter((f) => !toolbar.includes(f));
-  const panelActive = panel.filter((f) => getQueryValue(f.name)).length;
+  const panelActive = panel.filter((f) => !f.onValueChange && getQueryValue(f.name)).length;
 
   // One chip per active filter, in the order of the controls
   const optionLabel = (f: FiltersQuery, value: string) =>
@@ -185,6 +193,7 @@ export default function PageFilters({
     chips.push({ key: "q", label: `${tc("search")}: ${getQueryValue("q")}`, clear: { q: null } });
   }
   for (const f of allowed) {
+    if (f.onValueChange) continue;
     const value = getQueryValue(f.name);
     if (value) {
       chips.push({
