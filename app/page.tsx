@@ -37,7 +37,6 @@ import { FileSpreadsheet } from "lucide-react";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
-import { ListStatsSwitch, useListStatsView } from "@/ui/view-switch";
 
 import { formatDate as formatDateShared, formatNumber } from "@/lib/format";
 export default function PantografPage() {
@@ -336,63 +335,52 @@ export default function PantografPage() {
     { label: t("breadcrumbs.current"), current: true },
   ];
 
-  const [view, setView] = useListStatsView();
-  const viewSwitch = <ListStatsSwitch value={view} onValueChange={setView} />;
-  const header = (filters: React.ReactNode, actions: React.ReactNode) => (
-    <PageHeader
-      title={t("title")}
-      description={t("description")}
-      breadcrumbs={breadcrumbs}
-      filters={filters}
-      actions={actions}
-    />
-  );
-
   return (
     <Page>
-      {view === "stats" ? (
-        <StatsPanel
-          title={t("statistics.title")}
-          metrics={pantographMetrics}
-          useStats={usePantographStatistics as unknown as StatsHook}
-          locomotiveOptions={statLocomotiveOptions}
-          header={(filters) => header(filters, viewSwitch)}
-        />
-      ) : (
-        <>
-          {header(
-            <PageFilters
-              filters={pageFilters}
-              hasSearch={true}
-              searchPlaceholder={t("search_placeholder")}
-            />,
-            <>
-              {viewSwitch}
-              <ExportActions onExcel={handleExport} />
-              <AddButton onClick={handleCreate} permission="create_pantograf" />
-            </>,
-          )}
-
-          <PaginatedTable
-            columns={columns}
-            data={paginatedData}
-            getRowId={(row) => row.id}
-            isLoading={isLoading}
-            error={error}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            updateQueryParams={true}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            isDeleting={deleteEntryMutation.isPending}
-            selectable={true}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-            emptyTitle={t("empty_title")}
-            emptyDescription={t("empty_description")}
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={pageFilters}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
           />
-        </>
-      )}
+        }
+        actions={
+          <>
+            <ExportActions onExcel={handleExport} />
+            <AddButton onClick={handleCreate} permission="create_pantograf" />
+          </>
+        }
+      />
+
+      <StatsPanel
+        title={t("statistics.title")}
+        metrics={pantographMetrics}
+        useStats={usePantographStatistics as unknown as StatsHook}
+        locomotiveOptions={statLocomotiveOptions}
+      />
+
+      <PaginatedTable
+        columns={columns}
+        data={paginatedData}
+        getRowId={(row) => row.id}
+        isLoading={isLoading}
+        error={error}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        updateQueryParams={true}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        isDeleting={deleteEntryMutation.isPending}
+        selectable={true}
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
+        emptyTitle={t("empty_title")}
+        emptyDescription={t("empty_description")}
+      />
 
       <PantographModal
         isOpen={isModalOpen}

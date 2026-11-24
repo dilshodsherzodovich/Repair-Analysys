@@ -33,7 +33,6 @@ import { ConfirmationDialog } from "@/ui/confirmation-dialog";
 import { AddButton } from "@/ui/add-button";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
-import { ListStatsSwitch, useListStatsView } from "@/ui/view-switch";
 
 import { formatDateTime, formatNumber } from "@/lib/format";
 export default function OrdersPage() {
@@ -431,142 +430,129 @@ export default function OrdersPage() {
     { label: t("breadcrumbs.current"), current: true },
   ];
 
-  const [view, setView] = useListStatsView();
-  const viewSwitch = <ListStatsSwitch value={view} onValueChange={setView} />;
-  const header = (filters: React.ReactNode, actions: React.ReactNode) => (
-    <PageHeader
-      title={t("title")}
-      description={t("description")}
-      breadcrumbs={breadcrumbs}
-      filters={filters}
-      actions={actions}
-    />
-  );
-
   return (
     <Page>
-      {view === "stats" ? (
-        // Picking a status filters the list and opens it
-        <MprStatusStats
-          title={t("statistics.title")}
-          locomotiveOptions={statLocomotiveOptions}
-          activeStatus={confirm_status || ""}
-          onStatusSelect={(status) =>
-            updateQuery({ confirm_status: status || null, view: null })
-          }
-          header={(filters) => header(filters, viewSwitch)}
-        />
-      ) : (
-        <>
-          {header(
-            <PageFilters
-              filters={[
-                {
-                  name: "type_of_journal",
-                  label: t("filters.journal_type"),
-                  isSelect: true,
-                  options: journalTypeOptions,
-                  placeholder: t("filters.journal_type_placeholder"),
-                  searchable: false,
-                },
-                {
-                  name: "locomotive",
-                  label: t("filters.locomotive"),
-                  isSelect: true,
-                  options: locomotiveOptions,
-                  placeholder: t("filters.locomotive_placeholder"),
-                  searchable: true,
-                  loading: isLoadingLocomotives,
-                },
-                {
-                  name: "confirm_status",
-                  label: t("filters.status"),
-                  isSelect: true,
-                  options: [
-                    { value: "", label: t("options.all_statuses") },
-                    ...statusOptions,
-                  ],
-                  placeholder: t("filters.status_placeholder"),
-                  searchable: false,
-                },
-                ...(canChooseOrganization
-                  ? [
-                      {
-                        name: "organization",
-                        label: t("filters.organization"),
-                        isSelect: true,
-                        options: organizationOptions,
-                        placeholder: t("filters.organization_placeholder"),
-                        searchable: false,
-                        loading: isLoadingOrganizations,
-                      },
-                    ]
-                  : []),
-              ]}
-              hasSearch={true}
-              searchPlaceholder={t("search_placeholder")}
-              hasDatePicker={true}
-              datePickerLabel={t("date_label")}
-            />,
-            <>
-              {viewSwitch}
-              <ExportActions onExcel={handleExport} />
-              <AddButton onClick={isAdmin ? undefined : handleCreate} permission={isAdmin ? undefined : "create_order"} />
-            </>,
-          )}
-
-          <PaginatedTable
-            columns={columns}
-            data={paginatedData}
-            getRowId={(row) => row.id}
-            isLoading={isLoading}
-            error={error}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            updateQueryParams={true}
-            onEdit={isAdmin ? undefined : handleEdit}
-            onDelete={isAdmin ? undefined : handleDelete}
-            deletePermission="delete_order"
-            editPermission="edit_order"
-            isDeleting={deleteOrderMutation.isPending}
-            actionsDisplayMode="row"
-            extraActions={
-              isAdmin
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            filters={[
+              {
+                name: "type_of_journal",
+                label: t("filters.journal_type"),
+                isSelect: true,
+                options: journalTypeOptions,
+                placeholder: t("filters.journal_type_placeholder"),
+                searchable: false,
+              },
+              {
+                name: "locomotive",
+                label: t("filters.locomotive"),
+                isSelect: true,
+                options: locomotiveOptions,
+                placeholder: t("filters.locomotive_placeholder"),
+                searchable: true,
+                loading: isLoadingLocomotives,
+              },
+              {
+                name: "confirm_status",
+                label: t("filters.status"),
+                isSelect: true,
+                options: [
+                  { value: "", label: t("options.all_statuses") },
+                  ...statusOptions,
+                ],
+                placeholder: t("filters.status_placeholder"),
+                searchable: false,
+              },
+              ...(canChooseOrganization
                 ? [
                     {
-                      label: t("actions.confirm"),
-                      icon: <CheckCircle className="h-4 w-4" />,
-                      onClick: handleConfirmClick,
-                      permission: "view_orders" as Permission,
-                      variant: "outline" as const,
-                      shouldShow: (row: OrderData) =>
-                        row.confirm_status !== "confirmed",
-                      className:
-                        "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
-                    },
-                    {
-                      label: t("actions.reject"),
-                      icon: <XCircle className="h-4 w-4" />,
-                      onClick: handleRejectClick,
-                      permission: "view_orders" as Permission,
-                      variant: "outline" as const,
-                      shouldShow: (row: OrderData) =>
-                        row.confirm_status !== "rejected",
-                      className:
-                        "border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive/80 hover:border-destructive",
+                      name: "organization",
+                      label: t("filters.organization"),
+                      isSelect: true,
+                      options: organizationOptions,
+                      placeholder: t("filters.organization_placeholder"),
+                      searchable: false,
+                      loading: isLoadingOrganizations,
                     },
                   ]
-                : []
-            }
-            selectable={true}
-            size="sm"
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-            emptyTitle={t("empty_title")}
-            emptyDescription={t("empty_description")}
+                : []),
+            ]}
+            hasSearch={true}
+            searchPlaceholder={t("search_placeholder")}
+            hasDatePicker={true}
+            datePickerLabel={t("date_label")}
           />
-        </>
-      )}
+        }
+        actions={
+          <>
+            <ExportActions onExcel={handleExport} />
+            <AddButton onClick={isAdmin ? undefined : handleCreate} permission={isAdmin ? undefined : "create_order"} />
+          </>
+        }
+      />
+
+      {/* Picking a status filters the list below */}
+      <MprStatusStats
+        title={t("statistics.title")}
+        locomotiveOptions={statLocomotiveOptions}
+        activeStatus={confirm_status || ""}
+        onStatusSelect={(status) => updateQuery({ confirm_status: status || null })}
+      />
+
+      <PaginatedTable
+        columns={columns}
+        data={paginatedData}
+        getRowId={(row) => row.id}
+        isLoading={isLoading}
+        error={error}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        updateQueryParams={true}
+        onEdit={isAdmin ? undefined : handleEdit}
+        onDelete={isAdmin ? undefined : handleDelete}
+        deletePermission="delete_order"
+        editPermission="edit_order"
+        isDeleting={deleteOrderMutation.isPending}
+        actionsDisplayMode="row"
+        extraActions={
+          isAdmin
+            ? [
+                {
+                  label: t("actions.confirm"),
+                  icon: <CheckCircle className="h-4 w-4" />,
+                  onClick: handleConfirmClick,
+                  permission: "view_orders" as Permission,
+                  variant: "outline" as const,
+                  shouldShow: (row: OrderData) =>
+                    row.confirm_status !== "confirmed",
+                  className:
+                    "border-success text-success hover:bg-success/10 hover:text-success/80 hover:border-success",
+                },
+                {
+                  label: t("actions.reject"),
+                  icon: <XCircle className="h-4 w-4" />,
+                  onClick: handleRejectClick,
+                  permission: "view_orders" as Permission,
+                  variant: "outline" as const,
+                  shouldShow: (row: OrderData) =>
+                    row.confirm_status !== "rejected",
+                  className:
+                    "border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive/80 hover:border-destructive",
+                },
+              ]
+            : []
+        }
+        selectable={true}
+        size="sm"
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
+        emptyTitle={t("empty_title")}
+        emptyDescription={t("empty_description")}
+      />
 
       <OrderModal
         isOpen={isModalOpen}

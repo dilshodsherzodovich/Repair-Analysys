@@ -49,8 +49,10 @@ interface StatsPanelProps {
   /**
    * Renders the page's filter card around the panel's own filters, so the
    * statistics view keeps the same header and filter card as the list.
+   * Without it the panel sits on the list page and keeps its filters in
+   * its own heading.
    */
-  header: (filters: React.ReactNode) => React.ReactNode;
+  header?: (filters: React.ReactNode) => React.ReactNode;
   className?: string;
 }
 
@@ -200,12 +202,15 @@ export function StatsPanel({
 
   return (
     <>
-      {header(filters)}
+      {header?.(filters)}
       <section className={cn("space-y-4", className)}>
-        <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
-          <BarChart3 className="size-5 text-primary" />
-          {title}
-        </h2>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+            <BarChart3 className="size-5 text-primary" />
+            {title}
+          </h2>
+          {!header && filters}
+        </div>
         {isLoading ? (
           <LoadingState shape="cards" />
         ) : error ? (
