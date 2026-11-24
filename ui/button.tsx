@@ -83,9 +83,16 @@ function Button({
       aria-busy={loading || undefined}
       {...props}
     >
-      {/* Slot needs a single child, so asChild buttons skip the spinner */}
-      {loading && !asChild && <Loader2 className="animate-spin" />}
-      {children}
+      {/* Slot needs exactly one element child (not [false, child]), so
+          asChild buttons pass children through and skip the spinner */}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {loading && <Loader2 className="animate-spin" />}
+          {children}
+        </>
+      )}
     </Comp>
   );
 }
