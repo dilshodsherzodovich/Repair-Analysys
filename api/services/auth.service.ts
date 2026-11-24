@@ -48,8 +48,13 @@ export const authService = {
     return response.data;
   },
 
+  /**
+   * Drops the tokens. The in-memory user stays until the next sign-in
+   * replaces it (logout reloads the page anyway): pages and the layout read
+   * it during render, and nulling it under a still-mounted page crashed it.
+   * AuthGuard stops rendering protected pages once the tokens are gone.
+   */
   clearStorage: (): void => {
-    currentUser = null;
     localStorage.removeItem("auth_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("auth_expiry");

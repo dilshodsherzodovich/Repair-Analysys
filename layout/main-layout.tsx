@@ -100,7 +100,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header
-          user={user!}
+          user={user}
           isSidebarCollapsed={isSidebarCollapsed}
           onSidebarToggle={() => setIsSidebarCollapsed((prev) => !prev)}
           onMobileMenuOpen={() => setIsMobileOpen(true)}

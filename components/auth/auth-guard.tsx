@@ -76,7 +76,9 @@ export function AuthGuard({ children, publicRoutes }: AuthGuardProps) {
   // The user comes from /account/auth/me/; storage only holds the tokens
   const hasToken = isClient && authService.isAuthenticated();
   const meQuery = useMe(hasToken);
-  const currentUser = hasToken ? (meQuery.data ?? null) : null;
+  // A failed refetch keeps the old data; it no longer counts as signed in
+  const currentUser =
+    hasToken && !meQuery.isError ? (meQuery.data ?? null) : null;
   const isUserLoading = hasToken && !currentUser && !meQuery.isError;
 
   // A token the API no longer accepts: start over from the login page

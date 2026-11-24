@@ -9,7 +9,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { useTranslations } from "next-intl";
 
 interface HeaderProps {
-  user: UserData;
+  user: UserData | null;
   isSidebarCollapsed: boolean;
   onSidebarToggle: () => void;
   onMobileMenuOpen: () => void;
@@ -61,7 +61,8 @@ export function Header({
         <LanguageSwitcher />
       </div>
       <div className="flex items-center space-x-4">
-        <AccountPopover user={user!} onLogout={authService.logout} />
+        {/* The user is gone for a moment while logging out */}
+        {user && <AccountPopover user={user} onLogout={authService.logout} />}
       </div>
     </header>
   );
