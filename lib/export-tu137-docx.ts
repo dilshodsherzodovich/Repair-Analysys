@@ -134,7 +134,7 @@ export async function exportTu137ToDocx(records: Tu137Record[]) {
                 alignment: AlignmentType.RIGHT,
                 children: [
                   new TextRun({
-                    text: `Mashinist ID: ${r.mashinist_id}`,
+                    text: `Mashinist: ${r.create_user_fio || `#${r.mashinist_id}`}`,
                     bold: true,
                   }),
                 ],

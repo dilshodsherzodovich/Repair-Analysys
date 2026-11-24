@@ -14,7 +14,13 @@ import { formatDate } from "@/lib/utils";
 import { authService, getEmmDepoId } from "@/api/services/auth.service";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table";
 import { ExportActions } from "@/ui/export-actions";
-import { FilterBar, FilterField, FilterReset, SearchInput } from "@/ui/filter-bar";
+import PageFilters from "@/ui/filters";
+import { Repeat } from "lucide-react";
+import {
+  filterTu137,
+  getRecurringGroups,
+  getRespOrganizations,
+} from "@/lib/tu137-filters";
 import { Page } from "@/ui/page";
 import { StatCard, StatGrid } from "@/ui/stat-card";
 
@@ -45,7 +51,11 @@ export default function Tu137ReportsPage() {
   const t = useTranslations("Tu137Page");
   const tc = useTranslations("Common");
   const { getQueryValue, updateQuery } = useFilterParams();
-  const searchQuery = getQueryValue("search");
+  const searchQuery = getQueryValue("q");
+  const startDate = getQueryValue("start_date");
+  const endDate = getQueryValue("end_date");
+  const respOrg = getQueryValue("resp_org");
+  const [expandedRepeat, setExpandedRepeat] = useState<string | null>(null);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   const currentUser =
@@ -63,12 +73,38 @@ export default function Tu137ReportsPage() {
     page_size: 500,
   });
 
+  const depoRecords = apiResponse?.results ?? [];
+  const orgOptions = useMemo(
+    () => [
+      { value: "", label: t("filters_all_orgs") },
+      ...getRespOrganizations(depoRecords).map((o) => ({
+        value: String(o.id),
+        label: o.name,
+      })),
+    ],
+    [depoRecords, t],
+  );
+  const filteredRecords = useMemo(
+    () =>
+      filterTu137(depoRecords, {
+        q: searchQuery,
+        start_date: startDate,
+        end_date: endDate,
+        resp_org: respOrg,
+      }),
+    [depoRecords, searchQuery, startDate, endDate, respOrg],
+  );
+  const recurringGroups = useMemo(
+    () => getRecurringGroups(filteredRecords),
+    [filteredRecords],
+  );
+
   if (!currentUser || !canAccessSection(currentUser, "tu-137")) {
     return <UnauthorizedPage />;
   }
 
   const { globalStats, filteredMashinists } = useMemo(() => {
-    const rawData = apiResponse?.results ?? [];
+    const rawData = filteredRecords;
 
     let totalOpen = 0;
     let totalSolved = 0;
@@ -128,9 +164,9 @@ export default function Tu137ReportsPage() {
       },
       filteredMashinists: filtered,
     };
-  }, [apiResponse, searchQuery]);
+  }, [filteredRecords, searchQuery]);
 
-  const allRecords = apiResponse?.results ?? [];
+  const allRecords = filteredRecords;
 
   const breadcrumbs = [
     { label: t("breadcrumbs_home"), href: "/" },
@@ -150,16 +186,22 @@ export default function Tu137ReportsPage() {
           />
         }
         filters={
-          <FilterBar>
-            <FilterField label={tc("search")} width="lg">
-              <SearchInput
-                value={searchQuery}
-                placeholder={t("search_placeholder")}
-                onChange={(value) => updateQuery({ search: value || null })}
-              />
-            </FilterField>
-            <FilterReset active={Boolean(searchQuery)} onReset={() => updateQuery({ search: null })} />
-          </FilterBar>
+          <PageFilters
+            hasSearch
+            searchPlaceholder={t("search_placeholder")}
+            hasDateRangePicker
+            filters={[
+              {
+                name: "resp_org",
+                primary: true,
+                label: t("filters_resp_org"),
+                isSelect: true,
+                options: orgOptions,
+                placeholder: t("filters_resp_org_placeholder"),
+                searchable: true,
+              },
+            ]}
+          />
         }
       />
 
@@ -373,8 +415,8 @@ export default function Tu137ReportsPage() {
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody className="divide-y divide-muted">
-                                  {apiResponse?.results
-                                    ?.filter(
+                                  {filteredRecords
+                                    .filter(
                                       (r) =>
                                         String(r.mashinist_id) === matchKey,
                                     )
@@ -439,6 +481,111 @@ export default function Tu137ReportsPage() {
               )}
             </TableBody>
           </Table>
+        )}
+        {/* Recurring remarks of the depo */}
+        {!isLoading && !error && (
+          <div>
+            <div className="mb-4 mt-6 flex items-center gap-2">
+              <Repeat className="h-4 w-4 text-destructive" />
+              <h2 className="text-sm font-bold uppercase tracking-widest text-foreground-secondary">
+                {t("recurring_title")}
+              </h2>
+              <span className="text-xs font-medium text-foreground-subtle">
+                ({recurringGroups.length})
+              </span>
+            </div>
+            <p className="mb-3 text-xs text-foreground-subtle">
+              {t("recurring_hint")}
+            </p>
+            <Table density="compact" frame className="text-left">
+              <TableHeader className="font-bold uppercase tracking-wider text-muted-foreground">
+                <TableRow>
+                  <TableHead>{t("recurring_group")}</TableHead>
+                  <TableHead>{t("table_station")}</TableHead>
+                  <TableHead className="text-center">{t("recurring_count")}</TableHead>
+                  <TableHead className="text-center">{t("open")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-muted text-foreground-secondary">
+                {recurringGroups.length === 0 ? (
+                  <TableStateRow colSpan={4}>
+                    <EmptyState title={t("recurring_empty")} size="compact" />
+                  </TableStateRow>
+                ) : (
+                  recurringGroups.map((g) => {
+                    const isOpen = expandedRepeat === g.key;
+                    return (
+                      <React.Fragment key={g.key}>
+                        <TableRow
+                          className="group cursor-pointer"
+                          onClick={() => setExpandedRepeat(isOpen ? null : g.key)}
+                        >
+                          <TableCell className="flex items-center gap-2 font-medium text-foreground">
+                            {isOpen ? (
+                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-foreground-subtle" />
+                            )}
+                            {g.group_name}
+                          </TableCell>
+                          <TableCell>{g.station}</TableCell>
+                          <TableCell className="text-center font-bold text-destructive">
+                            {g.count}
+                          </TableCell>
+                          <TableCell className="text-center font-bold text-warning">
+                            {g.open}
+                          </TableCell>
+                        </TableRow>
+                        {isOpen && (
+                          <TableRow>
+                            <TableCell colSpan={4} className="bg-surface-muted p-4">
+                              <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+                                <Table density="compact" wrapper={false}>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead>{t("table_number")}</TableHead>
+                                      <TableHead>{t("mashinist")}</TableHead>
+                                      <TableHead>{t("table_lokomotiv")}</TableHead>
+                                      <TableHead>{t("table_date")}</TableHead>
+                                      <TableHead>{t("table_comment")}</TableHead>
+                                      <TableHead className="text-center">{t("table_status")}</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody className="divide-y divide-muted">
+                                    {g.records.map((r) => (
+                                      <TableRow key={r.id}>
+                                        <TableCell className="font-medium">#{r.id}</TableCell>
+                                        <TableCell>
+                                          {r.create_user_fio || `#${r.mashinist_id}`}
+                                          <div className="text-xs text-muted-foreground">
+                                            {r.resp_organization?.name}
+                                          </div>
+                                        </TableCell>
+                                        <TableCell>{r.lokomotiv_name}</TableCell>
+                                        <TableCell className="whitespace-nowrap">
+                                          {formatDate(r.created_at)}
+                                        </TableCell>
+                                        <TableCell className="max-w-lg whitespace-pre-wrap">
+                                          {r.comments}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {r.finished ? t("status_finished") : t("status_open")}
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </>
     </Page>

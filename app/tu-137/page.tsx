@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { canAccessSection } from "@/lib/permissions";
 import UnauthorizedPage from "../unauthorized/page";
@@ -15,6 +15,14 @@ import { authService, getEmmDepoId } from "@/api/services/auth.service";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { ExportActions } from "@/ui/export-actions";
 import { Page } from "@/ui/page";
+import PageFilters from "@/ui/filters";
+import { Repeat } from "lucide-react";
+import {
+  filterTu137,
+  getRecurringCounts,
+  getRespOrganizations,
+  recurringKey,
+} from "@/lib/tu137-filters";
 
 import { LoadingState, ErrorState } from "@/ui/empty-state";
 const PAGE_SIZE = 20;
@@ -24,6 +32,11 @@ type Tab = "in_progress" | "hal_qilingan";
 export default function Tu137Page() {
   const t = useTranslations("Tu137Page");
   const { getQueryValue, updateQuery } = useFilterParams();
+  const q = getQueryValue("q");
+  const startDate = getQueryValue("start_date");
+  const endDate = getQueryValue("end_date");
+  const respOrg = getQueryValue("resp_org");
+  const onlyRepeating = getQueryValue("repeat") === "true";
 
   const tab = (getQueryValue("tab") || "in_progress") as Tab;
   const page = Math.max(1, parseInt(getQueryValue("page") || "1"));
@@ -36,16 +49,46 @@ export default function Tu137Page() {
   const { data: apiResponse, isLoading, error } = useTu137Records({
     depo_id: pDepoId,
     finished: tab === "hal_qilingan" ? true : false,
-    page,
-    page_size: PAGE_SIZE,
+    // the depo's records come in one batch; filters and paging run client-side
+    page: 1,
+    page_size: 500,
   });
+
+  const allRecords = apiResponse?.results ?? [];
+  const orgOptions = useMemo(
+    () => [
+      { value: "", label: t("filters_all_orgs") },
+      ...getRespOrganizations(allRecords).map((o) => ({
+        value: String(o.id),
+        label: o.name,
+      })),
+    ],
+    [allRecords, t],
+  );
+  // repeat counts are taken over the whole depo, not the filtered slice
+  const repeatCounts = useMemo(
+    () => getRecurringCounts(allRecords),
+    [allRecords],
+  );
+  const filtered = useMemo(
+    () =>
+      filterTu137(allRecords, {
+        q,
+        start_date: startDate,
+        end_date: endDate,
+        resp_org: respOrg,
+      }).filter(
+        (r) => !onlyRepeating || (repeatCounts.get(recurringKey(r)) ?? 0) > 1,
+      ),
+    [allRecords, q, startDate, endDate, respOrg, onlyRepeating, repeatCounts],
+  );
 
   if (!currentUser || !canAccessSection(currentUser, "tu-137")) {
     return <UnauthorizedPage />;
   }
 
-  const records = apiResponse?.results ?? [];
-  const totalCount = apiResponse?.count ?? 0;
+  const totalCount = filtered.length;
+  const records = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   const recordsColumns: TableColumn<Tu137Record>[] = [
@@ -93,6 +136,12 @@ export default function Tu137Page() {
             {r.station_name}
             {r.station2_name ? ` - ${r.station2_name}` : ""}
           </div>
+          {(repeatCounts.get(recurringKey(r)) ?? 0) > 1 && (
+            <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-destructive/30 bg-destructive-subtle px-2 py-0.5 text-2xs font-bold text-destructive">
+              <Repeat className="h-3 w-3" />
+              {t("repeat_badge", { count: repeatCounts.get(recurringKey(r)) ?? 0 })}
+            </span>
+          )}
         </div>
       ),
     },
@@ -148,11 +197,41 @@ export default function Tu137Page() {
       <PageHeader
         title={t("title")}
         breadcrumbs={breadcrumbs}
+        filters={
+          <PageFilters
+            hasSearch
+            searchPlaceholder={t("search_placeholder")}
+            hasDateRangePicker
+            filters={[
+              {
+                name: "resp_org",
+                primary: true,
+                label: t("filters_resp_org"),
+                isSelect: true,
+                options: orgOptions,
+                placeholder: t("filters_resp_org_placeholder"),
+                searchable: true,
+              },
+              {
+                name: "repeat",
+                primary: true,
+                label: t("filters_repeat"),
+                isSelect: true,
+                options: [
+                  { value: "", label: t("filters_repeat_all") },
+                  { value: "true", label: t("filters_repeat_only") },
+                ],
+                placeholder: t("filters_repeat"),
+                searchable: false,
+              },
+            ]}
+          />
+        }
         actions={
           <>
             <SegmentedTabs
               value={tab}
-              onValueChange={(v) => updateQuery({ tab: v, page: "1" })}
+              onValueChange={(v) => updateQuery({ tab: v, page: null })}
               options={tabs.map(({ key, label }) => ({ value: key, label }))}
             />
             <ExportActions
